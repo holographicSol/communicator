@@ -12,7 +12,6 @@ from PyQt5.QtGui import QIcon, QPixmap, QPainter, QColor
 from win32api import GetSystemMetrics
 import socket
 
-self_app = []
 btnx_var = []
 btnx_title = []
 
@@ -48,9 +47,6 @@ configuration_thread_completed = False
 class App(QMainWindow):
     def __init__(self):
         super(App, self).__init__()
-
-        global self_app
-        self_app = self
 
         self.title = "SERVER_CLIENT_0"
 
@@ -325,7 +321,7 @@ class LoopBackSendClass(QThread):
         QThread.__init__(self)
 
         self.HOST_SEND = "127.0.0.1"
-        self.PORT_SEND = 65433
+        self.PORT_SEND = 65432
 
     def run(self):
         print('-' * 200)
@@ -342,8 +338,7 @@ class LoopBackSendClass(QThread):
         try:
             with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as SOCKET_LOOPBACK_SEND:
                 SOCKET_LOOPBACK_SEND.connect((self.HOST_SEND, self.PORT_SEND))
-                data = "COM1"
-                SOCKET_LOOPBACK_SEND.send(data.encode())
+                SOCKET_LOOPBACK_SEND.sendall(b"COM1")
                 SOCKET_LOOPBACK_SEND.settimeout(1)
                 try:
                     data = SOCKET_LOOPBACK_SEND.recv(1024)
@@ -391,7 +386,7 @@ class LoopBackServerClass(QThread):
     def listen(self):
         global LOOPBACK_SERVER_ADDRESS
         global SOCKET_LOOPBACK_SERVER
-        global self_app, btnx_var, btnx_title
+        global btnx_var, btnx_title
 
         btnx_title[0].setStyleSheet(
             """QLabel{background-color: rgb(0, 0, 0);
@@ -426,6 +421,7 @@ class LoopBackServerClass(QThread):
                         print(self.data)
                         self.server_logger()
                         conn.sendall(data)
+
                         if str(data) == "b'COM1'":
                             self.data = str(datetime.datetime.now()) + ' [LOOPBACK_SERVER] data recognized as internal command COM1: ' + str(addr)
                             print(self.data)
@@ -441,6 +437,10 @@ class LoopBackServerClass(QThread):
                                 color: rgb(200, 200, 200);
                                 border: 1px solid rgb(0, 0, 255);}"""
                             )
+                        else:
+                            print('invalid client request:', str(addr))
+                            # user option to add client_key mapped to user_name
+
         except Exception as e:
             print(e)
             btnx_title[0].setStyleSheet(
@@ -473,7 +473,7 @@ class LocalSendClass(QThread):
         QThread.__init__(self)
 
         self.HOST_SEND = "192.168.1.11"
-        self.PORT_SEND = 65433
+        self.PORT_SEND = 65432
 
     def run(self):
         print('-' * 200)
