@@ -1,21 +1,18 @@
 """
 Written by Benjamin Jack Cullen aka Holographic_Sol
 """
-import datetime
+
 import os
 import sys
-import subprocess
 import time
-from PyQt5.QtWidgets import QMainWindow, QApplication, QPushButton, QLabel
-from PyQt5.QtCore import Qt, QThread, QTimer
-from PyQt5.QtGui import QIcon, QPixmap, QPainter, QColor
-from win32api import GetSystemMetrics
+import datetime
 import socket
+from win32api import GetSystemMetrics
+from PyQt5.QtWidgets import *
+from PyQt5.QtCore import *
+from PyQt5.QtGui import *
 
-self_app = []
-btnx_var = []
-btnx_title = []
-
+# Socket Instances
 SOCKET_LOOPBACK_SERVER = []
 SOCKET_LOOPBACK_SEND = []
 SOCKET_LOCAL_SERVER = []
@@ -23,176 +20,79 @@ SOCKET_LOCAL_SEND = []
 SOCKET_PUBLIC_SERVER = []
 SOCKET_PUBLIC_SEND = []
 
+# Addresses (simplify)
 CLIENT_ADDRESS = []
 LOOPBACK_SERVER_ADDRESS = ''
 LOCAL_SERVER_ADDRESS = ''
 PUBLIC_SERVER_ADDRESS = ''
 
+# Loopback Settings
 loopback_server_thread_key = ''
 loopback_send_thread_key = ''
 loopback_server_log = './loopback_server_log.txt'
 
+# Local Settings
 local_server_thread_key = ''
 local_send_thread_key = ''
 local_server_log = './local_server_log.txt'
 
+# Public Settings
 public_server_thread_key = ''
 public_send_thread_key = ''
 public_server_log = './public_server_log.txt'
 
+# Configuration Settings
 configuration_thread_key = ''
-
 configuration_thread_completed = False
+
+# Object Lists
+button_var = []
+server_title = []
+
+# Stylesheet - Server Title (Mode 0)
+server_title_stylesheet_0 = """QLabel{background-color: rgb(0, 0, 0);
+            color: rgb(255, 0, 0);
+            border: 1px solid rgb(0, 0, 255);}"""
+
+# Stylesheet - Server Title (Mode 1)
+server_title_stylesheet_1 = """QLabel{background-color: rgb(0, 0, 0);
+            color: rgb(0, 255, 0);
+            border: 1px solid rgb(0, 0, 255);}"""
+
+# Stylesheet - Server Switches (Mode 0)
+button_stylesheet_0 = """QPushButton{background-color: rgb(0, 0, 0);
+                    color: rgb(200, 200, 200);
+                    border: 1px solid rgb(0, 0, 255);}"""
+
+# Stylesheet - Server Switches (Mode 1)
+button_stylesheet_1 = """QPushButton{background-color: rgb(255, 0, 0);
+                                color: rgb(200, 200, 200);
+                                border: 1px solid rgb(0, 0, 255);}"""
 
 
 class App(QMainWindow):
     def __init__(self):
         super(App, self).__init__()
 
-        global self_app
-        self_app = self
-
-        self.title = "SERVER_CLIENT_0"
-
-        app_w = 480
-        app_h = 136
-        scr_w = GetSystemMetrics(0)  # Native Resolution Width.
-        scr_h = GetSystemMetrics(1)  # Native Resolution Height.
-        app_pos_w = (scr_w / 2 - (app_w / 2))
-        app_pos_h = (scr_h / 2 - (app_h / 2))
-        self.left = int(app_pos_w)
-        self.top = int(app_pos_h)
-        self.width = int(app_w)
-        self.height = int(app_h)
-
-        p = self.palette()
-        p.setColor(self.backgroundRole(), Qt.black)
-        self.setPalette(p)
-        # self.setWindowOpacity(0.5)
-        self.initUI()
-
-    def initUI(self):
-        global btnx_title
-        self.setWindowTitle('SERVER_CLIENT_0')
-        self.setGeometry(self.left, self.top, self.width, self.height)
-        self.setFixedSize(self.width, self.height)
-
-        self.server_header_width = 80
-        self.btnx_wh = 40
-        self.btnx_spacing_w = 4
-        self.zone_spacing_h = 8
-
-        self.loopback_zone_header = QLabel(self)
-        self.loopback_zone_header.resize(self.server_header_width, self.btnx_wh)
-        self.loopback_zone_header.move(self.btnx_spacing_w, self.btnx_spacing_w)
-        self.loopback_zone_header.setText('LOOPBACK')
-        self.loopback_zone_header.setAlignment(Qt.AlignCenter)
-        self.loopback_zone_header.setStyleSheet(
-            """QLabel{background-color: rgb(0, 0, 0);
-            color: rgb(255, 0, 0);
-            border: 1px solid rgb(0, 0, 255);}"""
-        )
-        btnx_title.append(self.loopback_zone_header)
-
-        self.local_zone_header = QLabel(self)
-        self.local_zone_header.resize(self.server_header_width, self.btnx_wh)
-        self.local_zone_header.move(self.btnx_spacing_w, self.btnx_spacing_w * 2 + self.btnx_wh)
-        self.local_zone_header.setText('LOCAL')
-        self.local_zone_header.setAlignment(Qt.AlignCenter)
-        self.local_zone_header.setStyleSheet(
-            """QLabel{background-color: rgb(0, 0, 0);
-            color: rgb(255, 0, 0);
-            border: 1px solid rgb(0, 0, 255);}"""
-        )
-        btnx_title.append(self.local_zone_header)
-
-        self.public_zone_header = QLabel(self)
-        self.public_zone_header.resize(self.server_header_width, self.btnx_wh)
-        self.public_zone_header.move(self.btnx_spacing_w, self.btnx_spacing_w * 3 + self.btnx_wh * 2)
-        self.public_zone_header.setText('PUBLIC')
-        self.public_zone_header.setAlignment(Qt.AlignCenter)
-        self.public_zone_header.setStyleSheet(
-            """QLabel{background-color: rgb(0, 0, 0);
-            color: rgb(255, 0, 0);
-            border: 1px solid rgb(0, 0, 255);}"""
-        )
-        btnx_title.append(self.public_zone_header)
-
-        def generateButtonFunction():
-            global btnx_var
+        def generate_button_function():
+            global button_var
             print('\nplugged in: generateButtonFunction')
-            btnx_gencount = 9
+            button_gencount = 9
             i = 0
-            while i < btnx_gencount:
-                btnx_name = 'btnx_' + str(i)
-                self.btnx = btnx_name
-                self.btnx = QPushButton(self)
-                self.btnx.resize(self.btnx_wh, self.btnx_wh)
-                self.btnx.setStyleSheet(
-                    """QPushButton{background-color: rgb(0, 0, 0);
-                    color: rgb(200, 200, 200);
-                    border: 1px solid rgb(0, 0, 255);}"""
-                )
-                btnx_var.append(self.btnx)
-                self.btnx.show()
-                print('created object:', self.btnx, '. naming object:', btnx_name)
+            while i < button_gencount:
+                button_name = 'button_' + str(i)
+                self.button = button_name
+                self.button = QPushButton(self)
+                self.button.resize(self.button_wh, self.button_wh)
+                self.button.setStyleSheet(button_stylesheet_0)
+                button_var.append(self.button)
+                self.button.show()
+                print('created object:', self.button, '. naming object:', button_name)
                 i += 1
-
-            btnx_var[0].move(self.btnx_spacing_w * 2 + self.server_header_width, self.btnx_spacing_w)
-            btnx_var[1].move(self.btnx_spacing_w * 3 + self.server_header_width + self.btnx_wh, self.btnx_spacing_w)
-            btnx_var[2].move(self.btnx_spacing_w * 4 + self.server_header_width + self.btnx_wh * 2, self.btnx_spacing_w)
-
-            btnx_var[3].move(self.btnx_spacing_w * 2 + self.server_header_width, self.btnx_spacing_w * 2 + self.btnx_wh)
-            btnx_var[4].move(self.btnx_spacing_w * 3 + self.server_header_width + self.btnx_wh, self.btnx_spacing_w * 2 + self.btnx_wh)
-            btnx_var[5].move(self.btnx_spacing_w * 4 + self.server_header_width + self.btnx_wh * 2, self.btnx_spacing_w * 2 + self.btnx_wh)
-
-            btnx_var[6].move(self.btnx_spacing_w * 2 + self.server_header_width, self.btnx_spacing_w * 3 + self.btnx_wh * 2)
-            btnx_var[7].move(self.btnx_spacing_w * 3 + self.server_header_width + self.btnx_wh, self.btnx_spacing_w * 3 + self.btnx_wh * 2)
-            btnx_var[8].move(self.btnx_spacing_w * 4 + self.server_header_width + self.btnx_wh * 2, self.btnx_spacing_w * 3 + self.btnx_wh * 2)
-
-            btnx_var[0].setText('START')
-            btnx_var[1].setText('STOP')
-            btnx_var[2].setText('COM1')
-
-            btnx_var[3].setText('START')
-            btnx_var[4].setText('STOP')
-            btnx_var[5].setText('COM1')
-
-            btnx_var[6].setText('START')
-            btnx_var[7].setText('STOP')
-            btnx_var[8].setText('COM1')
-
-            btnx_var[0].clicked.connect(loopback_start_function)
-            btnx_var[1].clicked.connect(loopback_stop_function)
-            btnx_var[2].clicked.connect(loopback_com1_function)
-
-            btnx_var[3].clicked.connect(local_start_function)
-            btnx_var[4].clicked.connect(local_stop_function)
-            btnx_var[5].clicked.connect(local_com1_function)
-
-            btnx_var[6].clicked.connect(public_start_function)
-            btnx_var[7].clicked.connect(public_stop_function)
-            btnx_var[8].clicked.connect(public_com1_function)
-
-        loopback_server_thread = LoopBackServerClass()
-        loopback_send_thread = LoopBackSendClass()
-
-        local_server_thread = LocalServerClass()
-        local_send_thread = LocalSendClass()
-
-        public_server_thread = PublicServerClass()
-        public_send_thread = PublicSendClass()
-
-        configuration_thread = ConfigurationClass()
-
-        self.HOST_SEND = "127.0.0.1"  # The server's hostname or IP address
-        self.PORT_SEND = 65433  # The port used by the server
 
         def loopback_start_function():
             global loopback_server_thread_key
-
             loopback_server_thread.stop()
-
             loopback_server_thread_key = 'listen'
             loopback_server_thread.start()
 
@@ -206,13 +106,11 @@ class App(QMainWindow):
             global loopback_send_thread_key
             if loopback_send_thread.isRunning() is True:
                 loopback_send_thread.stop()
-
             loopback_send_thread_key = 'COM1'
             loopback_send_thread.start()
 
         def local_start_function():
             global local_server_thread_key
-
             local_server_thread.stop()
             local_server_thread_key = 'listen'
             local_server_thread.start()
@@ -227,13 +125,11 @@ class App(QMainWindow):
             global local_send_thread_key
             if local_send_thread.isRunning() is True:
                 local_send_thread.stop()
-
             local_send_thread_key = 'COM1'
             local_send_thread.start()
 
         def public_start_function():
             global public_server_thread_key
-
             public_server_thread.stop()
             public_server_thread_key = 'listen'
             public_server_thread.start()
@@ -248,21 +144,140 @@ class App(QMainWindow):
             global public_send_thread_key
             if public_send_thread.isRunning() is True:
                 public_send_thread.stop()
-
             public_send_thread_key = 'COM1'
             public_send_thread.start()
 
-        generateButtonFunction()
+        # Window Title
+        self.title = "Communicator"
+        self.setWindowTitle('Communicator')
 
+        # Window Geometry
+        self.width, self.height = 480, 136
+        app_pos_w, app_pos_h = (GetSystemMetrics(0) / 2 - (self.width / 2)), (GetSystemMetrics(1) / 2 - (self.height / 2))
+        self.left, self.top = int(app_pos_w), int(app_pos_h)
+        self.setGeometry(self.left, self.top, self.width, self.height)
+        self.setFixedSize(self.width, self.height)
+
+        # Window Colour
+        p = self.palette()
+        p.setColor(self.backgroundRole(), Qt.black)
+        self.setPalette(p)
+
+        # Object Geometry
+        self.server_title_width = 80
+        self.button_wh = 40
+        self.button_spacing_w = 4
+        self.zone_spacing_h = 8
+
+        global server_title
+
+        # QLabel - loopback_server_title
+        self.loopback_server_title = QLabel(self)
+        self.loopback_server_title.resize(self.server_title_width, self.button_wh)
+        self.loopback_server_title.move(self.button_spacing_w, self.button_spacing_w)
+        self.loopback_server_title.setText('LOOPBACK')
+        self.loopback_server_title.setAlignment(Qt.AlignCenter)
+        self.loopback_server_title.setStyleSheet(server_title_stylesheet_0)
+        server_title.append(self.loopback_server_title)
+
+        # QLabel - local_server_title
+        self.local_server_title = QLabel(self)
+        self.local_server_title.resize(self.server_title_width, self.button_wh)
+        self.local_server_title.move(self.button_spacing_w, self.button_spacing_w * 2 + self.button_wh)
+        self.local_server_title.setText('LOCAL')
+        self.local_server_title.setAlignment(Qt.AlignCenter)
+        self.local_server_title.setStyleSheet(server_title_stylesheet_0)
+        server_title.append(self.local_server_title)
+
+        # QLabel - public_server_title
+        self.public_server_title = QLabel(self)
+        self.public_server_title.resize(self.server_title_width, self.button_wh)
+        self.public_server_title.move(self.button_spacing_w, self.button_spacing_w * 3 + self.button_wh * 2)
+        self.public_server_title.setText('PUBLIC')
+        self.public_server_title.setAlignment(Qt.AlignCenter)
+        self.public_server_title.setStyleSheet(server_title_stylesheet_0)
+        server_title.append(self.public_server_title)
+
+        # QPushButton - Loop Generate
+        generate_button_function()
+
+        # QPushButton - LoopBack Server Geometry
+        button_var[0].move(self.button_spacing_w * 2 + self.server_title_width, self.button_spacing_w)
+        button_var[1].move(self.button_spacing_w * 3 + self.server_title_width + self.button_wh, self.button_spacing_w)
+        button_var[2].move(self.button_spacing_w * 4 + self.server_title_width + self.button_wh * 2, self.button_spacing_w)
+
+        # QPushButton - Local Server Geometry
+        button_var[3].move(self.button_spacing_w * 2 + self.server_title_width, self.button_spacing_w * 2 + self.button_wh)
+        button_var[4].move(self.button_spacing_w * 3 + self.server_title_width + self.button_wh, self.button_spacing_w * 2 + self.button_wh)
+        button_var[5].move(self.button_spacing_w * 4 + self.server_title_width + self.button_wh * 2, self.button_spacing_w * 2 + self.button_wh)
+
+        # QPushButton - Public Server Geometry
+        button_var[6].move(self.button_spacing_w * 2 + self.server_title_width, self.button_spacing_w * 3 + self.button_wh * 2)
+        button_var[7].move(self.button_spacing_w * 3 + self.server_title_width + self.button_wh, self.button_spacing_w * 3 + self.button_wh * 2)
+        button_var[8].move(self.button_spacing_w * 4 + self.server_title_width + self.button_wh * 2, self.button_spacing_w * 3 + self.button_wh * 2)
+
+        # QPushButton - LoopBack Server Text
+        button_var[0].setText('START')
+        button_var[1].setText('STOP')
+        button_var[2].setText('COM1')
+
+        # QPushButton - Local Server Text
+        button_var[3].setText('START')
+        button_var[4].setText('STOP')
+        button_var[5].setText('COM1')
+
+        # QPushButton - Public Server Text
+        button_var[6].setText('START')
+        button_var[7].setText('STOP')
+        button_var[8].setText('COM1')
+
+        # QPushButton - LoopBack Server Clicked Connect
+        button_var[0].clicked.connect(loopback_start_function)
+        button_var[1].clicked.connect(loopback_stop_function)
+        button_var[2].clicked.connect(loopback_com1_function)
+
+        # QPushButton - Local Server Clicked Connect
+        button_var[3].clicked.connect(local_start_function)
+        button_var[4].clicked.connect(local_stop_function)
+        button_var[5].clicked.connect(local_com1_function)
+
+        # QPushButton - Public Server Clicked Connect
+        button_var[6].clicked.connect(public_start_function)
+        button_var[7].clicked.connect(public_stop_function)
+        button_var[8].clicked.connect(public_com1_function)
+
+        # Thread - LoopBack Server
+        loopback_server_thread = LoopBackServerClass()
+        loopback_send_thread = LoopBackSendClass()
+
+        # Thread - Local Server
+        local_server_thread = LocalServerClass()
+        local_send_thread = LocalSendClass()
+
+        # Thread - Public Server
+        public_server_thread = PublicServerClass()
+        public_send_thread = PublicSendClass()
+
+        # Thread - Configuration
+        configuration_thread = ConfigurationClass()
+
+        # Configuration Thread - Set Configuration Key
         global configuration_thread_key
         configuration_thread_key = 'ALL'
+
+        # Configuration Thread - Run Configuration Thread
         configuration_thread.start()
+
+        # Configuration Thread - Wait For Configuration Thread To Complete
         global configuration_thread_completed
         print('configuration_thread_completed:', configuration_thread_completed)
         while configuration_thread_completed is False:
             time.sleep(1)
         print('configuration_thread_completed:', configuration_thread_completed)
 
+        self.initUI()
+
+    def initUI(self):
         self.show()
 
 
@@ -311,11 +326,9 @@ class ConfigurationClass(QThread):
                     elif str(line[0]) == 'CLIENT':
                         if len(line) is 4:
                             CLIENT_ADDRESS.append(str(line[1]) + ' ' + str(line[2]) + ' ' + str(line[3]))
+                            print('CLIENT_ADDRESS:', str(line[1]) + ' ' + str(line[2]) + ' ' + str(line[3]))
 
             fo.close()
-
-            for _ in CLIENT_ADDRESS:
-                print('CLIENT:', _)
 
         configuration_thread_completed = True
 
@@ -391,13 +404,9 @@ class LoopBackServerClass(QThread):
     def listen(self):
         global LOOPBACK_SERVER_ADDRESS
         global SOCKET_LOOPBACK_SERVER
-        global self_app, btnx_var, btnx_title
+        global button_var, server_title
 
-        btnx_title[0].setStyleSheet(
-            """QLabel{background-color: rgb(0, 0, 0);
-            color: rgb(0, 255, 0);
-            border: 1px solid rgb(0, 0, 255);}"""
-        )
+        server_title[0].setStyleSheet(server_title_stylesheet_1)
 
         print('[LoopBackServerClass] LOOPBACK_SERVER_ADDRESS:', LOOPBACK_SERVER_ADDRESS)
         self.LOOPBACK_SERVER_HOST = LOOPBACK_SERVER_ADDRESS.split(' ')[0]
@@ -430,28 +439,16 @@ class LoopBackServerClass(QThread):
                             self.data = str(datetime.datetime.now()) + ' [LOOPBACK_SERVER] data recognized as internal command COM1: ' + str(addr)
                             print(self.data)
                             self.server_logger()
-                            btnx_var[2].setStyleSheet(
-                                """QPushButton{background-color: rgb(255, 0, 0);
-                                color: rgb(200, 200, 200);
-                                border: 1px solid rgb(0, 0, 255);}"""
-                            )
+                            button_var[2].setStyleSheet(button_stylesheet_1)
                             time.sleep(1)
-                            btnx_var[2].setStyleSheet(
-                                """QPushButton{background-color: rgb(0, 0, 0);
-                                color: rgb(200, 200, 200);
-                                border: 1px solid rgb(0, 0, 255);}"""
-                            )
+                            button_var[2].setStyleSheet(button_stylesheet_0)
         except Exception as e:
             print(e)
-            btnx_title[0].setStyleSheet(
-                """QLabel{background-color: rgb(0, 0, 0);
-                color: rgb(255, 0, 0);
-                border: 1px solid rgb(0, 0, 255);}"""
-            )
+            server_title[0].setStyleSheet(server_title_stylesheet_0)
 
     def stop(self):
         global SOCKET_LOOPBACK_SERVER
-        global btnx_title
+        global server_title
         print('-' * 200)
         self.data = str(datetime.datetime.now()) + ' [LOOPBACK_SERVER] loopback server terminating'
         print(self.data)
@@ -460,11 +457,7 @@ class LoopBackServerClass(QThread):
             SOCKET_LOOPBACK_SERVER.close()
         except Exception as e:
             print(e)
-        btnx_title[0].setStyleSheet(
-            """QLabel{background-color: rgb(0, 0, 0);
-            color: rgb(255, 0, 0);
-            border: 1px solid rgb(0, 0, 255);}"""
-        )
+        server_title[0].setStyleSheet(server_title_stylesheet_0)
         self.terminate()
 
 
@@ -538,13 +531,9 @@ class LocalServerClass(QThread):
     def listen(self):
         global LOCAL_SERVER_ADDRESS
         global SOCKET_LOCAL_SERVER
-        global btnx_var, btnx_title
+        global button_var, server_title
 
-        btnx_title[1].setStyleSheet(
-            """QLabel{background-color: rgb(0, 0, 0);
-            color: rgb(0, 255, 0);
-            border: 1px solid rgb(0, 0, 255);}"""
-        )
+        server_title[1].setStyleSheet(server_title_stylesheet_1)
 
         print('[LocalServerClass] LOCAL_SERVER_ADDRESS:', LOCAL_SERVER_ADDRESS)
         self.LOCAL_SERVER_HOST = LOCAL_SERVER_ADDRESS.split(' ')[0]
@@ -577,28 +566,16 @@ class LocalServerClass(QThread):
                             self.data = str(datetime.datetime.now()) + ' [LOCAL_SERVER] data recognized as internal command COM1: ' + str(addr)
                             print(self.data)
                             self.server_logger()
-                            btnx_var[5].setStyleSheet(
-                                """QPushButton{background-color: rgb(255, 0, 0);
-                                color: rgb(200, 200, 200);
-                                border: 1px solid rgb(0, 0, 255);}"""
-                            )
+                            button_var[5].setStyleSheet(button_stylesheet_1)
                             time.sleep(1)
-                            btnx_var[5].setStyleSheet(
-                                """QPushButton{background-color: rgb(0, 0, 0);
-                                color: rgb(200, 200, 200);
-                                border: 1px solid rgb(0, 0, 255);}"""
-                            )
+                            button_var[5].setStyleSheet(button_stylesheet_0)
         except Exception as e:
             print(e)
-            btnx_title[1].setStyleSheet(
-                """QLabel{background-color: rgb(0, 0, 0);
-                color: rgb(255, 0, 0);
-                border: 1px solid rgb(0, 0, 255);}"""
-            )
+            server_title[1].setStyleSheet(server_title_stylesheet_0)
 
     def stop(self):
         global SOCKET_LOCAL_SERVER
-        global btnx_title
+        global server_title
         print('-' * 200)
         self.data = str(datetime.datetime.now()) + ' [LOCAL_SERVER] local server terminating'
         print(self.data)
@@ -607,11 +584,7 @@ class LocalServerClass(QThread):
             SOCKET_LOCAL_SERVER.close()
         except Exception as e:
             print(e)
-        btnx_title[1].setStyleSheet(
-            """QLabel{background-color: rgb(0, 0, 0);
-            color: rgb(255, 0, 0);
-            border: 1px solid rgb(0, 0, 255);}"""
-        )
+        server_title[1].setStyleSheet(server_title_stylesheet_0)
         self.terminate()
 
 
@@ -685,13 +658,9 @@ class PublicServerClass(QThread):
     def listen(self):
         global PUBLIC_SERVER_ADDRESS
         global SOCKET_PUBLIC_SERVER
-        global btnx_var, btnx_title
+        global button_var, server_title
 
-        btnx_title[2].setStyleSheet(
-            """QLabel{background-color: rgb(0, 0, 0);
-            color: rgb(0, 255, 0);
-            border: 1px solid rgb(0, 0, 255);}"""
-        )
+        server_title[2].setStyleSheet(server_title_stylesheet_1)
 
         print('[PublicServerClass] PUBLIC_SERVER_ADDRESS:', PUBLIC_SERVER_ADDRESS)
         self.PUBLIC_SERVER_HOST = PUBLIC_SERVER_ADDRESS.split(' ')[0]
@@ -724,28 +693,16 @@ class PublicServerClass(QThread):
                             self.data = str(datetime.datetime.now()) + ' [PUBLIC_SERVER] data recognized as internal command COM1: ' + str(addr)
                             print(self.data)
                             self.server_logger()
-                            btnx_var[8].setStyleSheet(
-                                """QPushButton{background-color: rgb(255, 0, 0);
-                                color: rgb(200, 200, 200);
-                                border: 1px solid rgb(0, 0, 255);}"""
-                            )
+                            button_var[8].setStyleSheet(button_stylesheet_1)
                             time.sleep(1)
-                            btnx_var[8].setStyleSheet(
-                                """QPushButton{background-color: rgb(0, 0, 0);
-                                color: rgb(200, 200, 200);
-                                border: 1px solid rgb(0, 0, 255);}"""
-                            )
+                            button_var[8].setStyleSheet(button_stylesheet_0)
         except Exception as e:
             print(e)
-            btnx_title[2].setStyleSheet(
-                """QLabel{background-color: rgb(0, 0, 0);
-                color: rgb(255, 0, 0);
-                border: 1px solid rgb(0, 0, 255);}"""
-            )
+            server_title[2].setStyleSheet(server_title_stylesheet_0)
 
     def stop(self):
         global SOCKET_PUBLIC_SERVER
-        global btnx_title
+        global server_title
         print('-' * 200)
         self.data = str(datetime.datetime.now()) + '  [PUBLIC_SERVER] public server terminating'
         print(self.data)
@@ -754,11 +711,7 @@ class PublicServerClass(QThread):
             SOCKET_PUBLIC_SERVER.close()
         except Exception as e:
             print(e)
-        btnx_title[2].setStyleSheet(
-            """QLabel{background-color: rgb(0, 0, 0);
-            color: rgb(255, 0, 0);
-            border: 1px solid rgb(0, 0, 255);}"""
-        )
+        server_title[2].setStyleSheet(server_title_stylesheet_0)
         self.terminate()
 
 
