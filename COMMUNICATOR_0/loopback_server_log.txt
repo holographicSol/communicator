@@ -795,3 +795,52 @@
 2022-06-23 23:03:54.194257 [LOOPBACK_SERVER] incoming connection: ('127.0.0.1', 15617)
 2022-06-23 23:03:54.194257 [LOOPBACK_SERVER] connection received data: ('127.0.0.1', 15617) data: b'COM1'
 2022-06-23 23:03:54.194257 [LOOPBACK_SERVER] data recognized as internal command COM1: ('127.0.0.1', 15617)
+2022-06-23 23:29:16.843697 [LOOPBACK_SERVER] loopback server terminating
+2022-06-23 23:29:16.844697 [LOOPBACK_SERVER] loopback server started
+2022-06-23 23:29:17.981592 [LOOPBACK_SERVER] loopback server terminating
+2022-06-23 23:48:41.812335 [LOOPBACK_SERVER] loopback server terminating
+2022-06-23 23:48:41.813350 [LOOPBACK_SERVER] loopback server started
+2022-06-23 23:48:42.519878 [LOOPBACK_SERVER] loopback server terminating
+2022-06-23 23:52:18.206160 [LOOPBACK_SERVER] loopback server terminating
+2022-06-23 23:52:18.206160 [LOOPBACK_SERVER] loopback server started
+2022-06-23 23:52:19.521125 [LOOPBACK_SERVER] incoming connection: ('127.0.0.1', 16092)
+2022-06-23 23:52:19.521125 [LOOPBACK_SERVER] connection received data: ('127.0.0.1', 16092) data: b'COM1'
+2022-06-23 23:52:19.521125 [LOOPBACK_SERVER] data recognized as internal command COM1: ('127.0.0.1', 16092)
+2022-06-23 23:52:21.289124 [LOOPBACK_SERVER] incoming connection: ('127.0.0.1', 16093)
+2022-06-23 23:52:21.289124 [LOOPBACK_SERVER] connection received data: ('127.0.0.1', 16093) data: b'COM1'
+2022-06-23 23:52:21.290109 [LOOPBACK_SERVER] data recognized as internal command COM1: ('127.0.0.1', 16093)
+2022-06-23 23:52:27.149003 [LOOPBACK_SERVER] incoming connection: ('127.0.0.1', 16094)
+2022-06-23 23:52:27.149003 [LOOPBACK_SERVER] connection received data: ('127.0.0.1', 16094) data: b'COM1'
+2022-06-23 23:52:27.149992 [LOOPBACK_SERVER] data recognized as internal command COM1: ('127.0.0.1', 16094)
+2022-06-23 23:52:33.629519 [LOOPBACK_SERVER] incoming connection: ('127.0.0.1', 16098)
+2022-06-23 23:52:33.629519 [LOOPBACK_SERVER] connection received data: ('127.0.0.1', 16098) data: b'COM1'
+2022-06-23 23:52:33.629519 [LOOPBACK_SERVER] data recognized as internal command COM1: ('127.0.0.1', 16098)
+2022-06-23 23:52:35.995362 [LOOPBACK_SERVER] incoming connection: ('127.0.0.1', 16100)
+2022-06-23 23:52:35.996329 [LOOPBACK_SERVER] connection received data: ('127.0.0.1', 16100) data: b'COM1'
+2022-06-23 23:52:35.996329 [LOOPBACK_SERVER] data recognized as internal command COM1: ('127.0.0.1', 16100)
+2022-06-23 23:52:38.620703 [LOOPBACK_SERVER] incoming connection: ('127.0.0.1', 16101)
+2022-06-23 23:52:38.620703 [LOOPBACK_SERVER] connection received data: ('127.0.0.1', 16101) data: b'COM1'
+2022-06-23 23:52:38.620703 [LOOPBACK_SERVER] data recognized as internal command COM1: ('127.0.0.1', 16101)
+2022-06-23 23:52:41.799676 [LOOPBACK_SERVER] incoming connection: ('127.0.0.1', 16102)
+2022-06-23 23:52:41.799676 [LOOPBACK_SERVER] connection received data: ('127.0.0.1', 16102) data: b'COM1'
+2022-06-23 23:52:41.800675 [LOOPBACK_SERVER] data recognized as internal command COM1: ('127.0.0.1', 16102)
+2022-06-23 23:52:43.787891 [LOOPBACK_SERVER] incoming connection: ('127.0.0.1', 16103)
+2022-06-23 23:52:43.787891 [LOOPBACK_SERVER] connection received data: ('127.0.0.1', 16103) data: b'COM1'
+2022-06-23 23:52:43.788887 [LOOPBACK_SERVER] data recognized as internal command COM1: ('127.0.0.1', 16103)
+2022-06-23 23:52:49.884699 [LOOPBACK_SERVER] loopback server terminating
+2022-06-24 00:17:42.733651 [LOOPBACK_SERVER] loopback server terminating
+2022-06-24 00:17:42.734661 [LOOPBACK_SERVER] loopback server started
+2022-06-24 00:17:44.235325 [LOOPBACK_SERVER] incoming connection: ('127.0.0.1', 16175)
+2022-06-24 00:17:44.236325 [LOOPBACK_SERVER] connection received data: ('127.0.0.1', 16175) data: b'COM1'
+2022-06-24 00:17:44.236325 [LOOPBACK_SERVER] data recognized as internal command COM1: ('127.0.0.1', 16175)
+2022-06-24 00:17:46.807027 [LOOPBACK_SERVER] incoming connection: ('127.0.0.1', 16176)
+2022-06-24 00:17:46.807027 [LOOPBACK_SERVER] connection received data: ('127.0.0.1', 16176) data: b'COM1'
+2022-06-24 00:17:46.807027 [LOOPBACK_SERVER] data recognized as internal command COM1: ('127.0.0.1', 16176)
+2022-06-24 00:18:03.477965 [LOOPBACK_SERVER] incoming connection: ('127.0.0.1', 16178)
+2022-06-24 00:18:03.478965 [LOOPBACK_SERVER] connection received data: ('127.0.0.1', 16178) data: b'COM1'
+2022-06-24 00:18:03.478965 [LOOPBACK_SERVER] data recognized as internal command COM1: ('127.0.0.1', 16178)
+2022-06-24 00:21:50.761366 [LOOPBACK_SERVER] loopback server terminating
+2022-06-24 00:21:50.762366 [LOOPBACK_SERVER] loopback server started
+2022-06-24 00:21:53.439840 [LOOPBACK_SERVER] incoming connection: ('127.0.0.1', 16184)
+2022-06-24 00:21:53.439840 [LOOPBACK_SERVER] connection received data: ('127.0.0.1', 16184) data: b'COM1'
+2022-06-24 00:21:53.439840 [LOOPBACK_SERVER] data recognized as internal command COM1: ('127.0.0.1', 16184)

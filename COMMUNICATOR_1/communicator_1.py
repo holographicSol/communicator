@@ -44,6 +44,7 @@ public_server_log = './public_server_log.txt'
 # Configuration Settings
 configuration_thread_key = ''
 configuration_thread_completed = False
+write_configuration_engaged = False
 
 # Object Lists
 button_var = []
@@ -68,6 +69,16 @@ button_stylesheet_0 = """QPushButton{background-color: rgb(0, 0, 0);
 button_stylesheet_1 = """QPushButton{background-color: rgb(255, 0, 0);
                                 color: rgb(200, 200, 200);
                                 border: 1px solid rgb(0, 0, 255);}"""
+
+# Stylesheet - Server Switches (Mode 0)
+linedit_stylesheet_0 = """QLineEdit{background-color: rgb(0, 0, 0);
+                    color: rgb(0, 255, 0);
+                    border: 1px solid rgb(0, 0, 255);}"""
+
+# Stylesheet - Server Switches (Mode 1)
+linedit_stylesheet_1 = """QLineEdit{background-color: rgb(0, 0, 0);
+                                color: rgb(0, 255, 0);
+                                border: 1px solid rgb(0, 255, 0);}"""
 
 
 class App(QMainWindow):
@@ -147,6 +158,59 @@ class App(QMainWindow):
             public_send_thread_key = 'COM1'
             public_send_thread.start()
 
+        def loopback_server_ip_port_write_function():
+            global write_configuration_engaged
+            if write_configuration_engaged is False:
+                self.write_var = 'LOOPBACK_SERVER_ADDRESS ' + self.loopback_server_ip_port.text().replace(':', ' ')
+                print('setting write variable:', self.write_var)
+                write_configuration()
+            else:
+                print('write_configuration_engaged:', write_configuration_engaged)
+
+        def local_server_ip_port_write_function():
+            global write_configuration_engaged
+            if write_configuration_engaged is False:
+                self.write_var = 'LOCAL_SERVER_ADDRESS ' + self.local_server_ip_port.text().replace(':', ' ')
+                print('setting write variable:', self.write_var)
+                write_configuration()
+            else:
+                print('write_configuration_engaged:', write_configuration_engaged)
+
+        def public_server_ip_port_write_function():
+            global write_configuration_engaged
+            if write_configuration_engaged is False:
+                self.write_var = 'PUBLIC_SERVER_ADDRESS ' + self.public_server_ip_port.text().replace(':', ' ')
+                print('setting write variable:', self.write_var)
+                write_configuration()
+            else:
+                print('write_configuration_engaged:', write_configuration_engaged)
+
+        def write_configuration():
+            global write_configuration_engaged
+            write_configuration_engaged = True
+            print('-' * 200)
+            print('writing line to configuration file:', self.write_var)
+            configuration_item = []
+            with open('./config.txt', 'r') as fo:
+                for line in fo:
+                    line = line.strip()
+                    if line.startswith(self.write_var.split()[0]):
+                        print('changing line in configuration file:', line)
+                        configuration_item.append(self.write_var)
+                    else:
+                        configuration_item.append(line)
+            fo.close()
+            print('-' * 200)
+            print('new configuration file:')
+            with open('./config.txt', 'w') as fo:
+                for _ in configuration_item:
+                    print(_)
+                    fo.write(_ + '\n')
+            fo.close()
+            write_configuration_engaged = False
+
+        self.write_var = ''
+
         # Window Title
         self.title = "Communicator"
         self.setWindowTitle('Communicator')
@@ -165,6 +229,8 @@ class App(QMainWindow):
 
         # Object Geometry
         self.server_title_width = 80
+        self.ip_port_width = 140
+        self.ip_port_height = 40
         self.button_wh = 40
         self.button_spacing_w = 4
         self.zone_spacing_h = 8
@@ -204,17 +270,17 @@ class App(QMainWindow):
         # QPushButton - LoopBack Server Geometry
         button_var[0].move(self.button_spacing_w * 2 + self.server_title_width, self.button_spacing_w)
         button_var[1].move(self.button_spacing_w * 3 + self.server_title_width + self.button_wh, self.button_spacing_w)
-        button_var[2].move(self.button_spacing_w * 4 + self.server_title_width + self.button_wh * 2, self.button_spacing_w)
+        button_var[2].move(self.button_spacing_w * 5 + self.ip_port_width + self.server_title_width + self.button_wh * 2, self.button_spacing_w)
 
         # QPushButton - Local Server Geometry
         button_var[3].move(self.button_spacing_w * 2 + self.server_title_width, self.button_spacing_w * 2 + self.button_wh)
         button_var[4].move(self.button_spacing_w * 3 + self.server_title_width + self.button_wh, self.button_spacing_w * 2 + self.button_wh)
-        button_var[5].move(self.button_spacing_w * 4 + self.server_title_width + self.button_wh * 2, self.button_spacing_w * 2 + self.button_wh)
+        button_var[5].move(self.button_spacing_w * 5 + self.ip_port_width + self.server_title_width + self.button_wh * 2, self.button_spacing_w * 2 + self.button_wh)
 
         # QPushButton - Public Server Geometry
         button_var[6].move(self.button_spacing_w * 2 + self.server_title_width, self.button_spacing_w * 3 + self.button_wh * 2)
         button_var[7].move(self.button_spacing_w * 3 + self.server_title_width + self.button_wh, self.button_spacing_w * 3 + self.button_wh * 2)
-        button_var[8].move(self.button_spacing_w * 4 + self.server_title_width + self.button_wh * 2, self.button_spacing_w * 3 + self.button_wh * 2)
+        button_var[8].move(self.button_spacing_w * 5 + self.ip_port_width + self.server_title_width + self.button_wh * 2, self.button_spacing_w * 3 + self.button_wh * 2)
 
         # QPushButton - LoopBack Server Text
         button_var[0].setText('START')
@@ -246,6 +312,36 @@ class App(QMainWindow):
         button_var[7].clicked.connect(public_stop_function)
         button_var[8].clicked.connect(public_com1_function)
 
+        # QLineEdit - Loopback Server IP
+        self.loopback_server_ip_port = QLineEdit(self)
+        self.loopback_server_ip_port.resize(self.ip_port_width, self.button_wh)
+        self.loopback_server_ip_port.move(self.button_spacing_w * 4 + self.server_title_width + self.button_wh * 2, self.button_spacing_w)
+        self.loopback_server_ip_port.returnPressed.connect(loopback_server_ip_port_write_function)
+        self.loopback_server_ip_port.setText('888.888.888.888:88888')
+        self.loopback_server_ip_port.setStyleSheet(linedit_stylesheet_0)
+        self.loopback_server_ip_port.setAlignment(Qt.AlignCenter)
+        print('-- [App.__init__] created:', self.loopback_server_ip_port)
+
+        # QLineEdit - Local Server IP
+        self.local_server_ip_port = QLineEdit(self)
+        self.local_server_ip_port.resize(self.ip_port_width, self.button_wh)
+        self.local_server_ip_port.move(self.button_spacing_w * 4 + self.server_title_width + self.button_wh * 2, self.button_spacing_w * 2 + self.button_wh)
+        self.local_server_ip_port.returnPressed.connect(local_server_ip_port_write_function)
+        self.local_server_ip_port.setText('888.888.888.888:88888')
+        self.local_server_ip_port.setStyleSheet(linedit_stylesheet_0)
+        self.local_server_ip_port.setAlignment(Qt.AlignCenter)
+        print('-- [App.__init__] created:', self.local_server_ip_port)
+
+        # QLineEdit - Public Server IP
+        self.public_server_ip_port = QLineEdit(self)
+        self.public_server_ip_port.resize(self.ip_port_width, self.button_wh)
+        self.public_server_ip_port.move(self.button_spacing_w * 4 + self.server_title_width + self.button_wh * 2, self.button_spacing_w * 3 + self.button_wh * 2)
+        self.public_server_ip_port.returnPressed.connect(public_server_ip_port_write_function)
+        self.public_server_ip_port.setText('888.888.888.888:88888')
+        self.public_server_ip_port.setStyleSheet(linedit_stylesheet_0)
+        self.public_server_ip_port.setAlignment(Qt.AlignCenter)
+        print('-- [App.__init__] created:', self.public_server_ip_port)
+
         # Thread - LoopBack Server
         loopback_server_thread = LoopBackServerClass()
         loopback_send_thread = LoopBackSendClass()
@@ -274,6 +370,12 @@ class App(QMainWindow):
         while configuration_thread_completed is False:
             time.sleep(1)
         print('configuration_thread_completed:', configuration_thread_completed)
+
+        self.loopback_server_ip_port.setText(LOOPBACK_SERVER_ADDRESS)
+
+        self.local_server_ip_port.setText(LOCAL_SERVER_ADDRESS)
+
+        self.public_server_ip_port.setText(PUBLIC_SERVER_ADDRESS)
 
         self.initUI()
 

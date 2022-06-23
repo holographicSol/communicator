@@ -449,3 +449,23 @@
 2022-06-23 23:03:55.302174 [LOOPBACK_SERVER] incoming connection: ('127.0.0.1', 15618)
 2022-06-23 23:03:55.302174 [LOOPBACK_SERVER] connection received data: ('127.0.0.1', 15618) data: b'COM1'
 2022-06-23 23:03:55.303170 [LOOPBACK_SERVER] data recognized as internal command COM1: ('127.0.0.1', 15618)
+2022-06-23 23:09:19.651205 [LOOPBACK_SERVER] loopback server terminating
+2022-06-23 23:52:28.044024 [LOOPBACK_SERVER] loopback server terminating
+2022-06-23 23:52:28.045024 [LOOPBACK_SERVER] loopback server started
+2022-06-23 23:52:30.490678 [LOOPBACK_SERVER] incoming connection: ('127.0.0.1', 16095)
+2022-06-23 23:52:30.490678 [LOOPBACK_SERVER] connection received data: ('127.0.0.1', 16095) data: b'COM1'
+2022-06-23 23:52:30.491682 [LOOPBACK_SERVER] data recognized as internal command COM1: ('127.0.0.1', 16095)
+2022-06-23 23:52:32.167574 [LOOPBACK_SERVER] incoming connection: ('127.0.0.1', 16097)
+2022-06-23 23:52:32.167574 [LOOPBACK_SERVER] connection received data: ('127.0.0.1', 16097) data: b'COM1'
+2022-06-23 23:52:32.167574 [LOOPBACK_SERVER] data recognized as internal command COM1: ('127.0.0.1', 16097)
+2022-06-23 23:52:50.681769 [LOOPBACK_SERVER] loopback server terminating
+2022-06-24 00:18:05.994768 [LOOPBACK_SERVER] loopback server terminating
+2022-06-24 00:18:05.995768 [LOOPBACK_SERVER] loopback server started
+2022-06-24 00:18:07.930900 [LOOPBACK_SERVER] incoming connection: ('127.0.0.1', 16179)
+2022-06-24 00:18:07.931901 [LOOPBACK_SERVER] connection received data: ('127.0.0.1', 16179) data: b'COM1'
+2022-06-24 00:18:07.931901 [LOOPBACK_SERVER] data recognized as internal command COM1: ('127.0.0.1', 16179)
+2022-06-24 00:21:48.642786 [LOOPBACK_SERVER] loopback server terminating
+2022-06-24 00:21:48.643801 [LOOPBACK_SERVER] loopback server started
+2022-06-24 00:21:51.684221 [LOOPBACK_SERVER] incoming connection: ('127.0.0.1', 16183)
+2022-06-24 00:21:51.685222 [LOOPBACK_SERVER] connection received data: ('127.0.0.1', 16183) data: b'COM1'
+2022-06-24 00:21:51.685222 [LOOPBACK_SERVER] data recognized as internal command COM1: ('127.0.0.1', 16183)
