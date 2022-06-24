@@ -80,17 +80,23 @@ com1_stylesheet_red = """QPushButton{background-color: rgb(255, 0, 0);
                                 color: rgb(0, 0, 0);
                                 border: 1px solid rgb(0, 0, 255);}"""
 
+global_self = []
+
 
 class App(QMainWindow):
     def __init__(self):
         super(App, self).__init__()
+        global global_self
+        global_self = self
 
         def dial_out_ip_port_function_set():
+            global_self.setFocus()
             global dial_out_address
             dial_out_address = self.dial_out_ip_port.text()
             print('setting dial out address:', dial_out_address)
 
         def dial_out_com1_function():
+            global_self.setFocus()
             global dial_out_thread_key
             if dial_out_thread.isRunning() is True:
                 dial_out_thread.stop()
@@ -98,18 +104,21 @@ class App(QMainWindow):
             dial_out_thread.start()
 
         def start_function():
+            global_self.setFocus()
             global server_thread_key
             server_thread.stop()
             server_thread_key = 'listen'
             server_thread.start()
 
         def stop_function():
+            global_self.setFocus()
             if server_thread.isRunning() is True:
                 server_thread.stop()
             else:
                 print('public server: already stopped')
 
         def server_ip_port_write_function():
+            global_self.setFocus()
             global write_configuration_engaged
             if write_configuration_engaged is False:
                 self.write_var = 'SERVER_ADDRESS ' + self.server_ip_port.text().replace(':', ' ')
@@ -119,6 +128,7 @@ class App(QMainWindow):
                 print('write_configuration_engaged:', write_configuration_engaged)
 
         def write_configuration():
+            global_self.setFocus()
             global write_configuration_engaged
             write_configuration_engaged = True
             print('-' * 200)
@@ -277,7 +287,7 @@ class ConfigurationClass(QThread):
         global SERVER_ADDRESS
         global DIAL_OUT_ADDRESSES
 
-        if configuration_thread_key is 'ALL':
+        if configuration_thread_key == 'ALL':
             print('-' * 200)
             print('ConfigurationClass(QThread): updating all values from configuration file...')
 
@@ -289,7 +299,7 @@ class ConfigurationClass(QThread):
                     line = line.split(' ')
 
                     if str(line[0]) == 'SERVER_ADDRESS':
-                        if len(line) is 3:
+                        if len(line) == 3:
                             SERVER_ADDRESS = str(str(line[1]) + ' ' + str(line[2]))
                             print('SERVER_ADDRESS:', SERVER_ADDRESS)
             fo.close()
@@ -303,7 +313,7 @@ class ConfigurationClass(QThread):
                     line = line.split(' ')
 
                     if str(line[0]) == 'DATA':
-                        if len(line) is 4:
+                        if len(line) == 4:
                             DIAL_OUT_ADDRESSES.append(str(line[1]) + ' ' + str(line[2]) + ' ' + str(line[3]))
                             print('DIAL_OUT_ADDRESSES:', str(line[1]) + ' ' + str(line[2]) + ' ' + str(line[3]))
 
@@ -333,7 +343,7 @@ class DialOutClass(QThread):
             self.HOST_SEND = dial_out_address_ip
             self.PORT_SEND = dial_out_address_port
 
-        if dial_out_thread_key is 'COM1':
+        if dial_out_thread_key == 'COM1':
             self.COM1()
 
     def COM1(self):
@@ -388,7 +398,7 @@ class PublicServerClass(QThread):
 
         global server_thread_key
         while True:
-            if server_thread_key is 'listen':
+            if server_thread_key == 'listen':
                 try:
                     self.listen()
                 except Exception as e:
@@ -400,6 +410,19 @@ class PublicServerClass(QThread):
         with open(server_log, 'a') as fo:
             fo.write(self.data + '\n')
         fo.close()
+
+    def notification(self):
+        self.server_com1.setStyleSheet(com1_stylesheet_green)
+
+        url = QUrl.fromLocalFile("communicator_0.wav")
+        content = QMediaContent(url)
+        player = QMediaPlayer()
+        player.setMedia(content)
+        player.setVolume(100)
+        player.play()
+        time.sleep(1)
+
+        self.server_com1.setStyleSheet(com1_stylesheet_default)
 
     def listen(self):
         global SERVER_ADDRESS
@@ -438,17 +461,7 @@ class PublicServerClass(QThread):
                             self.data = str(datetime.datetime.now()) + ' [SERVER] data recognized as internal command COM1: ' + str(addr)
                             print(self.data)
                             self.server_logger()
-                            self.server_com1.setStyleSheet(com1_stylesheet_green)
-
-                            url = QUrl.fromLocalFile("communicator_0.wav")
-                            content = QMediaContent(url)
-                            player = QMediaPlayer()
-                            player.setMedia(content)
-                            player.setVolume(100)
-                            player.play()
-                            time.sleep(1)
-
-                            self.server_com1.setStyleSheet(com1_stylesheet_default)
+                            self.notification()
 
         except Exception as e:
             print(e)
