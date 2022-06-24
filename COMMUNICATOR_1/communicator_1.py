@@ -14,20 +14,20 @@ from PyQt5.QtGui import *
 
 # Socket Instances
 SOCKET_DIAL_OUT = []
-SOCKET_PUBLIC_SERVER = []
+SOCKET_SERVER = []
 
 # Addresses (simplify)
 DIAL_OUT_ADDRESSES = []
-PUBLIC_SERVER_ADDRESS = ''
+SERVER_ADDRESS = ''
 
 # Dial Out Settings
 dial_out_thread_key = ''
 dial_out_address = ''
 
 # Public Settings
-public_server_thread_key = ''
-public_send_thread_key = ''
-public_server_log = './public_server_log.txt'
+server_thread_key = ''
+send_thread_key = ''
+server_log = './server_log.txt'
 
 # Configuration Settings
 configuration_thread_key = ''
@@ -96,22 +96,22 @@ class App(QMainWindow):
             dial_out_thread_key = 'COM1'
             dial_out_thread.start()
 
-        def public_start_function():
-            global public_server_thread_key
-            public_server_thread.stop()
-            public_server_thread_key = 'listen'
-            public_server_thread.start()
+        def start_function():
+            global server_thread_key
+            server_thread.stop()
+            server_thread_key = 'listen'
+            server_thread.start()
 
-        def public_stop_function():
-            if public_server_thread.isRunning() is True:
-                public_server_thread.stop()
+        def stop_function():
+            if server_thread.isRunning() is True:
+                server_thread.stop()
             else:
                 print('public server: already stopped')
 
-        def public_server_ip_port_write_function():
+        def server_ip_port_write_function():
             global write_configuration_engaged
             if write_configuration_engaged is False:
-                self.write_var = 'PUBLIC_SERVER_ADDRESS ' + self.public_server_ip_port.text().replace(':', ' ')
+                self.write_var = 'SERVER_ADDRESS ' + self.server_ip_port.text().replace(':', ' ')
                 print('setting write variable:', self.write_var)
                 write_configuration()
             else:
@@ -169,44 +169,44 @@ class App(QMainWindow):
         self.zone_spacing_h = 8
 
         # QLabel - Server Title
-        self.public_server_title = QLabel(self)
-        self.public_server_title.resize(self.server_title_width, self.button_wh)
-        self.public_server_title.move(self.button_spacing_w, self.zone_spacing_h)
-        self.public_server_title.setText('SERVER')
-        self.public_server_title.setAlignment(Qt.AlignCenter)
-        self.public_server_title.setStyleSheet(server_title_stylesheet_0)
+        self.server_title = QLabel(self)
+        self.server_title.resize(self.server_title_width, self.button_wh)
+        self.server_title.move(self.button_spacing_w, self.zone_spacing_h)
+        self.server_title.setText('SERVER')
+        self.server_title.setAlignment(Qt.AlignCenter)
+        self.server_title.setStyleSheet(server_title_stylesheet_0)
 
         # QPushButton - Server Start
-        self.public_server_start = QPushButton(self)
-        self.public_server_start.resize(self.button_wh, self.button_wh)
-        self.public_server_start.move(self.button_spacing_w * 2 + self.server_title_width, self.zone_spacing_h)
-        self.public_server_start.setText('START')
-        self.public_server_start.setStyleSheet(button_stylesheet_0)
-        self.public_server_start.clicked.connect(public_start_function)
+        self.server_start = QPushButton(self)
+        self.server_start.resize(self.button_wh, self.button_wh)
+        self.server_start.move(self.button_spacing_w * 2 + self.server_title_width, self.zone_spacing_h)
+        self.server_start.setText('START')
+        self.server_start.setStyleSheet(button_stylesheet_0)
+        self.server_start.clicked.connect(start_function)
 
         # QPushButton - Server Stop
-        self.public_server_stop = QPushButton(self)
-        self.public_server_stop.resize(self.button_wh, self.button_wh)
-        self.public_server_stop.move(self.button_spacing_w * 3 + self.server_title_width + self.button_wh, self.zone_spacing_h)
-        self.public_server_stop.setText('STOP')
-        self.public_server_stop.setStyleSheet(button_stylesheet_0)
-        self.public_server_stop.clicked.connect(public_stop_function)
+        self.server_stop = QPushButton(self)
+        self.server_stop.resize(self.button_wh, self.button_wh)
+        self.server_stop.move(self.button_spacing_w * 3 + self.server_title_width + self.button_wh, self.zone_spacing_h)
+        self.server_stop.setText('STOP')
+        self.server_stop.setStyleSheet(button_stylesheet_0)
+        self.server_stop.clicked.connect(stop_function)
 
         # QLineEdit - Public Server IP
-        self.public_server_ip_port = QLineEdit(self)
-        self.public_server_ip_port.resize(self.ip_port_width, self.button_wh)
-        self.public_server_ip_port.move(self.button_spacing_w * 4 + self.server_title_width + self.button_wh * 2, self.zone_spacing_h)
-        self.public_server_ip_port.returnPressed.connect(public_server_ip_port_write_function)
-        self.public_server_ip_port.setText('')
-        self.public_server_ip_port.setStyleSheet(linedit_stylesheet_0)
-        self.public_server_ip_port.setAlignment(Qt.AlignCenter)
+        self.server_ip_port = QLineEdit(self)
+        self.server_ip_port.resize(self.ip_port_width, self.button_wh)
+        self.server_ip_port.move(self.button_spacing_w * 4 + self.server_title_width + self.button_wh * 2, self.zone_spacing_h)
+        self.server_ip_port.returnPressed.connect(server_ip_port_write_function)
+        self.server_ip_port.setText('')
+        self.server_ip_port.setStyleSheet(linedit_stylesheet_0)
+        self.server_ip_port.setAlignment(Qt.AlignCenter)
 
         # QPushButton - Server Received Communication COM1
-        self.public_server_com1 = QPushButton(self)
-        self.public_server_com1.resize(self.button_wh, self.button_wh)
-        self.public_server_com1.move(self.button_spacing_w * 5 + self.server_title_width + self.button_wh * 2 + self.ip_port_width, self.zone_spacing_h)
-        self.public_server_com1.setText('COM1')
-        self.public_server_com1.setStyleSheet(com1_stylesheet_default)
+        self.server_com1 = QPushButton(self)
+        self.server_com1.resize(self.button_wh, self.button_wh)
+        self.server_com1.move(self.button_spacing_w * 5 + self.server_title_width + self.button_wh * 2 + self.ip_port_width, self.zone_spacing_h)
+        self.server_com1.setText('COM1')
+        self.server_com1.setStyleSheet(com1_stylesheet_default)
 
         # QLabel - Dial Out Title
         self.dial_out_title = QLabel(self)
@@ -234,7 +234,7 @@ class App(QMainWindow):
         self.dial_out_com1.clicked.connect(dial_out_com1_function)
 
         # Thread - Public Server
-        public_server_thread = PublicServerClass(self.public_server_title, self.public_server_com1)
+        server_thread = PublicServerClass(self.server_title, self.server_com1)
 
         # Thread - Dial_Out
         dial_out_thread = DialOutClass(self.dial_out_title, self.dial_out_com1)
@@ -256,7 +256,7 @@ class App(QMainWindow):
             time.sleep(1)
         print('configuration_thread_completed:', configuration_thread_completed)
 
-        self.public_server_ip_port.setText(PUBLIC_SERVER_ADDRESS)
+        self.server_ip_port.setText(SERVER_ADDRESS)
 
         self.initUI()
 
@@ -272,24 +272,24 @@ class ConfigurationClass(QThread):
         print('-' * 200)
         print('[ thread started: ConfigurationClass(QThread).run(self) ]')
         global configuration_thread_key, configuration_thread_completed
-        global PUBLIC_SERVER_ADDRESS
+        global SERVER_ADDRESS
         global DIAL_OUT_ADDRESSES
 
         if configuration_thread_key is 'ALL':
             print('-' * 200)
             print('ConfigurationClass(QThread): updating all values from configuration file...')
 
-            PUBLIC_SERVER_ADDRESS = ''
+            SERVER_ADDRESS = ''
 
             with open('./config.txt', 'r') as fo:
                 for line in fo:
                     line = line.strip()
                     line = line.split(' ')
 
-                    if str(line[0]) == 'PUBLIC_SERVER_ADDRESS':
+                    if str(line[0]) == 'SERVER_ADDRESS':
                         if len(line) is 3:
-                            PUBLIC_SERVER_ADDRESS = str(str(line[1]) + ' ' + str(line[2]))
-                            print('PUBLIC_SERVER_ADDRESS:', PUBLIC_SERVER_ADDRESS)
+                            SERVER_ADDRESS = str(str(line[1]) + ' ' + str(line[2]))
+                            print('SERVER_ADDRESS:', SERVER_ADDRESS)
             fo.close()
             print('-' * 200)
             print('ConfigurationClass(QThread): updating all values from communicator address book...')
@@ -372,86 +372,86 @@ class DialOutClass(QThread):
 
 
 class PublicServerClass(QThread):
-    def __init__(self, public_server_title, public_server_com1):
+    def __init__(self, server_title, server_com1):
         QThread.__init__(self)
-        self.public_server_com1 = public_server_com1
-        self.public_server_title = public_server_title
+        self.server_com1 = server_com1
+        self.server_title = server_title
         self.data = ''
 
     def run(self):
         print('-' * 200)
-        self.data = str(datetime.datetime.now()) + ' [PUBLIC_SERVER] public server started'
+        self.data = str(datetime.datetime.now()) + ' [SERVER] public server started'
         print(self.data)
         self.server_logger()
 
-        global public_server_thread_key
+        global server_thread_key
         while True:
-            if public_server_thread_key is 'listen':
+            if server_thread_key is 'listen':
                 self.listen()
 
     def server_logger(self):
-        if not os.path.exists(public_server_log):
-            open(public_server_log, 'w').close()
-        with open(public_server_log, 'a') as fo:
+        if not os.path.exists(server_log):
+            open(server_log, 'w').close()
+        with open(server_log, 'a') as fo:
             fo.write(self.data + '\n')
         fo.close()
 
     def listen(self):
-        global PUBLIC_SERVER_ADDRESS
-        global SOCKET_PUBLIC_SERVER
+        global SERVER_ADDRESS
+        global SOCKET_SERVER
 
-        self.public_server_title.setStyleSheet(server_title_stylesheet_1)
+        self.server_title.setStyleSheet(server_title_stylesheet_1)
 
-        print('[PublicServerClass] PUBLIC_SERVER_ADDRESS:', PUBLIC_SERVER_ADDRESS)
-        self.PUBLIC_SERVER_HOST = PUBLIC_SERVER_ADDRESS.split(' ')[0]
-        self.PUBLIC_SERVER_PORT = int(PUBLIC_SERVER_ADDRESS.split(' ')[1])
+        print('[PublicServerClass] SERVER_ADDRESS:', SERVER_ADDRESS)
+        self.SERVER_HOST = SERVER_ADDRESS.split(' ')[0]
+        self.SERVER_PORT = int(SERVER_ADDRESS.split(' ')[1])
 
         print('-' * 200)
-        print('PUBLIC_SERVER_HOST:', self.PUBLIC_SERVER_HOST)
-        print('PUBLIC_SERVER_PORT:', self.PUBLIC_SERVER_PORT)
-        print('PUBLIC_SERVER: attempting to listen')
+        print('SERVER_HOST:', self.SERVER_HOST)
+        print('SERVER_PORT:', self.SERVER_PORT)
+        print('SERVER: attempting to listen')
 
         try:
-            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as SOCKET_PUBLIC_SERVER:
-                SOCKET_PUBLIC_SERVER.bind((self.PUBLIC_SERVER_HOST, self.PUBLIC_SERVER_PORT))
-                SOCKET_PUBLIC_SERVER.listen()
-                conn, addr = SOCKET_PUBLIC_SERVER.accept()
+            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as SOCKET_SERVER:
+                SOCKET_SERVER.bind((self.SERVER_HOST, self.SERVER_PORT))
+                SOCKET_SERVER.listen()
+                conn, addr = SOCKET_SERVER.accept()
                 with conn:
                     print('-' * 200)
-                    self.data = str(datetime.datetime.now()) + ' [PUBLIC_SERVER] incoming connection: ' + str(addr)
+                    self.data = str(datetime.datetime.now()) + ' [SERVER] incoming connection: ' + str(addr)
                     print(self.data)
                     self.server_logger()
                     while True:
                         data = conn.recv(1024)
                         if not data:
                             break
-                        self.data = str(datetime.datetime.now()) + ' [PUBLIC_SERVER] connection received data: ' + str(addr) + ' data: ' + str(data)
+                        self.data = str(datetime.datetime.now()) + ' [SERVER] connection received data: ' + str(addr) + ' data: ' + str(data)
                         print(self.data)
                         self.server_logger()
                         conn.sendall(data)
                         if str(data) == "b'COM1'":
-                            self.data = str(datetime.datetime.now()) + ' [PUBLIC_SERVER] data recognized as internal command COM1: ' + str(addr)
+                            self.data = str(datetime.datetime.now()) + ' [SERVER] data recognized as internal command COM1: ' + str(addr)
                             print(self.data)
                             self.server_logger()
-                            self.public_server_com1.setStyleSheet(com1_stylesheet_green)
+                            self.server_com1.setStyleSheet(com1_stylesheet_green)
                             time.sleep(1)
-                            self.public_server_com1.setStyleSheet(com1_stylesheet_default)
+                            self.server_com1.setStyleSheet(com1_stylesheet_default)
         except Exception as e:
             print(e)
-            self.public_server_title.setStyleSheet(server_title_stylesheet_0)
+            self.server_title.setStyleSheet(server_title_stylesheet_0)
 
     def stop(self):
-        global SOCKET_PUBLIC_SERVER
+        global SOCKET_SERVER
         global server_title
         print('-' * 200)
-        self.data = str(datetime.datetime.now()) + '  [PUBLIC_SERVER] public server terminating'
+        self.data = str(datetime.datetime.now()) + '  [SERVER] public server terminating'
         print(self.data)
         self.server_logger()
         try:
-            SOCKET_PUBLIC_SERVER.close()
+            SOCKET_SERVER.close()
         except Exception as e:
             print(e)
-        self.public_server_title.setStyleSheet(server_title_stylesheet_0)
+        self.server_title.setStyleSheet(server_title_stylesheet_0)
         self.terminate()
 
 
