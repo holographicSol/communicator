@@ -387,7 +387,10 @@ class PublicServerClass(QThread):
         global server_thread_key
         while True:
             if server_thread_key is 'listen':
-                self.listen()
+                try:
+                    self.listen()
+                except Exception as e:
+                    print(e)
 
     def server_logger(self):
         if not os.path.exists(server_log):
