@@ -147,6 +147,7 @@ class App(QMainWindow):
         # Window Title
         self.title = "Communicator"
         self.setWindowTitle('Communicator')
+        self.setWindowIcon(QIcon('./icon.ico'))
 
         # Window Geometry
         self.width, self.height = 364, 104
@@ -445,7 +446,6 @@ class PublicServerClass(QThread):
 
     def stop(self):
         global SOCKET_SERVER
-        global server_title
         print('-' * 200)
         self.data = str(datetime.datetime.now()) + '  [SERVER] public server terminating'
         print(self.data)
