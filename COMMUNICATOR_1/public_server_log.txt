@@ -1,4 +1,0 @@
-2022-06-23 10:28:09.919183  [PUBLIC_SERVER] public server terminating
-2022-06-23 10:28:09.920184 [PUBLIC_SERVER] public server started
-2022-06-24 06:03:37.643345  [PUBLIC_SERVER] public server terminating
-2022-06-24 06:03:37.644357 [PUBLIC_SERVER] public server started
