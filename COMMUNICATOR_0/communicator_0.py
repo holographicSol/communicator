@@ -343,8 +343,8 @@ class DialOutClass(QThread):
             self.HOST_SEND = dial_out_address_ip
             self.PORT_SEND = dial_out_address_port
 
-        if dial_out_thread_key == 'COM1':
-            self.COM1()
+            if dial_out_thread_key == 'COM1':
+                self.COM1()
 
     def COM1(self):
         global SOCKET_DIAL_OUT
@@ -366,11 +366,13 @@ class DialOutClass(QThread):
                 self.dial_out_com1.setStyleSheet(com1_stylesheet_green)
                 time.sleep(1)
                 self.dial_out_com1.setStyleSheet(com1_stylesheet_default)
+                global_self.setFocus()
         except Exception as e:
             print(e)
             self.dial_out_com1.setStyleSheet(com1_stylesheet_red)
             time.sleep(1)
             self.dial_out_com1.setStyleSheet(com1_stylesheet_default)
+            global_self.setFocus()
 
     def stop(self):
         global SOCKET_DIAL_OUT
@@ -380,6 +382,7 @@ class DialOutClass(QThread):
             SOCKET_DIAL_OUT.close()
         except Exception as e:
             print(e)
+        global_self.setFocus()
         self.terminate()
 
 
@@ -462,10 +465,12 @@ class PublicServerClass(QThread):
                             print(self.data)
                             self.server_logger()
                             self.notification()
+                            global_self.setFocus()
 
         except Exception as e:
             print(e)
             self.server_title.setStyleSheet(server_title_stylesheet_0)
+            global_self.setFocus()
 
     def stop(self):
         global SOCKET_SERVER
@@ -478,6 +483,7 @@ class PublicServerClass(QThread):
         except Exception as e:
             print(e)
         self.server_title.setStyleSheet(server_title_stylesheet_0)
+        global_self.setFocus()
         self.terminate()
 
 
