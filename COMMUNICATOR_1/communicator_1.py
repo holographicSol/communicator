@@ -11,6 +11,7 @@ from win32api import GetSystemMetrics
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
+from PyQt5.QtMultimedia import *
 
 # Socket Instances
 SOCKET_DIAL_OUT = []
@@ -438,8 +439,17 @@ class PublicServerClass(QThread):
                             print(self.data)
                             self.server_logger()
                             self.server_com1.setStyleSheet(com1_stylesheet_green)
+
+                            url = QUrl.fromLocalFile("communicator_0.wav")
+                            content = QMediaContent(url)
+                            player = QMediaPlayer()
+                            player.setMedia(content)
+                            player.setVolume(100)
+                            player.play()
                             time.sleep(1)
+
                             self.server_com1.setStyleSheet(com1_stylesheet_default)
+
         except Exception as e:
             print(e)
             self.server_title.setStyleSheet(server_title_stylesheet_0)
