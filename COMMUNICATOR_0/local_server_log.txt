@@ -91,3 +91,45 @@
 2022-06-23 23:03:04.133628 [LOCAL_SERVER] connection received data: ('192.168.1.11', 15616) data: b'COM1'
 2022-06-23 23:03:04.133628 [LOCAL_SERVER] data recognized as internal command COM1: ('192.168.1.11', 15616)
 2022-06-23 23:03:51.153085 [LOCAL_SERVER] local server terminating
+2022-06-24 05:23:16.268501 [LOCAL_SERVER] local server terminating
+2022-06-24 05:23:16.279536 [LOCAL_SERVER] local server started
+2022-06-24 05:23:17.467648 [LOCAL_SERVER] incoming connection: ('192.168.1.11', 7448)
+2022-06-24 05:23:17.467648 [LOCAL_SERVER] connection received data: ('192.168.1.11', 7448) data: b'COM1'
+2022-06-24 05:23:17.468648 [LOCAL_SERVER] data recognized as internal command COM1: ('192.168.1.11', 7448)
+2022-06-24 05:38:12.161683 [LOCAL_SERVER] local server terminating
+2022-06-24 05:38:12.162677 [LOCAL_SERVER] local server started
+2022-06-24 05:38:13.089677 [LOCAL_SERVER] incoming connection: ('192.168.1.11', 7495)
+2022-06-24 05:38:13.089677 [LOCAL_SERVER] connection received data: ('192.168.1.11', 7495) data: b'COM1'
+2022-06-24 05:38:13.089677 [LOCAL_SERVER] data recognized as internal command COM1: ('192.168.1.11', 7495)
+2022-06-24 05:38:15.481679 [LOCAL_SERVER] incoming connection: ('192.168.1.11', 7496)
+2022-06-24 05:38:15.481679 [LOCAL_SERVER] connection received data: ('192.168.1.11', 7496) data: b'COM1'
+2022-06-24 05:38:15.481679 [LOCAL_SERVER] data recognized as internal command COM1: ('192.168.1.11', 7496)
+2022-06-24 05:38:31.026076 [LOCAL_SERVER] incoming connection: ('192.168.1.11', 7497)
+2022-06-24 05:38:31.027065 [LOCAL_SERVER] connection received data: ('192.168.1.11', 7497) data: b'COM1'
+2022-06-24 05:38:31.027065 [LOCAL_SERVER] data recognized as internal command COM1: ('192.168.1.11', 7497)
+2022-06-24 05:39:11.282030 [LOCAL_SERVER] local server terminating
+2022-06-24 05:39:11.283034 [LOCAL_SERVER] local server started
+2022-06-24 05:39:13.068476 [LOCAL_SERVER] incoming connection: ('192.168.1.11', 7499)
+2022-06-24 05:39:13.068476 [LOCAL_SERVER] connection received data: ('192.168.1.11', 7499) data: b'COM1'
+2022-06-24 05:39:13.069468 [LOCAL_SERVER] data recognized as internal command COM1: ('192.168.1.11', 7499)
+2022-06-24 05:40:44.170543 [LOCAL_SERVER] local server terminating
+2022-06-24 05:40:44.171529 [LOCAL_SERVER] local server started
+2022-06-24 05:40:47.824211 [LOCAL_SERVER] incoming connection: ('192.168.1.11', 7505)
+2022-06-24 05:40:47.824211 [LOCAL_SERVER] connection received data: ('192.168.1.11', 7505) data: b'COM1'
+2022-06-24 05:40:47.824211 [LOCAL_SERVER] data recognized as internal command COM1: ('192.168.1.11', 7505)
+2022-06-24 05:40:51.481054 [LOCAL_SERVER] incoming connection: ('192.168.1.11', 7507)
+2022-06-24 05:40:51.481054 [LOCAL_SERVER] connection received data: ('192.168.1.11', 7507) data: b'COM1'
+2022-06-24 05:40:51.481054 [LOCAL_SERVER] data recognized as internal command COM1: ('192.168.1.11', 7507)
+2022-06-24 06:03:35.713699 [LOCAL_SERVER] local server terminating
+2022-06-24 06:03:35.714715 [LOCAL_SERVER] local server started
+2022-06-24 06:06:16.696255 [LOCAL_SERVER] local server terminating
+2022-06-24 06:06:16.697263 [LOCAL_SERVER] local server started
+2022-06-24 06:07:16.659379 [LOCAL_SERVER] incoming connection: ('192.168.1.11', 7573)
+2022-06-24 06:07:16.660373 [LOCAL_SERVER] connection received data: ('192.168.1.11', 7573) data: b'COM1'
+2022-06-24 06:07:16.660373 [LOCAL_SERVER] data recognized as internal command COM1: ('192.168.1.11', 7573)
+2022-06-24 06:07:56.796832 [LOCAL_SERVER] incoming connection: ('192.168.1.11', 7575)
+2022-06-24 06:07:56.796832 [LOCAL_SERVER] connection received data: ('192.168.1.11', 7575) data: b'COM1'
+2022-06-24 06:07:56.796832 [LOCAL_SERVER] data recognized as internal command COM1: ('192.168.1.11', 7575)
+2022-06-24 06:08:02.534160 [LOCAL_SERVER] incoming connection: ('192.168.1.11', 7577)
+2022-06-24 06:08:02.534160 [LOCAL_SERVER] connection received data: ('192.168.1.11', 7577) data: b'COM1'
+2022-06-24 06:08:02.534160 [LOCAL_SERVER] data recognized as internal command COM1: ('192.168.1.11', 7577)

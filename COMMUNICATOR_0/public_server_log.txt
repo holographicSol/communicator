@@ -111,3 +111,33 @@
 2022-06-24 00:19:55.591784 [PUBLIC_SERVER] connection received data: ('92.40.168.144', 19790) data: b'COM1'
 2022-06-24 00:19:55.591784 [PUBLIC_SERVER] data recognized as internal command COM1: ('92.40.168.144', 19790)
 2022-06-24 00:20:06.082036  [PUBLIC_SERVER] public server terminating
+2022-06-24 05:23:23.825044  [PUBLIC_SERVER] public server terminating
+2022-06-24 05:23:23.949058 [PUBLIC_SERVER] public server started
+2022-06-24 05:23:44.327731 [PUBLIC_SERVER] incoming connection: ('92.40.174.105', 44011)
+2022-06-24 05:23:44.327731 [PUBLIC_SERVER] connection received data: ('92.40.174.105', 44011) data: b'COM1'
+2022-06-24 05:23:44.327731 [PUBLIC_SERVER] data recognized as internal command COM1: ('92.40.174.105', 44011)
+2022-06-24 05:23:48.961737 [PUBLIC_SERVER] incoming connection: ('92.40.174.105', 44012)
+2022-06-24 05:23:49.758420 [PUBLIC_SERVER] connection received data: ('92.40.174.105', 44012) data: b'COM1'
+2022-06-24 05:23:49.758420 [PUBLIC_SERVER] data recognized as internal command COM1: ('92.40.174.105', 44012)
+2022-06-24 05:39:26.183639  [PUBLIC_SERVER] public server terminating
+2022-06-24 05:39:26.184646 [PUBLIC_SERVER] public server started
+2022-06-24 05:39:26.545329 [PUBLIC_SERVER] incoming connection: ('92.40.168.1', 58916)
+2022-06-24 05:39:26.564607 [PUBLIC_SERVER] connection received data: ('92.40.168.1', 58916) data: b'COM1'
+2022-06-24 05:39:26.564607 [PUBLIC_SERVER] data recognized as internal command COM1: ('92.40.168.1', 58916)
+2022-06-24 05:39:35.300637  [PUBLIC_SERVER] public server terminating
+2022-06-24 05:39:35.301670 [PUBLIC_SERVER] public server started
+2022-06-24 05:39:40.481439  [PUBLIC_SERVER] public server terminating
+2022-06-24 05:39:41.305050  [PUBLIC_SERVER] public server terminating
+2022-06-24 05:39:41.305050 [PUBLIC_SERVER] public server started
+2022-06-24 05:39:44.534351 [PUBLIC_SERVER] incoming connection: ('92.40.168.1', 58926)
+2022-06-24 05:39:44.696338 [PUBLIC_SERVER] connection received data: ('92.40.168.1', 58926) data: b'COM1'
+2022-06-24 05:39:44.696338 [PUBLIC_SERVER] data recognized as internal command COM1: ('92.40.168.1', 58926)
+2022-06-24 05:39:51.684905  [PUBLIC_SERVER] public server terminating
+2022-06-24 06:03:36.507365  [PUBLIC_SERVER] public server terminating
+2022-06-24 06:03:36.507365 [PUBLIC_SERVER] public server started
+2022-06-24 06:06:19.120464  [PUBLIC_SERVER] public server terminating
+2022-06-24 06:06:19.121488 [PUBLIC_SERVER] public server started
+2022-06-24 06:07:31.290159 [PUBLIC_SERVER] incoming connection: ('92.40.168.167', 45509)
+2022-06-24 06:07:31.292137 [PUBLIC_SERVER] connection received data: ('92.40.168.167', 45509) data: b'COM1'
+2022-06-24 06:07:31.292137 [PUBLIC_SERVER] data recognized as internal command COM1: ('92.40.168.167', 45509)
+2022-06-24 06:07:45.142535  [PUBLIC_SERVER] public server terminating

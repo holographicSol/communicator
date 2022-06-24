@@ -56,3 +56,24 @@
 2022-06-23 23:03:02.643556 [LOCAL_SERVER] connection received data: ('192.168.1.11', 15615) data: b'COM1'
 2022-06-23 23:03:02.643556 [LOCAL_SERVER] data recognized as internal command COM1: ('192.168.1.11', 15615)
 2022-06-23 23:03:52.337669 [LOCAL_SERVER] local server terminating
+2022-06-24 05:54:59.846665 [LOCAL_SERVER] local server terminating
+2022-06-24 05:54:59.866765 [LOCAL_SERVER] local server started
+2022-06-24 05:55:07.505996 [LOCAL_SERVER] incoming connection: ('192.168.1.11', 7531)
+2022-06-24 05:55:07.505996 [LOCAL_SERVER] connection received data: ('192.168.1.11', 7531) data: b'COM1'
+2022-06-24 05:55:07.506997 [LOCAL_SERVER] data recognized as internal command COM1: ('192.168.1.11', 7531)
+2022-06-24 05:56:18.288377 [LOCAL_SERVER] local server terminating
+2022-06-24 06:03:33.191078 [LOCAL_SERVER] local server terminating
+2022-06-24 06:03:33.192064 [LOCAL_SERVER] local server started
+2022-06-24 06:05:04.987574 [LOCAL_SERVER] local server terminating
+2022-06-24 06:05:04.988573 [LOCAL_SERVER] local server started
+2022-06-24 06:06:22.554015 [LOCAL_SERVER] local server terminating
+2022-06-24 06:06:22.554015 [LOCAL_SERVER] local server started
+2022-06-24 06:06:44.487653 [LOCAL_SERVER] incoming connection: ('192.168.1.11', 7570)
+2022-06-24 06:06:44.487653 [LOCAL_SERVER] connection received data: ('192.168.1.11', 7570) data: b'COM1'
+2022-06-24 06:06:44.488650 [LOCAL_SERVER] data recognized as internal command COM1: ('192.168.1.11', 7570)
+2022-06-24 06:07:54.167175 [LOCAL_SERVER] incoming connection: ('192.168.1.11', 7574)
+2022-06-24 06:07:54.167175 [LOCAL_SERVER] connection received data: ('192.168.1.11', 7574) data: b'COM1'
+2022-06-24 06:07:54.167175 [LOCAL_SERVER] data recognized as internal command COM1: ('192.168.1.11', 7574)
+2022-06-24 06:07:59.739801 [LOCAL_SERVER] incoming connection: ('192.168.1.11', 7576)
+2022-06-24 06:07:59.739801 [LOCAL_SERVER] connection received data: ('192.168.1.11', 7576) data: b'COM1'
+2022-06-24 06:07:59.740809 [LOCAL_SERVER] data recognized as internal command COM1: ('192.168.1.11', 7576)

@@ -13,22 +13,23 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 
 # Socket Instances
+SOCKET_DIAL_OUT = []
 SOCKET_LOOPBACK_SERVER = []
-SOCKET_LOOPBACK_SEND = []
 SOCKET_LOCAL_SERVER = []
-SOCKET_LOCAL_SEND = []
 SOCKET_PUBLIC_SERVER = []
-SOCKET_PUBLIC_SEND = []
 
 # Addresses (simplify)
-CLIENT_ADDRESS = []
+DIAL_OUT_ADDRESSES = []
 LOOPBACK_SERVER_ADDRESS = ''
 LOCAL_SERVER_ADDRESS = ''
 PUBLIC_SERVER_ADDRESS = ''
 
+# Dial Out Settings
+dial_out_thread_key = ''
+dial_out_address = ''
+
 # Loopback Settings
 loopback_server_thread_key = ''
-loopback_send_thread_key = ''
 loopback_server_log = './loopback_server_log.txt'
 
 # Local Settings
@@ -80,6 +81,21 @@ linedit_stylesheet_1 = """QLineEdit{background-color: rgb(0, 0, 0);
                                 color: rgb(0, 255, 0);
                                 border: 1px solid rgb(0, 255, 0);}"""
 
+# Stylesheet - Dial Out COM1 (Mode 0)
+com1_stylesheet_default = """QPushButton{background-color: rgb(0, 0, 0);
+                    color: rgb(200, 200, 200);
+                    border: 1px solid rgb(0, 0, 255);}"""
+
+# Stylesheet - Dial Out COM1 (Mode 1)
+com1_stylesheet_green = """QPushButton{background-color: rgb(0, 255, 0);
+                                color: rgb(0, 0, 0);
+                                border: 1px solid rgb(0, 0, 255);}"""
+
+# Stylesheet - Dial Out COM1 (Mode 2)
+com1_stylesheet_red = """QPushButton{background-color: rgb(255, 0, 0);
+                                color: rgb(0, 0, 0);
+                                border: 1px solid rgb(0, 0, 255);}"""
+
 
 class App(QMainWindow):
     def __init__(self):
@@ -101,6 +117,18 @@ class App(QMainWindow):
                 print('created object:', self.button, '. naming object:', button_name)
                 i += 1
 
+        def dial_out_ip_port_function_set():
+            global dial_out_address
+            dial_out_address = self.dial_out_ip_port.text()
+            print('setting dial out address:', dial_out_address)
+
+        def dial_out_com1_function():
+            global dial_out_thread_key
+            if dial_out_thread.isRunning() is True:
+                dial_out_thread.stop()
+            dial_out_thread_key = 'COM1'
+            dial_out_thread.start()
+
         def loopback_start_function():
             global loopback_server_thread_key
             loopback_server_thread.stop()
@@ -112,13 +140,6 @@ class App(QMainWindow):
                 loopback_server_thread.stop()
             else:
                 print('loopback server: already stopped')
-
-        def loopback_com1_function():
-            global loopback_send_thread_key
-            if loopback_send_thread.isRunning() is True:
-                loopback_send_thread.stop()
-            loopback_send_thread_key = 'COM1'
-            loopback_send_thread.start()
 
         def local_start_function():
             global local_server_thread_key
@@ -132,13 +153,6 @@ class App(QMainWindow):
             else:
                 print('local server: already stopped')
 
-        def local_com1_function():
-            global local_send_thread_key
-            if local_send_thread.isRunning() is True:
-                local_send_thread.stop()
-            local_send_thread_key = 'COM1'
-            local_send_thread.start()
-
         def public_start_function():
             global public_server_thread_key
             public_server_thread.stop()
@@ -150,13 +164,6 @@ class App(QMainWindow):
                 public_server_thread.stop()
             else:
                 print('public server: already stopped')
-
-        def public_com1_function():
-            global public_send_thread_key
-            if public_send_thread.isRunning() is True:
-                public_send_thread.stop()
-            public_send_thread_key = 'COM1'
-            public_send_thread.start()
 
         def loopback_server_ip_port_write_function():
             global write_configuration_engaged
@@ -216,7 +223,7 @@ class App(QMainWindow):
         self.setWindowTitle('Communicator')
 
         # Window Geometry
-        self.width, self.height = 480, 136
+        self.width, self.height = 504, 200
         app_pos_w, app_pos_h = (GetSystemMetrics(0) / 2 - (self.width / 2)), (GetSystemMetrics(1) / 2 - (self.height / 2))
         self.left, self.top = int(app_pos_w), int(app_pos_h)
         self.setGeometry(self.left, self.top, self.width, self.height)
@@ -240,7 +247,7 @@ class App(QMainWindow):
         # QLabel - loopback_server_title
         self.loopback_server_title = QLabel(self)
         self.loopback_server_title.resize(self.server_title_width, self.button_wh)
-        self.loopback_server_title.move(self.button_spacing_w, self.button_spacing_w)
+        self.loopback_server_title.move(self.button_spacing_w, self.zone_spacing_h)
         self.loopback_server_title.setText('LOOPBACK')
         self.loopback_server_title.setAlignment(Qt.AlignCenter)
         self.loopback_server_title.setStyleSheet(server_title_stylesheet_0)
@@ -249,7 +256,7 @@ class App(QMainWindow):
         # QLabel - local_server_title
         self.local_server_title = QLabel(self)
         self.local_server_title.resize(self.server_title_width, self.button_wh)
-        self.local_server_title.move(self.button_spacing_w, self.button_spacing_w * 2 + self.button_wh)
+        self.local_server_title.move(self.button_spacing_w, self.zone_spacing_h * 2 + self.button_wh)
         self.local_server_title.setText('LOCAL')
         self.local_server_title.setAlignment(Qt.AlignCenter)
         self.local_server_title.setStyleSheet(server_title_stylesheet_0)
@@ -258,29 +265,55 @@ class App(QMainWindow):
         # QLabel - public_server_title
         self.public_server_title = QLabel(self)
         self.public_server_title.resize(self.server_title_width, self.button_wh)
-        self.public_server_title.move(self.button_spacing_w, self.button_spacing_w * 3 + self.button_wh * 2)
+        self.public_server_title.move(self.button_spacing_w, self.zone_spacing_h * 3 + self.button_wh * 2)
         self.public_server_title.setText('PUBLIC')
         self.public_server_title.setAlignment(Qt.AlignCenter)
         self.public_server_title.setStyleSheet(server_title_stylesheet_0)
         server_title.append(self.public_server_title)
 
+        # QLabel - dial_out title
+        self.dial_out_title = QLabel(self)
+        self.dial_out_title.resize(self.server_title_width + 88, self.button_wh)
+        self.dial_out_title.move(self.button_spacing_w, self.zone_spacing_h * 4 + self.button_wh * 3)
+        self.dial_out_title.setText('DIAL OUT')
+        self.dial_out_title.setAlignment(Qt.AlignCenter)
+        self.dial_out_title.setStyleSheet(server_title_stylesheet_0)
+        server_title.append(self.dial_out_title)
+
+        # QLineEdit - dial_out_address
+        self.dial_out_ip_port = QLineEdit(self)
+        self.dial_out_ip_port.resize(self.ip_port_width, self.button_wh)
+        self.dial_out_ip_port.move(self.button_spacing_w * 4 + self.server_title_width + self.button_wh * 2, self.zone_spacing_h * 4 + self.button_wh * 3)
+        self.dial_out_ip_port.returnPressed.connect(dial_out_ip_port_function_set)
+        self.dial_out_ip_port.setText('')
+        self.dial_out_ip_port.setStyleSheet(linedit_stylesheet_0)
+        self.dial_out_ip_port.setAlignment(Qt.AlignCenter)
+
+        self.dial_out_com1 = QPushButton(self)
+        self.dial_out_com1.resize(self.button_wh, self.button_wh)
+        self.dial_out_com1.move(self.button_spacing_w * 5 + self.server_title_width + self.button_wh * 2 + self.ip_port_width, self.zone_spacing_h * 4 + self.button_wh * 3)
+        self.dial_out_com1.setText('COM1')
+        # self.dial_out_com1.setAlignment(Qt.AlignCenter)
+        self.dial_out_com1.setStyleSheet(com1_stylesheet_default)
+        self.dial_out_com1.clicked.connect(dial_out_com1_function)
+
         # QPushButton - Loop Generate
         generate_button_function()
 
         # QPushButton - LoopBack Server Geometry
-        button_var[0].move(self.button_spacing_w * 2 + self.server_title_width, self.button_spacing_w)
-        button_var[1].move(self.button_spacing_w * 3 + self.server_title_width + self.button_wh, self.button_spacing_w)
-        button_var[2].move(self.button_spacing_w * 5 + self.ip_port_width + self.server_title_width + self.button_wh * 2, self.button_spacing_w)
+        button_var[0].move(self.button_spacing_w * 2 + self.server_title_width, self.zone_spacing_h)
+        button_var[1].move(self.button_spacing_w * 3 + self.server_title_width + self.button_wh, self.zone_spacing_h)
+        button_var[2].move(self.button_spacing_w * 5 + self.server_title_width + self.button_wh * 2 + self.ip_port_width, self.zone_spacing_h)
 
         # QPushButton - Local Server Geometry
-        button_var[3].move(self.button_spacing_w * 2 + self.server_title_width, self.button_spacing_w * 2 + self.button_wh)
-        button_var[4].move(self.button_spacing_w * 3 + self.server_title_width + self.button_wh, self.button_spacing_w * 2 + self.button_wh)
-        button_var[5].move(self.button_spacing_w * 5 + self.ip_port_width + self.server_title_width + self.button_wh * 2, self.button_spacing_w * 2 + self.button_wh)
+        button_var[3].move(self.button_spacing_w * 2 + self.server_title_width, self.zone_spacing_h * 2 + self.button_wh)
+        button_var[4].move(self.button_spacing_w * 3 + self.server_title_width + self.button_wh, self.zone_spacing_h * 2 + self.button_wh)
+        button_var[5].move(self.button_spacing_w * 5 + self.server_title_width + self.button_wh * 2 + self.ip_port_width, self.zone_spacing_h * 2 + self.button_wh)
 
         # QPushButton - Public Server Geometry
-        button_var[6].move(self.button_spacing_w * 2 + self.server_title_width, self.button_spacing_w * 3 + self.button_wh * 2)
-        button_var[7].move(self.button_spacing_w * 3 + self.server_title_width + self.button_wh, self.button_spacing_w * 3 + self.button_wh * 2)
-        button_var[8].move(self.button_spacing_w * 5 + self.ip_port_width + self.server_title_width + self.button_wh * 2, self.button_spacing_w * 3 + self.button_wh * 2)
+        button_var[6].move(self.button_spacing_w * 2 + self.server_title_width, self.zone_spacing_h * 3 + self.button_wh * 2)
+        button_var[7].move(self.button_spacing_w * 3 + self.server_title_width + self.button_wh, self.zone_spacing_h * 3 + self.button_wh * 2)
+        button_var[8].move(self.button_spacing_w * 5 + self.server_title_width + self.button_wh * 2 + self.ip_port_width, self.zone_spacing_h * 3 + self.button_wh * 2)
 
         # QPushButton - LoopBack Server Text
         button_var[0].setText('START')
@@ -300,24 +333,21 @@ class App(QMainWindow):
         # QPushButton - LoopBack Server Clicked Connect
         button_var[0].clicked.connect(loopback_start_function)
         button_var[1].clicked.connect(loopback_stop_function)
-        button_var[2].clicked.connect(loopback_com1_function)
 
         # QPushButton - Local Server Clicked Connect
         button_var[3].clicked.connect(local_start_function)
         button_var[4].clicked.connect(local_stop_function)
-        button_var[5].clicked.connect(local_com1_function)
 
         # QPushButton - Public Server Clicked Connect
         button_var[6].clicked.connect(public_start_function)
         button_var[7].clicked.connect(public_stop_function)
-        button_var[8].clicked.connect(public_com1_function)
 
         # QLineEdit - Loopback Server IP
         self.loopback_server_ip_port = QLineEdit(self)
         self.loopback_server_ip_port.resize(self.ip_port_width, self.button_wh)
-        self.loopback_server_ip_port.move(self.button_spacing_w * 4 + self.server_title_width + self.button_wh * 2, self.button_spacing_w)
+        self.loopback_server_ip_port.move(self.button_spacing_w * 4 + self.server_title_width + self.button_wh * 2, self.zone_spacing_h)
         self.loopback_server_ip_port.returnPressed.connect(loopback_server_ip_port_write_function)
-        self.loopback_server_ip_port.setText('888.888.888.888:88888')
+        self.loopback_server_ip_port.setText('')
         self.loopback_server_ip_port.setStyleSheet(linedit_stylesheet_0)
         self.loopback_server_ip_port.setAlignment(Qt.AlignCenter)
         print('-- [App.__init__] created:', self.loopback_server_ip_port)
@@ -325,9 +355,9 @@ class App(QMainWindow):
         # QLineEdit - Local Server IP
         self.local_server_ip_port = QLineEdit(self)
         self.local_server_ip_port.resize(self.ip_port_width, self.button_wh)
-        self.local_server_ip_port.move(self.button_spacing_w * 4 + self.server_title_width + self.button_wh * 2, self.button_spacing_w * 2 + self.button_wh)
+        self.local_server_ip_port.move(self.button_spacing_w * 4 + self.server_title_width + self.button_wh * 2, self.zone_spacing_h * 2 + self.button_wh)
         self.local_server_ip_port.returnPressed.connect(local_server_ip_port_write_function)
-        self.local_server_ip_port.setText('888.888.888.888:88888')
+        self.local_server_ip_port.setText('')
         self.local_server_ip_port.setStyleSheet(linedit_stylesheet_0)
         self.local_server_ip_port.setAlignment(Qt.AlignCenter)
         print('-- [App.__init__] created:', self.local_server_ip_port)
@@ -335,24 +365,24 @@ class App(QMainWindow):
         # QLineEdit - Public Server IP
         self.public_server_ip_port = QLineEdit(self)
         self.public_server_ip_port.resize(self.ip_port_width, self.button_wh)
-        self.public_server_ip_port.move(self.button_spacing_w * 4 + self.server_title_width + self.button_wh * 2, self.button_spacing_w * 3 + self.button_wh * 2)
+        self.public_server_ip_port.move(self.button_spacing_w * 4 + self.server_title_width + self.button_wh * 2, self.zone_spacing_h * 3 + self.button_wh * 2)
         self.public_server_ip_port.returnPressed.connect(public_server_ip_port_write_function)
-        self.public_server_ip_port.setText('888.888.888.888:88888')
+        self.public_server_ip_port.setText('')
         self.public_server_ip_port.setStyleSheet(linedit_stylesheet_0)
         self.public_server_ip_port.setAlignment(Qt.AlignCenter)
         print('-- [App.__init__] created:', self.public_server_ip_port)
 
         # Thread - LoopBack Server
         loopback_server_thread = LoopBackServerClass()
-        loopback_send_thread = LoopBackSendClass()
 
         # Thread - Local Server
         local_server_thread = LocalServerClass()
-        local_send_thread = LocalSendClass()
 
         # Thread - Public Server
         public_server_thread = PublicServerClass()
-        public_send_thread = PublicSendClass()
+
+        # Thread - Dial_Out
+        dial_out_thread = DialOutClass(self.dial_out_com1)
 
         # Thread - Configuration
         configuration_thread = ConfigurationClass()
@@ -394,7 +424,7 @@ class ConfigurationClass(QThread):
         global LOOPBACK_SERVER_ADDRESS
         global LOCAL_SERVER_ADDRESS
         global PUBLIC_SERVER_ADDRESS
-        global CLIENT_ADDRESS
+        global DIAL_OUT_ADDRESSES
 
         if configuration_thread_key is 'ALL':
             print('-' * 200)
@@ -402,14 +432,12 @@ class ConfigurationClass(QThread):
 
             LOOPBACK_SERVER_ADDRESS = ''
             LOCAL_SERVER_ADDRESS = ''
-            CLIENT_ADDRESS = []
+            PUBLIC_SERVER_ADDRESS = ''
 
             with open('./config.txt', 'r') as fo:
                 for line in fo:
                     line = line.strip()
                     line = line.split(' ')
-                    # print(line)
-
                     if str(line[0]) == 'LOOPBACK_SERVER_ADDRESS':
                         if len(line) is 3:
                             LOOPBACK_SERVER_ADDRESS = str(str(line[1]) + ' ' + str(line[2]))
@@ -424,57 +452,81 @@ class ConfigurationClass(QThread):
                         if len(line) is 3:
                             PUBLIC_SERVER_ADDRESS = str(str(line[1]) + ' ' + str(line[2]))
                             print('PUBLIC_SERVER_ADDRESS:', PUBLIC_SERVER_ADDRESS)
-
-                    elif str(line[0]) == 'CLIENT':
-                        if len(line) is 4:
-                            CLIENT_ADDRESS.append(str(line[1]) + ' ' + str(line[2]) + ' ' + str(line[3]))
-                            print('CLIENT_ADDRESS:', str(line[1]) + ' ' + str(line[2]) + ' ' + str(line[3]))
-
             fo.close()
+            print('-' * 200)
+            print('ConfigurationClass(QThread): updating all values from communicator address book...')
+            DIAL_OUT_ADDRESSES = []
+
+            with open('./communicator_address_book.txt', 'r') as fo:
+                for line in fo:
+                    line = line.strip()
+                    line = line.split(' ')
+
+                    if str(line[0]) == 'DATA':
+                        if len(line) is 4:
+                            DIAL_OUT_ADDRESSES.append(str(line[1]) + ' ' + str(line[2]) + ' ' + str(line[3]))
+                            print('DIAL_OUT_ADDRESSES:', str(line[1]) + ' ' + str(line[2]) + ' ' + str(line[3]))
 
         configuration_thread_completed = True
 
 
-class LoopBackSendClass(QThread):
-    def __init__(self):
+class DialOutClass(QThread):
+    def __init__(self, dial_out_com1):
         QThread.__init__(self)
 
-        self.HOST_SEND = "127.0.0.1"
-        self.PORT_SEND = 65433
+        self.dial_out_com1 = dial_out_com1
+        self.HOST_SEND = ''
+        self.PORT_SEND = ''
 
     def run(self):
         print('-' * 200)
-        print('[ thread started: LoopBackSendClass(QThread).run(self) ]')
-        global loopback_send_thread_key
+        print('[ thread started: DialOutClass(QThread).run(self) ]')
+        global dial_out_thread_key
+        global dial_out_address
 
-        if loopback_send_thread_key is 'COM1':
+        dial_out_address_split = dial_out_address.split(' ')
+        print('dial_out_address_split:', dial_out_address_split)
+        if len(dial_out_address_split) == 2:
+            dial_out_address_ip = dial_out_address_split[0]
+            dial_out_address_port = int(dial_out_address_split[1])
+            self.HOST_SEND = dial_out_address_ip
+            self.PORT_SEND = dial_out_address_port
+
+        if dial_out_thread_key is 'COM1':
             self.COM1()
 
     def COM1(self):
-        global SOCKET_LOOPBACK_SEND
+        global SOCKET_DIAL_OUT
         print('-' * 200)
-        print(f"[LOOPBACK_SERVER] outgoing: COM1 to {self.HOST_SEND} : {self.PORT_SEND}")
+        print(f"[DialOutClass] outgoing: COM1 to {self.HOST_SEND} : {self.PORT_SEND}")
         try:
-            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as SOCKET_LOOPBACK_SEND:
-                SOCKET_LOOPBACK_SEND.connect((self.HOST_SEND, self.PORT_SEND))
-                data = "COM1"
-                SOCKET_LOOPBACK_SEND.send(data.encode())
-                SOCKET_LOOPBACK_SEND.settimeout(1)
+            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as SOCKET_DIAL_OUT:
+                SOCKET_DIAL_OUT.connect((self.HOST_SEND, self.PORT_SEND))
+                data_send = "COM1"
+                SOCKET_DIAL_OUT.send(data_send.encode())
+                SOCKET_DIAL_OUT.settimeout(1)
                 try:
-                    data = SOCKET_LOOPBACK_SEND.recv(1024)
+                    data = SOCKET_DIAL_OUT.recv(1024)
                 except Exception as e:
                     print(e)
+
             if str(data) == "b'COM1'":
-                print(f"[LOOPBACK_SERVER] incoming: COM1 received by {self.HOST_SEND} : {self.PORT_SEND}")
+                print(f"[DialOutClass] incoming: COM1 received by {self.HOST_SEND} : {self.PORT_SEND}")
+                self.dial_out_com1.setStyleSheet(com1_stylesheet_green)
+                time.sleep(1)
+                self.dial_out_com1.setStyleSheet(com1_stylesheet_default)
         except Exception as e:
             print(e)
+            self.dial_out_com1.setStyleSheet(com1_stylesheet_red)
+            time.sleep(1)
+            self.dial_out_com1.setStyleSheet(com1_stylesheet_default)
 
     def stop(self):
-        global SOCKET_LOOPBACK_SEND
+        global SOCKET_DIAL_OUT
         print('-' * 200)
-        print('[ thread terminating: LoopBackSendClass(QThread).run(self) ]')
+        print('[ thread terminating: DialOutClass(QThread).run(self) ]')
         try:
-            SOCKET_LOOPBACK_SEND.close()
+            SOCKET_DIAL_OUT.close()
         except Exception as e:
             print(e)
         self.terminate()
@@ -541,9 +593,9 @@ class LoopBackServerClass(QThread):
                             self.data = str(datetime.datetime.now()) + ' [LOOPBACK_SERVER] data recognized as internal command COM1: ' + str(addr)
                             print(self.data)
                             self.server_logger()
-                            button_var[2].setStyleSheet(button_stylesheet_1)
+                            button_var[2].setStyleSheet(com1_stylesheet_green)
                             time.sleep(1)
-                            button_var[2].setStyleSheet(button_stylesheet_0)
+                            button_var[2].setStyleSheet(com1_stylesheet_default)
         except Exception as e:
             print(e)
             server_title[0].setStyleSheet(server_title_stylesheet_0)
@@ -560,50 +612,6 @@ class LoopBackServerClass(QThread):
         except Exception as e:
             print(e)
         server_title[0].setStyleSheet(server_title_stylesheet_0)
-        self.terminate()
-
-
-class LocalSendClass(QThread):
-    def __init__(self):
-        QThread.__init__(self)
-
-        self.HOST_SEND = "192.168.1.11"
-        self.PORT_SEND = 65433
-
-    def run(self):
-        print('-' * 200)
-        print('[ thread started: LocalSendClass(QThread).run(self) ]')
-        global local_send_thread_key
-
-        if local_send_thread_key is 'COM1':
-            self.COM1()
-
-    def COM1(self):
-        global SOCKET_LOCAL_SEND
-        print('-' * 200)
-        print(f"[LOCAL_SERVER] outgoing: COM1 to {self.HOST_SEND} : {self.PORT_SEND}")
-        try:
-            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as SOCKET_LOOPBACK_SEND:
-                SOCKET_LOOPBACK_SEND.connect((self.HOST_SEND, self.PORT_SEND))
-                SOCKET_LOOPBACK_SEND.sendall(b"COM1")
-                SOCKET_LOOPBACK_SEND.settimeout(1)
-                try:
-                    data = SOCKET_LOOPBACK_SEND.recv(1024)
-                except Exception as e:
-                    print(e)
-            if str(data) == "b'COM1'":
-                print(f"[LOCAL_SERVER] incoming: COM1 received by {self.HOST_SEND} : {self.PORT_SEND}")
-        except Exception as e:
-            print(e)
-
-    def stop(self):
-        global SOCKET_LOCAL_SEND
-        print('-' * 200)
-        print('[ thread terminating: LocalSendClass(QThread).run(self) ]')
-        try:
-            SOCKET_LOCAL_SEND.close()
-        except Exception as e:
-            print(e)
         self.terminate()
 
 
@@ -668,9 +676,9 @@ class LocalServerClass(QThread):
                             self.data = str(datetime.datetime.now()) + ' [LOCAL_SERVER] data recognized as internal command COM1: ' + str(addr)
                             print(self.data)
                             self.server_logger()
-                            button_var[5].setStyleSheet(button_stylesheet_1)
+                            button_var[5].setStyleSheet(com1_stylesheet_green)
                             time.sleep(1)
-                            button_var[5].setStyleSheet(button_stylesheet_0)
+                            button_var[5].setStyleSheet(com1_stylesheet_default)
         except Exception as e:
             print(e)
             server_title[1].setStyleSheet(server_title_stylesheet_0)
@@ -687,50 +695,6 @@ class LocalServerClass(QThread):
         except Exception as e:
             print(e)
         server_title[1].setStyleSheet(server_title_stylesheet_0)
-        self.terminate()
-
-
-class PublicSendClass(QThread):
-    def __init__(self):
-        QThread.__init__(self)
-
-        self.HOST_SEND = ""
-        self.PORT_SEND = 55555
-
-    def run(self):
-        print('-' * 200)
-        print('[ thread started: PublicSendClass(QThread).run(self) ]')
-        global public_send_thread_key
-
-        if public_send_thread_key is 'COM1':
-            self.COM1()
-
-    def COM1(self):
-        global SOCKET_PUBLIC_SEND
-        print('-' * 200)
-        print(f"[LOCAL_SERVER] outgoing: COM1 to {self.HOST_SEND} : {self.PORT_SEND}")
-        try:
-            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as SOCKET_PUBLIC_SEND:
-                SOCKET_PUBLIC_SEND.connect((self.HOST_SEND, self.PORT_SEND))
-                SOCKET_PUBLIC_SEND.sendall(b"COM1")
-                SOCKET_PUBLIC_SEND.settimeout(1)
-                try:
-                    data = SOCKET_PUBLIC_SEND.recv(1024)
-                except Exception as e:
-                    print(e)
-            if str(data) == "b'COM1'":
-                print(f"[PUBLIC_SERVER] incoming: COM1 received by {self.HOST_SEND} : {self.PORT_SEND}")
-        except Exception as e:
-            print(e)
-
-    def stop(self):
-        global SOCKET_PUBLIC_SEND
-        print('-' * 200)
-        print('[ thread terminating: PublicSendClass(QThread).run(self) ]')
-        try:
-            SOCKET_PUBLIC_SEND.close()
-        except Exception as e:
-            print(e)
         self.terminate()
 
 
@@ -795,9 +759,9 @@ class PublicServerClass(QThread):
                             self.data = str(datetime.datetime.now()) + ' [PUBLIC_SERVER] data recognized as internal command COM1: ' + str(addr)
                             print(self.data)
                             self.server_logger()
-                            button_var[8].setStyleSheet(button_stylesheet_1)
+                            button_var[8].setStyleSheet(com1_stylesheet_green)
                             time.sleep(1)
-                            button_var[8].setStyleSheet(button_stylesheet_0)
+                            button_var[8].setStyleSheet(com1_stylesheet_default)
         except Exception as e:
             print(e)
             server_title[2].setStyleSheet(server_title_stylesheet_0)
