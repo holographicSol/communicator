@@ -16,3 +16,6 @@ communicator intends to provide communication between two or more communicator a
 -- share one key per contact. in address book contact saves key as you, you save key as contact.
 
 -- share your key = share your identity...
+
+SERVER:
+listens for incoming connections and if receives a message will try each key including the default communicator key as a dictionary attack function on the encrypted message. if the message is decrypted then the name associated with the key that was successful in decrypting the message will be used to identify the message sender.
