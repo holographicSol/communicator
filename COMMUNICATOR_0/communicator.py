@@ -21,6 +21,7 @@ from Crypto import Random
 default_crypt_key = 'default_communicator_key'
 crypt_key = bytes('default_communicator_key', 'utf-8')
 crypt_iv = bytes('This is an IV456', 'utf-8')
+fingerprint = ''
 BS = 16
 pad = lambda s: bytes(s + (BS - len(s) % BS) * chr(BS - len(s) % BS), 'utf-8')
 unpad = lambda s : s[0:-ord(s[-1:])]
@@ -30,13 +31,20 @@ SOCKET_DIAL_OUT = []
 SOCKET_SERVER = []
 
 # Addresses (simplify)
-DIAL_OUT_ADDRESSES = ['0 0 0 0 default_communicator_key']
+DIAL_OUT_ADDRESSES = []
 SERVER_ADDRESS = ''
 
 # Dial Out Settings
 dial_out_thread_key = ''
 dial_out_address = ''
 dial_out_address_index = 0
+
+# NEW DIAL OUT SETTINGS
+address_name = []
+address_ip = []
+address_port = []
+address_key = []
+address_fingerprint = []
 
 # Public Settings
 server_thread_key = ''
@@ -110,52 +118,44 @@ class App(QMainWindow):
         def dial_out_prev_addr_function():
             print('plugged in: dial_out_prev_addr_function')
             global_self.setFocus()
-            global crypt_key
             global dial_out_address, dial_out_address_index
+
+            # Get length of address book
             LEN_DIAL_OUT_ADDRESSES = len(DIAL_OUT_ADDRESSES)
 
-            if dial_out_address_index == 1:
-                dial_out_address_index = abs(LEN_DIAL_OUT_ADDRESSES-1)
+            # Step through address book
+            if dial_out_address_index == 0:
+                dial_out_address_index = LEN_DIAL_OUT_ADDRESSES - 1
             else:
-                dial_out_address_index = abs(dial_out_address_index-1)
+                dial_out_address_index = dial_out_address_index - 1
 
             print('setting dial_out_address_index:', dial_out_address_index)
-            print('setting dial_out_address:', DIAL_OUT_ADDRESSES[dial_out_address_index])
-            dial_out_address_split = DIAL_OUT_ADDRESSES[dial_out_address_index].split()
-            self.dial_out_ip_port.setText(dial_out_address_split[2] + ' ' + dial_out_address_split[3])
-            dial_out_address = dial_out_address_split[2] + ' ' + dial_out_address_split[3]
-            self.dial_out_name.setText(dial_out_address_split[1])
-            if len(dial_out_address_split) == 5:
-                crypt_key = bytes(dial_out_address_split[4], 'utf-8')
-                print('using private crypt_key:', crypt_key)
-            else:
-                crypt_key = bytes(default_crypt_key, 'utf-8')
-                print('using default crypt_key:', crypt_key)
+            print('setting dial_out_address using dial_out_address_index:', DIAL_OUT_ADDRESSES[dial_out_address_index])
+
+            dial_out_address = address_ip[dial_out_address_index] + ' ' + str(address_port[dial_out_address_index])
+            self.dial_out_ip_port.setText(dial_out_address)
+            self.dial_out_name.setText(address_name[dial_out_address_index])
 
         def dial_out_next_addr_function():
             print('plugged in: dial_out_next_addr_function')
             global_self.setFocus()
-            global crypt_key
             global dial_out_address, dial_out_address_index
+
+            # Get length of address book
             LEN_DIAL_OUT_ADDRESSES = len(DIAL_OUT_ADDRESSES)
 
+            # Step through address book
             if dial_out_address_index == LEN_DIAL_OUT_ADDRESSES - 1:
-                dial_out_address_index = 1
+                dial_out_address_index = 0
             else:
                 dial_out_address_index += 1
 
             print('setting dial_out_address_index:', dial_out_address_index)
-            print('setting dial_out_address:', DIAL_OUT_ADDRESSES[dial_out_address_index])
-            dial_out_address_split = DIAL_OUT_ADDRESSES[dial_out_address_index].split()
-            self.dial_out_ip_port.setText(dial_out_address_split[2] + ' ' + dial_out_address_split[3])
-            dial_out_address = dial_out_address_split[2] + ' ' + dial_out_address_split[3]
-            self.dial_out_name.setText(dial_out_address_split[1])
-            if len(dial_out_address_split) == 5:
-                crypt_key = bytes(dial_out_address_split[4], 'utf-8')
-                print('using private crypt_key:', crypt_key)
-            else:
-                crypt_key = bytes(default_crypt_key, 'utf-8')
-                print('using default crypt_key:', crypt_key)
+            print('setting dial_out_address using dial_out_address_index:', DIAL_OUT_ADDRESSES[dial_out_address_index])
+
+            dial_out_address = address_ip[dial_out_address_index] + ' ' + address_port[dial_out_address_index]
+            self.dial_out_ip_port.setText(dial_out_address)
+            self.dial_out_name.setText(address_name[dial_out_address_index])
 
         def dial_out_ip_port_function_set():
             global_self.setFocus()
@@ -380,6 +380,12 @@ class ConfigurationClass(QThread):
         global SERVER_ADDRESS
         global DIAL_OUT_ADDRESSES
 
+        global address_name
+        global address_ip
+        global address_port
+        global address_key
+        global address_fingerprint
+
         if configuration_thread_key == 'ALL':
             print('-' * 200)
             print('ConfigurationClass(QThread): updating all values from configuration file...')
@@ -399,23 +405,57 @@ class ConfigurationClass(QThread):
             print('-' * 200)
             print('ConfigurationClass(QThread): updating all values from communicator address book...')
 
-            DIAL_OUT_ADDRESSES = ['0 0 0 0 default_communicator_key']
+            DIAL_OUT_ADDRESSES = []
 
             with open('./communicator_address_book.txt', 'r') as fo:
                 for line in fo:
                     line = line.strip()
 
                     if line.startswith('DATA'):
-                        print(line)
                         DIAL_OUT_ADDRESSES.append(line)
+
+            for _ in DIAL_OUT_ADDRESSES:
+
+                # Split address
+                dial_out_address_split = _.split(' ')
+                print('dial_out_address_split:', dial_out_address_split)
+
+                if len(dial_out_address_split) == 6:
+
+                    # Name
+                    print('setting dial out name:', dial_out_address_split[1])
+                    address_name.append(dial_out_address_split[1])
+
+                    # IP
+                    print('setting dial out ip:', dial_out_address_split[2])
+                    address_ip.append(dial_out_address_split[2])
+
+                    # Port
+                    print('setting dial out port:', dial_out_address_split[3])
+                    address_port.append(int(dial_out_address_split[3]))
+
+                    # Key
+                    print('address_key:', dial_out_address_split[4])
+                    address_key.append(bytes(dial_out_address_split[4], 'utf-8'))
+
+                    # Fingerprint
+                    fingerprint_file = dial_out_address_split[5]
+                    print('reading fingerprint_file:', fingerprint_file)
+                    address_fingerprint_string = ''
+                    if os.path.exists(fingerprint_file):
+                        with open(fingerprint_file, 'r') as fingerprint_fo:
+                            for line in fingerprint_fo:
+                                address_fingerprint_string = address_fingerprint_string + line
+                        fo.close()
+                        address_fingerprint.append(bytes(address_fingerprint_string, 'utf-8'))
 
         configuration_thread_completed = True
 
 
 class AESCipher:
 
-    def __init__(self, crypt_key):
-        self.key = crypt_key
+    def __init__(self, KEY):
+        self.key = KEY
 
     def encrypt(self, raw):
         raw = pad(raw)
@@ -433,28 +473,28 @@ class AESCipher:
 class DialOutClass(QThread):
     def __init__(self, dial_out_title, dial_out_com1):
         QThread.__init__(self)
+        global address_name, address_ip, address_port, address_key, address_fingerprint
 
         self.dial_out_title = dial_out_title
         self.dial_out_com1 = dial_out_com1
+
         self.HOST_SEND = ''
         self.PORT_SEND = ''
+        self.KEY = ''
+        self.FINGERPRINT = ''
 
     def run(self):
         print('-' * 200)
         print('[ thread started: DialOutClass(QThread).run(self) ]')
         global dial_out_thread_key
-        global dial_out_address
 
-        dial_out_address_split = dial_out_address.split(' ')
-        print('dial_out_address_split:', dial_out_address_split)
-        if len(dial_out_address_split) == 2:
-            dial_out_address_ip = dial_out_address_split[0]
-            dial_out_address_port = int(dial_out_address_split[1])
-            self.HOST_SEND = dial_out_address_ip
-            self.PORT_SEND = dial_out_address_port
+        self.HOST_SEND = address_ip[dial_out_address_index]
+        self.PORT_SEND = address_port[dial_out_address_index]
+        self.KEY = address_key[dial_out_address_index]
+        self.FINGERPRINT = address_fingerprint[dial_out_address_index]
 
-            if dial_out_thread_key == 'COM1':
-                self.COM1()
+        if dial_out_thread_key == 'COM1':
+            self.COM1()
 
     def COM1(self):
         global SOCKET_DIAL_OUT
@@ -464,15 +504,15 @@ class DialOutClass(QThread):
             with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as SOCKET_DIAL_OUT:
                 SOCKET_DIAL_OUT.connect((self.HOST_SEND, self.PORT_SEND))
 
-                cipher = AESCipher(crypt_key)
-                ciphertext = cipher.encrypt('COM1')
+                cipher = AESCipher(self.KEY)
+                ciphertext = cipher.encrypt(str(self.FINGERPRINT) + 'COM1')
                 print('sending ciphertext:', ciphertext)
 
                 SOCKET_DIAL_OUT.send(ciphertext)
                 SOCKET_DIAL_OUT.settimeout(1)
 
                 try:
-                    data = SOCKET_DIAL_OUT.recv(1024)
+                    data = SOCKET_DIAL_OUT.recv(2048)
                 except Exception as e:
                     print(e)
 
@@ -482,6 +522,7 @@ class DialOutClass(QThread):
                 time.sleep(1)
                 self.dial_out_com1.setStyleSheet(com1_stylesheet_default)
                 global_self.setFocus()
+
         except Exception as e:
             print(e)
             self.dial_out_com1.setStyleSheet(com1_stylesheet_red)
@@ -570,7 +611,7 @@ class PublicServerClass(QThread):
                     print(self.data)
                     self.server_logger()
                     while True:
-                        data = conn.recv(1024)
+                        data = conn.recv(2048)
                         if not data:
                             break
 
@@ -580,32 +621,41 @@ class PublicServerClass(QThread):
                         self.server_logger()
 
                         decrypted = ''
+                        decrypted_message = ''
 
                         # Next Try Named Key(s)
-                        for _ in DIAL_OUT_ADDRESSES:
+                        i = 0
+                        for _ in address_key:
                             print(_)
-                            dial_out_address_split = _.split(' ')
-                            if len(dial_out_address_split) == 5:
-                                try_key = str(dial_out_address_split[4]).strip()
-                                print('trying key:', dial_out_address_split[4])
+                            print('trying key:', _)
 
-                                try:
-                                    crypt_key = bytes(try_key, 'utf-8')
-                                    cipher = AESCipher(crypt_key)
-                                    decrypted = cipher.decrypt(data)
-                                except Exception as e:
-                                    print(e)
+                            try:
+                                crypt_key = _
+                                cipher = AESCipher(crypt_key)
+                                decrypted = cipher.decrypt(data)
+                            except Exception as e:
+                                print(e)
 
-                                print(decrypted)
-                                if len(decrypted) > 0:
-                                    print('successfully decrypted message:', decrypted)
-                                    print('message appears to be from:', dial_out_address_split[1])
-                                    break
+                            print(decrypted)
+                            if len(decrypted) > 0:
+                                print('successfully decrypted message:', decrypted)
+                                print('message appears to be from:', address_name[i])
+                                print('attempting to fingerprint the message')
+                                print('add_fingerprint:', address_fingerprint[i])
+                                print('snd_fingerprint:', decrypted)
+                                if decrypted.startswith(str(address_fingerprint[i])):
+                                    print('fingerprint: validated as', address_name[i])
+                                    decrypted_message = decrypted.replace(str(address_fingerprint[i]), '')
+                                    print('decrypted_message:', decrypted_message)
+                                else:
+                                    print('fingerprint: does not match', address_name[i])
+                                break
+                            i += 1
 
                         # send delivery confirmation message
                         conn.sendall(data)
 
-                        if str(decrypted) == "COM1":
+                        if decrypted_message == "COM1":
                             self.data = str(datetime.datetime.now()) + ' [SERVER] data recognized as internal command COM1: ' + str(addr)
                             print(self.data)
                             self.server_logger()

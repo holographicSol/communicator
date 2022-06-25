@@ -1,7 +1,5 @@
 # communicator address book
 
-DATA dev_0 192.168.1.11 55555 1234567891011121
+DATA dev_0 192.168.1.11 55555 T`Bd:HW'u&RoHtrwr%t<)G_K[i.IlL[+ ./dev_key_sp.txt
 
-DATA dev_1 192.168.1.11 55555 0101010101010101
-
-DATA dev_no_key 192.168.1.11 55555
+DATA dev_1 192.168.1.11 55555 T`Bd:HW'u&RoHtrwr%t<)G_K[i.IlL[- ./dev_key_sp.txt
