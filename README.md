@@ -20,6 +20,3 @@ communicator intends to provide communication between two or more communicator a
 SERVER:
 listens for incoming connections and if receives a message will try each key including the default communicator key as a dictionary attack function on the encrypted message. if the message is decrypted then the name associated with the key that was successful in decrypting the message will be used to identify the message sender.
 
-1. create and share a key with ONE contact.
-
-2. add name + ip + port + key to adress book (for you name is name of contact and for contact name is name of you! but same key)
