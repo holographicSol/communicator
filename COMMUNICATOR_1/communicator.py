@@ -153,9 +153,12 @@ class App(QMainWindow):
             print('setting dial_out_address_index:', dial_out_address_index)
             print('setting dial_out_address using dial_out_address_index:', DIAL_OUT_ADDRESSES[dial_out_address_index])
 
-            dial_out_address = address_ip[dial_out_address_index] + ' ' + address_port[dial_out_address_index]
+            dial_out_address = address_ip[dial_out_address_index] + ' ' + str(address_port[dial_out_address_index])
+            print('dial_out_address:', dial_out_address)
             self.dial_out_ip_port.setText(dial_out_address)
+            print('set dial_out_ip_port text:', dial_out_address)
             self.dial_out_name.setText(address_name[dial_out_address_index])
+            print('set dial_out_name text:', address_name[dial_out_address_index])
 
         def dial_out_ip_port_function_set():
             global_self.setFocus()
@@ -516,7 +519,9 @@ class DialOutClass(QThread):
                 except Exception as e:
                     print(e)
 
-            if str(data) == "b'COM1'":
+            print('data:      ', data)
+            print('ciphertext:', ciphertext)
+            if data == ciphertext:
                 print(f"[DialOutClass] incoming: COM1 received by {self.HOST_SEND} : {self.PORT_SEND}")
                 self.dial_out_com1.setStyleSheet(com1_stylesheet_green)
                 time.sleep(1)
