@@ -22,6 +22,5 @@ listens for incoming connections and if receives a message will try each key inc
 
 1. create and share a key with ONE contact.
 
-2. add name + ip + port + key to adress book
+2. add name + ip + port + key to adress book (for you name is name of contact and for contact name is name of you! but same key)
 
-3. now your contact can receive a message from you from any IP address and be identified as your contact and the message data more secure.
