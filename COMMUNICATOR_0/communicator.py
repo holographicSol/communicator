@@ -18,10 +18,7 @@ import base64
 from Crypto import Random
 
 # key, initialization vector and padding
-default_crypt_key = 'default_communicator_key'
-crypt_key = bytes('default_communicator_key', 'utf-8')
 crypt_iv = bytes('This is an IV456', 'utf-8')
-fingerprint = ''
 BS = 16
 pad = lambda s: bytes(s + (BS - len(s) % BS) * chr(BS - len(s) % BS), 'utf-8')
 unpad = lambda s : s[0:-ord(s[-1:])]
@@ -116,58 +113,70 @@ class App(QMainWindow):
         global_self = self
 
         def dial_out_prev_addr_function():
-            print('plugged in: dial_out_prev_addr_function')
+            print(str(datetime.datetime.now()) + ' -- plugged in: App.dial_out_prev_addr_function')
             global_self.setFocus()
             global dial_out_address, dial_out_address_index
 
             # Get length of address book
             LEN_DIAL_OUT_ADDRESSES = len(DIAL_OUT_ADDRESSES)
+            print(str(datetime.datetime.now()) + ' -- len(DIAL_OUT_ADDRESSES):', len(DIAL_OUT_ADDRESSES))
 
             # Step through address book
             if dial_out_address_index == 0:
+                print(str(datetime.datetime.now()) + ' -- dial_out_address_index is zero: setting dial_out_address_index to len(DIAL_OUT_ADDRESSES)')
                 dial_out_address_index = LEN_DIAL_OUT_ADDRESSES - 1
             else:
+                print(str(datetime.datetime.now()) + ' -- dial_out_address_index is not zero: subtracting 1 from DIAL_OUT_ADDRESSES')
                 dial_out_address_index = dial_out_address_index - 1
 
-            print('setting dial_out_address_index:', dial_out_address_index)
-            print('setting dial_out_address using dial_out_address_index:', DIAL_OUT_ADDRESSES[dial_out_address_index])
+            print(str(datetime.datetime.now()) + ' -- setting dial_out_address_index:', dial_out_address_index)
+            print(str(datetime.datetime.now()) + ' -- setting dial_out_address using dial_out_address_index:', DIAL_OUT_ADDRESSES[dial_out_address_index])
 
             dial_out_address = address_ip[dial_out_address_index] + ' ' + str(address_port[dial_out_address_index])
+            print(str(datetime.datetime.now()) + ' -- dial_out_address:', dial_out_address)
             self.dial_out_ip_port.setText(dial_out_address)
+            print(str(datetime.datetime.now()) + ' -- set dial_out_ip_port text:', dial_out_address)
             self.dial_out_name.setText(address_name[dial_out_address_index])
+            print(str(datetime.datetime.now()) + ' -- set dial_out_name text:', address_name[dial_out_address_index])
 
         def dial_out_next_addr_function():
-            print('plugged in: dial_out_next_addr_function')
+            print(str(datetime.datetime.now()) + ' -- plugged in: App.dial_out_next_addr_function')
             global_self.setFocus()
             global dial_out_address, dial_out_address_index
 
             # Get length of address book
             LEN_DIAL_OUT_ADDRESSES = len(DIAL_OUT_ADDRESSES)
+            print(str(datetime.datetime.now()) + ' -- len(DIAL_OUT_ADDRESSES):', len(DIAL_OUT_ADDRESSES))
 
             # Step through address book
             if dial_out_address_index == LEN_DIAL_OUT_ADDRESSES - 1:
+                print(str(datetime.datetime.now()) + ' -- dial_out_address_index is reached max: setting dial_out_address_index to zero')
                 dial_out_address_index = 0
             else:
+                print(str(datetime.datetime.now()) + ' -- dial_out_address_index is not max: adding 1 to dial_out_address_index')
                 dial_out_address_index += 1
 
-            print('setting dial_out_address_index:', dial_out_address_index)
-            print('setting dial_out_address using dial_out_address_index:', DIAL_OUT_ADDRESSES[dial_out_address_index])
+            print(str(datetime.datetime.now()) + ' -- setting dial_out_address_index:', dial_out_address_index)
+            print(str(datetime.datetime.now()) + ' -- setting dial_out_address using dial_out_address_index:', DIAL_OUT_ADDRESSES[dial_out_address_index])
 
             dial_out_address = address_ip[dial_out_address_index] + ' ' + str(address_port[dial_out_address_index])
-            print('dial_out_address:', dial_out_address)
+            print(str(datetime.datetime.now()) + ' -- dial_out_address:', dial_out_address)
             self.dial_out_ip_port.setText(dial_out_address)
-            print('set dial_out_ip_port text:', dial_out_address)
+            print(str(datetime.datetime.now()) + ' -- set dial_out_ip_port text:', dial_out_address)
             self.dial_out_name.setText(address_name[dial_out_address_index])
-            print('set dial_out_name text:', address_name[dial_out_address_index])
+            print(str(datetime.datetime.now()) + ' -- set dial_out_name text:', address_name[dial_out_address_index])
 
         def dial_out_ip_port_function_set():
+            print(str(datetime.datetime.now()) + ' -- plugged in: App.dial_out_ip_port_function_set')
             global_self.setFocus()
             global dial_out_address
             dial_out_address = self.dial_out_ip_port.text()
-            print('setting dial out address:', dial_out_address)
+            print(str(datetime.datetime.now()) + ' -- setting dial out address:', dial_out_address)
             self.dial_out_name.setText('')
+            print(str(datetime.datetime.now()) + ' -- impromptu dial out: clearing self.dial_out_name')
 
         def dial_out_com1_function():
+            print(str(datetime.datetime.now()) + ' -- plugged in: App.dial_out_com1_function')
             global_self.setFocus()
             global dial_out_thread_key
             if dial_out_thread.isRunning() is True:
@@ -176,6 +185,7 @@ class App(QMainWindow):
             dial_out_thread.start()
 
         def start_function():
+            print(str(datetime.datetime.now()) + ' -- plugged in: App.start_function')
             global_self.setFocus()
             global server_thread_key
             server_thread.stop()
@@ -183,6 +193,7 @@ class App(QMainWindow):
             server_thread.start()
 
         def stop_function():
+            print(str(datetime.datetime.now()) + ' -- plugged in: App.stop_function')
             global_self.setFocus()
             if server_thread.isRunning() is True:
                 server_thread.stop()
@@ -190,36 +201,40 @@ class App(QMainWindow):
                 print('public server: already stopped')
 
         def server_ip_port_write_function():
+            print(str(datetime.datetime.now()) + ' -- plugged in: App.server_ip_port_write_function')
             global_self.setFocus()
+            global SERVER_ADDRESS
             global write_configuration_engaged
             if write_configuration_engaged is False:
-                self.write_var = 'SERVER_ADDRESS ' + self.server_ip_port.text().replace(':', ' ')
-                print('setting write variable:', self.write_var)
+                self.write_var = 'SERVER_ADDRESS ' + self.server_ip_port.text()
+                print(str(datetime.datetime.now()) + ' -- setting write variable:', self.write_var)
                 write_configuration()
+                SERVER_ADDRESS = self.server_ip_port.text()
             else:
-                print('write_configuration_engaged:', write_configuration_engaged)
+                print(str(datetime.datetime.now()) + ' -- write_configuration_engaged:', write_configuration_engaged)
 
         def write_configuration():
+            print(str(datetime.datetime.now()) + ' -- plugged in: App.write_configuration')
             global_self.setFocus()
             global write_configuration_engaged
             write_configuration_engaged = True
             print('-' * 200)
-            print('writing line to configuration file:', self.write_var)
+            print(str(datetime.datetime.now()) + ' -- writing line to configuration file:', self.write_var)
             configuration_item = []
             with open('./config.txt', 'r') as fo:
                 for line in fo:
                     line = line.strip()
                     if line.startswith(self.write_var.split()[0]):
-                        print('changing line in configuration file:', line)
+                        print(str(datetime.datetime.now()) + ' -- changing line in configuration file:', line)
                         configuration_item.append(self.write_var)
                     else:
                         configuration_item.append(line)
             fo.close()
             print('-' * 200)
-            print('new configuration file:')
+            print(str(datetime.datetime.now()) + ' -- new configuration file:')
             with open('./config.txt', 'w') as fo:
                 for _ in configuration_item:
-                    print(_)
+                    print(str(datetime.datetime.now()) + ' --  ' + str(_))
                     fo.write(_ + '\n')
             fo.close()
             write_configuration_engaged = False
@@ -319,7 +334,7 @@ class App(QMainWindow):
 
         # QPushButton - Dial Out Previous Address
         self.dial_out_prev_addr = QPushButton(self)
-        self.dial_out_prev_addr.resize(self.button_wh, self.button_wh / 2 - 4)
+        self.dial_out_prev_addr.resize(self.button_wh, int(self.button_wh / 2 - 4))
         self.dial_out_prev_addr.move(self.button_spacing_w * 2 + self.server_title_width, self.zone_spacing_h * 2 + self.button_wh + 24)
         self.dial_out_prev_addr.setText('-')
         self.dial_out_prev_addr.setStyleSheet(com1_stylesheet_default)
@@ -327,7 +342,7 @@ class App(QMainWindow):
 
         # QPushButton - Dial Out Next Address
         self.dial_out_next_addr = QPushButton(self)
-        self.dial_out_next_addr.resize(self.button_wh, self.button_wh / 2 - 4)
+        self.dial_out_next_addr.resize(self.button_wh, int(self.button_wh / 2 - 4))
         self.dial_out_next_addr.move(self.button_spacing_w * 3 + self.server_title_width + self.button_wh, self.zone_spacing_h * 2 + self.button_wh + 24)
         self.dial_out_next_addr.setText('+')
         self.dial_out_next_addr.setStyleSheet(com1_stylesheet_default)
@@ -335,7 +350,7 @@ class App(QMainWindow):
 
         # QPushButton - Dial Out Next Address
         self.dial_out_name = QPushButton(self)
-        self.dial_out_name.resize(self.button_wh * 2 + 4, self.button_wh / 2)
+        self.dial_out_name.resize(self.button_wh * 2 + 4, int(self.button_wh / 2))
         self.dial_out_name.move(self.button_spacing_w * 2 + self.server_title_width, self.zone_spacing_h * 2 + self.button_wh)
         self.dial_out_name.setText('')
         self.dial_out_name.setStyleSheet(dial_out_name_stylesheet_0)
@@ -359,10 +374,10 @@ class App(QMainWindow):
 
         # Configuration Thread - Wait For Configuration Thread To Complete
         global configuration_thread_completed
-        print('configuration_thread_completed:', configuration_thread_completed)
+        print(str(datetime.datetime.now()) + ' configuration_thread_completed:', configuration_thread_completed)
         while configuration_thread_completed is False:
             time.sleep(1)
-        print('configuration_thread_completed:', configuration_thread_completed)
+        print(str(datetime.datetime.now()) + ' configuration_thread_completed:', configuration_thread_completed)
 
         self.server_ip_port.setText(SERVER_ADDRESS)
 
@@ -378,7 +393,7 @@ class ConfigurationClass(QThread):
 
     def run(self):
         print('-' * 200)
-        print('[ thread started: ConfigurationClass(QThread).run(self) ]')
+        print(str(datetime.datetime.now()) + ' [ thread started: ConfigurationClass(QThread).run(self) ]')
         global configuration_thread_key, configuration_thread_completed
         global SERVER_ADDRESS
         global DIAL_OUT_ADDRESSES
@@ -391,7 +406,7 @@ class ConfigurationClass(QThread):
 
         if configuration_thread_key == 'ALL':
             print('-' * 200)
-            print('ConfigurationClass(QThread): updating all values from configuration file...')
+            print(str(datetime.datetime.now()) + ' ConfigurationClass(QThread): updating all values from configuration file...')
 
             SERVER_ADDRESS = ''
 
@@ -403,10 +418,10 @@ class ConfigurationClass(QThread):
                     if str(line[0]) == 'SERVER_ADDRESS':
                         if len(line) == 3:
                             SERVER_ADDRESS = str(str(line[1]) + ' ' + str(line[2]))
-                            print('SERVER_ADDRESS:', SERVER_ADDRESS)
+                            print(str(datetime.datetime.now()) + ' SERVER_ADDRESS:', SERVER_ADDRESS)
             fo.close()
             print('-' * 200)
-            print('ConfigurationClass(QThread): updating all values from communicator address book...')
+            print(str(datetime.datetime.now()) + ' ConfigurationClass(QThread): updating all values from communicator address book...')
 
             DIAL_OUT_ADDRESSES = []
 
@@ -419,37 +434,40 @@ class ConfigurationClass(QThread):
 
             for _ in DIAL_OUT_ADDRESSES:
 
+                # ToDo --> Sanitize Strings and check len(dial_out_address_split) before calling index ints
+
                 # Split address
                 dial_out_address_split = _.split(' ')
-                print('dial_out_address_split:', dial_out_address_split)
+                print(str(datetime.datetime.now()) + ' dial_out_address_split:', dial_out_address_split)
 
                 if len(dial_out_address_split) == 6:
 
                     # Name
-                    print('setting dial out name:', dial_out_address_split[1])
+                    print(str(datetime.datetime.now()) + ' setting dial out name:', dial_out_address_split[1])
                     address_name.append(dial_out_address_split[1])
 
                     # IP
-                    print('setting dial out ip:', dial_out_address_split[2])
+                    print(str(datetime.datetime.now()) + ' setting dial out ip:', dial_out_address_split[2])
                     address_ip.append(dial_out_address_split[2])
 
                     # Port
-                    print('setting dial out port:', dial_out_address_split[3])
+                    print(str(datetime.datetime.now()) + ' setting dial out port:', dial_out_address_split[3])
                     address_port.append(int(dial_out_address_split[3]))
 
                     # Key
-                    print('address_key:', dial_out_address_split[4])
+                    print(str(datetime.datetime.now()) + ' address_key:', dial_out_address_split[4])
                     address_key.append(bytes(dial_out_address_split[4], 'utf-8'))
 
                     # Fingerprint
                     fingerprint_file = dial_out_address_split[5]
-                    print('reading fingerprint_file:', fingerprint_file)
+                    print(str(datetime.datetime.now()) + ' reading fingerprint_file:', fingerprint_file)
                     address_fingerprint_string = ''
                     if os.path.exists(fingerprint_file):
                         with open(fingerprint_file, 'r') as fingerprint_fo:
                             for line in fingerprint_fo:
                                 address_fingerprint_string = address_fingerprint_string + line
-                        fo.close()
+                                print(line.strip())
+                        fingerprint_fo.close()
                         address_fingerprint.append(bytes(address_fingerprint_string, 'utf-8'))
 
         configuration_thread_completed = True
@@ -461,12 +479,14 @@ class AESCipher:
         self.key = KEY
 
     def encrypt(self, raw):
+        print(str(datetime.datetime.now()) + ' -- AESCipher: encrypting')
         raw = pad(raw)
         iv = Random.new().read(AES.block_size)
         cipher = AES.new(self.key, AES.MODE_CBC, iv)
         return base64.b64encode(iv + cipher.encrypt(raw))
 
     def decrypt(self, enc):
+        print(str(datetime.datetime.now()) + ' -- AESCipher: decrypting')
         enc = base64.b64decode(enc)
         iv = enc[:16]
         cipher = AES.new(self.key, AES.MODE_CBC, iv)
@@ -488,7 +508,7 @@ class DialOutClass(QThread):
 
     def run(self):
         print('-' * 200)
-        print('[ thread started: DialOutClass(QThread).run(self) ]')
+        print(str(datetime.datetime.now()) + ' [ thread started: DialOutClass(QThread).run(self) ]')
         global dial_out_thread_key
 
         self.HOST_SEND = address_ip[dial_out_address_index]
@@ -502,34 +522,39 @@ class DialOutClass(QThread):
     def COM1(self):
         global SOCKET_DIAL_OUT
         print('-' * 200)
-        print(f"[DialOutClass] outgoing: COM1 to {self.HOST_SEND} : {self.PORT_SEND}")
+        print(str(datetime.datetime.now()) + f" -- DialOutClass.COM1 outgoing to: {self.HOST_SEND} : {self.PORT_SEND}")
         try:
+            data_response = ''
             with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as SOCKET_DIAL_OUT:
                 SOCKET_DIAL_OUT.connect((self.HOST_SEND, self.PORT_SEND))
 
+                print(str(datetime.datetime.now()) + ' -- DialOutClass.COM1: handing message to AESCipher')
                 cipher = AESCipher(self.KEY)
                 ciphertext = cipher.encrypt(str(self.FINGERPRINT) + 'COM1')
-                print('sending ciphertext:', ciphertext)
+                print(str(datetime.datetime.now()) + ' -- DialOutClass.COM1 ciphertext:', ciphertext)
+
+                print(str(datetime.datetime.now()) + ' -- DialOutClass.COM1: attempting to send ciphertext')
 
                 SOCKET_DIAL_OUT.send(ciphertext)
                 SOCKET_DIAL_OUT.settimeout(1)
 
-                try:
-                    data = SOCKET_DIAL_OUT.recv(2048)
-                except Exception as e:
-                    print(e)
+                print(str(datetime.datetime.now()) + ' -- DialOutClass.COM1: waiting for response from recipient')
 
-            print('data:      ', data)
-            print('ciphertext:', ciphertext)
-            if data == ciphertext:
-                print(f"[DialOutClass] incoming: COM1 received by {self.HOST_SEND} : {self.PORT_SEND}")
+                try:
+                    data_response = SOCKET_DIAL_OUT.recv(2048)
+                except Exception as e:
+                    print(str(datetime.datetime.now()) + ' -- DialOutClass.COM1 failed:', e)
+
+            if data_response == ciphertext:
+                print(str(datetime.datetime.now()) + ' -- DialOutClass.COM1 response from recipient equals ciphertext:', data_response)
+                # print(f"[DialOutClass] incoming: COM1 received by {self.HOST_SEND} : {self.PORT_SEND}")
                 self.dial_out_com1.setStyleSheet(com1_stylesheet_green)
                 time.sleep(1)
                 self.dial_out_com1.setStyleSheet(com1_stylesheet_default)
                 global_self.setFocus()
 
         except Exception as e:
-            print(e)
+            print(str(datetime.datetime.now()) + ' -- DialOutClass.COM1 failed:', e)
             self.dial_out_com1.setStyleSheet(com1_stylesheet_red)
             time.sleep(1)
             self.dial_out_com1.setStyleSheet(com1_stylesheet_default)
@@ -538,11 +563,11 @@ class DialOutClass(QThread):
     def stop(self):
         global SOCKET_DIAL_OUT
         print('-' * 200)
-        print('[ thread terminating: DialOutClass(QThread).run(self) ]')
+        print(str(datetime.datetime.now()) + ' [ thread terminating: DialOutClass(QThread).run(self) ]')
         try:
             SOCKET_DIAL_OUT.close()
         except Exception as e:
-            print(e)
+            print(str(datetime.datetime.now()) + ' -- DialOutClass.stop failed:', e)
         global_self.setFocus()
         self.terminate()
 
@@ -556,7 +581,7 @@ class PublicServerClass(QThread):
 
     def run(self):
         print('-' * 200)
-        self.data = str(datetime.datetime.now()) + ' [SERVER] public server started'
+        self.data = str(datetime.datetime.now()) + ' -- PublicServerClass.run: public server started'
         print(self.data)
         self.server_logger()
 
@@ -566,7 +591,7 @@ class PublicServerClass(QThread):
                 try:
                     self.listen()
                 except Exception as e:
-                    print(e)
+                    print(str(datetime.datetime.now()) + ' -- PublicServerClass.run failed:', e)
 
     def server_logger(self):
         if not os.path.exists(server_log):
@@ -576,6 +601,7 @@ class PublicServerClass(QThread):
         fo.close()
 
     def notification(self):
+        print(str(datetime.datetime.now()) + ' -- PublicServerClass.notification: attempting communicator notification')
         self.server_com1.setStyleSheet(com1_stylesheet_green)
 
         url = QUrl.fromLocalFile("communicator_0.wav")
@@ -592,18 +618,17 @@ class PublicServerClass(QThread):
         global SERVER_ADDRESS
         global SOCKET_SERVER
         global DIAL_OUT_ADDRESSES
-        global crypt_key
 
         self.server_title.setStyleSheet(server_title_stylesheet_1)
 
-        print('[PublicServerClass] SERVER_ADDRESS:', SERVER_ADDRESS)
+        print(str(datetime.datetime.now()) + ' -- PublicServerClass.listen SERVER_ADDRESS:', SERVER_ADDRESS)
         self.SERVER_HOST = SERVER_ADDRESS.split(' ')[0]
         self.SERVER_PORT = int(SERVER_ADDRESS.split(' ')[1])
 
         print('-' * 200)
-        print('SERVER_HOST:', self.SERVER_HOST)
-        print('SERVER_PORT:', self.SERVER_PORT)
-        print('SERVER: attempting to listen')
+        print(str(datetime.datetime.now()) + ' -- PublicServerClass.listen SERVER_HOST:', self.SERVER_HOST)
+        print(str(datetime.datetime.now()) + ' -- PublicServerClass.listen SERVER_PORT:', self.SERVER_PORT)
+        print(str(datetime.datetime.now()) + ' -- PublicServerClass.listen SERVER: attempting to listen')
 
         try:
             with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as SOCKET_SERVER:
@@ -612,7 +637,7 @@ class PublicServerClass(QThread):
                 conn, addr = SOCKET_SERVER.accept()
                 with conn:
                     print('-' * 200)
-                    self.data = str(datetime.datetime.now()) + ' [SERVER] incoming connection: ' + str(addr)
+                    self.data = str(datetime.datetime.now()) + ' -- PublicServerClass.listen incoming connection: ' + str(addr)
                     print(self.data)
                     self.server_logger()
                     while True:
@@ -621,67 +646,67 @@ class PublicServerClass(QThread):
                             break
 
                         # show connection received data
-                        self.data = str(datetime.datetime.now()) + ' [SERVER] connection received data: ' + str(addr) + ' data: ' + str(data)
+                        self.data = str(datetime.datetime.now()) + ' -- PublicServerClass.listen connection received data: ' + str(addr) + ' data: ' + str(data)
                         print(self.data)
                         self.server_logger()
 
                         decrypted = ''
                         decrypted_message = ''
 
+                        print(str(datetime.datetime.now()) + ' -- PublicServerClass.listen: attempting to decrypt message')
+
                         # Next Try Named Key(s)
                         i = 0
                         for _ in address_key:
-                            print(_)
-                            print('trying key:', _)
+                            print(str(datetime.datetime.now()) + ' -- PublicServerClass.listen trying key: ***')
 
                             try:
-                                crypt_key = _
-                                cipher = AESCipher(crypt_key)
+                                print(str(datetime.datetime.now()) + ' -- PublicServerClass.listen: handing message to AESCipher')
+                                cipher = AESCipher(_)
                                 decrypted = cipher.decrypt(data)
                             except Exception as e:
-                                print(e)
+                                print(str(datetime.datetime.now()) + ' -- PublicServerClass.listen:', e)
 
-                            print(decrypted)
                             if len(decrypted) > 0:
-                                print('successfully decrypted message:', decrypted)
-                                print('message appears to be from:', address_name[i])
-                                print('attempting to fingerprint the message')
-                                print('add_fingerprint:', address_fingerprint[i])
-                                print('snd_fingerprint:', decrypted)
+                                print(str(datetime.datetime.now()) + ' -- PublicServerClass.listen: successfully decrypted message')
+                                print(str(datetime.datetime.now()) + ' -- PublicServerClass.listen searching incoming message for fingerprint associated with:', address_name[i])
                                 if decrypted.startswith(str(address_fingerprint[i])):
-                                    print('fingerprint: validated as', address_name[i])
+                                    print(str(datetime.datetime.now()) + ' -- PublicServerClass.listen fingerprint: validated as', address_name[i])
                                     decrypted_message = decrypted.replace(str(address_fingerprint[i]), '')
-                                    print('decrypted_message:', decrypted_message)
+                                    print(str(datetime.datetime.now()) + ' -- PublicServerClass.listen decrypted_message:', decrypted_message)
+
+                                    # send delivery confirmation message
+                                    conn.sendall(data)
+
                                 else:
-                                    print('fingerprint: does not match', address_name[i])
+                                    print(str(datetime.datetime.now()) + ' -- PublicServerClass.listen fingerprint: missing or invalid')
                                 break
+                            else:
+                                print(str(datetime.datetime.now()) + ' -- PublicServerClass.listen decrypt: empty (try another key)')
                             i += 1
 
-                        # send delivery confirmation message
-                        conn.sendall(data)
-
                         if decrypted_message == "COM1":
-                            self.data = str(datetime.datetime.now()) + ' [SERVER] data recognized as internal command COM1: ' + str(addr)
+                            self.data = str(datetime.datetime.now()) + ' -- PublicServerClass.listen data recognized as internal command COM1: ' + str(addr)
                             print(self.data)
                             self.server_logger()
                             self.notification()
                             global_self.setFocus()
 
         except Exception as e:
-            print(e)
+            print(str(datetime.datetime.now()) + ' -- PublicServerClass.listen failed:', e)
             self.server_title.setStyleSheet(server_title_stylesheet_0)
             global_self.setFocus()
 
     def stop(self):
         global SOCKET_SERVER
         print('-' * 200)
-        self.data = str(datetime.datetime.now()) + '  [SERVER] public server terminating'
+        self.data = str(datetime.datetime.now()) + ' -- PublicServerClass.stop public server terminating'
         print(self.data)
         self.server_logger()
         try:
             SOCKET_SERVER.close()
         except Exception as e:
-            print(e)
+            print(str(datetime.datetime.now()) + ' -- PublicServerClass.stop failed:', e)
         self.server_title.setStyleSheet(server_title_stylesheet_0)
         global_self.setFocus()
         self.terminate()
