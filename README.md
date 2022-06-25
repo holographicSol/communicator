@@ -23,4 +23,3 @@ listens for incoming connections and if receives a message will try each key inc
 1. create and share a key with ONE contact.
 
 2. add name + ip + port + key to adress book (for you name is name of contact and for contact name is name of you! but same key)
-
