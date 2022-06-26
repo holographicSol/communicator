@@ -11,8 +11,6 @@ communicator intends to provide communication between two or more communicator a
 
 -- added encryption. if no key is specified in address book then a default key is used.
 
--- ONLY keys in address book AND fingerprints are used to attempt identity recognition.
-
 -- share one key per contact. in address book contact saves key as you, you save key as contact.
 
 SERVER:
