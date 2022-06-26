@@ -13,8 +13,7 @@ character fingerprint must be generated and shared between the intended sender a
 to share a different key and fingerprint between each sender and recipient. This way you have a reasonable assurance
 that you know who is communicating with you regardless of IP address and regardless of any other data.
 6. The Communicator Server Data Handler performs dictionary attacks on incoming messages over 1024 bytes in order
-to try and decrypt the message thereby identifying the sender and enabling the message to be read in a Communicator
-Standard Communicator fashion.
+to try and decrypt the message thereby identifying the sender and enabling the message to be read in a two way Communicator Standard Communicator fashion.
 7. The above comprises much of the Communicator Standard Communication.
 8. It is also recommended sharing the key and fingerprint offline.
 9. Green notification is for message delivered and Communicator Standard Communication received.
