@@ -725,9 +725,8 @@ class ServerClass(QThread):
 
         self.server_title.setStyleSheet(server_title_stylesheet_1)
 
-        print(str(datetime.datetime.now()) + ' -- ServerClass.listen SERVER_ADDRESS:', SERVER_ADDRESS)
-
         print('-' * 200)
+        print(str(datetime.datetime.now()) + ' -- ServerClass.listen SERVER_ADDRESS:', SERVER_ADDRESS)
         print(str(datetime.datetime.now()) + ' -- ServerClass.listen SERVER_HOST:', self.SERVER_HOST)
         print(str(datetime.datetime.now()) + ' -- ServerClass.listen SERVER_PORT:', self.SERVER_PORT)
         print(str(datetime.datetime.now()) + ' -- ServerClass.listen SERVER: attempting to listen')
@@ -748,15 +747,19 @@ class ServerClass(QThread):
                                 server_data_0 = conn.recv(2048)
                                 if not server_data_0:
                                     break
+
+                                # ToDo --> This may make the data_handler_thread infinitely slower so be sure to clear this list periodically and safely without disrupting the data_handler_thread
+                                # dump server_data_0 into a stack for the server_data_handler
                                 server_data.append(server_data_0)
 
                                 # show connection received data
-                                self.data = str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run connection received server_data: ' + str(addr) + ' server_data: ' + str(server_data)
+                                self.data = str(datetime.datetime.now()) + ' -- ServerClass.listen connection received server_data: ' + str(addr) + ' server_data: ' + str(server_data_0)
                                 print(self.data)
                                 self.server_logger()
 
-                                # send delivery confirmation message ToDo --> SECURITY RISK: Only send delivery confirmation conditionally!
-                                print(' -- send delivery confirmation message to:', conn)
+                                # ToDo --> SECURITY RISK: Only send delivery confirmation conditionally! also change the delivery message
+                                # send delivery confirmation message
+                                print(str(datetime.datetime.now()) + ' -- ServerClass.listen: sending delivery confirmation message to:', conn)
                                 conn.sendall(server_data_0)
 
                             except Exception as e:
