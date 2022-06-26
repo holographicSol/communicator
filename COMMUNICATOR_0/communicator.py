@@ -27,7 +27,7 @@ unpad = lambda s : s[0:-ord(s[-1:])]
 SOCKET_DIAL_OUT = []
 SOCKET_SERVER = []
 
-# Addresses (simplify)
+# Addresses
 DIAL_OUT_ADDRESSES = []
 SERVER_ADDRESS = ''
 SERVER_HOST = ''
@@ -38,13 +38,14 @@ server_data = []
 dial_out_thread_key = ''
 dial_out_address = ''
 dial_out_address_index = 0
-
-# NEW DIAL OUT SETTINGS
 address_name = []
 address_ip = []
 address_port = []
 address_key = []
 address_fingerprint = []
+
+# Wild Addresses
+wild_addresses_ip = []
 
 # Public Settings
 server_thread_key = ''
@@ -637,7 +638,7 @@ class ServerDataHandlerClass(QThread):
 
     def run(self):
         print('-' * 200)
-        self.data = str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run: public server started'
+        self.data = str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run: plugged in'
         print(self.data)
         global server_data
         global address_key
@@ -645,82 +646,68 @@ class ServerDataHandlerClass(QThread):
         while True:
             try:
                 self.server_data_0 = server_data
-                if self.server_data_0 != self.server_data_1:
-                    i_0 = 0
-                    for self.server_data_0s in self.server_data_0:
-                        try:
-                            if self.server_data_0[i_0] not in self.server_data_1:
+                i_0 = 0
+                for self.server_data_0s in self.server_data_0:
+                    try:
+                        ciphertext = self.server_data_0[i_0]
 
-                                ciphertext = self.server_data_0[i_0]
+                        server_data.remove(ciphertext)
 
-                                print(self.server_data_0[i_0])
-                                self.server_data_1.append(self.server_data_0[i_0])
-                                print(' -- ServerDataHandlerClass has new data:', self.server_data_0[i_0])
+                        decrypted = ''
+                        decrypted_message = ''
+                        print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run: attempting to decrypt message')
 
-                                print('server_data:', len(server_data), server_data)
-                                print('self.server_data_0:', len(self.server_data_0), self.server_data_0)
-                                server_data.remove(ciphertext)
-                                self.server_data_1.remove(ciphertext)
+                        if len(ciphertext) > 1024:
 
-                                # ciphertext = self.server_data_0[i_0]
-                                print('ciphertext:', ciphertext)
-                                decrypted = ''
-                                decrypted_message = ''
-                                print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run: attempting to decrypt message')
+                            # Next Try Named Key(s)
+                            i_1 = 0
+                            for _ in address_key:
+                                print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run trying key:', _)
+                                try:
+                                    print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run: handing message to AESCipher')
+                                    cipher = AESCipher(_)
+                                    decrypted = cipher.decrypt(ciphertext)
+                                except Exception as e:
+                                    print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run (address_key loop): ' + str(e))
+                                    break
 
-                                if len(ciphertext) > 1024:
+                                if decrypted:
+                                    print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run: successfully decrypted message')
+                                    print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run searching incoming message for fingerprint associated with:', address_name[i_1])
+                                    if decrypted.startswith(str(address_fingerprint[i_1])):
+                                        print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run fingerprint: validated as', address_name[i_1])
+                                        decrypted_message = decrypted.replace(str(address_fingerprint[i_1]), '')
+                                        print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run decrypted_message:', decrypted_message)
+                                        break
 
-                                    # Next Try Named Key(s)
-                                    i_1 = 0
-                                    for _ in address_key:
-                                        print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run trying key:', _)
-                                        try:
-                                            print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run: handing message to AESCipher')
-                                            cipher = AESCipher(_)
-                                            decrypted = cipher.decrypt(ciphertext)
-                                        except Exception as e:
-                                            print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run (address_key loop): ' + str(e))
-                                            break
-
-                                        if decrypted:
-                                            print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run: successfully decrypted message')
-                                            print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run searching incoming message for fingerprint associated with:', address_name[i_1])
-                                            if decrypted.startswith(str(address_fingerprint[i_1])):
-                                                print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run fingerprint: validated as', address_name[i_1])
-                                                decrypted_message = decrypted.replace(str(address_fingerprint[i_1]), '')
-                                                print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run decrypted_message:', decrypted_message)
-                                                break
-
-                                            else:
-                                                print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run fingerprint: missing or invalid')
-                                                # break
-                                        else:
-                                            print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run decrypt: empty (try another key)')
-
-                                        i_1 += 1
-
-                                if len(decrypted_message) > 0:
-
-                                    self.data = str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.listen decrypted message: ' + str(decrypted_message)
-                                    print(self.data)
-                                    self.server_logger()
-                                    self.notification_key = 'green'
-                                    self.notification()
-                                    global_self.setFocus()
-
+                                    else:
+                                        print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run fingerprint: missing or invalid')
                                 else:
-                                    self.data = str(datetime.datetime.now()) + ' -- message is not encrypted using keys in address book: ' + str(ciphertext)
-                                    print(self.data)
-                                    self.server_logger()
-                                    self.notification_key = 'amber'
-                                    self.notification()
-                                    global_self.setFocus()
+                                    print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run decrypt: empty (try another key)')
 
-                            i_0 += 1
+                                i_1 += 1
 
-                        except Exception as e:
-                            print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run (body_0): ' + str(e))
-                            i_0 += 1
+                        if len(decrypted_message) > 0:
+
+                            self.data = str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run decrypted message: ' + str(decrypted_message)
+                            self.server_logger()
+                            self.notification_key = 'green'
+                            self.notification()
+                            global_self.setFocus()
+
+                        else:
+                            self.data = str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run message is not encrypted using keys in address book: ' + str(ciphertext)
+                            print(self.data)
+                            self.server_logger()
+                            self.notification_key = 'amber'
+                            self.notification()
+                            global_self.setFocus()
+
+                        i_0 += 1
+
+                    except Exception as e:
+                        print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run (body_0): ' + str(e))
+                        i_0 += 1
             except Exception as e:
                 print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run (main_exception): ' + str(e))
 
@@ -767,6 +754,7 @@ class ServerClass(QThread):
         global SOCKET_SERVER
         global DIAL_OUT_ADDRESSES
         global server_data
+        global wild_addresses_ip
 
         self.server_title.setStyleSheet(server_title_stylesheet_1)
 
@@ -782,6 +770,11 @@ class ServerClass(QThread):
                     SOCKET_SERVER.bind((self.SERVER_HOST, self.SERVER_PORT))
                     SOCKET_SERVER.listen()
                     conn, addr = SOCKET_SERVER.accept()
+                    wild_address_ip = str(addr[0])
+                    wild_address_port = str(addr[1])
+                    if wild_address_ip not in address_ip:
+                        print(str(datetime.datetime.now()) + ' -- ServerClass.listen incoming wild address:', wild_address_ip, str(wild_address_port))
+                        wild_addresses_ip.append(str(wild_address_ip + ' ' + wild_address_port))
                     with conn:
                         print('-' * 200)
                         self.data = str(datetime.datetime.now()) + ' -- ServerClass.listen incoming connection: ' + str(addr)
