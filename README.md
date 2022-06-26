@@ -1,4 +1,5 @@
-# communicator
+Communicator - Written by Benjamin Jack Cullen
+
 communicator intends to provide communication between two or more communicator applications running over loopback, local network and world wide web (www requires port forwarding from router to local ip address of host running the communicator). 
 
 -- project in early development :) You have been warned.
@@ -15,8 +16,6 @@ communicator intends to provide communication between two or more communicator a
 
 SERVER:
 listens for incoming connections and if receives a message will try each key including the default communicator key as a dictionary attack function on the encrypted message. if the message is decrypted then the name associated with the key that was successful in decrypting the message will be used to identify the message sender alongside a sender fingerprint header inside the message. Now you can read the message and have reasonable assurance the sender name is authentic.
-
-Communicator - Written by Benjamin Jack Cullen
 
 Communicator Standard Communication:
     1. Messages encrypted with AES-256 32 bytes shared key.
