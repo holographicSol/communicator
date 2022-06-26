@@ -30,6 +30,9 @@ SOCKET_SERVER = []
 # Addresses (simplify)
 DIAL_OUT_ADDRESSES = []
 SERVER_ADDRESS = ''
+SERVER_HOST = ''
+SERVER_PORT = int()
+server_data = []
 
 # Dial Out Settings
 dial_out_thread_key = ''
@@ -204,12 +207,16 @@ class App(QMainWindow):
             print(str(datetime.datetime.now()) + ' -- plugged in: App.server_ip_port_write_function')
             global_self.setFocus()
             global SERVER_ADDRESS
+            global SERVER_HOST
+            global SERVER_PORT
             global write_configuration_engaged
             if write_configuration_engaged is False:
                 self.write_var = 'SERVER_ADDRESS ' + self.server_ip_port.text()
                 print(str(datetime.datetime.now()) + ' -- setting write variable:', self.write_var)
                 write_configuration()
                 SERVER_ADDRESS = self.server_ip_port.text()
+                SERVER_HOST = SERVER_ADDRESS.split(' ')[0]
+                SERVER_PORT = int(SERVER_ADDRESS.split(' ')[1])
             else:
                 print(str(datetime.datetime.now()) + ' -- write_configuration_engaged:', write_configuration_engaged)
 
@@ -357,7 +364,11 @@ class App(QMainWindow):
         # self.dial_out_name.clicked.connect(dial_out_next_addr_function)
 
         # Thread - Public Server
-        server_thread = PublicServerClass(self.server_title, self.server_com1)
+        server_thread = ServerClass(self.server_title, self.server_com1)
+
+        # Thread - ServerDataHandlerClass
+        server_data_handler_class = ServerDataHandlerClass(self.server_title, self.server_com1)
+        server_data_handler_class.start()
 
         # Thread - Dial_Out
         dial_out_thread = DialOutClass(self.dial_out_title, self.dial_out_com1)
@@ -396,6 +407,8 @@ class ConfigurationClass(QThread):
         print(str(datetime.datetime.now()) + ' [ thread started: ConfigurationClass(QThread).run(self) ]')
         global configuration_thread_key, configuration_thread_completed
         global SERVER_ADDRESS
+        global SERVER_HOST
+        global SERVER_PORT
         global DIAL_OUT_ADDRESSES
 
         global address_name
@@ -418,6 +431,8 @@ class ConfigurationClass(QThread):
                     if str(line[0]) == 'SERVER_ADDRESS':
                         if len(line) == 3:
                             SERVER_ADDRESS = str(str(line[1]) + ' ' + str(line[2]))
+                            SERVER_HOST = str(line[1])
+                            SERVER_PORT = int(line[2])
                             print(str(datetime.datetime.now()) + ' SERVER_ADDRESS:', SERVER_ADDRESS)
             fo.close()
             print('-' * 200)
@@ -572,26 +587,14 @@ class DialOutClass(QThread):
         self.terminate()
 
 
-class PublicServerClass(QThread):
+class ServerDataHandlerClass(QThread):
     def __init__(self, server_title, server_com1):
         QThread.__init__(self)
         self.server_com1 = server_com1
         self.server_title = server_title
+        self.server_data_0 = []
+        self.server_data_1 = []
         self.data = ''
-
-    def run(self):
-        print('-' * 200)
-        self.data = str(datetime.datetime.now()) + ' -- PublicServerClass.run: public server started'
-        print(self.data)
-        self.server_logger()
-
-        global server_thread_key
-        while True:
-            if server_thread_key == 'listen':
-                try:
-                    self.listen()
-                except Exception as e:
-                    print(str(datetime.datetime.now()) + ' -- PublicServerClass.run failed:', e)
 
     def server_logger(self):
         if not os.path.exists(server_log):
@@ -601,7 +604,7 @@ class PublicServerClass(QThread):
         fo.close()
 
     def notification(self):
-        print(str(datetime.datetime.now()) + ' -- PublicServerClass.notification: attempting communicator notification')
+        print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.notification: attempting communicator notification')
         self.server_com1.setStyleSheet(com1_stylesheet_green)
 
         url = QUrl.fromLocalFile("communicator_0.wav")
@@ -614,99 +617,167 @@ class PublicServerClass(QThread):
 
         self.server_com1.setStyleSheet(com1_stylesheet_default)
 
-    def listen(self):
-        global SERVER_ADDRESS
-        global SOCKET_SERVER
-        global DIAL_OUT_ADDRESSES
-
-        self.server_title.setStyleSheet(server_title_stylesheet_1)
-
-        print(str(datetime.datetime.now()) + ' -- PublicServerClass.listen SERVER_ADDRESS:', SERVER_ADDRESS)
-        self.SERVER_HOST = SERVER_ADDRESS.split(' ')[0]
-        self.SERVER_PORT = int(SERVER_ADDRESS.split(' ')[1])
-
+    def run(self):
         print('-' * 200)
-        print(str(datetime.datetime.now()) + ' -- PublicServerClass.listen SERVER_HOST:', self.SERVER_HOST)
-        print(str(datetime.datetime.now()) + ' -- PublicServerClass.listen SERVER_PORT:', self.SERVER_PORT)
-        print(str(datetime.datetime.now()) + ' -- PublicServerClass.listen SERVER: attempting to listen')
+        self.data = str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run: public server started'
+        print(self.data)
+        global server_data
+        global address_key
 
-        try:
-            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as SOCKET_SERVER:
-                SOCKET_SERVER.bind((self.SERVER_HOST, self.SERVER_PORT))
-                SOCKET_SERVER.listen()
-                conn, addr = SOCKET_SERVER.accept()
-                with conn:
-                    print('-' * 200)
-                    self.data = str(datetime.datetime.now()) + ' -- PublicServerClass.listen incoming connection: ' + str(addr)
-                    print(self.data)
-                    self.server_logger()
-                    while True:
-                        data = conn.recv(2048)
-                        if not data:
-                            break
+        while True:
+            i_0 = 0
+            self.server_data_0 = server_data
+            if self.server_data_0 != self.server_data_1:
+                for self.server_data_0s in self.server_data_0:
+                    if self.server_data_0[i_0] not in self.server_data_1:
+                        print(self.server_data_0[i_0])
+                        self.server_data_1.append(self.server_data_0[i_0])
 
-                        # show connection received data
-                        self.data = str(datetime.datetime.now()) + ' -- PublicServerClass.listen connection received data: ' + str(addr) + ' data: ' + str(data)
-                        print(self.data)
-                        self.server_logger()
+                        print(' -- ServerDataHandlerClass has new data:', self.server_data_1[i_0])
+
+                        ciphertext = self.server_data_0[i_0]
+                        print('ciphertext:', ciphertext)
 
                         decrypted = ''
                         decrypted_message = ''
 
-                        print(str(datetime.datetime.now()) + ' -- PublicServerClass.listen: attempting to decrypt message')
+                        print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run: attempting to decrypt message')
 
                         # Next Try Named Key(s)
-                        i = 0
+                        i_1 = 0
                         for _ in address_key:
-                            print(str(datetime.datetime.now()) + ' -- PublicServerClass.listen trying key: ***')
-
+                            print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run trying key: ***')
+                            print('address_key[i_1]:', _)
                             try:
-                                print(str(datetime.datetime.now()) + ' -- PublicServerClass.listen: handing message to AESCipher')
+                                print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run: handing message to AESCipher')
                                 cipher = AESCipher(_)
-                                decrypted = cipher.decrypt(data)
+                                decrypted = cipher.decrypt(ciphertext)
                             except Exception as e:
-                                print(str(datetime.datetime.now()) + ' -- PublicServerClass.listen:', e)
+                                print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run:', e)
 
                             if len(decrypted) > 0:
-                                print(str(datetime.datetime.now()) + ' -- PublicServerClass.listen: successfully decrypted message')
-                                print(str(datetime.datetime.now()) + ' -- PublicServerClass.listen searching incoming message for fingerprint associated with:', address_name[i])
-                                if decrypted.startswith(str(address_fingerprint[i])):
-                                    print(str(datetime.datetime.now()) + ' -- PublicServerClass.listen fingerprint: validated as', address_name[i])
-                                    decrypted_message = decrypted.replace(str(address_fingerprint[i]), '')
-                                    print(str(datetime.datetime.now()) + ' -- PublicServerClass.listen decrypted_message:', decrypted_message)
-
-                                    # send delivery confirmation message
-                                    conn.sendall(data)
+                                print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run: successfully decrypted message')
+                                print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run searching incoming message for fingerprint associated with:', address_name[i_1])
+                                if decrypted.startswith(str(address_fingerprint[i_1])):
+                                    print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run fingerprint: validated as', address_name[i_1])
+                                    decrypted_message = decrypted.replace(str(address_fingerprint[i_1]), '')
+                                    print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run decrypted_message:', decrypted_message)
 
                                 else:
-                                    print(str(datetime.datetime.now()) + ' -- PublicServerClass.listen fingerprint: missing or invalid')
+                                    print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run fingerprint: missing or invalid')
                                 break
                             else:
-                                print(str(datetime.datetime.now()) + ' -- PublicServerClass.listen decrypt: empty (try another key)')
-                            i += 1
+                                print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run decrypt: empty (try another key)')
+
+                            i_1 += 1
 
                         if decrypted_message == "COM1":
-                            self.data = str(datetime.datetime.now()) + ' -- PublicServerClass.listen data recognized as internal command COM1: ' + str(addr)
+                            self.data = str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.listen data recognized as internal command COM1'
                             print(self.data)
                             self.server_logger()
                             self.notification()
                             global_self.setFocus()
+                    i_0 += 1
 
-        except Exception as e:
-            print(str(datetime.datetime.now()) + ' -- PublicServerClass.listen failed:', e)
-            self.server_title.setStyleSheet(server_title_stylesheet_0)
-            global_self.setFocus()
+
+class ServerClass(QThread):
+    def __init__(self, server_title, server_com1):
+        QThread.__init__(self)
+        self.server_com1 = server_com1
+        self.server_title = server_title
+        self.data = ''
+        self.SERVER_HOST = ''
+        self.SERVER_PORT = ''
+
+    def run(self):
+        global SERVER_ADDRESS
+        global SERVER_HOST
+        global SERVER_PORT
+
+        self.SERVER_HOST = SERVER_HOST
+        self.SERVER_PORT = SERVER_PORT
+
+        print('-' * 200)
+        self.data = str(datetime.datetime.now()) + ' -- ServerClass.run: public server started'
+        print(self.data)
+        self.server_logger()
+
+        global server_thread_key
+        while True:
+            if server_thread_key == 'listen':
+                try:
+                    self.listen()
+                except Exception as e:
+                    print(str(datetime.datetime.now()) + ' -- ServerClass.run failed:', e)
+
+    def server_logger(self):
+        if not os.path.exists(server_log):
+            open(server_log, 'w').close()
+        with open(server_log, 'a') as fo:
+            fo.write(self.data + '\n')
+        fo.close()
+
+    def listen(self):
+        global SERVER_ADDRESS
+        global SOCKET_SERVER
+        global DIAL_OUT_ADDRESSES
+        global server_data
+
+        self.server_title.setStyleSheet(server_title_stylesheet_1)
+
+        print(str(datetime.datetime.now()) + ' -- ServerClass.listen SERVER_ADDRESS:', SERVER_ADDRESS)
+
+        print('-' * 200)
+        print(str(datetime.datetime.now()) + ' -- ServerClass.listen SERVER_HOST:', self.SERVER_HOST)
+        print(str(datetime.datetime.now()) + ' -- ServerClass.listen SERVER_PORT:', self.SERVER_PORT)
+        print(str(datetime.datetime.now()) + ' -- ServerClass.listen SERVER: attempting to listen')
+
+        while True:
+            try:
+                with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as SOCKET_SERVER:
+                    SOCKET_SERVER.bind((self.SERVER_HOST, self.SERVER_PORT))
+                    SOCKET_SERVER.listen()
+                    conn, addr = SOCKET_SERVER.accept()
+                    with conn:
+                        print('-' * 200)
+                        self.data = str(datetime.datetime.now()) + ' -- ServerClass.listen incoming connection: ' + str(addr)
+                        print(self.data)
+                        self.server_logger()
+                        while True:
+                            try:
+                                server_data_0 = conn.recv(2048)
+                                if not server_data_0:
+                                    break
+                                server_data.append(server_data_0)
+
+                                # show connection received data
+                                self.data = str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run connection received server_data: ' + str(addr) + ' server_data: ' + str(server_data)
+                                print(self.data)
+                                self.server_logger()
+
+                                # send delivery confirmation message ToDo --> SECURITY RISK: Only send delivery confirmation conditionally!
+                                print(' -- send delivery confirmation message to:', conn)
+                                conn.sendall(server_data_0)
+
+                            except Exception as e:
+                                print(e)
+                                break
+
+            except Exception as e:
+                print(str(datetime.datetime.now()) + ' -- ServerClass.listen failed:', e)
+                self.server_title.setStyleSheet(server_title_stylesheet_0)
+                global_self.setFocus()
 
     def stop(self):
         global SOCKET_SERVER
         print('-' * 200)
-        self.data = str(datetime.datetime.now()) + ' -- PublicServerClass.stop public server terminating'
+        self.data = str(datetime.datetime.now()) + ' -- ServerClass.stop public server terminating'
         print(self.data)
         self.server_logger()
         try:
             SOCKET_SERVER.close()
         except Exception as e:
-            print(str(datetime.datetime.now()) + ' -- PublicServerClass.stop failed:', e)
+            print(str(datetime.datetime.now()) + ' -- ServerClass.stop failed:', e)
         self.server_title.setStyleSheet(server_title_stylesheet_0)
         global_self.setFocus()
         self.terminate()
