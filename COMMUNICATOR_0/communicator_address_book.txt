@@ -1,5 +1,4 @@
-# communicator address book
-
-DATA dev_0 192.168.1.11 55554 T`Bd:HW'u&RoHtrwr%t<)G_K[i.IlL[+ ./dev_key_sp.txt
-
-DATA dev_1 192.168.1.11 55554 T`Bd:HW'u&RoHtrwr%t<)G_K[i.IlL[- ./dev_key_sp.txt
+DATA dev_0 192.168.1.11 55554 XfwzcTd;PKjX%.fjQNXn\hk]wd%!,f!P ./dev_key_sp.txt
+DATA dev_1 192.168.1.11 55554 {pDF{Aw(xNu+FQFg.Is$Uof;M`HCk?<_ ./dev_key_sp.txt
+DATA dev_2 192.168.1.11 55554 *)ELdog#G+:VbsD/n/#*gPsRg`OY_%R& ./dev_key_sp.txt
+DATA dev_3 192.168.1.11 55554 *)ELdog#G+:VbsD/n/#*gPsRg`OY_%R& ./dev_key_sp.txt

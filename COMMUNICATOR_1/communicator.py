@@ -18,7 +18,7 @@ import base64
 from Crypto import Random
 
 # key, initialization vector and padding
-crypt_iv = bytes('This is an IV456', 'utf-8')
+# crypt_iv = bytes('This is an IV456', 'utf-8')
 BS = 16
 pad = lambda s: bytes(s + (BS - len(s) % BS) * chr(BS - len(s) % BS), 'utf-8')
 unpad = lambda s : s[0:-ord(s[-1:])]
@@ -93,6 +93,11 @@ com1_stylesheet_default = """QPushButton{background-color: rgb(0, 0, 0);
 
 # Stylesheet - Dial Out COM1 (Mode 1)
 com1_stylesheet_green = """QPushButton{background-color: rgb(0, 255, 0);
+                                color: rgb(0, 0, 0);
+                                border: 1px solid rgb(0, 0, 255);}"""
+
+# Stylesheet - Dial Out COM1 (Mode 1)
+com1_stylesheet_amber = """QPushButton{background-color: rgb(255, 255, 0);
                                 color: rgb(0, 0, 0);
                                 border: 1px solid rgb(0, 0, 255);}"""
 
@@ -495,17 +500,25 @@ class AESCipher:
 
     def encrypt(self, raw):
         print(str(datetime.datetime.now()) + ' -- AESCipher: encrypting')
-        raw = pad(raw)
-        iv = Random.new().read(AES.block_size)
-        cipher = AES.new(self.key, AES.MODE_CBC, iv)
-        return base64.b64encode(iv + cipher.encrypt(raw))
+        try:
+            raw = pad(raw)
+            iv = Random.new().read(AES.block_size)
+            cipher = AES.new(self.key, AES.MODE_CBC, iv)
+            return base64.b64encode(iv + cipher.encrypt(raw))
+
+        except Exception as e:
+            print('AESCipher.encrypt:', e)
 
     def decrypt(self, enc):
         print(str(datetime.datetime.now()) + ' -- AESCipher: decrypting')
-        enc = base64.b64decode(enc)
-        iv = enc[:16]
-        cipher = AES.new(self.key, AES.MODE_CBC, iv)
-        return unpad(cipher.decrypt(enc[16:])).decode('utf8')
+        try:
+            enc = base64.b64decode(enc)
+            iv = enc[:16]
+            cipher = AES.new(self.key, AES.MODE_CBC, iv)
+            return unpad(cipher.decrypt(enc[16:])).decode('utf-8')
+
+        except Exception as e:
+            print('AESCipher.decrypt:', e)
 
 
 class DialOutClass(QThread):
@@ -595,6 +608,7 @@ class ServerDataHandlerClass(QThread):
         self.server_data_0 = []
         self.server_data_1 = []
         self.data = ''
+        self.notification_key = ''
 
     def server_logger(self):
         if not os.path.exists(server_log):
@@ -605,7 +619,11 @@ class ServerDataHandlerClass(QThread):
 
     def notification(self):
         print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.notification: attempting communicator notification')
-        self.server_com1.setStyleSheet(com1_stylesheet_green)
+
+        if self.notification_key == 'green':
+            self.server_com1.setStyleSheet(com1_stylesheet_green)
+        elif self.notification_key == 'amber':
+            self.server_com1.setStyleSheet(com1_stylesheet_amber)
 
         url = QUrl.fromLocalFile("communicator_0.wav")
         content = QMediaContent(url)
@@ -625,59 +643,86 @@ class ServerDataHandlerClass(QThread):
         global address_key
 
         while True:
-            i_0 = 0
-            self.server_data_0 = server_data
-            if self.server_data_0 != self.server_data_1:
-                for self.server_data_0s in self.server_data_0:
-                    if self.server_data_0[i_0] not in self.server_data_1:
-                        print(self.server_data_0[i_0])
-                        self.server_data_1.append(self.server_data_0[i_0])
+            try:
+                self.server_data_0 = server_data
+                if self.server_data_0 != self.server_data_1:
+                    i_0 = 0
+                    for self.server_data_0s in self.server_data_0:
+                        try:
+                            if self.server_data_0[i_0] not in self.server_data_1:
 
-                        print(' -- ServerDataHandlerClass has new data:', self.server_data_1[i_0])
+                                ciphertext = self.server_data_0[i_0]
 
-                        ciphertext = self.server_data_0[i_0]
-                        print('ciphertext:', ciphertext)
+                                print(self.server_data_0[i_0])
+                                self.server_data_1.append(self.server_data_0[i_0])
+                                print(' -- ServerDataHandlerClass has new data:', self.server_data_0[i_0])
 
-                        decrypted = ''
-                        decrypted_message = ''
+                                print('server_data:', len(server_data), server_data)
+                                print('self.server_data_0:', len(self.server_data_0), self.server_data_0)
+                                server_data.remove(ciphertext)
+                                self.server_data_1.remove(ciphertext)
 
-                        print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run: attempting to decrypt message')
+                                # ciphertext = self.server_data_0[i_0]
+                                print('ciphertext:', ciphertext)
+                                decrypted = ''
+                                decrypted_message = ''
+                                print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run: attempting to decrypt message')
 
-                        # Next Try Named Key(s)
-                        i_1 = 0
-                        for _ in address_key:
-                            print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run trying key: ***')
-                            print('address_key[i_1]:', _)
-                            try:
-                                print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run: handing message to AESCipher')
-                                cipher = AESCipher(_)
-                                decrypted = cipher.decrypt(ciphertext)
-                            except Exception as e:
-                                print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run:', e)
+                                if len(ciphertext) > 1024:
 
-                            if len(decrypted) > 0:
-                                print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run: successfully decrypted message')
-                                print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run searching incoming message for fingerprint associated with:', address_name[i_1])
-                                if decrypted.startswith(str(address_fingerprint[i_1])):
-                                    print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run fingerprint: validated as', address_name[i_1])
-                                    decrypted_message = decrypted.replace(str(address_fingerprint[i_1]), '')
-                                    print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run decrypted_message:', decrypted_message)
+                                    # Next Try Named Key(s)
+                                    i_1 = 0
+                                    for _ in address_key:
+                                        print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run trying key:', _)
+                                        try:
+                                            print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run: handing message to AESCipher')
+                                            cipher = AESCipher(_)
+                                            decrypted = cipher.decrypt(ciphertext)
+                                        except Exception as e:
+                                            print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run (address_key loop): ' + str(e))
+                                            break
+
+                                        if decrypted:
+                                            print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run: successfully decrypted message')
+                                            print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run searching incoming message for fingerprint associated with:', address_name[i_1])
+                                            if decrypted.startswith(str(address_fingerprint[i_1])):
+                                                print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run fingerprint: validated as', address_name[i_1])
+                                                decrypted_message = decrypted.replace(str(address_fingerprint[i_1]), '')
+                                                print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run decrypted_message:', decrypted_message)
+                                                break
+
+                                            else:
+                                                print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run fingerprint: missing or invalid')
+                                                # break
+                                        else:
+                                            print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run decrypt: empty (try another key)')
+
+                                        i_1 += 1
+
+                                if len(decrypted_message) > 0:
+
+                                    self.data = str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.listen decrypted message: ' + str(decrypted_message)
+                                    print(self.data)
+                                    self.server_logger()
+                                    self.notification_key = 'green'
+                                    self.notification()
+                                    global_self.setFocus()
 
                                 else:
-                                    print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run fingerprint: missing or invalid')
-                                break
-                            else:
-                                print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run decrypt: empty (try another key)')
+                                    self.data = str(datetime.datetime.now()) + ' -- message is not encrypted using keys in address book: ' + str(ciphertext)
+                                    print(self.data)
+                                    self.server_logger()
+                                    self.notification_key = 'amber'
+                                    self.notification()
+                                    global_self.setFocus()
 
-                            i_1 += 1
+                            i_0 += 1
 
-                        if decrypted_message == "COM1":
-                            self.data = str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.listen data recognized as internal command COM1'
-                            print(self.data)
-                            self.server_logger()
-                            self.notification()
-                            global_self.setFocus()
-                    i_0 += 1
+                        except Exception as e:
+                            print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run (body_0): ' + str(e))
+                            i_0 += 1
+            except Exception as e:
+                print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run (main_exception): ' + str(e))
 
 
 class ServerClass(QThread):
@@ -759,11 +804,11 @@ class ServerClass(QThread):
 
                                 # ToDo --> SECURITY RISK: Only send delivery confirmation conditionally! also change the delivery message
                                 # send delivery confirmation message
-                                print(str(datetime.datetime.now()) + ' -- ServerClass.listen: sending delivery confirmation message to:', conn)
+                                print(str(datetime.datetime.now()) + ' -- ServerClass.listen: sending delivery confirmation message to:' + str(conn))
                                 conn.sendall(server_data_0)
 
                             except Exception as e:
-                                print(e)
+                                print(str(datetime.datetime.now()) + ' -- ServerClass.listen:' + str(e))
                                 break
 
             except Exception as e:
