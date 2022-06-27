@@ -28,7 +28,7 @@ up to 1024 bytes and be received and receive notification.
 3. Amber notification is for Communicator Non-Standard Communication received. (Potentially insecure message received).
 
 
-Keys Trust Logic:
+Key Trust Logic:
 The Key Trust logic. A scenario involving two people and a stranger.
 1. Person 1 creates a key and fingerprint for person 1 and person 2 to use.
 2. Person 1 shares the key and fingerprint with person 2.
