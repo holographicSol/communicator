@@ -29,10 +29,17 @@ SOCKET_SERVER = []
 
 # Addresses
 DIAL_OUT_ADDRESSES = []
-SERVER_ADDRESS = ''
-SERVER_HOST = ''
-SERVER_PORT = int()
+# SERVER_ADDRESS = ''
+# SERVER_HOST = ''
+# SERVER_PORT = int()
 server_data = []
+
+# NEW ADDRESS SETTINGS
+server_addresses = ['127.0.0.1 55555']
+server_address = ''
+server_address_index = 0
+server_ip = ['127.0.0.1']
+server_port = [55555]
 
 # Dial Out Settings
 dial_out_thread_key = ''
@@ -212,45 +219,97 @@ class App(QMainWindow):
         def server_ip_port_write_function():
             print(str(datetime.datetime.now()) + ' -- plugged in: App.server_ip_port_write_function')
             global_self.setFocus()
-            global SERVER_ADDRESS
-            global SERVER_HOST
-            global SERVER_PORT
+            global server_addresses
+            global server_address
+            global server_ip
+            global server_port
             global write_configuration_engaged
+            global server_address_index
             if write_configuration_engaged is False:
-                self.write_var = 'SERVER_ADDRESS ' + self.server_ip_port.text()
-                print(str(datetime.datetime.now()) + ' -- setting write variable:', self.write_var)
-                write_configuration()
-                SERVER_ADDRESS = self.server_ip_port.text()
-                SERVER_HOST = SERVER_ADDRESS.split(' ')[0]
-                SERVER_PORT = int(SERVER_ADDRESS.split(' ')[1])
+
+                write_configuration_engaged = True
+
+                server_address_var = self.server_ip_port.text()
+                if server_address_var not in server_addresses:
+                    print(str(datetime.datetime.now()) + ' -- new server address detected:', server_address_var)
+
+                    self.write_var = 'SERVER_ADDRESS ' + self.server_ip_port.text()
+                    print(str(datetime.datetime.now()) + ' -- setting write variable:', self.write_var)
+
+                    with open('./config.txt', 'a') as fo:
+                        fo.write(self.write_var + '\n')
+                    fo.close()
+
+                    server_addresses.append(server_address_var)
+                    server_ip.append(server_address_var.split()[0])
+                    server_port.append(server_address_var.split()[1])
+                    server_address_index = server_addresses.index(server_address_var)
+                    print(str(datetime.datetime.now()) + ' -- changing server_address_index to:', server_address_index)
+                    server_address = server_addresses[server_address_index]
+                    print(str(datetime.datetime.now()) + ' -- setting server_address using server_address_index:', server_address)
+
+                else:
+                    print(str(datetime.datetime.now()) + ' -- server address already exists:', server_address_var)
+                    server_address_index = server_addresses.index(server_address_var)
+                    print(str(datetime.datetime.now()) + ' -- changing server_address_index to:', server_address_index)
+                    server_address = server_addresses[server_address_index]
+                    print(str(datetime.datetime.now()) + ' -- setting server_address using server_address_index:', server_address)
+
+                write_configuration_engaged = False
+
             else:
                 print(str(datetime.datetime.now()) + ' -- write_configuration_engaged:', write_configuration_engaged)
 
-        def write_configuration():
-            print(str(datetime.datetime.now()) + ' -- plugged in: App.write_configuration')
+        def server_prev_addr_function():
+            print(str(datetime.datetime.now()) + ' -- plugged in: App.server_prev_addr_function')
             global_self.setFocus()
-            global write_configuration_engaged
-            write_configuration_engaged = True
-            print('-' * 200)
-            print(str(datetime.datetime.now()) + ' -- writing line to configuration file:', self.write_var)
-            configuration_item = []
-            with open('./config.txt', 'r') as fo:
-                for line in fo:
-                    line = line.strip()
-                    if line.startswith(self.write_var.split()[0]):
-                        print(str(datetime.datetime.now()) + ' -- changing line in configuration file:', line)
-                        configuration_item.append(self.write_var)
-                    else:
-                        configuration_item.append(line)
-            fo.close()
-            print('-' * 200)
-            print(str(datetime.datetime.now()) + ' -- new configuration file:')
-            with open('./config.txt', 'w') as fo:
-                for _ in configuration_item:
-                    print(str(datetime.datetime.now()) + ' --  ' + str(_))
-                    fo.write(_ + '\n')
-            fo.close()
-            write_configuration_engaged = False
+            global server_address, server_address_index, server_addresses
+            global server_ip, server_port
+
+            LEN_SERVER_ADDRESSES = len(server_addresses)
+            print(str(datetime.datetime.now()) + ' -- len(server_addresses):', len(server_addresses))
+
+            # Step through address book
+            if server_address_index == 0:
+                print(str(datetime.datetime.now()) + ' -- server_address_index is zero: setting server_address_index to len(server_addresses)')
+                server_address_index = LEN_SERVER_ADDRESSES - 1
+            else:
+                print(str(datetime.datetime.now()) + ' -- server_address_index is not zero: subtracting 1 from server_address_index')
+                server_address_index = server_address_index - 1
+
+            print(str(datetime.datetime.now()) + ' -- setting server_address_index:', server_address_index)
+            print(str(datetime.datetime.now()) + ' -- setting server_address using server_address_index:', server_addresses[server_address_index])
+
+            server_address = server_addresses[server_address_index]
+            print(str(datetime.datetime.now()) + ' -- server_address:', server_address)
+            self.server_ip_port.setText(server_address)
+            print(str(datetime.datetime.now()) + ' -- set server_ip_port text:', server_address)
+
+        def server_next_addr_function():
+            print(str(datetime.datetime.now()) + ' -- plugged in: App.server_next_addr_function')
+            global_self.setFocus()
+            global server_address, server_address_index, server_addresses
+            global server_ip, server_port
+
+            # Get length of address book
+            LEN_SERVER_ADDRESSES = len(server_addresses)
+            print(str(datetime.datetime.now()) + ' -- len(server_addresses):', len(server_addresses))
+
+            # Step through address book
+            if server_address_index == LEN_SERVER_ADDRESSES - 1:
+                print(str(datetime.datetime.now()) + ' -- server_address_index reached max: setting server_address_index to zero')
+                server_address_index = 0
+            else:
+                print(str(datetime.datetime.now()) + ' -- server_address_index is not max: adding 1 to server_address_index')
+                server_address_index += 1
+
+            print(str(datetime.datetime.now()) + ' -- setting server_address_index:', server_address_index)
+            print(str(datetime.datetime.now()) + ' -- setting server_address using server_address_index:', server_addresses[server_address_index])
+
+            server_address = server_addresses[server_address_index]
+            print(str(datetime.datetime.now()) + ' -- server_address:', server_address)
+            self.server_ip_port.setText(server_address)
+            print(str(datetime.datetime.now()) + ' -- set server_ip_port text:', server_address)
 
         # Variable should be set before running write_configuration function
         self.write_var = ''
@@ -261,7 +320,7 @@ class App(QMainWindow):
         self.setWindowIcon(QIcon('./icon.ico'))
 
         # Window Geometry
-        self.width, self.height = 364, 102
+        self.width, self.height = 452, 102
         app_pos_w, app_pos_h = (GetSystemMetrics(0) / 2 - (self.width / 2)), (GetSystemMetrics(1) / 2 - (self.height / 2))
         self.left, self.top = int(app_pos_w), int(app_pos_h)
         self.setGeometry(self.left, self.top, self.width, self.height)
@@ -307,7 +366,7 @@ class App(QMainWindow):
         # QLineEdit - Public Server IP
         self.server_ip_port = QLineEdit(self)
         self.server_ip_port.resize(self.ip_port_width, self.button_wh)
-        self.server_ip_port.move(self.button_spacing_w * 4 + self.server_title_width + self.button_wh * 2, self.zone_spacing_h)
+        self.server_ip_port.move(self.button_spacing_w * 5 + self.server_title_width + self.button_wh * 3, self.zone_spacing_h)
         self.server_ip_port.returnPressed.connect(server_ip_port_write_function)
         self.server_ip_port.setText('')
         self.server_ip_port.setStyleSheet(linedit_stylesheet_0)
@@ -316,7 +375,7 @@ class App(QMainWindow):
         # QPushButton - Server Received Communication COM1
         self.server_com1 = QPushButton(self)
         self.server_com1.resize(self.button_wh, self.button_wh)
-        self.server_com1.move(self.button_spacing_w * 5 + self.server_title_width + self.button_wh * 2 + self.ip_port_width, self.zone_spacing_h)
+        self.server_com1.move(self.width - self.button_wh - self.button_spacing_w, self.zone_spacing_h)
         self.server_com1.setText('COM1')
         self.server_com1.setStyleSheet(com1_stylesheet_default)
 
@@ -331,7 +390,7 @@ class App(QMainWindow):
         # QLineEdit - Dial Out Address
         self.dial_out_ip_port = QLineEdit(self)
         self.dial_out_ip_port.resize(self.ip_port_width, self.button_wh)
-        self.dial_out_ip_port.move(self.button_spacing_w * 2 + self.server_title_width + 88, self.zone_spacing_h * 2 + self.button_wh)
+        self.dial_out_ip_port.move(self.button_spacing_w * 5 + self.server_title_width + self.button_wh * 3, self.zone_spacing_h * 2 + self.button_wh)
         self.dial_out_ip_port.returnPressed.connect(dial_out_ip_port_function_set)
         self.dial_out_ip_port.setText('')
         self.dial_out_ip_port.setStyleSheet(linedit_stylesheet_0)
@@ -340,34 +399,53 @@ class App(QMainWindow):
         # QPushButton - Dial Out Send COM1 message
         self.dial_out_com1 = QPushButton(self)
         self.dial_out_com1.resize(self.button_wh, self.button_wh)
-        self.dial_out_com1.move(self.button_spacing_w * 3 + self.server_title_width + 88 + self.ip_port_width, self.zone_spacing_h * 2 + self.button_wh)
+        self.dial_out_com1.move(self.width - self.button_wh - self.button_spacing_w, self.zone_spacing_h * 2 + self.button_wh)
         self.dial_out_com1.setText('COM1')
         self.dial_out_com1.setStyleSheet(com1_stylesheet_default)
         self.dial_out_com1.clicked.connect(dial_out_com1_function)
 
         # QPushButton - Dial Out Previous Address
         self.dial_out_prev_addr = QPushButton(self)
-        self.dial_out_prev_addr.resize(self.button_wh, int(self.button_wh / 2 - 4))
-        self.dial_out_prev_addr.move(self.button_spacing_w * 2 + self.server_title_width, self.zone_spacing_h * 2 + self.button_wh + 24)
-        self.dial_out_prev_addr.setText('-')
+        self.dial_out_prev_addr.resize(self.button_wh, self.button_wh)
+        self.dial_out_prev_addr.move(self.button_spacing_w * 4 + self.server_title_width + self.button_wh * 2, self.zone_spacing_h * 2 + self.button_wh)
+        self.dial_out_prev_addr.setIcon(QIcon("./baseline_keyboard_arrow_left_white_18dp.png"))
+        self.dial_out_prev_addr.setIconSize(QSize(self.button_wh, self.button_wh))
         self.dial_out_prev_addr.setStyleSheet(com1_stylesheet_default)
         self.dial_out_prev_addr.clicked.connect(dial_out_prev_addr_function)
 
         # QPushButton - Dial Out Next Address
         self.dial_out_next_addr = QPushButton(self)
-        self.dial_out_next_addr.resize(self.button_wh, int(self.button_wh / 2 - 4))
-        self.dial_out_next_addr.move(self.button_spacing_w * 3 + self.server_title_width + self.button_wh, self.zone_spacing_h * 2 + self.button_wh + 24)
-        self.dial_out_next_addr.setText('+')
+        self.dial_out_next_addr.resize(self.button_wh, self.button_wh)
+        self.dial_out_next_addr.move(self.button_spacing_w * 6 + self.server_title_width + self.button_wh * 3 + self.ip_port_width, self.zone_spacing_h * 2 + self.button_wh)
+        self.dial_out_next_addr.setIcon(QIcon("./baseline_keyboard_arrow_right_white_18dp.png"))
+        self.dial_out_next_addr.setIconSize(QSize(self.button_wh, self.button_wh))
         self.dial_out_next_addr.setStyleSheet(com1_stylesheet_default)
         self.dial_out_next_addr.clicked.connect(dial_out_next_addr_function)
 
-        # QPushButton - Dial Out Next Address
+        # QPushButton - Dial Out Name
         self.dial_out_name = QPushButton(self)
         self.dial_out_name.resize(self.button_wh * 2 + 4, int(self.button_wh / 2))
         self.dial_out_name.move(self.button_spacing_w * 2 + self.server_title_width, self.zone_spacing_h * 2 + self.button_wh)
         self.dial_out_name.setText('')
         self.dial_out_name.setStyleSheet(dial_out_name_stylesheet_0)
-        # self.dial_out_name.clicked.connect(dial_out_next_addr_function)
+
+        # QPushButton - Dial Out Previous Address
+        self.server_prev_addr = QPushButton(self)
+        self.server_prev_addr.resize(self.button_wh, self.button_wh)
+        self.server_prev_addr.move(self.button_spacing_w * 4 + self.server_title_width + self.button_wh * 2, self.zone_spacing_h)
+        self.server_prev_addr.setIcon(QIcon("./baseline_keyboard_arrow_left_white_18dp.png"))
+        self.server_prev_addr.setIconSize(QSize(self.button_wh, self.button_wh))
+        self.server_prev_addr.setStyleSheet(com1_stylesheet_default)
+        self.server_prev_addr.clicked.connect(server_prev_addr_function)
+
+        # QPushButton - Dial Out Next Address
+        self.server_next_addr = QPushButton(self)
+        self.server_next_addr.resize(self.button_wh, self.button_wh)
+        self.server_next_addr.move(self.button_spacing_w * 6 + self.server_title_width + self.button_wh * 3 + self.ip_port_width, self.zone_spacing_h)
+        self.server_next_addr.setIcon(QIcon("./baseline_keyboard_arrow_right_white_18dp.png"))
+        self.server_next_addr.setIconSize(QSize(self.button_wh, self.button_wh))
+        self.server_next_addr.setStyleSheet(com1_stylesheet_default)
+        self.server_next_addr.clicked.connect(server_next_addr_function)
 
         # Thread - Public Server
         server_thread = ServerClass(self.server_title, self.server_com1)
@@ -383,7 +461,7 @@ class App(QMainWindow):
         configuration_thread = ConfigurationClass()
 
         # Configuration Thread - Set Configuration Key
-        global configuration_thread_key
+        global configuration_thread_key, server_addresses
         configuration_thread_key = 'ALL'
 
         # Configuration Thread - Run Configuration Thread
@@ -396,7 +474,7 @@ class App(QMainWindow):
             time.sleep(1)
         print(str(datetime.datetime.now()) + ' configuration_thread_completed:', configuration_thread_completed)
 
-        self.server_ip_port.setText(SERVER_ADDRESS)
+        self.server_ip_port.setText(server_addresses[server_address_index])
 
         self.initUI()
 
@@ -412,10 +490,12 @@ class ConfigurationClass(QThread):
         print('-' * 200)
         print(str(datetime.datetime.now()) + ' [ thread started: ConfigurationClass(QThread).run(self) ]')
         global configuration_thread_key, configuration_thread_completed
-        global SERVER_ADDRESS
-        global SERVER_HOST
-        global SERVER_PORT
         global DIAL_OUT_ADDRESSES
+
+        global server_ip
+        global server_port
+        global server_address
+        global server_addresses
 
         global address_name
         global address_ip
@@ -424,10 +504,11 @@ class ConfigurationClass(QThread):
         global address_fingerprint
 
         if configuration_thread_key == 'ALL':
+            server_addresses = ['127.0.0.1 55555']
+            server_ip = ['127.0.0.1']
+            server_port = [55555]
             print('-' * 200)
             print(str(datetime.datetime.now()) + ' ConfigurationClass(QThread): updating all values from configuration file...')
-
-            SERVER_ADDRESS = ''
 
             with open('./config.txt', 'r') as fo:
                 for line in fo:
@@ -436,10 +517,10 @@ class ConfigurationClass(QThread):
 
                     if str(line[0]) == 'SERVER_ADDRESS':
                         if len(line) == 3:
-                            SERVER_ADDRESS = str(str(line[1]) + ' ' + str(line[2]))
-                            SERVER_HOST = str(line[1])
-                            SERVER_PORT = int(line[2])
-                            print(str(datetime.datetime.now()) + ' SERVER_ADDRESS:', SERVER_ADDRESS)
+                            server_ip.append(str(line[1]))
+                            server_port.append(int((line[2])))
+                            server_addresses.append(str(line[1]) + ' ' + str(line[2]))
+                            print(str(datetime.datetime.now()) + ' server_ip:', str(line[1]), 'server_port:', str(line[2]))
             fo.close()
             print('-' * 200)
             print(str(datetime.datetime.now()) + ' ConfigurationClass(QThread): updating all values from communicator address book...')
@@ -576,7 +657,6 @@ class DialOutClass(QThread):
 
             if data_response == ciphertext:
                 print(str(datetime.datetime.now()) + ' -- DialOutClass.COM1 response from recipient equals ciphertext:', data_response)
-                # print(f"[DialOutClass] incoming: COM1 received by {self.HOST_SEND} : {self.PORT_SEND}")
                 self.dial_out_com1.setStyleSheet(com1_stylesheet_green)
                 time.sleep(1)
                 self.dial_out_com1.setStyleSheet(com1_stylesheet_default)
@@ -607,7 +687,6 @@ class ServerDataHandlerClass(QThread):
         self.server_com1 = server_com1
         self.server_title = server_title
         self.server_data_0 = []
-        self.server_data_1 = []
         self.data = ''
         self.notification_key = ''
 
@@ -651,15 +730,17 @@ class ServerDataHandlerClass(QThread):
                     try:
                         ciphertext = self.server_data_0[i_0]
 
+                        # remove currently iterated over item from server_data to keep the list low and performance high
                         server_data.remove(ciphertext)
 
                         decrypted = ''
                         decrypted_message = ''
                         print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run: attempting to decrypt message')
 
+                        # Communicator Standard Communication fingerprint is 1024 bytes so attempt decryption of any message larger than 1024 bytes
                         if len(ciphertext) > 1024:
 
-                            # Next Try Named Key(s)
+                            # Use Keys in address book to attempt decryption (dictionary attack the message)
                             i_1 = 0
                             for _ in address_key:
                                 print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run trying key:', _)
@@ -671,6 +752,7 @@ class ServerDataHandlerClass(QThread):
                                     print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run (address_key loop): ' + str(e))
                                     break
 
+                                # If decrypted then display the name associated with the key else try next key
                                 if decrypted:
                                     print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run: successfully decrypted message')
                                     print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run searching incoming message for fingerprint associated with:', address_name[i_1])
@@ -679,22 +761,19 @@ class ServerDataHandlerClass(QThread):
                                         decrypted_message = decrypted.replace(str(address_fingerprint[i_1]), '')
                                         print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run decrypted_message:', decrypted_message)
                                         break
-
                                     else:
                                         print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run fingerprint: missing or invalid')
                                 else:
                                     print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run decrypt: empty (try another key)')
-
                                 i_1 += 1
 
+                        # Display Server incoming message's
                         if len(decrypted_message) > 0:
-
                             self.data = str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run decrypted message: ' + str(decrypted_message)
                             self.server_logger()
                             self.notification_key = 'green'
                             self.notification()
                             global_self.setFocus()
-
                         else:
                             self.data = str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run message is not encrypted using keys in address book: ' + str(ciphertext)
                             print(self.data)
@@ -702,7 +781,6 @@ class ServerDataHandlerClass(QThread):
                             self.notification_key = 'amber'
                             self.notification()
                             global_self.setFocus()
-
                         i_0 += 1
 
                     except Exception as e:
@@ -722,12 +800,16 @@ class ServerClass(QThread):
         self.SERVER_PORT = ''
 
     def run(self):
-        global SERVER_ADDRESS
-        global SERVER_HOST
-        global SERVER_PORT
 
-        self.SERVER_HOST = SERVER_HOST
-        self.SERVER_PORT = SERVER_PORT
+        global server_ip
+        global server_port
+        global server_address_index
+
+        print(server_ip)
+        print(server_port)
+
+        self.SERVER_HOST = server_ip[server_address_index]
+        self.SERVER_PORT = int(server_port[server_address_index])
 
         print('-' * 200)
         self.data = str(datetime.datetime.now()) + ' -- ServerClass.run: public server started'
@@ -750,7 +832,8 @@ class ServerClass(QThread):
         fo.close()
 
     def listen(self):
-        global SERVER_ADDRESS
+        global server_ip
+        global server_port
         global SOCKET_SERVER
         global DIAL_OUT_ADDRESSES
         global server_data
@@ -759,7 +842,6 @@ class ServerClass(QThread):
         self.server_title.setStyleSheet(server_title_stylesheet_1)
 
         print('-' * 200)
-        print(str(datetime.datetime.now()) + ' -- ServerClass.listen SERVER_ADDRESS:', SERVER_ADDRESS)
         print(str(datetime.datetime.now()) + ' -- ServerClass.listen SERVER_HOST:', self.SERVER_HOST)
         print(str(datetime.datetime.now()) + ' -- ServerClass.listen SERVER_PORT:', self.SERVER_PORT)
         print(str(datetime.datetime.now()) + ' -- ServerClass.listen SERVER: attempting to listen')
