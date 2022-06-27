@@ -143,6 +143,15 @@ class App(QMainWindow):
 
         self.font_s7b = QFont("Segoe UI", 7, QFont.Bold)
 
+        """ Tooltip """
+        self.tooltip_style = """QToolTip {background-color: rgb(35, 35, 35);
+                                   color: rgb(200, 200, 200);
+                                   border-top:0px solid rgb(35, 35, 35);
+                                   border-bottom:0px solid rgb(35, 35, 35);
+                                   border-right:0px solid rgb(0, 0, 0);
+                                   border-left:0px solid rgb(0, 0, 0);}"""
+        self.setStyleSheet(self.tooltip_style)
+
         def dial_out_prev_addr_function():
             print(str(datetime.datetime.now()) + ' -- plugged in: App.dial_out_prev_addr_function')
             global_self.setFocus()
@@ -468,6 +477,7 @@ class App(QMainWindow):
         self.dial_out_add_addr.setIconSize(QSize(14, 14))
         self.dial_out_add_addr.setStyleSheet(com1_stylesheet_default)
         self.dial_out_add_addr.clicked.connect(dial_out_next_add_addr_function)
+        self.dial_out_add_addr.setToolTip(" ADD ADDRESS\n\n 1. Enter Name\n 2. Enter IP & Port\n 3. Then press this button if you wish to add to the address book.\n\n An entry in the address book will be created with a key and a path to a generated fingerprint file.\n You may then share the fingerprint with the contact and they can add you as the key name in their address book.\n\n WARNING! Use a unique name to avoid an existing matching name being overwritten!")
 
         # QPushButton - Dial Out Remove Address
         self.dial_out_rem_addr = QPushButton(self)
@@ -606,52 +616,52 @@ class FingerprintGeneration(QThread):
         print(str(datetime.datetime.now()) + ' [ thread started: FingerprintGeneration(QThread).run(self) ]')
         global address_name
         global dial_out_address_index
-
+        
         try:
 
             self.dial_out_add_addr.setStyleSheet(com1_stylesheet_amber)
-
+    
             forbidden_fname = ['con', 'prn', 'aux', 'nul',
                                'com1', 'com2', 'com3', 'com4', 'com5', 'com6', 'com7', 'com8', 'com9',
                                'lpt1', 'lpt2', 'lpt3', 'lpt4', 'lpt5', 'lpt6', 'lpt7', 'lpt8', 'lpt9']
-
+    
             address_name_var = str(self.dial_out_name.text()).replace('_', '')
             if str(address_name_var).isalnum():
                 address_name_var = str(self.dial_out_name.text())
                 if canonical_caseless(address_name_var) not in forbidden_fname:
                     print(str(datetime.datetime.now()) + ' -- FingerprintGeneration(QThread).run address_name[dial_out_address_index]: is not in forbidden_fname')
-
+    
                     # Create initial address book entry consisting of name ip and port
                     self.entry_address_book = 'DATA ' + str(address_name_var) + ' ' + str(self.dial_out_ip_port.text())
                     print(str(datetime.datetime.now()) + ' -- FingerprintGeneration(QThread).run initial address book entry string:', self.entry_address_book)
-
+    
                     # Create Key
                     self.iter_rand()
                     print(str(datetime.datetime.now()) + ' -- generating key:', self.key_string)
-
+    
                     # Add key to address book entry string
                     self.entry_address_book = self.entry_address_book + ' ' + self.key_string
-
+    
                     # Generate Fingerprint
                     i = 0
                     while i < 32:
                         self.iter_rand()
                         i += 1
-
+    
                     print(str(datetime.datetime.now()) + ' -- FingerprintGeneration(QThread).run: fingerprint generated')
                     finger_print_fname = str('./fingerprints/' + str(address_name_var) + '.txt')
                     print(str(datetime.datetime.now()) + ' -- FingerprintGeneration(QThread).run generated finger_print_fname:', finger_print_fname)
-
+    
                     self.entry_address_book = self.entry_address_book + ' ' + finger_print_fname
                     print(str(datetime.datetime.now()) + ' -- FingerprintGeneration(QThread).run full address book entry string:', self.entry_address_book)
-
+    
                     # Write the fingerprint file
                     with open(finger_print_fname, 'w') as fo:
                         for _ in self.fingerprint_var:
                             print(_)
                             fo.write(_ + '\n')
                     fo.close()
-
+    
                     # Check the fingerprint file
                     fingerprint_validation_bool = True
                     with open(finger_print_fname, 'r') as fo:
@@ -666,7 +676,7 @@ class FingerprintGeneration(QThread):
                             i += 1
                     fo.close()
                     print(str(datetime.datetime.now()) + ' -- FingerprintGeneration(QThread).run new fingerprint file validation:', fingerprint_validation_bool)
-
+    
                     # If name in address book, overwrite existing entry in the address book
                     print('-' * 200)
                     if address_name_var in address_name:
@@ -702,7 +712,7 @@ class FingerprintGeneration(QThread):
                     time.sleep(1)
 
                     print(str(datetime.datetime.now()) + ' -- FingerprintGeneration(QThread).run -- complete')
-
+    
                 else:
                     print(str(datetime.datetime.now()) + ' -- FingerprintGeneration(QThread).run invalid address_name[dial_out_address_index] forbidden file name:', address_name_var)
                     self.dial_out_add_addr.setStyleSheet(com1_stylesheet_red)
