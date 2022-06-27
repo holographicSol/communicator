@@ -45,6 +45,7 @@ which is in neither persons favour.
 
 Python version - 3.9
 Platform - Developed on Windows 10.
+Intended Resolution 1920x1080 - No scaling yet.
 
 Pycrypto Installation:
 1. If encounter error: error: command 'C:\\Program Files\\Microsoft Visual Studio\\2022\\Professional\\VC\\Tools\\MSVC\\14.31.31103\\bin\\HostX86\\x64\\cl.exe' failed with exit code 2
