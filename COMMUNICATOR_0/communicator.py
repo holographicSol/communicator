@@ -16,6 +16,17 @@ from Crypto.Cipher import AES
 from hashlib import sha256
 import base64
 from Crypto import Random
+import random
+import string
+import unicodedata
+
+
+def NFD(text):
+    return unicodedata.normalize('NFD', text)
+
+
+def canonical_caseless(text):
+    return NFD(NFD(text).casefold())
 
 # key, initialization vector and padding
 # crypt_iv = bytes('This is an IV456', 'utf-8')
@@ -29,17 +40,14 @@ SOCKET_SERVER = []
 
 # Addresses
 DIAL_OUT_ADDRESSES = []
-# SERVER_ADDRESS = ''
-# SERVER_HOST = ''
-# SERVER_PORT = int()
 server_data = []
 
 # NEW ADDRESS SETTINGS
-server_addresses = ['127.0.0.1 55555']
+server_addresses = []
 server_address = ''
 server_address_index = 0
-server_ip = ['127.0.0.1']
-server_port = [55555]
+server_ip = []
+server_port = []
 
 # Dial Out Settings
 dial_out_thread_key = ''
@@ -57,7 +65,7 @@ wild_addresses_ip = []
 # Public Settings
 server_thread_key = ''
 send_thread_key = ''
-server_log = './server_log.txt'
+server_log = './log/server_log.txt'
 
 # Configuration Settings
 configuration_thread_key = ''
@@ -94,6 +102,11 @@ linedit_stylesheet_1 = """QLineEdit{background-color: rgb(0, 0, 0);
                                 color: rgb(0, 255, 0);
                                 border: 1px solid rgb(0, 255, 0);}"""
 
+# Stylesheet - Server Switches (Mode 2)
+linedit_stylesheet_2 = """QLineEdit{background-color: rgb(0, 0, 0);
+                                color: rgb(255, 0, 0);
+                                border: 1px solid rgb(0, 0, 255);}"""
+
 # Stylesheet - Dial Out COM1 (Mode 0)
 com1_stylesheet_default = """QPushButton{background-color: rgb(0, 0, 0);
                     color: rgb(200, 200, 200);
@@ -128,10 +141,13 @@ class App(QMainWindow):
         global global_self
         global_self = self
 
+        self.font_s7b = QFont("Segoe UI", 7, QFont.Bold)
+
         def dial_out_prev_addr_function():
             print(str(datetime.datetime.now()) + ' -- plugged in: App.dial_out_prev_addr_function')
             global_self.setFocus()
             global dial_out_address, dial_out_address_index
+            global address_name, address_ip, address_port, address_key, address_fingerprint
 
             # Get length of address book
             LEN_DIAL_OUT_ADDRESSES = len(DIAL_OUT_ADDRESSES)
@@ -156,6 +172,7 @@ class App(QMainWindow):
             print(str(datetime.datetime.now()) + ' -- set dial_out_name text:', address_name[dial_out_address_index])
 
         def dial_out_next_addr_function():
+            global address_name, address_ip, address_port, address_key, address_fingerprint
             print(str(datetime.datetime.now()) + ' -- plugged in: App.dial_out_next_addr_function')
             global_self.setFocus()
             global dial_out_address, dial_out_address_index
@@ -188,8 +205,8 @@ class App(QMainWindow):
             global dial_out_address
             dial_out_address = self.dial_out_ip_port.text()
             print(str(datetime.datetime.now()) + ' -- setting dial out address:', dial_out_address)
-            self.dial_out_name.setText('')
-            print(str(datetime.datetime.now()) + ' -- impromptu dial out: clearing self.dial_out_name')
+            # self.dial_out_name.setText('')
+            # print(str(datetime.datetime.now()) + ' -- impromptu dial out: clearing self.dial_out_name')
 
         def dial_out_com1_function():
             print(str(datetime.datetime.now()) + ' -- plugged in: App.dial_out_com1_function')
@@ -311,13 +328,25 @@ class App(QMainWindow):
             self.server_ip_port.setText(server_address)
             print(str(datetime.datetime.now()) + ' -- set server_ip_port text:', server_address)
 
+        def dial_out_next_add_addr_function():
+            print(str(datetime.datetime.now()) + ' -- plugged in: App.dial_out_next_add_addr_function')
+            finger_print_gen_thread.start()
+
+        def dial_out_next_rem_addr_function():
+            print(str(datetime.datetime.now()) + ' -- plugged in: App.dial_out_next_rem_addr_function')
+
+        def dial_out_name_function_set():
+            print(str(datetime.datetime.now()) + ' -- plugged in: App.dial_out_name_function_set')
+            if self.dial_out_name.text() not in address_name:
+                print('-- accepting name as name does not already exist')
+
         # Variable should be set before running write_configuration function
         self.write_var = ''
 
         # Window Title
         self.title = "Communicator"
         self.setWindowTitle('Communicator')
-        self.setWindowIcon(QIcon('./icon.ico'))
+        self.setWindowIcon(QIcon('./resources/image/icon.ico'))
 
         # Window Geometry
         self.width, self.height = 452, 102
@@ -408,7 +437,7 @@ class App(QMainWindow):
         self.dial_out_prev_addr = QPushButton(self)
         self.dial_out_prev_addr.resize(self.button_wh, self.button_wh)
         self.dial_out_prev_addr.move(self.button_spacing_w * 4 + self.server_title_width + self.button_wh * 2, self.zone_spacing_h * 2 + self.button_wh)
-        self.dial_out_prev_addr.setIcon(QIcon("./baseline_keyboard_arrow_left_white_18dp.png"))
+        self.dial_out_prev_addr.setIcon(QIcon("./resources/image/baseline_keyboard_arrow_left_white_18dp.png"))
         self.dial_out_prev_addr.setIconSize(QSize(self.button_wh, self.button_wh))
         self.dial_out_prev_addr.setStyleSheet(com1_stylesheet_default)
         self.dial_out_prev_addr.clicked.connect(dial_out_prev_addr_function)
@@ -417,32 +446,54 @@ class App(QMainWindow):
         self.dial_out_next_addr = QPushButton(self)
         self.dial_out_next_addr.resize(self.button_wh, self.button_wh)
         self.dial_out_next_addr.move(self.button_spacing_w * 6 + self.server_title_width + self.button_wh * 3 + self.ip_port_width, self.zone_spacing_h * 2 + self.button_wh)
-        self.dial_out_next_addr.setIcon(QIcon("./baseline_keyboard_arrow_right_white_18dp.png"))
+        self.dial_out_next_addr.setIcon(QIcon("./resources/image/baseline_keyboard_arrow_right_white_18dp.png"))
         self.dial_out_next_addr.setIconSize(QSize(self.button_wh, self.button_wh))
         self.dial_out_next_addr.setStyleSheet(com1_stylesheet_default)
         self.dial_out_next_addr.clicked.connect(dial_out_next_addr_function)
 
         # QPushButton - Dial Out Name
-        self.dial_out_name = QPushButton(self)
+        self.dial_out_name = QLineEdit(self)
         self.dial_out_name.resize(self.button_wh * 2 + 4, int(self.button_wh / 2))
         self.dial_out_name.move(self.button_spacing_w * 2 + self.server_title_width, self.zone_spacing_h * 2 + self.button_wh)
         self.dial_out_name.setText('')
-        self.dial_out_name.setStyleSheet(dial_out_name_stylesheet_0)
+        self.dial_out_name.setStyleSheet(linedit_stylesheet_2)
+        self.dial_out_name.setAlignment(Qt.AlignCenter)
+        self.dial_out_name.returnPressed.connect(dial_out_name_function_set)
 
-        # QPushButton - Dial Out Previous Address
+        # QPushButton - Dial Out Add Address
+        self.dial_out_add_addr = QPushButton(self)
+        self.dial_out_add_addr.resize(self.button_wh, int(self.button_wh / 2) - 4)
+        self.dial_out_add_addr.move(self.button_spacing_w * 3 + self.server_title_width + self.button_wh, self.zone_spacing_h * 2 + self.button_wh + int(self.button_wh / 2) + 4)
+        self.dial_out_add_addr.setIcon(QIcon("./resources/image/add_FILL0_wght400_GRAD200_opsz18_WHITE.png"))
+        self.dial_out_add_addr.setIconSize(QSize(14, 14))
+        self.dial_out_add_addr.setStyleSheet(com1_stylesheet_default)
+        self.dial_out_add_addr.clicked.connect(dial_out_next_add_addr_function)
+
+        # QPushButton - Dial Out Remove Address
+        self.dial_out_rem_addr = QPushButton(self)
+        self.dial_out_rem_addr.resize(self.button_wh, int(self.button_wh / 2) - 4)
+        self.dial_out_rem_addr.move(self.button_spacing_w * 2 + self.server_title_width, self.zone_spacing_h * 2 + self.button_wh + int(self.button_wh / 2) + 4)
+        # self.dial_out_rem_addr.setIcon(QIcon("./resources/image/delete_FILL1_wght300_GRAD200_opsz12_WHITE.png"))
+        self.dial_out_rem_addr.setFont(self.font_s7b)
+        self.dial_out_rem_addr.setText('DEL')
+        self.dial_out_rem_addr.setIconSize(QSize(14, 14))
+        self.dial_out_rem_addr.setStyleSheet(com1_stylesheet_default)
+        self.dial_out_rem_addr.clicked.connect(dial_out_next_rem_addr_function)
+
+        # QPushButton - Server Previous Address
         self.server_prev_addr = QPushButton(self)
         self.server_prev_addr.resize(self.button_wh, self.button_wh)
         self.server_prev_addr.move(self.button_spacing_w * 4 + self.server_title_width + self.button_wh * 2, self.zone_spacing_h)
-        self.server_prev_addr.setIcon(QIcon("./baseline_keyboard_arrow_left_white_18dp.png"))
+        self.server_prev_addr.setIcon(QIcon("./resources/image/baseline_keyboard_arrow_left_white_18dp.png"))
         self.server_prev_addr.setIconSize(QSize(self.button_wh, self.button_wh))
         self.server_prev_addr.setStyleSheet(com1_stylesheet_default)
         self.server_prev_addr.clicked.connect(server_prev_addr_function)
 
-        # QPushButton - Dial Out Next Address
+        # QPushButton - Server Out Next Address
         self.server_next_addr = QPushButton(self)
         self.server_next_addr.resize(self.button_wh, self.button_wh)
         self.server_next_addr.move(self.button_spacing_w * 6 + self.server_title_width + self.button_wh * 3 + self.ip_port_width, self.zone_spacing_h)
-        self.server_next_addr.setIcon(QIcon("./baseline_keyboard_arrow_right_white_18dp.png"))
+        self.server_next_addr.setIcon(QIcon("./resources/image/baseline_keyboard_arrow_right_white_18dp.png"))
         self.server_next_addr.setIconSize(QSize(self.button_wh, self.button_wh))
         self.server_next_addr.setStyleSheet(com1_stylesheet_default)
         self.server_next_addr.clicked.connect(server_next_addr_function)
@@ -460,6 +511,8 @@ class App(QMainWindow):
         # Thread - Configuration
         configuration_thread = ConfigurationClass()
 
+        finger_print_gen_thread = FingerprintGeneration(self.dial_out_name, self.dial_out_ip_port, self.dial_out_add_addr)
+
         # Configuration Thread - Set Configuration Key
         global configuration_thread_key, server_addresses
         configuration_thread_key = 'ALL'
@@ -474,12 +527,197 @@ class App(QMainWindow):
             time.sleep(1)
         print(str(datetime.datetime.now()) + ' configuration_thread_completed:', configuration_thread_completed)
 
-        self.server_ip_port.setText(server_addresses[server_address_index])
+        if len(server_addresses) > 0:
+            self.server_ip_port.setText(server_addresses[server_address_index])
+
+        if len(address_name) > 0:
+            self.dial_out_name.setText(address_name[dial_out_address_index])
+        if len(address_ip) > 0 and len(address_port) > 0:
+            self.dial_out_ip_port.setText(address_ip[dial_out_address_index] + ' ' + str(address_port[dial_out_address_index]))
 
         self.initUI()
 
     def initUI(self):
         self.show()
+
+
+class FingerprintGeneration(QThread):
+    def __init__(self, dial_out_name, dial_out_ip_port, dial_out_add_addr):
+        QThread.__init__(self)
+        self.fingerprint_var = []
+        self.dial_out_ip_port = dial_out_ip_port
+        self.dial_out_name = dial_out_name
+        self.dial_out_add_addr = dial_out_add_addr
+        self.key_string = ''
+        self.entry_address_book = ''
+
+    def update_values(self):
+        global dial_out_address_index
+        global dial_out_address
+        global address_name
+        global address_ip
+        global address_port
+        global address_key
+        global address_fingerprint
+        global DIAL_OUT_ADDRESSES
+
+        dial_out_address_split = self.entry_address_book.split(' ')
+        print(str(datetime.datetime.now()) + ' -- FingerprintGeneration(QThread).run dial_out_address_split:', dial_out_address_split)
+
+        # Name
+        print(str(datetime.datetime.now()) + ' -- FingerprintGeneration(QThread).run setting dial out name:', dial_out_address_split[1])
+        address_name.append(dial_out_address_split[1])
+
+        # IP
+        print(str(datetime.datetime.now()) + ' -- FingerprintGeneration(QThread).run setting dial out ip:', dial_out_address_split[2])
+        address_ip.append(dial_out_address_split[2])
+
+        # Port
+        print(str(datetime.datetime.now()) + ' -- FingerprintGeneration(QThread).run setting dial out port:', dial_out_address_split[3])
+        address_port.append(int(dial_out_address_split[3]))
+
+        # Key
+        print(str(datetime.datetime.now()) + ' -- FingerprintGeneration(QThread).run setting address_key:', dial_out_address_split[4])
+        address_key.append(bytes(dial_out_address_split[4], 'utf-8'))
+
+        # Fingerprint
+        print(str(datetime.datetime.now()) + ' -- FingerprintGeneration(QThread).run setting fingerprint:', dial_out_address_split[5])
+        address_fingerprint.append(bytes(dial_out_address_split[5], 'utf-8'))
+
+        DIAL_OUT_ADDRESSES.append(self.entry_address_book)
+
+        print(str(datetime.datetime.now()) + ' -- FingerprintGeneration(QThread).run:', address_name)
+        print(str(datetime.datetime.now()) + ' -- FingerprintGeneration(QThread).run:', address_ip)
+        print(str(datetime.datetime.now()) + ' -- FingerprintGeneration(QThread).run:', address_port)
+        print(str(datetime.datetime.now()) + ' -- FingerprintGeneration(QThread).run:', address_key)
+        print(str(datetime.datetime.now()) + ' -- FingerprintGeneration(QThread).run:', address_fingerprint)
+        dial_out_address_index = address_name.index(self.dial_out_name.text())
+        dial_out_address = self.dial_out_ip_port.text()
+
+    def randStr(self, chars=string.ascii_uppercase + string.digits, N=32):
+        return ''.join(random.choice(chars) for _ in range(N))
+
+    def iter_rand(self):
+        self.key_string = self.randStr(chars=string.ascii_lowercase + string.ascii_uppercase + string.punctuation.replace("'", "f"))
+        self.fingerprint_var.append(self.key_string)
+
+    def run(self):
+        print('-' * 200)
+        print(str(datetime.datetime.now()) + ' [ thread started: FingerprintGeneration(QThread).run(self) ]')
+        global address_name
+        global dial_out_address_index
+        
+        try:
+
+            self.dial_out_add_addr.setStyleSheet(com1_stylesheet_amber)
+    
+            forbidden_fname = ['con', 'prn', 'aux', 'nul',
+                               'com1', 'com2', 'com3', 'com4', 'com5', 'com6', 'com7', 'com8', 'com9',
+                               'lpt1', 'lpt2', 'lpt3', 'lpt4', 'lpt5', 'lpt6', 'lpt7', 'lpt8', 'lpt9']
+    
+            address_name_var = str(self.dial_out_name.text()).replace('_', '')
+            if str(address_name_var).isalnum():
+                address_name_var = str(self.dial_out_name.text())
+                if canonical_caseless(address_name_var) not in forbidden_fname:
+                    print(str(datetime.datetime.now()) + ' -- FingerprintGeneration(QThread).run address_name[dial_out_address_index]: is not in forbidden_fname')
+    
+                    # Create initial address book entry consisting of name ip and port
+                    self.entry_address_book = 'DATA ' + str(address_name_var) + ' ' + str(self.dial_out_ip_port.text())
+                    print(str(datetime.datetime.now()) + ' -- FingerprintGeneration(QThread).run initial address book entry string:', self.entry_address_book)
+    
+                    # Create Key
+                    self.iter_rand()
+                    print(str(datetime.datetime.now()) + ' -- generating key:', self.key_string)
+    
+                    # Add key to address book entry string
+                    self.entry_address_book = self.entry_address_book + ' ' + self.key_string
+    
+                    # Generate Fingerprint
+                    i = 0
+                    while i < 32:
+                        self.iter_rand()
+                        i += 1
+    
+                    print(str(datetime.datetime.now()) + ' -- FingerprintGeneration(QThread).run: fingerprint generated')
+                    finger_print_fname = str('./fingerprints/' + str(address_name_var) + '.txt')
+                    print(str(datetime.datetime.now()) + ' -- FingerprintGeneration(QThread).run generated finger_print_fname:', finger_print_fname)
+    
+                    self.entry_address_book = self.entry_address_book + ' ' + finger_print_fname
+                    print(str(datetime.datetime.now()) + ' -- FingerprintGeneration(QThread).run full address book entry string:', self.entry_address_book)
+    
+                    # Write the fingerprint file
+                    with open(finger_print_fname, 'w') as fo:
+                        for _ in self.fingerprint_var:
+                            print(_)
+                            fo.write(_ + '\n')
+                    fo.close()
+    
+                    # Check the fingerprint file
+                    fingerprint_validation_bool = True
+                    with open(finger_print_fname, 'r') as fo:
+                        i = 0
+                        for line in fo:
+                            line = line.strip()
+                            if line == self.fingerprint_var[i]:
+                                print(str(datetime.datetime.now()) + ' -- FingerprintGeneration(QThread).run validating line:', str(i), 'in new fingerprint file:', line, '-->', self.fingerprint_var[i], '  [valid]')
+                            elif line != self.fingerprint_var[i]:
+                                print(str(datetime.datetime.now()) + ' -- FingerprintGeneration(QThread).run validating line:', str(i), 'in new fingerprint file:', line, '-->', self.fingerprint_var[i], '  [invalid]')
+                                fingerprint_validation_bool = False
+                            i += 1
+                    fo.close()
+                    print(str(datetime.datetime.now()) + ' -- FingerprintGeneration(QThread).run new fingerprint file validation:', fingerprint_validation_bool)
+    
+                    # If name in address book, overwrite existing entry in the address book
+                    print('-' * 200)
+                    if address_name_var in address_name:
+                        print(str(datetime.datetime.now()) + ' -- FingerprintGeneration(QThread).run attempting to overwrite existing address book entry')
+                        addr_var = []
+                        if os.path.exists('./communicator_address_book.txt'):
+                            print(str(datetime.datetime.now()) + ' -- FingerprintGeneration(QThread).run: address book exists')
+                            with open('./communicator_address_book.txt', 'r') as fo:
+                                for line in fo:
+                                    line = line.strip()
+                                    line_split = line.split(' ')
+                                    if len(line_split) >= 2:
+                                        if line_split[1] == address_name_var:
+                                            print(str(datetime.datetime.now()) + ' -- FingerprintGeneration(QThread).run  changing existing entry:', line, '  -->  ', self.entry_address_book)
+                                            addr_var.append(self.entry_address_book)
+                                        else:
+                                            print('--', line)
+                                            addr_var.append(line)
+                            with open('./communicator_address_book.txt', 'w') as fo:
+                                for _ in addr_var:
+                                    print(str(datetime.datetime.now()) + ' -- FingerprintGeneration(QThread).run writing address book line:', _)
+                                    fo.write(_ + '\n')
+                            fo.close()
+                    else:
+                        print(str(datetime.datetime.now()) + ' -- FingerprintGeneration(QThread).run appending new address book entry to address book')
+                        with open('./communicator_address_book.txt', 'a') as fo:
+                            fo.write(self.entry_address_book + '\n')
+                        fo.close()
+                    print('-' * 200)
+
+                    self.update_values()
+                    self.dial_out_add_addr.setStyleSheet(com1_stylesheet_green)
+                    time.sleep(1)
+
+                    print(str(datetime.datetime.now()) + ' -- FingerprintGeneration(QThread).run -- complete')
+    
+                else:
+                    print(str(datetime.datetime.now()) + ' -- FingerprintGeneration(QThread).run invalid address_name[dial_out_address_index] forbidden file name:', address_name_var)
+                    self.dial_out_add_addr.setStyleSheet(com1_stylesheet_red)
+                    time.sleep(1)
+            else:
+                print(str(datetime.datetime.now()) + ' -- FingerprintGeneration(QThread).run invalid address_name[dial_out_address_index]:', address_name_var)
+                self.dial_out_add_addr.setStyleSheet(com1_stylesheet_red)
+                time.sleep(1)
+
+            self.dial_out_add_addr.setStyleSheet(com1_stylesheet_default)
+        except Exception as e:
+            print(str(datetime.datetime.now()) + ' -- :', e)
+            self.dial_out_add_addr.setStyleSheet(com1_stylesheet_red)
+            time.sleep(1)
+            self.dial_out_add_addr.setStyleSheet(com1_stylesheet_default)
 
 
 class ConfigurationClass(QThread):
@@ -504,9 +742,9 @@ class ConfigurationClass(QThread):
         global address_fingerprint
 
         if configuration_thread_key == 'ALL':
-            server_addresses = ['127.0.0.1 55555']
-            server_ip = ['127.0.0.1']
-            server_port = [55555]
+            server_addresses = []
+            server_ip = []
+            server_port = []
             print('-' * 200)
             print(str(datetime.datetime.now()) + ' ConfigurationClass(QThread): updating all values from configuration file...')
 
@@ -705,7 +943,7 @@ class ServerDataHandlerClass(QThread):
         elif self.notification_key == 'amber':
             self.server_com1.setStyleSheet(com1_stylesheet_amber)
 
-        url = QUrl.fromLocalFile("communicator_0.wav")
+        url = QUrl.fromLocalFile("./resources/audio/communicator_0.wav")
         content = QMediaContent(url)
         player = QMediaPlayer()
         player.setMedia(content)

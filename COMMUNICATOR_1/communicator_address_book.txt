@@ -1,4 +1,1 @@
-DATA dev_0 192.168.1.11 55555 XfwzcTd;PKjX%.fjQNXn\hk]wd%!,f!P ./dev_key_sp.txt
-DATA dev_1 192.168.1.11 55555 {pDF{Aw(xNu+FQFg.Is$Uof;M`HCk?<_ ./dev_key_sp.txt
-DATA dev_2 192.168.1.11 55555 *)ELdog#G+:VbsD/n/#*gPsRg`OY_%R& ./dev_key_sp.txt
-DATA dev_3 192.168.1.11 55555 *)ELdog#G+:VbsD/n/#*gPsRg`OY_%R& ./dev_key_sp.txt
+DATA hansolo 192.168.1.11 55555 QMuhRJXb>(#(N@VbxXOXn#sO[=I/o;uq ./fingerprints/chewbacca.txt
