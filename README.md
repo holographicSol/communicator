@@ -1,5 +1,7 @@
 Communicator - Written by Benjamin Jack Cullen
 
+Project in early development.
+
 Communicator Standard Communication:
 1. Messages encrypted with AES-256 32 bytes shared key.
 2. Messages contain encrypted shared fingerprint and encrypted message. Key's are not transmitted by the
@@ -39,3 +41,15 @@ who can be impersonated is person 2, which person 2 might likely not want.
 now has the key and fingerprint) pretend to be person 2, they can also decrypt BOTH person 1 AND person 2's messages,
 which is in neither persons favour.
 5. Share a different key and fingerprint for each contact in the address book.
+
+
+Python version - 3.9
+Platform - Developed on Windows 10.
+
+Pycrypto Installation
+1. If encounter error: error: command 'C:\\Program Files\\Microsoft Visual Studio\\2022\\Professional\\VC\\Tools\\MSVC\\14.31.31103\\bin\\HostX86\\x64\\cl.exe' failed with exit code 2
+2. In Admin CMD Run: (adjust path according to your MVS version)
+"C:\Program Files\Microsoft Visual Studio\2022\Professional\VC\Auxiliary\Build\vcvarsx86_amd64.bat"
+3. Then Run: (adjust path according to your MVS version)
+set CL=-FI"%VCINSTALLDIR%Tools\MSVC\14.16.27023\include\stdint.h
+4. Then pip install pycrypto.
