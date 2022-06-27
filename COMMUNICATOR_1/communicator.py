@@ -132,6 +132,11 @@ dial_out_name_stylesheet_0 = """QPushButton{background-color: rgb(0, 0, 0);
                                 color: rgb(255, 0, 0);
                                 border: 1px solid rgb(0, 0, 255);}"""
 
+# Stylesheet - Fingerprint Gen (Mode 0)
+fingerprint_generator_stylesheet = """QPushButton{background-color: rgb(255, 125, 0);
+                                color: rgb(0, 0, 0);
+                                border: 1px solid rgb(0, 0, 255);}"""
+
 global_self = []
 
 
@@ -619,7 +624,7 @@ class FingerprintGeneration(QThread):
         
         try:
 
-            self.dial_out_add_addr.setStyleSheet(com1_stylesheet_amber)
+            self.dial_out_add_addr.setStyleSheet(fingerprint_generator_stylesheet)
     
             forbidden_fname = ['con', 'prn', 'aux', 'nul',
                                'com1', 'com2', 'com3', 'com4', 'com5', 'com6', 'com7', 'com8', 'com9',
