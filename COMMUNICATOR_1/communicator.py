@@ -220,15 +220,18 @@ class App(QMainWindow):
             print(str(datetime.datetime.now()) + ' -- plugged in: App.server_ip_port_write_function')
             global_self.setFocus()
             global server_addresses
+            global server_address
             global server_ip
             global server_port
             global write_configuration_engaged
+            global server_address_index
             if write_configuration_engaged is False:
 
                 write_configuration_engaged = True
 
                 server_address_var = self.server_ip_port.text()
                 if server_address_var not in server_addresses:
+                    print(str(datetime.datetime.now()) + ' -- new server address detected:', server_address_var)
 
                     self.write_var = 'SERVER_ADDRESS ' + self.server_ip_port.text()
                     print(str(datetime.datetime.now()) + ' -- setting write variable:', self.write_var)
@@ -240,8 +243,20 @@ class App(QMainWindow):
                     server_addresses.append(server_address_var)
                     server_ip.append(server_address_var.split()[0])
                     server_port.append(server_address_var.split()[1])
+                    server_address_index = server_addresses.index(server_address_var)
+                    print(str(datetime.datetime.now()) + ' -- changing server_address_index to:', server_address_index)
+                    server_address = server_addresses[server_address_index]
+                    print(str(datetime.datetime.now()) + ' -- setting server_address using server_address_index:', server_address)
+
+                else:
+                    print(str(datetime.datetime.now()) + ' -- server address already exists:', server_address_var)
+                    server_address_index = server_addresses.index(server_address_var)
+                    print(str(datetime.datetime.now()) + ' -- changing server_address_index to:', server_address_index)
+                    server_address = server_addresses[server_address_index]
+                    print(str(datetime.datetime.now()) + ' -- setting server_address using server_address_index:', server_address)
 
                 write_configuration_engaged = False
+
             else:
                 print(str(datetime.datetime.now()) + ' -- write_configuration_engaged:', write_configuration_engaged)
 
