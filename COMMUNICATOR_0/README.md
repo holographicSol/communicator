@@ -1,5 +1,7 @@
 Communicator - Written by Benjamin Jack Cullen
 
+Project in early development.
+
 Communicator Standard Communication:
 1. Messages encrypted with AES-256 32 bytes shared key.
 2. Messages contain encrypted shared fingerprint and encrypted message. Key's are not transmitted by the
@@ -25,4 +27,29 @@ Communicator Non-Standard Communication:
 other reasons allows a 'Communicator Non-Standard Communication' which allows for things like plain text to be sent
 up to 1024 bytes and be received and receive notification.
 2. Great for emergencies as this will not require a key or fingerprint however the communication will be insecure.
-3. Amber notification is for Communicator Non-Standard Communication received. (Potentially insecure message received).
+3. Amber notification is for Communicator Non-Standard Communication received. Potentially insecure message received
+or key/fingerprint not found for message.
+
+
+Key Trust Logic:
+The Key Trust logic. A scenario involving two people and a stranger.
+1. Person 1 creates a key and fingerprint for person 1 and person 2 to use.
+2. Person 1 shares the key and fingerprint with person 2.
+3. Person 2 could break the trust and share the key and fingerprint with the stranger however now the only person
+who can be impersonated is person 2, which person 2 might likely not want.
+4. If person 2 still went ahead and shared the key and fingerprint then not only can stranger (and anyone else who
+now has the key and fingerprint) pretend to be person 2, they can also decrypt BOTH person 1 AND person 2's messages,
+which is in neither persons favour.
+5. Share a different key and fingerprint for each contact in the address book.
+
+
+Python version - 3.9
+Platform - Developed on Windows 10.
+
+Pycrypto Installation:
+1. If encounter error: error: command 'C:\\Program Files\\Microsoft Visual Studio\\2022\\Professional\\VC\\Tools\\MSVC\\14.31.31103\\bin\\HostX86\\x64\\cl.exe' failed with exit code 2
+2. In Admin CMD Run: (adjust path according to your MVS version)
+"C:\Program Files\Microsoft Visual Studio\2022\Professional\VC\Auxiliary\Build\vcvarsx86_amd64.bat"
+3. Then Run: (adjust path according to your MVS version)
+set CL=-FI"%VCINSTALLDIR%Tools\MSVC\14.16.27023\include\stdint.h
+4. Then pip install pycrypto.
