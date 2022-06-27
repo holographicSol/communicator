@@ -13,7 +13,8 @@ character fingerprint must be generated and shared between the intended sender a
 to share a different key and fingerprint between each sender and recipient. This way you have a reasonable assurance
 that you know who is communicating with you regardless of IP address and regardless of any other data.
 6. The Communicator Server Data Handler performs dictionary attacks on incoming messages over 1024 bytes in order
-to try and decrypt the message thereby identifying the sender and enabling the message to be read in a two way Communicator Standard Communication fashion.
+to try and decrypt the message thereby identifying the sender and enabling the message to be read. This requires
+the address book is properly configured.
 7. The above comprises much of the Communicator Standard Communication.
 8. It is also recommended sharing the key and fingerprint offline.
 9. Green notification is for message delivered and Communicator Standard Communication received.
@@ -25,3 +26,14 @@ other reasons allows a 'Communicator Non-Standard Communication' which allows fo
 up to 1024 bytes and be received and receive notification.
 2. Great for emergencies as this will not require a key or fingerprint however the communication will be insecure.
 3. Amber notification is for Communicator Non-Standard Communication received. (Potentially insecure message received).
+
+
+Keys Trust Logic:
+The Key Trust logic. A scenario involving two people and a stranger.
+1. Person 1 creates a key and fingerprint for person 1 and person 2 to use.
+2. Person 1 shares the key and fingerprint with person 2.
+3. Person 2 could break the trust and share the key and fingerprint with the stranger however now the only person
+who can be impersonated is person 2, which person 2 might likely not want.
+4. If person 2 still went ahead and shared the key and fingerprint then not only can stranger (and anyone else who
+now has the key and fingerprint) pretend to be person 2, they can also decrypt BOTH person 1 AND person 2's messages,
+which is in neither persons favour.
