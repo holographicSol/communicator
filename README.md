@@ -37,3 +37,4 @@ who can be impersonated is person 2, which person 2 might likely not want.
 4. If person 2 still went ahead and shared the key and fingerprint then not only can stranger (and anyone else who
 now has the key and fingerprint) pretend to be person 2, they can also decrypt BOTH person 1 AND person 2's messages,
 which is in neither persons favour.
+5. Share a different key and fingerprint for each contact in the address book.
