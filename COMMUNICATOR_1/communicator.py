@@ -1118,10 +1118,10 @@ class DialOutClass(QThread):
                     cipher = AESCipher(self.KEY)
                     ciphertext = cipher.encrypt(str(self.FINGERPRINT) + message_snd)
                     print(str(datetime.datetime.now()) + ' -- DialOutClass.COM1 ciphertext:', str(ciphertext))
+                    messages.append('[' + str(datetime.datetime.now()) + '] [SENDING] [' + str(self.HOST_SEND) + ':' + str(self.PORT_SEND) + '] [ENCRYPTED] ' + str(ciphertext))
                 else:
                     ciphertext = bytes(message_snd, 'utf-8')
-
-                messages.append('[' + str(datetime.datetime.now()) + '] [SENDING] [' + str(self.HOST_SEND) + ':' + str(self.PORT_SEND) + '] ' + str(ciphertext))
+                    messages.append('[' + str(datetime.datetime.now()) + '] [SENDING] [' + str(self.HOST_SEND) + ':' + str(self.PORT_SEND) + '] [UNENCRYPTED] ' + str(ciphertext))
 
                 self.dial_out_message.setText('')
 
