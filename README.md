@@ -25,7 +25,8 @@ Communicator Non-Standard Communication:
 other reasons allows a 'Communicator Non-Standard Communication' which allows for things like plain text to be sent
 up to 1024 bytes and be received and receive notification.
 2. Great for emergencies as this will not require a key or fingerprint however the communication will be insecure.
-3. Amber notification is for Communicator Non-Standard Communication received. (Potentially insecure message received).
+3. Amber notification is for Communicator Non-Standard Communication received. Potentially insecure message received
+or key/fingerprint not found for message.
 
 
 Key Trust Logic:
