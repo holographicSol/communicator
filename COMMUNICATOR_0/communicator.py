@@ -143,6 +143,15 @@ class App(QMainWindow):
 
         self.font_s7b = QFont("Segoe UI", 7, QFont.Bold)
 
+        """ Tooltip """
+        self.tooltip_style = """QToolTip {background-color: rgb(35, 35, 35);
+                                   color: rgb(200, 200, 200);
+                                   border-top:0px solid rgb(35, 35, 35);
+                                   border-bottom:0px solid rgb(35, 35, 35);
+                                   border-right:0px solid rgb(0, 0, 0);
+                                   border-left:0px solid rgb(0, 0, 0);}"""
+        self.setStyleSheet(self.tooltip_style)
+
         def dial_out_prev_addr_function():
             print(str(datetime.datetime.now()) + ' -- plugged in: App.dial_out_prev_addr_function')
             global_self.setFocus()
@@ -468,6 +477,7 @@ class App(QMainWindow):
         self.dial_out_add_addr.setIconSize(QSize(14, 14))
         self.dial_out_add_addr.setStyleSheet(com1_stylesheet_default)
         self.dial_out_add_addr.clicked.connect(dial_out_next_add_addr_function)
+        self.dial_out_add_addr.setToolTip(" ADD ADDRESS\n\n 1. Enter Name\n 2. Enter IP & Port\n 3. Then press this button if you wish to add to the address book.\n\n An entry in the address book will be created with a key and a path to a generated fingerprint file.\n You may then share the fingerprint with the contact and they can add you as the key name in their address book.\n\n WARNING! Use a unique name to avoid an existing matching name being overwritten!")
 
         # QPushButton - Dial Out Remove Address
         self.dial_out_rem_addr = QPushButton(self)
