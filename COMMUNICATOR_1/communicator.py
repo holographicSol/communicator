@@ -1265,7 +1265,7 @@ class ServerDataHandlerClass(QThread):
                                     if decrypted.startswith(str(address_fingerprint[i_1])):
                                         print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run fingerprint: validated as', address_name[i_1])
                                         decrypted_message = decrypted.replace(str(address_fingerprint[i_1]), '')
-                                        messages.append('[' + str(datetime.datetime.now()) + '] [' + str(addr_data) + '] [VERIFIED] [' + address_name[i_1] + '] ' + decrypted_message)
+                                        messages.append('[' + str(datetime.datetime.now()) + '] [' + str(addr_data) + '] [DECIPHER] [' + address_name[i_1] + '] ' + decrypted_message)
                                         print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run decrypted_message:', decrypted_message)
                                         cipher_message_count += 1
                                         self.server_notify_cipher.setText(str(cipher_message_count))
