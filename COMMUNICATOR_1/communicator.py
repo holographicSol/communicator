@@ -83,6 +83,8 @@ configuration_thread_key = ''
 configuration_thread_completed = False
 write_configuration_engaged = False
 
+configuration_thread = []
+
 # Stylesheet - Server Title (Mode 0)
 server_title_stylesheet_0 = """QLabel{background-color: rgb(10, 10, 10);
                        color: rgb(200, 200, 200);
@@ -283,23 +285,36 @@ class App(QMainWindow):
             LEN_DIAL_OUT_ADDRESSES = len(DIAL_OUT_ADDRESSES)
             print(str(datetime.datetime.now()) + ' -- len(DIAL_OUT_ADDRESSES):', len(DIAL_OUT_ADDRESSES))
 
-            # Step through address book
-            if dial_out_address_index == 0:
-                print(str(datetime.datetime.now()) + ' -- dial_out_address_index is zero: setting dial_out_address_index to len(DIAL_OUT_ADDRESSES)')
-                dial_out_address_index = LEN_DIAL_OUT_ADDRESSES - 1
+            if LEN_DIAL_OUT_ADDRESSES > 0:
+
+                # Step through address book
+                if dial_out_address_index == 0:
+                    print(str(datetime.datetime.now()) + ' -- dial_out_address_index is zero: setting dial_out_address_index to len(DIAL_OUT_ADDRESSES)')
+                    dial_out_address_index = LEN_DIAL_OUT_ADDRESSES - 1
+                else:
+                    print(str(datetime.datetime.now()) + ' -- dial_out_address_index is not zero: subtracting 1 from DIAL_OUT_ADDRESSES')
+                    dial_out_address_index = dial_out_address_index - 1
+
+                print(str(datetime.datetime.now()) + ' -- setting dial_out_address_index:', dial_out_address_index)
+                print(str(datetime.datetime.now()) + ' -- setting dial_out_address using dial_out_address_index:', DIAL_OUT_ADDRESSES[dial_out_address_index])
+
+                dial_out_address = address_ip[dial_out_address_index] + ' ' + str(address_port[dial_out_address_index])
+                print(str(datetime.datetime.now()) + ' -- dial_out_address:', dial_out_address)
+                self.dial_out_ip_port.setText(dial_out_address)
+                print(str(datetime.datetime.now()) + ' -- set dial_out_ip_port text:', dial_out_address)
+                self.dial_out_name.setText(address_name[dial_out_address_index])
+                print(str(datetime.datetime.now()) + ' -- set dial_out_name text:', address_name[dial_out_address_index])
+
             else:
-                print(str(datetime.datetime.now()) + ' -- dial_out_address_index is not zero: subtracting 1 from DIAL_OUT_ADDRESSES')
-                dial_out_address_index = dial_out_address_index - 1
+                print(str(datetime.datetime.now()) + ' -- DIAL_OUT_ADDRESSES unpopulated')
 
-            print(str(datetime.datetime.now()) + ' -- setting dial_out_address_index:', dial_out_address_index)
-            print(str(datetime.datetime.now()) + ' -- setting dial_out_address using dial_out_address_index:', DIAL_OUT_ADDRESSES[dial_out_address_index])
-
-            dial_out_address = address_ip[dial_out_address_index] + ' ' + str(address_port[dial_out_address_index])
-            print(str(datetime.datetime.now()) + ' -- dial_out_address:', dial_out_address)
-            self.dial_out_ip_port.setText(dial_out_address)
-            print(str(datetime.datetime.now()) + ' -- set dial_out_ip_port text:', dial_out_address)
-            self.dial_out_name.setText(address_name[dial_out_address_index])
-            print(str(datetime.datetime.now()) + ' -- set dial_out_name text:', address_name[dial_out_address_index])
+            print('')
+            print('address_name', address_name[dial_out_address_index])
+            print('address_ip', address_ip[dial_out_address_index])
+            print('address_port', address_port[dial_out_address_index])
+            print('address_key', address_key[dial_out_address_index])
+            print('address_fingerprint', address_fingerprint[dial_out_address_index])
+            print('')
 
         def dial_out_next_addr_function():
             global address_name, address_ip, address_port, address_key, address_fingerprint
@@ -318,23 +333,35 @@ class App(QMainWindow):
             LEN_DIAL_OUT_ADDRESSES = len(DIAL_OUT_ADDRESSES)
             print(str(datetime.datetime.now()) + ' -- len(DIAL_OUT_ADDRESSES):', len(DIAL_OUT_ADDRESSES))
 
-            # Step through address book
-            if dial_out_address_index == LEN_DIAL_OUT_ADDRESSES - 1:
-                print(str(datetime.datetime.now()) + ' -- dial_out_address_index is reached max: setting dial_out_address_index to zero')
-                dial_out_address_index = 0
+            if LEN_DIAL_OUT_ADDRESSES > 0:
+
+                # Step through address book
+                if dial_out_address_index == LEN_DIAL_OUT_ADDRESSES - 1:
+                    print(str(datetime.datetime.now()) + ' -- dial_out_address_index is reached max: setting dial_out_address_index to zero')
+                    dial_out_address_index = 0
+                else:
+                    print(str(datetime.datetime.now()) + ' -- dial_out_address_index is not max: adding 1 to dial_out_address_index')
+                    dial_out_address_index += 1
+
+                print(str(datetime.datetime.now()) + ' -- setting dial_out_address_index:', dial_out_address_index)
+                print(str(datetime.datetime.now()) + ' -- setting dial_out_address using dial_out_address_index:', DIAL_OUT_ADDRESSES[dial_out_address_index])
+
+                dial_out_address = address_ip[dial_out_address_index] + ' ' + str(address_port[dial_out_address_index])
+                print(str(datetime.datetime.now()) + ' -- dial_out_address:', dial_out_address)
+                self.dial_out_ip_port.setText(dial_out_address)
+                print(str(datetime.datetime.now()) + ' -- set dial_out_ip_port text:', dial_out_address)
+                self.dial_out_name.setText(address_name[dial_out_address_index])
+                print(str(datetime.datetime.now()) + ' -- set dial_out_name text:', address_name[dial_out_address_index])
             else:
-                print(str(datetime.datetime.now()) + ' -- dial_out_address_index is not max: adding 1 to dial_out_address_index')
-                dial_out_address_index += 1
+                print(str(datetime.datetime.now()) + ' -- DIAL_OUT_ADDRESSES unpopulated')
 
-            print(str(datetime.datetime.now()) + ' -- setting dial_out_address_index:', dial_out_address_index)
-            print(str(datetime.datetime.now()) + ' -- setting dial_out_address using dial_out_address_index:', DIAL_OUT_ADDRESSES[dial_out_address_index])
-
-            dial_out_address = address_ip[dial_out_address_index] + ' ' + str(address_port[dial_out_address_index])
-            print(str(datetime.datetime.now()) + ' -- dial_out_address:', dial_out_address)
-            self.dial_out_ip_port.setText(dial_out_address)
-            print(str(datetime.datetime.now()) + ' -- set dial_out_ip_port text:', dial_out_address)
-            self.dial_out_name.setText(address_name[dial_out_address_index])
-            print(str(datetime.datetime.now()) + ' -- set dial_out_name text:', address_name[dial_out_address_index])
+            print('')
+            print('address_name', address_name[dial_out_address_index])
+            print('address_ip', address_ip[dial_out_address_index])
+            print('address_port', address_port[dial_out_address_index])
+            print('address_key', address_key[dial_out_address_index])
+            print('address_fingerprint', address_fingerprint[dial_out_address_index])
+            print('')
 
         def dial_out_ip_port_function_set():
             print(str(datetime.datetime.now()) + ' -- plugged in: App.dial_out_ip_port_function_set')
@@ -511,35 +538,102 @@ class App(QMainWindow):
             alien_message_count = 0
             self.server_notify_alien.setText(str(alien_message_count))
 
-        def dial_out_next_add_addr_confirm_function():
-            print(str(datetime.datetime.now()) + ' -- plugged in: App.dial_out_next_add_addr_confirm_function')
+        def dial_out_add_addr_confirm_function():
+            print(str(datetime.datetime.now()) + ' -- plugged in: App.dial_out_add_addr_confirm_function')
+            print(str(datetime.datetime.now()) + ' -- plugged in: App.dial_out_add_addr_confirm_function add address: waiting for confirmation')
             self.dial_out_add_addr.hide()
             self.dial_out_rem_addr.hide()
-
             self.dial_out_add_addr_confirm.show()
             self.decline_dial_out_add_addr.show()
 
         def decline_add_address():
             print(str(datetime.datetime.now()) + ' -- plugged in: App.decline_add_address')
+            print(
+                str(datetime.datetime.now()) + ' -- plugged in: App.dial_out_add_addr_confirm_function add address: aborted')
             self.dial_out_add_addr_confirm.hide()
             self.decline_dial_out_add_addr.hide()
-
             self.dial_out_add_addr.show()
             self.dial_out_rem_addr.show()
 
         def dial_out_add_addr_function():
             print(str(datetime.datetime.now()) + ' -- plugged in: App.dial_out_add_addr_function')
+            print(str(datetime.datetime.now()) + ' -- plugged in: App.dial_out_add_addr_confirm_function add address: accepted')
             finger_print_gen_thread.start()
-
             self.dial_out_add_addr_confirm.hide()
             self.decline_dial_out_add_addr.hide()
+            self.dial_out_add_addr.show()
+            self.dial_out_rem_addr.show()
+
+        def decline_remove_address():
+            print(str(datetime.datetime.now()) + ' -- plugged in: App.decline_remove_address')
+            print(str(datetime.datetime.now()) + ' -- plugged in: App.decline_remove_address remove address: aborted')
+            self.accept_remove_address.hide()
+            self.decline_remove_address.hide()
+            self.dial_out_add_addr.show()
+            self.dial_out_rem_addr.show()
+
+        def remove_address_confirm():
+            global dial_out_address_index
+            global address_name, address_ip, address_port, address_key, address_fingerprint
+
+            print(str(datetime.datetime.now()) + ' -- plugged in: App.remove_address_confirm')
+            print(str(datetime.datetime.now()) + ' -- plugged in: App.decline_remove_address remove address: accepted')
+            self.accept_remove_address.hide()
+            self.decline_remove_address.hide()
+
+            var_addresses = []
+
+            # Remove focused address book entry
+            if os.path.exists('./communicator_address_book.txt'):
+                with open('./communicator_address_book.txt', 'r') as fo:
+                    for line in fo:
+                        line = line.strip()
+                        if line != '':
+                            line_split = line.split(' ')
+                            if line_split[1] != self.dial_out_name.text():
+                                var_addresses.append(line)
+                                print('reading:', line)
+                fo.close()
+                open('./communicator_address_book.tmp', 'w').close()
+                for _ in var_addresses:
+                    print('writing:', _)
+                    with open('./communicator_address_book.tmp', 'a') as fo:
+                        fo.write(_ + '\n')
+                    fo.close()
+                os.replace('./communicator_address_book.tmp', './communicator_address_book.txt')
+                if os.path.exists('./communicator_address_book.txt'):
+                    # ToDo --> check file
+                    print('file exists: check lines')
+
+            del address_name[dial_out_address_index]
+            del address_ip[dial_out_address_index]
+            del address_port[dial_out_address_index]
+            del address_key[dial_out_address_index]
+            del address_fingerprint[dial_out_address_index]
+            del DIAL_OUT_ADDRESSES[dial_out_address_index]
+
+            print(address_name)
+            print(address_ip)
+            print(address_port)
+            print(address_key)
+            print(address_fingerprint)
+            print(DIAL_OUT_ADDRESSES)
+
+            self.dial_out_name.setText('')
+            self.dial_out_ip_port.setText('')
+
+            dial_out_prev_addr_function()
 
             self.dial_out_add_addr.show()
             self.dial_out_rem_addr.show()
 
-        def dial_out_next_rem_addr_function():
-            print(str(datetime.datetime.now()) + ' -- plugged in: App.dial_out_next_rem_addr_function')
-
+        def remove_address_ask_confirmation():
+            print(str(datetime.datetime.now()) + ' -- plugged in: App.remove_address_ask_confirmation')
+            print(str(datetime.datetime.now()) + ' -- plugged in: App.decline_remove_address remove address: waiting for confirmation')
+            self.dial_out_add_addr.hide()
+            self.dial_out_rem_addr.hide()
+            self.accept_remove_address.show()
+            self.decline_remove_address.show()
 
         # Variable should be set before running write_configuration function
         self.write_var = ''
@@ -568,6 +662,24 @@ class App(QMainWindow):
         self.button_wh = 40
         self.button_spacing_w = 4
         self.zone_spacing_h = 8
+
+        # QPushButton - Confirm REMOVE Address
+        self.accept_remove_address = QPushButton(self)
+        self.accept_remove_address.resize(self.button_wh, int(self.button_wh / 2) - 4)
+        self.accept_remove_address.move(self.button_spacing_w * 3 + self.server_title_width + self.button_wh, self.zone_spacing_h * 2 + self.button_wh + int(self.button_wh / 2) + 4)
+        self.accept_remove_address.setText('YES')
+        self.accept_remove_address.setStyleSheet(button_stylesheet_0)
+        self.accept_remove_address.clicked.connect(remove_address_confirm)
+        self.accept_remove_address.hide()
+
+        # QPushButton - Decline REMOVE Address
+        self.decline_remove_address = QPushButton(self)
+        self.decline_remove_address.resize(self.button_wh, int(self.button_wh / 2) - 4)
+        self.decline_remove_address.move(self.button_spacing_w * 2 + self.server_title_width, self.zone_spacing_h * 2 + self.button_wh + int(self.button_wh / 2) + 4)
+        self.decline_remove_address.setText('NO')
+        self.decline_remove_address.setStyleSheet(button_stylesheet_0)
+        self.decline_remove_address.clicked.connect(decline_remove_address)
+        self.decline_remove_address.hide()
 
         # QPushButton - Confirm Add Address
         self.dial_out_add_addr_confirm = QPushButton(self)
@@ -697,7 +809,7 @@ class App(QMainWindow):
         self.dial_out_add_addr.setIcon(QIcon("./resources/image/add_FILL0_wght400_GRAD200_opsz18_WHITE.png"))
         self.dial_out_add_addr.setIconSize(QSize(14, 14))
         self.dial_out_add_addr.setStyleSheet(button_stylesheet_0)
-        self.dial_out_add_addr.clicked.connect(dial_out_next_add_addr_confirm_function)
+        self.dial_out_add_addr.clicked.connect(dial_out_add_addr_confirm_function)
         self.dial_out_add_addr.setToolTip(" ADD ADDRESS\n\n 1. Enter Name\n 2. Enter IP & Port\n 3. Then press this button if you wish to add to the address book.\n\n An entry in the address book will be created with a key and a path to a generated fingerprint file.\n You may then share the fingerprint with the contact and they can add you as the key name in their address book.\n\n WARNING! Use a unique name to avoid an existing matching name being overwritten!")
 
         # QPushButton - Dial Out Remove Address
@@ -708,7 +820,7 @@ class App(QMainWindow):
         self.dial_out_rem_addr.setText('DEL')
         self.dial_out_rem_addr.setIconSize(QSize(14, 14))
         self.dial_out_rem_addr.setStyleSheet(button_stylesheet_0)
-        self.dial_out_rem_addr.clicked.connect(dial_out_next_rem_addr_function)
+        self.dial_out_rem_addr.clicked.connect(remove_address_ask_confirmation)
 
         # QLabel - Dial Out Message Title
         self.dial_out_message_title = QLabel(self)
@@ -787,7 +899,9 @@ class App(QMainWindow):
         dial_out_thread = DialOutClass(self.dial_out_title, self.dial_out_line_test, self.dial_out_message_send, self.dial_out_message)
 
         # Thread - Configuration
-        configuration_thread = ConfigurationClass()
+        global configuration_thread
+        configuration_thread_ = ConfigurationClass()
+        configuration_thread.append(configuration_thread_)
 
         finger_print_gen_thread = FingerprintGeneration(self.dial_out_name, self.dial_out_ip_port, self.dial_out_add_addr)
 
@@ -796,7 +910,7 @@ class App(QMainWindow):
         configuration_thread_key = 'ALL'
 
         # Configuration Thread - Run Configuration Thread
-        configuration_thread.start()
+        configuration_thread[0].start()
 
         # Configuration Thread - Wait For Configuration Thread To Complete
         global configuration_thread_completed
@@ -864,47 +978,22 @@ class FingerprintGeneration(QThread):
         self.dial_out_add_addr = dial_out_add_addr
         self.key_string = ''
         self.entry_address_book = ''
+        self.new_full_dial_out_address = ''
+        self.fingerprint_str = ''
 
     def update_values(self):
         global dial_out_address_index
         global dial_out_address
-        global address_name
-        global address_ip
-        global address_port
-        global address_key
-        global address_fingerprint
-        global DIAL_OUT_ADDRESSES
+        global configuration_thread_completed
 
-        dial_out_address_split = self.entry_address_book.split(' ')
-        print(str(datetime.datetime.now()) + ' -- FingerprintGeneration(QThread).run dial_out_address_split:', dial_out_address_split)
+        configuration_thread_completed = False
 
-        # Name
-        print(str(datetime.datetime.now()) + ' -- FingerprintGeneration(QThread).run setting dial out name:', dial_out_address_split[1])
-        address_name.append(dial_out_address_split[1])
+        # Update config
+        configuration_thread[0].start()
 
-        # IP
-        print(str(datetime.datetime.now()) + ' -- FingerprintGeneration(QThread).run setting dial out ip:', dial_out_address_split[2])
-        address_ip.append(dial_out_address_split[2])
+        while configuration_thread_completed is False:
+            time.sleep(1)
 
-        # Port
-        print(str(datetime.datetime.now()) + ' -- FingerprintGeneration(QThread).run setting dial out port:', dial_out_address_split[3])
-        address_port.append(int(dial_out_address_split[3]))
-
-        # Key
-        print(str(datetime.datetime.now()) + ' -- FingerprintGeneration(QThread).run setting address_key:', dial_out_address_split[4])
-        address_key.append(bytes(dial_out_address_split[4], 'utf-8'))
-
-        # Fingerprint
-        print(str(datetime.datetime.now()) + ' -- FingerprintGeneration(QThread).run setting fingerprint:', dial_out_address_split[5])
-        address_fingerprint.append(bytes(dial_out_address_split[5], 'utf-8'))
-
-        DIAL_OUT_ADDRESSES.append(self.entry_address_book)
-
-        print(str(datetime.datetime.now()) + ' -- FingerprintGeneration(QThread).run:', address_name)
-        print(str(datetime.datetime.now()) + ' -- FingerprintGeneration(QThread).run:', address_ip)
-        print(str(datetime.datetime.now()) + ' -- FingerprintGeneration(QThread).run:', address_port)
-        print(str(datetime.datetime.now()) + ' -- FingerprintGeneration(QThread).run:', address_key)
-        print(str(datetime.datetime.now()) + ' -- FingerprintGeneration(QThread).run:', address_fingerprint)
         dial_out_address_index = address_name.index(self.dial_out_name.text())
         dial_out_address = self.dial_out_ip_port.text()
 
@@ -914,12 +1003,17 @@ class FingerprintGeneration(QThread):
     def iter_rand(self):
         self.key_string = self.randStr(chars=string.ascii_lowercase + string.ascii_uppercase + string.punctuation.replace("'", "f"))
         self.fingerprint_var.append(self.key_string)
+        self.fingerprint_str = self.fingerprint_str + self.key_string
 
     def run(self):
         print('-' * 200)
         print(str(datetime.datetime.now()) + ' [ thread started: FingerprintGeneration(QThread).run(self) ]')
         global address_name
         global dial_out_address_index
+        global DIAL_OUT_ADDRESSES
+        global configuration_thread
+
+        self.fingerprint_var = []
 
         try:
 
@@ -956,10 +1050,14 @@ class FingerprintGeneration(QThread):
                     finger_print_fname = str('./fingerprints/' + str(address_name_var) + '.txt')
                     print(str(datetime.datetime.now()) + ' -- FingerprintGeneration(QThread).run generated finger_print_fname:', finger_print_fname)
 
+                    self.new_full_dial_out_address = self.entry_address_book + ' ' + self.fingerprint_str
                     self.entry_address_book = self.entry_address_book + ' ' + finger_print_fname
+                    DIAL_OUT_ADDRESSES = self.entry_address_book
                     print(str(datetime.datetime.now()) + ' -- FingerprintGeneration(QThread).run full address book entry string:', self.entry_address_book)
 
+
                     # Write the fingerprint file
+                    open(finger_print_fname, 'w').close()
                     with open(finger_print_fname, 'w') as fo:
                         for _ in self.fingerprint_var:
                             print(_)
@@ -999,11 +1097,12 @@ class FingerprintGeneration(QThread):
                                         else:
                                             print('--', line)
                                             addr_var.append(line)
-                            with open('./communicator_address_book.txt', 'w') as fo:
+                            with open('./communicator_address_book.tmp', 'w') as fo:
                                 for _ in addr_var:
                                     print(str(datetime.datetime.now()) + ' -- FingerprintGeneration(QThread).run writing address book line:', _)
                                     fo.write(_ + '\n')
                             fo.close()
+                            os.replace('./communicator_address_book.tmp', './communicator_address_book.txt')
                     else:
                         print(str(datetime.datetime.now()) + ' -- FingerprintGeneration(QThread).run appending new address book entry to address book')
                         with open('./communicator_address_book.txt', 'a') as fo:
@@ -1011,11 +1110,13 @@ class FingerprintGeneration(QThread):
                         fo.close()
                     print('-' * 200)
 
-                    self.update_values()
+                    # self.update_values()
                     self.dial_out_add_addr.setStyleSheet(qline_edit_style_sheet_default)
                     time.sleep(1)
 
                     print(str(datetime.datetime.now()) + ' -- FingerprintGeneration(QThread).run -- complete')
+
+                    self.update_values()
 
                 else:
                     print(str(datetime.datetime.now()) + ' -- FingerprintGeneration(QThread).run invalid address_name[dial_out_address_index] forbidden file name:', address_name_var)
@@ -1054,6 +1155,18 @@ class ConfigurationClass(QThread):
         global address_port
         global address_key
         global address_fingerprint
+
+        server_ip = []
+        server_port = []
+        server_address = []
+        server_addresses = []
+
+        address_name = []
+        address_ip = []
+        address_port = []
+        address_key = []
+        address_fingerprint = []
+
 
         if configuration_thread_key == 'ALL':
             server_addresses = []
@@ -1133,7 +1246,7 @@ class AESCipher:
         self.key = KEY
 
     def encrypt(self, raw):
-        print(str(datetime.datetime.now()) + ' -- AESCipher: encrypting')
+        print(str(datetime.datetime.now()) + ' -- AESCipher encrypting using key:', self.key)
         try:
             raw = pad(raw)
             iv = Random.new().read(AES.block_size)
@@ -1144,7 +1257,7 @@ class AESCipher:
             print('AESCipher.encrypt:', e)
 
     def decrypt(self, enc):
-        print(str(datetime.datetime.now()) + ' -- AESCipher: decrypting')
+        print(str(datetime.datetime.now()) + ' -- AESCipher decrypting using key:', self.key)
         try:
             enc = base64.b64decode(enc)
             iv = enc[:16]
@@ -1189,6 +1302,12 @@ class DialOutClass(QThread):
             self.HOST_SEND = dial_out_address.split(' ')[0]
             self.PORT_SEND = int(dial_out_address.split(' ')[1])
 
+        print(address_name[dial_out_address_index])
+        print(self.HOST_SEND)
+        print(self.PORT_SEND)
+        print(self.KEY)
+        print(self.FINGERPRINT)
+
         self.message_snd = ''
         self.data = ''
 
@@ -1226,6 +1345,8 @@ class DialOutClass(QThread):
 
                 if dial_out_dial_out_cipher_bool is True:
                     print(str(datetime.datetime.now()) + ' -- DialOutClass.message_send: handing message to AESCipher')
+                    print(str(datetime.datetime.now()) + ' -- DialOutClass.message_send using KEY:', self.KEY)
+                    print(str(datetime.datetime.now()) + ' -- DialOutClass.message_send using FINGERPRINT:', self.FINGERPRINT)
                     cipher = AESCipher(self.KEY)
                     ciphertext = cipher.encrypt(str(self.FINGERPRINT) + self.message_snd)
                     print(str(datetime.datetime.now()) + ' -- DialOutClass.message_send ciphertext:', str(ciphertext))
