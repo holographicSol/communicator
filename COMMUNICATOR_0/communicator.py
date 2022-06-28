@@ -308,13 +308,14 @@ class App(QMainWindow):
             else:
                 print(str(datetime.datetime.now()) + ' -- DIAL_OUT_ADDRESSES unpopulated')
 
-            print('')
-            print('address_name', address_name[dial_out_address_index])
-            print('address_ip', address_ip[dial_out_address_index])
-            print('address_port', address_port[dial_out_address_index])
-            print('address_key', address_key[dial_out_address_index])
-            print('address_fingerprint', address_fingerprint[dial_out_address_index])
-            print('')
+            if len(address_name) > 0:
+                print('')
+                print('address_name', address_name[dial_out_address_index])
+                print('address_ip', address_ip[dial_out_address_index])
+                print('address_port', address_port[dial_out_address_index])
+                print('address_key', address_key[dial_out_address_index])
+                print('address_fingerprint', address_fingerprint[dial_out_address_index])
+                print('')
 
         def dial_out_next_addr_function():
             global address_name, address_ip, address_port, address_key, address_fingerprint
@@ -355,13 +356,14 @@ class App(QMainWindow):
             else:
                 print(str(datetime.datetime.now()) + ' -- DIAL_OUT_ADDRESSES unpopulated')
 
-            print('')
-            print('address_name', address_name[dial_out_address_index])
-            print('address_ip', address_ip[dial_out_address_index])
-            print('address_port', address_port[dial_out_address_index])
-            print('address_key', address_key[dial_out_address_index])
-            print('address_fingerprint', address_fingerprint[dial_out_address_index])
-            print('')
+            if len(address_name) > 0:
+                print('')
+                print('address_name', address_name[dial_out_address_index])
+                print('address_ip', address_ip[dial_out_address_index])
+                print('address_port', address_port[dial_out_address_index])
+                print('address_key', address_key[dial_out_address_index])
+                print('address_fingerprint', address_fingerprint[dial_out_address_index])
+                print('')
 
         def dial_out_ip_port_function_set():
             print(str(datetime.datetime.now()) + ' -- plugged in: App.dial_out_ip_port_function_set')
