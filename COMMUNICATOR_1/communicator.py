@@ -128,7 +128,7 @@ qline_edit_style_sheet_default = """QLineEdit{background-color: rgb(10, 10, 10);
                        border-top:2px solid rgb(5, 5, 5);
                        border-left:2px solid rgb(5, 5, 5);}"""
 
-# Stylesheet - Dial Out COM1 (Mode 2)
+# Stylesheet - Dial Out LINE_TEST (Mode 2)
 dial_out_add_addr_stylesheet_red = """QPushButton{background-color: rgb(10, 10, 10);
                        color: rgb(200, 200, 200);
                        border-bottom:2px solid rgb(5, 5, 5);
@@ -328,13 +328,13 @@ class App(QMainWindow):
             dial_out_address = self.dial_out_ip_port.text()
             print(str(datetime.datetime.now()) + ' -- setting dial out address:', dial_out_address)
 
-        def dial_out_com1_function():
-            print(str(datetime.datetime.now()) + ' -- plugged in: App.dial_out_com1_function')
+        def dial_out_line_test_function():
+            print(str(datetime.datetime.now()) + ' -- plugged in: App.dial_out_line_test_function')
             global_self.setFocus()
             global dial_out_thread_key
             if dial_out_thread.isRunning() is True:
                 dial_out_thread.stop()
-            dial_out_thread_key = 'COM1'
+            dial_out_thread_key = 'LINE_TEST'
             dial_out_thread.start()
 
         def dial_out_message_send_function():
@@ -582,14 +582,14 @@ class App(QMainWindow):
         self.dial_out_ip_port.setStyleSheet(qline_edit_style_sheet_default)
         self.dial_out_ip_port.setAlignment(Qt.AlignCenter)
 
-        # QPushButton - Dial Out Send COM1 message
+        # QPushButton - Dial Out Send LINE_TEST message
         self.dial_out_line_test = QPushButton(self)
         self.dial_out_line_test.resize(self.button_wh, self.button_wh)
         self.dial_out_line_test.move(self.width - self.button_wh - self.button_spacing_w, self.zone_spacing_h * 2 + self.button_wh)
         self.dial_out_line_test.setIcon(QIcon("./resources/image/cell_tower_FILL1_wght200_GRAD200_opsz40_WHITE.png"))
         self.dial_out_line_test.setIconSize(QSize(self.button_wh - 12, self.button_wh - 12))
         self.dial_out_line_test.setStyleSheet(button_stylesheet_0)
-        self.dial_out_line_test.clicked.connect(dial_out_com1_function)
+        self.dial_out_line_test.clicked.connect(dial_out_line_test_function)
 
         # QPushButton - Dial Out Previous Address
         self.dial_out_prev_addr = QPushButton(self)
@@ -1123,8 +1123,8 @@ class DialOutClass(QThread):
         self.message_snd = ''
         self.data = ''
 
-        if dial_out_thread_key == 'COM1':
-            self.message_snd = 'COM1'
+        if dial_out_thread_key == 'LINE_TEST':
+            self.message_snd = 'LINE_TEST'
             self.message_send()
 
         elif dial_out_thread_key == 'MESSAGE':
@@ -1186,7 +1186,7 @@ class DialOutClass(QThread):
             if data_response == ciphertext:
                 self.data = '[' + str(datetime.datetime.now()) + '] [DELIVERY CONFIRMATION] [' + str(self.HOST_SEND) + ':' + str(self.PORT_SEND) + ']'
                 messages.append(self.data)
-                if self.message_snd == 'COM1':
+                if self.message_snd == 'LINE_TEST':
                     print(str(datetime.datetime.now()) + ' -- DialOutClass.message_send response from recipient equals ciphertext:', data_response)
                     self.dial_out_line_test.setIcon(QIcon("./resources/image/cell_tower_FILL1_wght200_GRAD200_opsz40_GREEN.png"))
                     time.sleep(1)
@@ -1203,7 +1203,7 @@ class DialOutClass(QThread):
                 print(self.data)
                 messages.append(self.data)
                 self.dial_out_logger()
-                if self.message_snd == 'COM1':
+                if self.message_snd == 'LINE_TEST':
                     self.dial_out_line_test.setIcon(QIcon("./resources/image/cell_tower_FILL1_wght200_GRAD200_opsz40_YELLOW.png"))
                     time.sleep(1)
                     self.dial_out_line_test.setIcon(QIcon("./resources/image/cell_tower_FILL1_wght200_GRAD200_opsz40_WHITE.png"))
@@ -1214,7 +1214,7 @@ class DialOutClass(QThread):
 
         except Exception as e:
 
-            if self.message_snd == 'COM1':
+            if self.message_snd == 'LINE_TEST':
                 print(str(datetime.datetime.now()) + ' -- DialOutClass.message_send failed:', e)
                 self.dial_out_line_test.setIcon(QIcon("./resources/image/cell_tower_FILL1_wght200_GRAD200_opsz40_RED.png"))
                 time.sleep(1)
