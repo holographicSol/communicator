@@ -337,7 +337,7 @@ class App(QMainWindow):
             dial_out_thread.start()
 
         def dial_out_message_send_function():
-            print(str(datetime.datetime.now()) + ' -- plugged in: App.dial_out_com1_function')
+            print(str(datetime.datetime.now()) + ' -- plugged in: App.dial_out_message_send_function')
             global_self.setFocus()
             global dial_out_thread_key
             if not self.dial_out_message.text() == '':
@@ -345,6 +345,8 @@ class App(QMainWindow):
                     dial_out_thread.stop()
                 dial_out_thread_key = 'MESSAGE'
                 dial_out_thread.start()
+            else:
+                print(str(datetime.datetime.now()) + ' -- dial_out_message_send_function: blocking empty message send')
 
         def start_function():
             print(str(datetime.datetime.now()) + ' -- plugged in: App.start_function')
@@ -554,13 +556,13 @@ class App(QMainWindow):
         self.server_ip_port.setStyleSheet(qline_edit_style_sheet_default)
         self.server_ip_port.setAlignment(Qt.AlignCenter)
 
-        # QPushButton - Server Received Communication COM1
-        self.server_com1 = QPushButton(self)
-        self.server_com1.resize(self.button_wh, self.button_wh)
-        self.server_com1.move(self.width - self.button_wh - self.button_spacing_w, self.zone_spacing_h)
-        self.server_com1.setIcon(QIcon("./resources/image/public_FILL1_wght100_GRAD200_opsz40_WHITE.png"))
-        self.server_com1.setIconSize(QSize(self.button_wh - 8, self.button_wh - 8))
-        self.server_com1.setStyleSheet(button_stylesheet_0)
+        # QPushButton - Server Received Communication
+        self.server_incoming = QPushButton(self)
+        self.server_incoming.resize(self.button_wh, self.button_wh)
+        self.server_incoming.move(self.width - self.button_wh - self.button_spacing_w, self.zone_spacing_h)
+        self.server_incoming.setIcon(QIcon("./resources/image/public_FILL1_wght100_GRAD200_opsz40_WHITE.png"))
+        self.server_incoming.setIconSize(QSize(self.button_wh - 8, self.button_wh - 8))
+        self.server_incoming.setStyleSheet(button_stylesheet_0)
 
         # QLabel - Dial Out Title
         self.dial_out_title = QLabel(self)
@@ -580,13 +582,13 @@ class App(QMainWindow):
         self.dial_out_ip_port.setAlignment(Qt.AlignCenter)
 
         # QPushButton - Dial Out Send COM1 message
-        self.dial_out_com1 = QPushButton(self)
-        self.dial_out_com1.resize(self.button_wh, self.button_wh)
-        self.dial_out_com1.move(self.width - self.button_wh - self.button_spacing_w, self.zone_spacing_h * 2 + self.button_wh)
-        self.dial_out_com1.setIcon(QIcon("./resources/image/cell_tower_FILL1_wght200_GRAD200_opsz40_WHITE.png"))
-        self.dial_out_com1.setIconSize(QSize(self.button_wh - 12, self.button_wh - 12))
-        self.dial_out_com1.setStyleSheet(button_stylesheet_0)
-        self.dial_out_com1.clicked.connect(dial_out_com1_function)
+        self.dial_out_line_test = QPushButton(self)
+        self.dial_out_line_test.resize(self.button_wh, self.button_wh)
+        self.dial_out_line_test.move(self.width - self.button_wh - self.button_spacing_w, self.zone_spacing_h * 2 + self.button_wh)
+        self.dial_out_line_test.setIcon(QIcon("./resources/image/cell_tower_FILL1_wght200_GRAD200_opsz40_WHITE.png"))
+        self.dial_out_line_test.setIconSize(QSize(self.button_wh - 12, self.button_wh - 12))
+        self.dial_out_line_test.setStyleSheet(button_stylesheet_0)
+        self.dial_out_line_test.clicked.connect(dial_out_com1_function)
 
         # QPushButton - Dial Out Previous Address
         self.dial_out_prev_addr = QPushButton(self)
@@ -713,14 +715,14 @@ class App(QMainWindow):
         self.server_status_label.setStyleSheet(server_title_stylesheet_0)
 
         # Thread - Public Server
-        server_thread = ServerClass(self.server_title, self.server_com1, self.server_status_label)
+        server_thread = ServerClass(self.server_title, self.server_incoming, self.server_status_label)
 
         # Thread - ServerDataHandlerClass
-        server_data_handler_class = ServerDataHandlerClass(self.server_title, self.server_com1, self.server_notify_cipher, self.server_notify_alien)
+        server_data_handler_class = ServerDataHandlerClass(self.server_title, self.server_incoming, self.server_notify_cipher, self.server_notify_alien)
         server_data_handler_class.start()
 
         # Thread - Dial_Out
-        dial_out_thread = DialOutClass(self.dial_out_title, self.dial_out_com1, self.dial_out_message_send, self.dial_out_message)
+        dial_out_thread = DialOutClass(self.dial_out_title, self.dial_out_line_test, self.dial_out_message_send, self.dial_out_message)
 
         # Thread - Configuration
         configuration_thread = ConfigurationClass()
@@ -1087,12 +1089,12 @@ class AESCipher:
 
 
 class DialOutClass(QThread):
-    def __init__(self, dial_out_title, dial_out_com1, dial_out_message_send, dial_out_message):
+    def __init__(self, dial_out_title, dial_out_line_test, dial_out_message_send, dial_out_message):
         QThread.__init__(self)
         global address_name, address_ip, address_port, address_key, address_fingerprint
 
         self.dial_out_title = dial_out_title
-        self.dial_out_com1 = dial_out_com1
+        self.dial_out_line_test = dial_out_line_test
         self.dial_out_message_send = dial_out_message_send
         self.dial_out_message = dial_out_message
 
@@ -1123,11 +1125,17 @@ class DialOutClass(QThread):
             self.message_snd = str(self.dial_out_message.text())
             self.message_send()
 
+        else:
+            print(str(datetime.datetime.now()) + ' -- DialOutClass.run: dial_out_thread_key has no key')
+
     def message_send(self):
         global SOCKET_DIAL_OUT
         global dial_out_dial_out_cipher_bool
+        global dial_out_thread_key
+
+        dial_out_thread_key = ''
         print('-' * 200)
-        print(str(datetime.datetime.now()) + f" -- DialOutClass.COM1 outgoing to: {self.HOST_SEND} : {self.PORT_SEND}")
+        print(str(datetime.datetime.now()) + f" -- DialOutClass.message_send outgoing to: {self.HOST_SEND} : {self.PORT_SEND}")
 
         try:
             data_response = ''
@@ -1135,38 +1143,38 @@ class DialOutClass(QThread):
                 SOCKET_DIAL_OUT.connect((self.HOST_SEND, self.PORT_SEND))
 
                 if dial_out_dial_out_cipher_bool is True:
-                    print(str(datetime.datetime.now()) + ' -- DialOutClass.COM1: handing message to AESCipher')
+                    print(str(datetime.datetime.now()) + ' -- DialOutClass.message_send: handing message to AESCipher')
                     cipher = AESCipher(self.KEY)
                     ciphertext = cipher.encrypt(str(self.FINGERPRINT) + self.message_snd)
-                    print(str(datetime.datetime.now()) + ' -- DialOutClass.COM1 ciphertext:', str(ciphertext))
-                    messages.append('[' + str(datetime.datetime.now()) + '] [SENDING] [' + str(self.HOST_SEND) + ':' + str(self.PORT_SEND) + '] [ENCRYPTED] ' + str(ciphertext))
+                    print(str(datetime.datetime.now()) + ' -- DialOutClass.message_send ciphertext:', str(ciphertext))
+                    messages.append('[' + str(datetime.datetime.now()) + '] [SENDING ENCRYPTED] [' + str(self.HOST_SEND) + ':' + str(self.PORT_SEND) + ']')
                 else:
                     ciphertext = bytes(self.message_snd, 'utf-8')
-                    messages.append('[' + str(datetime.datetime.now()) + '] [SENDING] [' + str(self.HOST_SEND) + ':' + str(self.PORT_SEND) + '] [UNENCRYPTED] ' + str(ciphertext))
+                    messages.append('[' + str(datetime.datetime.now()) + '] [SENDING UNENCRYPTED] [' + str(self.HOST_SEND) + ':' + str(self.PORT_SEND) + ']')
 
                 self.dial_out_message.setText('')
 
-                print(str(datetime.datetime.now()) + ' -- DialOutClass.COM1: attempting to send ciphertext')
+                print(str(datetime.datetime.now()) + ' -- DialOutClass.message_send: attempting to send ciphertext')
 
                 SOCKET_DIAL_OUT.send(ciphertext)
                 SOCKET_DIAL_OUT.settimeout(1)
 
-                print(str(datetime.datetime.now()) + ' -- DialOutClass.COM1: waiting for response from recipient')
+                print(str(datetime.datetime.now()) + ' -- DialOutClass.message_send: waiting for response from recipient')
 
                 try:
                     data_response = SOCKET_DIAL_OUT.recv(2048)
                 except Exception as e:
-                    print(str(datetime.datetime.now()) + ' -- DialOutClass.COM1 failed:', e)
-                    self.dial_out_com1.setIcon(QIcon("./resources/image/cell_tower_FILL1_wght200_GRAD200_opsz40_RED.png"))
+                    print(str(datetime.datetime.now()) + ' -- DialOutClass.message_send failed:', e)
+                    self.dial_out_line_test.setIcon(QIcon("./resources/image/cell_tower_FILL1_wght200_GRAD200_opsz40_RED.png"))
 
             if data_response == ciphertext:
                 if self.message_snd == 'COM1':
-                    print(str(datetime.datetime.now()) + ' -- DialOutClass.COM1 response from recipient equals ciphertext:', data_response)
-                    self.dial_out_com1.setIcon(QIcon("./resources/image/cell_tower_FILL1_wght200_GRAD200_opsz40_GREEN.png"))
+                    print(str(datetime.datetime.now()) + ' -- DialOutClass.message_send response from recipient equals ciphertext:', data_response)
+                    self.dial_out_line_test.setIcon(QIcon("./resources/image/cell_tower_FILL1_wght200_GRAD200_opsz40_GREEN.png"))
                     time.sleep(1)
-                    self.dial_out_com1.setIcon(QIcon("./resources/image/cell_tower_FILL1_wght200_GRAD200_opsz40_WHITE.png"))
+                    self.dial_out_line_test.setIcon(QIcon("./resources/image/cell_tower_FILL1_wght200_GRAD200_opsz40_WHITE.png"))
                 else:
-                    print(str(datetime.datetime.now()) + ' -- DialOutClass.COM1 response from recipient equals ciphertext:', data_response)
+                    print(str(datetime.datetime.now()) + ' -- DialOutClass.message_send response from recipient equals ciphertext:', data_response)
                     self.dial_out_message_send.setIcon(QIcon("./resources/image/send_FILL1_wght100_GRAD-25_opsz40_GREEN.png"))
                     time.sleep(1)
                     self.dial_out_message_send.setIcon(QIcon("./resources/image/send_FILL1_wght100_GRAD-25_opsz40_WHITE.png"))
@@ -1175,12 +1183,12 @@ class DialOutClass(QThread):
         except Exception as e:
 
             if self.message_snd == 'COM1':
-                print(str(datetime.datetime.now()) + ' -- DialOutClass.COM1 failed:', e)
-                self.dial_out_com1.setIcon(QIcon("./resources/image/cell_tower_FILL1_wght200_GRAD200_opsz40_RED.png"))
+                print(str(datetime.datetime.now()) + ' -- DialOutClass.message_send failed:', e)
+                self.dial_out_line_test.setIcon(QIcon("./resources/image/cell_tower_FILL1_wght200_GRAD200_opsz40_RED.png"))
                 time.sleep(1)
-                self.dial_out_com1.setIcon(QIcon("./resources/image/cell_tower_FILL1_wght200_GRAD200_opsz40_WHITE.png"))
+                self.dial_out_line_test.setIcon(QIcon("./resources/image/cell_tower_FILL1_wght200_GRAD200_opsz40_WHITE.png"))
             else:
-                print(str(datetime.datetime.now()) + ' -- DialOutClass.COM1 failed:', e)
+                print(str(datetime.datetime.now()) + ' -- DialOutClass.message_send failed:', e)
                 self.dial_out_message_send.setIcon(QIcon("./resources/image/send_FILL1_wght100_GRAD-25_opsz40_RED.png"))
                 time.sleep(1)
                 self.dial_out_message_send.setIcon(QIcon("./resources/image/send_FILL1_wght100_GRAD-25_opsz40_WHITE.png"))
@@ -1199,9 +1207,9 @@ class DialOutClass(QThread):
 
 
 class ServerDataHandlerClass(QThread):
-    def __init__(self, server_title, server_com1, server_notify_cipher, server_notify_alien):
+    def __init__(self, server_title, server_incoming, server_notify_cipher, server_notify_alien):
         QThread.__init__(self)
-        self.server_com1 = server_com1
+        self.server_incoming = server_incoming
         self.server_title = server_title
         self.server_notify_cipher = server_notify_cipher
         self.server_notify_alien = server_notify_alien
@@ -1219,12 +1227,12 @@ class ServerDataHandlerClass(QThread):
     def notification(self):
         print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.notification: attempting communicator notification')
 
-        self.server_com1.setIcon(QIcon("./resources/image/public_FILL1_wght100_GRAD200_opsz40.png"))
+        self.server_incoming.setIcon(QIcon("./resources/image/public_FILL1_wght100_GRAD200_opsz40.png"))
 
         if self.notification_key == 'green':
-            self.server_com1.setIcon(QIcon("./resources/image/public_FILL1_wght100_GRAD200_opsz40_GREEN.png"))
+            self.server_incoming.setIcon(QIcon("./resources/image/public_FILL1_wght100_GRAD200_opsz40_GREEN.png"))
         elif self.notification_key == 'amber':
-            self.server_com1.setIcon(QIcon("./resources/image/public_FILL1_wght100_GRAD200_opsz40_AMBER.png"))
+            self.server_incoming.setIcon(QIcon("./resources/image/public_FILL1_wght100_GRAD200_opsz40_AMBER.png"))
 
         url = QUrl.fromLocalFile("./resources/audio/communicator_0.wav")
         content = QMediaContent(url)
@@ -1234,7 +1242,7 @@ class ServerDataHandlerClass(QThread):
         player.play()
         time.sleep(1)
 
-        self.server_com1.setIcon(QIcon("./resources/image/public_FILL1_wght100_GRAD200_opsz40_WHITE.png"))
+        self.server_incoming.setIcon(QIcon("./resources/image/public_FILL1_wght100_GRAD200_opsz40_WHITE.png"))
 
     def run(self):
         print('-' * 200)
@@ -1286,7 +1294,7 @@ class ServerDataHandlerClass(QThread):
                                     if decrypted.startswith(str(address_fingerprint[i_1])):
                                         print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run fingerprint: validated as', address_name[i_1])
                                         decrypted_message = decrypted.replace(str(address_fingerprint[i_1]), '')
-                                        messages.append('[' + str(datetime.datetime.now()) + '] [' + str(addr_data) + '] [DECIPHER] [' + address_name[i_1] + '] ' + decrypted_message)
+                                        messages.append('[' + str(datetime.datetime.now()) + '] [' + str(addr_data) + '] [DECIPHERED] [' + address_name[i_1] + '] ' + decrypted_message)
                                         print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run decrypted_message:', decrypted_message)
 
                                         if not cipher_message_count == '999+':
@@ -1340,9 +1348,9 @@ class ServerDataHandlerClass(QThread):
 
 
 class ServerClass(QThread):
-    def __init__(self, server_title, server_com1, server_status_label):
+    def __init__(self, server_title, server_incoming, server_status_label):
         QThread.__init__(self)
-        self.server_com1 = server_com1
+        self.server_incoming = server_incoming
         self.server_title = server_title
         self.server_status_label = server_status_label
         self.data = ''
