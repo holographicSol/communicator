@@ -760,12 +760,17 @@ class App(QMainWindow):
         self.tb_0.setLineWrapMode(QTextBrowser.NoWrap)
         self.tb_0.horizontalScrollBar().setValue(0)
 
-        # RAPID TEXT APPEND EXAMPLE STEP 3: Create Timer That Connects To A Function (In This Case A PyQtSlot)
+        # QTimer - Used For Appending To tb_0 Using QtSlots
         self.timer_0 = QTimer(self)
         self.timer_0.setInterval(0)
         self.timer_0.timeout.connect(self.update_tb)
-        self.server_start.clicked.connect(self.jumpstart_1)
-        self.server_stop.clicked.connect(self.stop_timer_1)
+
+        # Remove Comments To Enable Output Only When Server Online
+        # self.server_start.clicked.connect(self.jumpstart_1)
+        # self.server_stop.clicked.connect(self.stop_timer_1)
+
+        # Comment If Removing Comments Above
+        self.jumpstart_1()
 
         self.initUI()
 
