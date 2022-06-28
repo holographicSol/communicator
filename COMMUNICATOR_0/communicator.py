@@ -1185,6 +1185,17 @@ class DialOutClass(QThread):
                     self.dial_out_message_send.setIcon(QIcon("./resources/image/send_FILL1_wght100_GRAD-25_opsz40_WHITE.png"))
                 global_self.setFocus()
 
+            else:
+                print(str(datetime.datetime.now()) + ' -- DialOutClass.message_send WARNING: THE MESSAGE RECEIVED DOES NOT MATCH THE MESSAGE SENT!')
+                if self.message_snd == 'COM1':
+                    self.dial_out_line_test.setIcon(QIcon("./resources/image/cell_tower_FILL1_wght200_GRAD200_opsz40_YELLOW.png"))
+                    time.sleep(1)
+                    self.dial_out_line_test.setIcon(QIcon("./resources/image/cell_tower_FILL1_wght200_GRAD200_opsz40_WHITE.png"))
+                else:
+                    self.dial_out_message_send.setIcon(QIcon("./resources/image/send_FILL1_wght100_GRAD-25_opsz40_YELLOW.png"))
+                    time.sleep(1)
+                    self.dial_out_message_send.setIcon(QIcon("./resources/image/send_FILL1_wght100_GRAD-25_opsz40_WHITE.png"))
+
         except Exception as e:
 
             if self.message_snd == 'COM1':
@@ -1299,7 +1310,7 @@ class ServerDataHandlerClass(QThread):
                                     if decrypted.startswith(str(address_fingerprint[i_1])):
                                         print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run fingerprint: validated as', address_name[i_1])
                                         decrypted_message = decrypted.replace(str(address_fingerprint[i_1]), '')
-                                        messages.append('[' + str(datetime.datetime.now()) + '] [' + str(addr_data) + '] [DECIPHERED] [' + address_name[i_1] + '] ' + decrypted_message)
+                                        messages.append('[' + str(datetime.datetime.now()) + '] [[DECIPHERED] [' + str(addr_data) + '] [' + address_name[i_1] + '] ' + decrypted_message)
                                         print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run decrypted_message:', decrypted_message)
 
                                         if not cipher_message_count == '999+':
