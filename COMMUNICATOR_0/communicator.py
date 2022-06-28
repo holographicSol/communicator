@@ -75,6 +75,7 @@ alien_message_count = 0
 server_thread_key = ''
 send_thread_key = ''
 server_log = './log/server_log.txt'
+dial_out_log = './log/dial_out_log.txt'
 
 # Configuration Settings
 configuration_thread_key = ''
@@ -1119,8 +1120,8 @@ class DialOutClass(QThread):
         self.PORT_SEND = address_port[dial_out_address_index]
         self.KEY = address_key[dial_out_address_index]
         self.FINGERPRINT = address_fingerprint[dial_out_address_index]
-
         self.message_snd = ''
+        self.data = ''
 
         if dial_out_thread_key == 'COM1':
             self.message_snd = 'COM1'
@@ -1132,6 +1133,13 @@ class DialOutClass(QThread):
 
         else:
             print(str(datetime.datetime.now()) + ' -- DialOutClass.run: dial_out_thread_key has no key')
+
+    def dial_out_logger(self):
+        if not os.path.exists(dial_out_log):
+            open(dial_out_log, 'w').close()
+        with open(dial_out_log, 'a') as fo:
+            fo.write(self.data + '\n')
+        fo.close()
 
     def message_send(self):
         global SOCKET_DIAL_OUT
@@ -1171,8 +1179,13 @@ class DialOutClass(QThread):
                 except Exception as e:
                     print(str(datetime.datetime.now()) + ' -- DialOutClass.message_send failed:', e)
                     self.dial_out_line_test.setIcon(QIcon("./resources/image/cell_tower_FILL1_wght200_GRAD200_opsz40_RED.png"))
+                    self.data = '[' + str(datetime.datetime.now()) + '] [SENDING FAILED] [' + str(self.HOST_SEND) + ':' + str(self.PORT_SEND) + ']'
+                    messages.append(self.data)
+                    self.dial_out_logger()
 
             if data_response == ciphertext:
+                self.data = '[' + str(datetime.datetime.now()) + '] [DELIVERY CONFIRMATION] [' + str(self.HOST_SEND) + ':' + str(self.PORT_SEND) + ']'
+                messages.append(self.data)
                 if self.message_snd == 'COM1':
                     print(str(datetime.datetime.now()) + ' -- DialOutClass.message_send response from recipient equals ciphertext:', data_response)
                     self.dial_out_line_test.setIcon(QIcon("./resources/image/cell_tower_FILL1_wght200_GRAD200_opsz40_GREEN.png"))
@@ -1186,7 +1199,10 @@ class DialOutClass(QThread):
                 global_self.setFocus()
 
             else:
-                print(str(datetime.datetime.now()) + ' -- DialOutClass.message_send WARNING: THE MESSAGE RECEIVED DOES NOT MATCH THE MESSAGE SENT!')
+                self.data = '[' + str(datetime.datetime.now()) + '] [WARNING] [MESSAGE RECEIVED DOES NOT MATCH MESSAGE SENT] [' + str(self.HOST_SEND) + ':' + str(self.PORT_SEND) + ']'
+                print(self.data)
+                messages.append(self.data)
+                self.dial_out_logger()
                 if self.message_snd == 'COM1':
                     self.dial_out_line_test.setIcon(QIcon("./resources/image/cell_tower_FILL1_wght200_GRAD200_opsz40_YELLOW.png"))
                     time.sleep(1)
