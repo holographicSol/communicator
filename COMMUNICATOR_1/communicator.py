@@ -345,6 +345,8 @@ class App(QMainWindow):
                     dial_out_thread.stop()
                 dial_out_thread_key = 'MESSAGE'
                 dial_out_thread.start()
+            else:
+                print(str(datetime.datetime.now()) + ' -- dial_out_message_send_function: blocking empty message send')
 
         def start_function():
             print(str(datetime.datetime.now()) + ' -- plugged in: App.start_function')
@@ -1123,9 +1125,15 @@ class DialOutClass(QThread):
             self.message_snd = str(self.dial_out_message.text())
             self.message_send()
 
+        else:
+            print(str(datetime.datetime.now()) + ' -- DialOutClass.run: dial_out_thread_key has no key')
+
     def message_send(self):
         global SOCKET_DIAL_OUT
         global dial_out_dial_out_cipher_bool
+        global dial_out_thread_key
+
+        dial_out_thread_key = ''
         print('-' * 200)
         print(str(datetime.datetime.now()) + f" -- DialOutClass.COM1 outgoing to: {self.HOST_SEND} : {self.PORT_SEND}")
 
