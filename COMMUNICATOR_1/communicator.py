@@ -1267,7 +1267,12 @@ class ServerDataHandlerClass(QThread):
                                         decrypted_message = decrypted.replace(str(address_fingerprint[i_1]), '')
                                         messages.append('[' + str(datetime.datetime.now()) + '] [' + str(addr_data) + '] [DECIPHER] [' + address_name[i_1] + '] ' + decrypted_message)
                                         print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run decrypted_message:', decrypted_message)
-                                        cipher_message_count += 1
+
+                                        if not cipher_message_count == '999+':
+                                            if cipher_message_count < 999:
+                                                cipher_message_count += 1
+                                            else:
+                                                cipher_message_count = str('999+')
                                         self.server_notify_cipher.setText(str(cipher_message_count))
 
                                         break
@@ -1293,8 +1298,14 @@ class ServerDataHandlerClass(QThread):
                                 if str(ciphertext).endswith("'"):
                                     ciphertext = ciphertext[:len(ciphertext)-1]
                             messages.append('[' + str(datetime.datetime.now()) + '] [' + str(addr_data) + '] [ALIEN] ' + ciphertext)
-                            alien_message_count += 1
+
+                            if not alien_message_count == '999+':
+                                if alien_message_count < 999:
+                                    alien_message_count += 1
+                                else:
+                                    alien_message_count = str('999+')
                             self.server_notify_alien.setText(str(alien_message_count))
+
                             self.notification_key = 'amber'
                             self.notification()
                             global_self.setFocus()
