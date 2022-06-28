@@ -61,6 +61,7 @@ address_port = []
 address_key = []
 address_fingerprint = []
 dial_out_dial_out_cipher_bool = True
+dial_out_using_address_book_bool = True
 
 # Wild Addresses
 wild_addresses_ip = []
@@ -270,6 +271,13 @@ class App(QMainWindow):
             global_self.setFocus()
             global dial_out_address, dial_out_address_index
             global address_name, address_ip, address_port, address_key, address_fingerprint
+            global dial_out_using_address_book_bool
+            global dial_out_dial_out_cipher_bool
+
+            dial_out_using_address_book_bool = True
+            dial_out_dial_out_cipher_bool = False
+            self.dial_out_cipher_bool_btn.setEnabled(True)
+            dial_out_dial_out_cipher_bool_btn_function()
 
             # Get length of address book
             LEN_DIAL_OUT_ADDRESSES = len(DIAL_OUT_ADDRESSES)
@@ -298,6 +306,13 @@ class App(QMainWindow):
             print(str(datetime.datetime.now()) + ' -- plugged in: App.dial_out_next_addr_function')
             global_self.setFocus()
             global dial_out_address, dial_out_address_index
+            global dial_out_using_address_book_bool
+            global dial_out_dial_out_cipher_bool
+
+            dial_out_using_address_book_bool = True
+            dial_out_dial_out_cipher_bool = False
+            self.dial_out_cipher_bool_btn.setEnabled(True)
+            dial_out_dial_out_cipher_bool_btn_function()
 
             # Get length of address book
             LEN_DIAL_OUT_ADDRESSES = len(DIAL_OUT_ADDRESSES)
@@ -325,8 +340,15 @@ class App(QMainWindow):
             print(str(datetime.datetime.now()) + ' -- plugged in: App.dial_out_ip_port_function_set')
             global_self.setFocus()
             global dial_out_address
+            global dial_out_using_address_book_bool
+            global dial_out_dial_out_cipher_bool
             dial_out_address = self.dial_out_ip_port.text()
             print(str(datetime.datetime.now()) + ' -- setting dial out address:', dial_out_address)
+            self.dial_out_name.setText('-- -- --')
+            dial_out_using_address_book_bool = False
+            dial_out_dial_out_cipher_bool = True
+            self.dial_out_cipher_bool_btn.setEnabled(False)
+            dial_out_dial_out_cipher_bool_btn_function()
 
         def dial_out_line_test_function():
             print(str(datetime.datetime.now()) + ' -- plugged in: App.dial_out_line_test_function')
@@ -1114,12 +1136,20 @@ class DialOutClass(QThread):
     def run(self):
         print('-' * 200)
         print(str(datetime.datetime.now()) + ' [ thread started: DialOutClass(QThread).run(self) ]')
+        global dial_out_address
         global dial_out_thread_key
+        global dial_out_using_address_book_bool
 
-        self.HOST_SEND = address_ip[dial_out_address_index]
-        self.PORT_SEND = address_port[dial_out_address_index]
-        self.KEY = address_key[dial_out_address_index]
-        self.FINGERPRINT = address_fingerprint[dial_out_address_index]
+        if dial_out_using_address_book_bool is True:
+            self.HOST_SEND = address_ip[dial_out_address_index]
+            self.PORT_SEND = address_port[dial_out_address_index]
+            self.KEY = address_key[dial_out_address_index]
+            self.FINGERPRINT = address_fingerprint[dial_out_address_index]
+
+        elif dial_out_using_address_book_bool is False:
+            self.HOST_SEND = dial_out_address.split(' ')[0]
+            self.PORT_SEND = int(dial_out_address.split(' ')[1])
+
         self.message_snd = ''
         self.data = ''
 
