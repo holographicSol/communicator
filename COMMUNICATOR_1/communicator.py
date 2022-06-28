@@ -1124,7 +1124,7 @@ class DialOutClass(QThread):
         self.data = ''
 
         if dial_out_thread_key == 'LINE_TEST':
-            self.message_snd = 'LINE_TEST'
+            self.message_snd = '[LINE TEST]'
             self.message_send()
 
         elif dial_out_thread_key == 'MESSAGE':
@@ -1186,7 +1186,7 @@ class DialOutClass(QThread):
             if data_response == ciphertext:
                 self.data = '[' + str(datetime.datetime.now()) + '] [DELIVERY CONFIRMATION] [' + str(self.HOST_SEND) + ':' + str(self.PORT_SEND) + ']'
                 messages.append(self.data)
-                if self.message_snd == 'LINE_TEST':
+                if self.message_snd == '[LINE TEST]':
                     print(str(datetime.datetime.now()) + ' -- DialOutClass.message_send response from recipient equals ciphertext:', data_response)
                     self.dial_out_line_test.setIcon(QIcon("./resources/image/cell_tower_FILL1_wght200_GRAD200_opsz40_GREEN.png"))
                     time.sleep(1)
@@ -1203,7 +1203,7 @@ class DialOutClass(QThread):
                 print(self.data)
                 messages.append(self.data)
                 self.dial_out_logger()
-                if self.message_snd == 'LINE_TEST':
+                if self.message_snd == '[LINE TEST]':
                     self.dial_out_line_test.setIcon(QIcon("./resources/image/cell_tower_FILL1_wght200_GRAD200_opsz40_YELLOW.png"))
                     time.sleep(1)
                     self.dial_out_line_test.setIcon(QIcon("./resources/image/cell_tower_FILL1_wght200_GRAD200_opsz40_WHITE.png"))
@@ -1214,7 +1214,7 @@ class DialOutClass(QThread):
 
         except Exception as e:
 
-            if self.message_snd == 'LINE_TEST':
+            if self.message_snd == '[LINE TEST]':
                 print(str(datetime.datetime.now()) + ' -- DialOutClass.message_send failed:', e)
                 self.dial_out_line_test.setIcon(QIcon("./resources/image/cell_tower_FILL1_wght200_GRAD200_opsz40_RED.png"))
                 time.sleep(1)
