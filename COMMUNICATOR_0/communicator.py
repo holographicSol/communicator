@@ -1199,7 +1199,7 @@ class DialOutClass(QThread):
                 global_self.setFocus()
 
             else:
-                self.data = '[' + str(datetime.datetime.now()) + '] [WARNING] [MESSAGE RECEIVED DOES NOT MATCH MESSAGE SENT] [' + str(self.HOST_SEND) + ':' + str(self.PORT_SEND) + ']'
+                self.data = '[' + str(datetime.datetime.now()) + '] [WARNING] [MESSAGE RECEIVED DOES NOT MATCH MESSAGE SENT] [' + str(self.HOST_SEND) + ':' + str(self.PORT_SEND) + '] ' + str(data_response)
                 print(self.data)
                 messages.append(self.data)
                 self.dial_out_logger()
