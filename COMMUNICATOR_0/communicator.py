@@ -437,7 +437,7 @@ class App(QMainWindow):
                     print(str(datetime.datetime.now()) + ' -- setting write variable:', self.write_var)
 
                     with open('./config.txt', 'a') as fo:
-                        fo.write(self.write_var + '\n')
+                        fo.write('\n' + self.write_var + '\n')
                     fo.close()
 
                     server_addresses.append(server_address_var)
@@ -600,7 +600,7 @@ class App(QMainWindow):
                 for _ in var_addresses:
                     print('writing:', _)
                     with open('./communicator_address_book.tmp', 'a') as fo:
-                        fo.write(_ + '\n')
+                        fo.write('\n' + _ + '\n')
                     fo.close()
                 os.replace('./communicator_address_book.tmp', './communicator_address_book.txt')
                 if os.path.exists('./communicator_address_book.txt'):
@@ -1102,13 +1102,13 @@ class FingerprintGeneration(QThread):
                             with open('./communicator_address_book.tmp', 'w') as fo:
                                 for _ in addr_var:
                                     print(str(datetime.datetime.now()) + ' -- FingerprintGeneration(QThread).run writing address book line:', _)
-                                    fo.write(_ + '\n')
+                                    fo.write('\n' + _ + '\n')
                             fo.close()
                             os.replace('./communicator_address_book.tmp', './communicator_address_book.txt')
                     else:
                         print(str(datetime.datetime.now()) + ' -- FingerprintGeneration(QThread).run appending new address book entry to address book')
                         with open('./communicator_address_book.txt', 'a') as fo:
-                            fo.write(self.entry_address_book + '\n')
+                            fo.write('\n' + self.entry_address_book + '\n')
                         fo.close()
                     print('-' * 200)
 
@@ -1328,7 +1328,7 @@ class DialOutClass(QThread):
         if not os.path.exists(dial_out_log):
             open(dial_out_log, 'w').close()
         with open(dial_out_log, 'a') as fo:
-            fo.write(self.data + '\n')
+            fo.write('\n' + self.data + '\n')
         fo.close()
 
     def message_send(self):
@@ -1445,7 +1445,7 @@ class ServerDataHandlerClass(QThread):
         if not os.path.exists(server_log):
             open(server_log, 'w').close()
         with open(server_log, 'a') as fo:
-            fo.write(self.data + '\n')
+            fo.write('\n' + self.data + '\n')
         fo.close()
 
     def notification(self):
@@ -1610,7 +1610,7 @@ class ServerClass(QThread):
         if not os.path.exists(server_log):
             open(server_log, 'w').close()
         with open(server_log, 'a') as fo:
-            fo.write(self.data + '\n')
+            fo.write('\n' + self.data + '\n')
         fo.close()
 
     def listen(self):
