@@ -1712,6 +1712,8 @@ class ServerClass(QThread):
 
         while True:
             if len(soft_block_ip) > 0:
+
+                # DOS & DDOS Protection - Tune And Add Ranges Of Soft Block Time Using Z_Time And Violation Count
                 i = 0
                 for _ in z_time:
                     if violation_count[i] < 20:
@@ -1738,6 +1740,8 @@ class ServerClass(QThread):
                     SOCKET_SERVER.listen()
                     conn, addr = SOCKET_SERVER.accept()
                     print('SOCKET_SERVER:', SOCKET_SERVER)
+
+                    # DOS & DDOS Protection - Close Socket
                     if addr[0] in soft_block_ip:
                         print('BLOCK:', addr[0])
                         SOCKET_SERVER.close()
@@ -1751,38 +1755,45 @@ class ServerClass(QThread):
                         print('SETTING PREVIOUS ADDRESS')
                         prev_addr = addr[0]
                     elif addr[0] == prev_addr:
+
+                        # DOS & DDOS Protection - Initiate Y_Time
                         print('ADDRESS == PREVIOUS ADDRESS:', addr[0])
                         y_time = round(time.time() * 1000)
 
-                        # Add IP To Soft Block List
+                        # DOS & DDOS Protection - Compare Y_Time (Now) To X_Time (Last Time)
                         if y_time < (x_time + 1000):
                             print(str(datetime.datetime.now()) + ' -- ServerClass.listen checking soft block configuration for:' + str(addr[0]))
 
+                            # DOS & DDOS Protection - Add New Entry To Soft Block List
                             if addr[0] not in soft_block_ip:
                                 print(str(datetime.datetime.now()) + ' -- ServerClass.listen adding IP Address to soft block list: ' + str(addr[0]))
                                 soft_block_ip.append(addr[0])
 
-                                # Set Z Time
+                                # DOS & DDOS Protection - Set Z Time
                                 _z_time = round(time.time() * 1000)
                                 z_time.append(_z_time)
                                 print(str(datetime.datetime.now()) + ' -- ServerClass.listen setting IP Address Z_TIME to current time: ' + str(addr[0]) + ' --> ' + str(_z_time))
 
-                                # Set Violation Count
+                                # DOS & DDOS Protection - Set Violation Count
                                 _violation_count = 1
                                 violation_count.append(_violation_count)
                                 print(str(datetime.datetime.now()) + ' -- ServerClass.listen setting IP Address violation count: ' + str(addr[0]) + ' --> ' + str(_violation_count))
 
                             elif addr[0] in soft_block_ip:
+
+                                # DOS & DDOS Protection - Amend Entry In Soft Block List
                                 print(str(datetime.datetime.now()) + ' -- ServerClass.listen IP Address already in soft block list: ' + str(addr[0]))
                                 soft_block_ip_index = soft_block_ip.index(addr[0])
 
+                                # DOS & DDOS Protection - Amend Entry In Z_Time List
                                 z_time[soft_block_ip_index] = round(time.time() * 1000)
                                 print(str(datetime.datetime.now()) + ' -- ServerClass.listen resetting IP Address Z_TIME to current time: ' + str(addr[0]) + ' --> ' + str(z_time[soft_block_ip_index]))
 
+                                # DOS & DDOS Protection - Amend Entry In Violation Count List
                                 violation_count[soft_block_ip_index] += 1
                                 print(str(datetime.datetime.now()) + ' -- ServerClass.listen increasing IP Address violation count: ' + str(addr[0]) + ' --> ' + str(violation_count[soft_block_ip_index]))
 
-                        # Set Time X As Time Y
+                        # DOS & DDOS Protection - Set X_Time As Time Y_Time
                         x_time = y_time
                         print(str(datetime.datetime.now()) + ' -- ServerClass.listen updating x time: ' + str(addr[0]))
 
