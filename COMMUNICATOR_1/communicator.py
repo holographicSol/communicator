@@ -1713,10 +1713,11 @@ class ServerClass(QThread):
         while True:
             if len(soft_block_ip) > 0:
 
-                # DOS & DDOS Protection - Tune And Add Ranges Of Soft Block Time Using Z_Time And Violation Count
+                # DOS & DDOS Protection - Tune And Add Soft Block Time Ranges Using Z_Time And Violation Count
                 i = 0
                 for _ in z_time:
-                    if violation_count[i] < 20:
+
+                    if violation_count[i] < 20:  # DOS & DDOS Protection - Range 0
                         print(str(datetime.datetime.now()) + ' -- ServerClass.listen violation count < 3 (client soft block time 2 seconds) checking time: ' + str(soft_block_ip[i]))
                         print(str(datetime.datetime.now()) + ' -- ServerClass.listen soft block comparing z_time to current time: ' + str(round(time.time() * 1000)), ' --> ', str(z_time[i]))
                         if round(time.time() * 1000) > (z_time[i] + 2000):
@@ -1724,7 +1725,8 @@ class ServerClass(QThread):
                             del soft_block_ip[i]
                         else:
                             print(str(datetime.datetime.now()) + ' -- ServerClass.listen soft block will remain: ' + str(soft_block_ip[i]))
-                    elif violation_count[i] >= 20:
+
+                    elif violation_count[i] >= 20:  # DOS & DDOS Protection - Range 1
                         print(str(datetime.datetime.now()) + ' -- ServerClass.listen violation count exceeds 3 (client soft block time end of the day) checking time: ' + str(soft_block_ip[i]))
                         print(str(datetime.datetime.now()) + ' -- ServerClass.listen soft block comparing z_time to current time: ' + str(round(time.time() * 1000)), ' --> ', str(z_time[i]))
                         if round(time.time() * 1000) > (z_time[i] + (86400 * 999)):
