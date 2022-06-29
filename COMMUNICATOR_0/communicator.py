@@ -83,6 +83,9 @@ configuration_thread_key = ''
 configuration_thread_completed = False
 write_configuration_engaged = False
 
+mute_server_notify_alien_bool = False
+mute_server_notify_cipher_bool = False
+
 configuration_thread = []
 
 # Stylesheet - Server Title (Mode 0)
@@ -637,6 +640,30 @@ class App(QMainWindow):
             self.accept_remove_address.show()
             self.decline_remove_address.show()
 
+        def mute_server_notify_alien_function():
+            print(str(datetime.datetime.now()) + ' -- plugged in: App.mute_server_notify_alien_function')
+            global mute_server_notify_alien_bool
+            if mute_server_notify_alien_bool is True:
+                mute_server_notify_alien_bool = False
+                self.mute_server_notify_alien.setIcon(QIcon("./resources/image/volume_up_FILL0_wght100_GRAD200_opsz20.png"))
+                print(str(datetime.datetime.now()) + ' -- plugged in: App.mute_server_notify_alien_function setting mute:', mute_server_notify_alien_bool)
+            elif mute_server_notify_alien_bool is False:
+                mute_server_notify_alien_bool = True
+                self.mute_server_notify_alien.setIcon(QIcon("./resources/image/volume_off_FILL0_wght100_GRAD200_opsz20.png"))
+                print(str(datetime.datetime.now()) + ' -- plugged in: App.mute_server_notify_alien_function setting mute:', mute_server_notify_alien_bool)
+
+        def mute_server_notify_cipher_function():
+            print(str(datetime.datetime.now()) + ' -- plugged in: App.mute_server_notify_cipher_function')
+            global mute_server_notify_cipher_bool
+            if mute_server_notify_cipher_bool is True:
+                mute_server_notify_cipher_bool = False
+                self.mute_server_notify_cipher.setIcon(QIcon("./resources/image/volume_up_FILL0_wght100_GRAD200_opsz20.png"))
+                print(str(datetime.datetime.now()) + ' -- plugged in: App.mute_server_notify_alien_function setting mute:', mute_server_notify_cipher_bool)
+            elif mute_server_notify_cipher_bool is False:
+                mute_server_notify_cipher_bool = True
+                self.mute_server_notify_cipher.setIcon(QIcon("./resources/image/volume_off_FILL0_wght100_GRAD200_opsz20.png"))
+                print(str(datetime.datetime.now()) + ' -- plugged in: App.mute_server_notify_alien_function setting mute:', mute_server_notify_cipher_bool)
+
         # Variable should be set before running write_configuration function
         self.write_var = ''
 
@@ -646,7 +673,7 @@ class App(QMainWindow):
         self.setWindowIcon(QIcon('./resources/image/icon.ico'))
 
         # Window Geometry
-        self.width, self.height = 496, 226
+        self.width, self.height = 540, 226
         app_pos_w, app_pos_h = (GetSystemMetrics(0) / 2 - (self.width / 2)), (GetSystemMetrics(1) / 2 - (self.height / 2))
         self.left, self.top = int(app_pos_w), int(app_pos_h)
         self.setGeometry(self.left, self.top, self.width, self.height)
@@ -788,7 +815,7 @@ class App(QMainWindow):
 
         # QPushButton - Dial Out Set Encryption Boolean
         self.dial_out_cipher_bool_btn = QPushButton(self)
-        self.dial_out_cipher_bool_btn.resize(self.button_wh, self.button_wh)
+        self.dial_out_cipher_bool_btn.resize(self.button_wh * 2 + 4, self.button_wh)
         self.dial_out_cipher_bool_btn.move(self.button_spacing_w * 7 + self.server_title_width + self.button_wh * 4 + self.ip_port_width, self.zone_spacing_h * 2 + self.button_wh)
         self.dial_out_cipher_bool_btn.setText('CIPHER')
         self.dial_out_cipher_bool_btn.setFont(self.font_s7b)
@@ -834,7 +861,7 @@ class App(QMainWindow):
 
         # QLabel - Dial Out Message
         self.dial_out_message = QLineEdit(self)
-        self.dial_out_message.resize(360, self.button_wh - 20)
+        self.dial_out_message.resize(404, self.button_wh - 20)
         self.dial_out_message.move(self.button_spacing_w * 2 + self.server_title_width, self.zone_spacing_h * 3 + self.button_wh * 2)
         self.dial_out_message.setText('')
         self.dial_out_message.setStyleSheet(dial_out_message_stylesheet)
@@ -881,6 +908,24 @@ class App(QMainWindow):
         self.server_notify_alien.setStyleSheet(non_standard_communication_count)
         self.server_notify_alien.setText(str(alien_message_count))
         self.server_notify_alien.clicked.connect(server_notify_alien_function)
+
+        # QPushButton - Server Alien Message Toggle Mute
+        self.mute_server_notify_alien = QPushButton(self)
+        self.mute_server_notify_alien.resize(self.button_wh, int(self.button_wh / 2))
+        self.mute_server_notify_alien.move(self.button_spacing_w * 8 + self.server_title_width + self.button_wh * 5 + self.ip_port_width, self.zone_spacing_h + int(self.button_wh / 2))
+        self.mute_server_notify_alien.setStyleSheet(non_standard_communication_count)
+        self.mute_server_notify_alien.setIcon(QIcon("./resources/image/volume_up_FILL0_wght100_GRAD200_opsz20.png"))
+        self.mute_server_notify_alien.setIconSize(QSize(14, 14))
+        self.mute_server_notify_alien.clicked.connect(mute_server_notify_alien_function)
+
+        # QPushButton - Server Cipher Message Toggle Mute
+        self.mute_server_notify_cipher = QPushButton(self)
+        self.mute_server_notify_cipher.resize(self.button_wh, int(self.button_wh / 2))
+        self.mute_server_notify_cipher.move(self.button_spacing_w * 8 + self.server_title_width + self.button_wh * 5 + self.ip_port_width,self.zone_spacing_h)
+        self.mute_server_notify_cipher.setStyleSheet(standard_communication_count)
+        self.mute_server_notify_cipher.setIcon(QIcon("./resources/image/volume_up_FILL0_wght100_GRAD200_opsz20.png"))
+        self.mute_server_notify_cipher.setIconSize(QSize(14, 14))
+        self.mute_server_notify_cipher.clicked.connect(mute_server_notify_cipher_function)
 
         # QLabel - Server Status
         self.server_status_label = QLabel(self)
@@ -1448,16 +1493,7 @@ class ServerDataHandlerClass(QThread):
             fo.write('\n' + self.data + '\n')
         fo.close()
 
-    def notification(self):
-        print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.notification: attempting communicator notification')
-
-        self.server_incoming.setIcon(QIcon("./resources/image/public_FILL1_wght100_GRAD200_opsz40.png"))
-
-        if self.notification_key == 'green':
-            self.server_incoming.setIcon(QIcon("./resources/image/public_FILL1_wght100_GRAD200_opsz40_GREEN.png"))
-        elif self.notification_key == 'amber':
-            self.server_incoming.setIcon(QIcon("./resources/image/public_FILL1_wght100_GRAD200_opsz40_AMBER.png"))
-
+    def play_notification_sound(self):
         url = QUrl.fromLocalFile("./resources/audio/communicator_0.wav")
         content = QMediaContent(url)
         player = QMediaPlayer()
@@ -1466,6 +1502,34 @@ class ServerDataHandlerClass(QThread):
         player.play()
         time.sleep(1)
 
+    def notification(self):
+        print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.notification: attempting communicator notification')
+        global mute_server_notify_cipher_bool
+        global mute_server_notify_alien_bool
+
+        print('mute_server_notify_cipher_bool:', mute_server_notify_cipher_bool)
+
+        if self.notification_key == 'green':
+            self.server_incoming.setIcon(QIcon("./resources/image/public_FILL1_wght100_GRAD200_opsz40_GREEN.png"))
+            if mute_server_notify_cipher_bool is False:
+                url = QUrl.fromLocalFile("./resources/audio/communicator_0.wav")
+                content = QMediaContent(url)
+                player = QMediaPlayer()
+                player.setMedia(content)
+                player.setVolume(100)
+                player.play()
+
+        elif self.notification_key == 'amber':
+            self.server_incoming.setIcon(QIcon("./resources/image/public_FILL1_wght100_GRAD200_opsz40_AMBER.png"))
+            if mute_server_notify_alien_bool is False:
+                url = QUrl.fromLocalFile("./resources/audio/communicator_0.wav")
+                content = QMediaContent(url)
+                player = QMediaPlayer()
+                player.setMedia(content)
+                player.setVolume(100)
+                player.play()
+
+        time.sleep(1)
         self.server_incoming.setIcon(QIcon("./resources/image/public_FILL1_wght100_GRAD200_opsz40_WHITE.png"))
 
     def run(self):
