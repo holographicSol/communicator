@@ -63,6 +63,12 @@ address_fingerprint = []
 dial_out_dial_out_cipher_bool = True
 dial_out_using_address_book_bool = True
 
+x_time = round(time.time() * 1000)
+z_time = []
+prev_addr = []
+soft_block_ip = []
+violation_count = []
+
 # Wild Addresses
 wild_addresses_ip = []
 
@@ -85,6 +91,8 @@ write_configuration_engaged = False
 
 mute_server_notify_alien_bool = False
 mute_server_notify_cipher_bool = False
+
+server_rate_limiting_bool = True
 
 configuration_thread = []
 
@@ -1220,7 +1228,6 @@ class ConfigurationClass(QThread):
         address_key = []
         address_fingerprint = []
 
-
         if configuration_thread_key == 'ALL':
             server_addresses = []
             server_ip = []
@@ -1635,6 +1642,7 @@ class ServerClass(QThread):
         self.data = ''
         self.SERVER_HOST = ''
         self.SERVER_PORT = ''
+        self.time_con = 0
 
     def run(self):
 
@@ -1656,10 +1664,10 @@ class ServerClass(QThread):
         global server_thread_key
         while True:
             if server_thread_key == 'listen':
-                try:
-                    self.listen()
-                except Exception as e:
-                    print(str(datetime.datetime.now()) + ' -- ServerClass.run failed:', e)
+                # try:
+                self.listen()
+                # except Exception as e:
+                #     print(str(datetime.datetime.now()) + ' -- ServerClass.run failed:', e)
 
     def server_logger(self):
         if not os.path.exists(server_log):
@@ -1667,6 +1675,15 @@ class ServerClass(QThread):
         with open(server_log, 'a') as fo:
             fo.write('\n' + self.data + '\n')
         fo.close()
+
+    @QtCore.pyqtSlot()
+    def foo(self):
+        self.time_con = 0
+        print('Server.foo:', self.time_con)
+        while True:
+            self.time_con += 1
+            print(self.time_con)
+            time.sleep(1)
 
     def listen(self):
         global server_ip
@@ -1676,6 +1693,13 @@ class ServerClass(QThread):
         global server_data
         global wild_addresses_ip
         global address_server_data
+        global server_rate_limiting_bool
+
+        global x_time
+        global z_time
+        global prev_addr
+        global soft_block_ip
+        global violation_count
 
         self.server_status_label.setText('SERVER STATUS: ONLINE')
 
@@ -1684,48 +1708,121 @@ class ServerClass(QThread):
         print(str(datetime.datetime.now()) + ' -- ServerClass.listen SERVER_PORT:', self.SERVER_PORT)
         print(str(datetime.datetime.now()) + ' -- ServerClass.listen SERVER: attempting to listen')
 
+        x_time = round(time.time() * 1000)
+
         while True:
+            if len(soft_block_ip) > 0:
+                i = 0
+                for _ in z_time:
+                    if violation_count[i] < 20:
+                        print(str(datetime.datetime.now()) + ' -- ServerClass.listen violation count < 3 (client soft block time 2 seconds) checking time: ' + str(soft_block_ip[i]))
+                        print(str(datetime.datetime.now()) + ' -- ServerClass.listen soft block comparing z_time to current time: ' + str(round(time.time() * 1000)), ' --> ', str(z_time[i]))
+                        if round(time.time() * 1000) > (z_time[i] + 2000):
+                            print(str(datetime.datetime.now()) + ' -- ServerClass.listen unblocking: ' + str(soft_block_ip[i]))
+                            del soft_block_ip[i]
+                        else:
+                            print(str(datetime.datetime.now()) + ' -- ServerClass.listen soft block will remain: ' + str(soft_block_ip[i]))
+                    elif violation_count[i] >= 20:
+                        print(str(datetime.datetime.now()) + ' -- ServerClass.listen violation count exceeds 3 (client soft block time 24 hours) checking time: ' + str(soft_block_ip[i]))
+                        print(str(datetime.datetime.now()) + ' -- ServerClass.listen soft block comparing z_time to current time: ' + str(round(time.time() * 1000)), ' --> ', str(z_time[i]))
+                        if round(time.time() * 1000) > (z_time[i] + (86400 * 1000)):
+                            print(str(datetime.datetime.now()) + ' -- ServerClass.listen unblocking: ' + str(soft_block_ip[i]))
+                            del soft_block_ip[i]
+                        else:
+                            print(str(datetime.datetime.now()) + ' -- ServerClass.listen soft block will remain: ' + str(soft_block_ip[i]))
+                    i += 1
+
             try:
                 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as SOCKET_SERVER:
                     SOCKET_SERVER.bind((self.SERVER_HOST, self.SERVER_PORT))
                     SOCKET_SERVER.listen()
                     conn, addr = SOCKET_SERVER.accept()
-                    wild_address_ip = str(addr[0])
-                    wild_address_port = str(addr[1])
-                    if wild_address_ip not in address_ip:
-                        print(str(datetime.datetime.now()) + ' -- ServerClass.listen incoming wild address:', wild_address_ip, str(wild_address_port))
-                        wild_addresses_ip.append(str(wild_address_ip + ' ' + wild_address_port))
-                    with conn:
-                        print('-' * 200)
-                        self.data = str(datetime.datetime.now()) + ' -- ServerClass.listen incoming connection: ' + str(addr)
-                        messages.append('[' + str(datetime.datetime.now()) + '] [INCOMING CONNECTION] [' + str(addr[0]) + ':' + str(addr[1]) + ']')
-                        print(self.data)
-                        self.server_logger()
-                        while True:
-                            try:
-                                server_data_0 = conn.recv(2048)
-                                if not server_data_0:
+                    print('SOCKET_SERVER:', SOCKET_SERVER)
+                    if addr[0] in soft_block_ip:
+                        print('BLOCK:', addr[0])
+                        SOCKET_SERVER.close()
+                        print('SOCKET_SERVER AFTER BLOCKED:', SOCKET_SERVER)
+
+                    print('ADDRESS:', addr[0])
+                    print('PREVIOUS ADDRESS:', prev_addr)
+
+                    # Set Previous Address
+                    if addr[0] != prev_addr:
+                        print('SETTING PREVIOUS ADDRESS')
+                        prev_addr = addr[0]
+                    elif addr[0] == prev_addr:
+                        print('ADDRESS == PREVIOUS ADDRESS:', addr[0])
+                        y_time = round(time.time() * 1000)
+
+                        # Add IP To Soft Block List
+                        if y_time < (x_time + 1000):
+                            print(str(datetime.datetime.now()) + ' -- ServerClass.listen checking soft block configuration for:' + str(addr[0]))
+
+                            if addr[0] not in soft_block_ip:
+                                print(str(datetime.datetime.now()) + ' -- ServerClass.listen adding IP Address to soft block list: ' + str(addr[0]))
+                                soft_block_ip.append(addr[0])
+
+                                # Set Z Time
+                                _z_time = round(time.time() * 1000)
+                                z_time.append(_z_time)
+                                print(str(datetime.datetime.now()) + ' -- ServerClass.listen setting IP Address Z_TIME to current time: ' + str(addr[0]) + ' --> ' + str(_z_time))
+
+                                # Set Violation Count
+                                _violation_count = 1
+                                violation_count.append(_violation_count)
+                                print(str(datetime.datetime.now()) + ' -- ServerClass.listen setting IP Address violation count: ' + str(addr[0]) + ' --> ' + str(_violation_count))
+
+                            elif addr[0] in soft_block_ip:
+                                print(str(datetime.datetime.now()) + ' -- ServerClass.listen IP Address already in soft block list: ' + str(addr[0]))
+                                soft_block_ip_index = soft_block_ip.index(addr[0])
+
+                                z_time[soft_block_ip_index] = round(time.time() * 1000)
+                                print(str(datetime.datetime.now()) + ' -- ServerClass.listen resetting IP Address Z_TIME to current time: ' + str(addr[0]) + ' --> ' + str(z_time[soft_block_ip_index]))
+
+                                violation_count[soft_block_ip_index] += 1
+                                print(str(datetime.datetime.now()) + ' -- ServerClass.listen increasing IP Address violation count: ' + str(addr[0]) + ' --> ' + str(violation_count[soft_block_ip_index]))
+
+                        # Set Time X As Time Y
+                        x_time = y_time
+                        print(str(datetime.datetime.now()) + ' -- ServerClass.listen updating x time: ' + str(addr[0]))
+
+                    # Handle Accepted Connection
+                    if addr[0] not in soft_block_ip:
+                        # Compile list of addresses not in address book
+                        if str(addr[0]) not in address_ip:
+                            print(str(datetime.datetime.now()) + ' -- ServerClass.listen incoming wild address:', str(addr[0]), str(addr[1]))
+                            wild_addresses_ip.append(str(addr[0]) + ' ' + str(addr[1]))
+
+                        with conn:
+                            print('-' * 200)
+                            self.data = str(datetime.datetime.now()) + ' -- ServerClass.listen incoming connection: ' + str(addr)
+                            messages.append('[' + str(datetime.datetime.now()) + '] [INCOMING CONNECTION] [' + str(addr[0]) + ':' + str(addr[1]) + ']')
+                            print(self.data)
+                            self.server_logger()
+                            while True:
+                                try:
+                                    server_data_0 = ''
+                                    server_data_0 = conn.recv(2048)
+                                    if not server_data_0:
+                                        break
+
+                                    # dump server_data_0 into a stack for the server_data_handler
+                                    server_data.append(server_data_0)
+                                    address_server_data.append(str(addr[0]) + ' ' + str(addr[1]))
+
+                                    # show connection received data
+                                    self.data = str(datetime.datetime.now()) + ' -- ServerClass.listen connection received server_data: ' + str(addr) + ' server_data: ' + str(server_data_0)
+                                    print(self.data)
+                                    self.server_logger()
+
+                                    # send delivery confirmation message
+                                    print(str(datetime.datetime.now()) + ' -- ServerClass.listen: sending delivery confirmation message to:' + str(conn))
+                                    conn.sendall(server_data_0)
+
+                                except Exception as e:
+                                    print(str(datetime.datetime.now()) + ' ' + str(e))
+                                    messages.append('[' + str(datetime.datetime.now()) + '] ' + str(e))
                                     break
-
-                                # ToDo --> This may make the data_handler_thread infinitely slower so be sure to clear this list periodically and safely without disrupting the data_handler_thread
-                                # dump server_data_0 into a stack for the server_data_handler
-                                server_data.append(server_data_0)
-                                address_server_data.append(str(addr[0]) + ' ' + str(addr[1]))
-
-                                # show connection received data
-                                self.data = str(datetime.datetime.now()) + ' -- ServerClass.listen connection received server_data: ' + str(addr) + ' server_data: ' + str(server_data_0)
-                                print(self.data)
-                                self.server_logger()
-
-                                # ToDo --> SECURITY RISK: Only send delivery confirmation conditionally! also change the delivery message
-                                # send delivery confirmation message
-                                print(str(datetime.datetime.now()) + ' -- ServerClass.listen: sending delivery confirmation message to:' + str(conn))
-                                conn.sendall(server_data_0)
-
-                            except Exception as e:
-                                print(str(datetime.datetime.now()) + ' ' + str(e))
-                                messages.append('[' + str(datetime.datetime.now()) + '] ' + str(e))
-                                break
 
             except Exception as e:
                 print(str(datetime.datetime.now()) + ' -- ServerClass.listen failed:', e)
