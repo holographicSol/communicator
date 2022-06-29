@@ -1760,7 +1760,7 @@ class ServerClass(QThread):
                         print('ADDRESS == PREVIOUS ADDRESS:', addr[0])
                         y_time = round(time.time() * 1000)
 
-                        # DOS & DDOS Protection - Compare Y_Time (Now) To X_Time (Last Time)
+                        # DOS & DDOS Protection - Compare Y_Time (Now) To X_Time (Last Time) [ TUNABLE X_Time + n ]
                         if y_time < (x_time + 1000):
                             print(str(datetime.datetime.now()) + ' -- ServerClass.listen checking soft block configuration for:' + str(addr[0]))
 
