@@ -1750,7 +1750,7 @@ class ServerClass(QThread):
                     print('ADDRESS:', addr[0])
                     print('PREVIOUS ADDRESS:', prev_addr)
 
-                    # Set Previous Address
+                    # DOS & DDOS Protection - Set Previous Address
                     if addr[0] != prev_addr:
                         print('SETTING PREVIOUS ADDRESS')
                         prev_addr = addr[0]
