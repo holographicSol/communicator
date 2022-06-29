@@ -1713,14 +1713,14 @@ class ServerClass(QThread):
         while True:
             if len(soft_block_ip) > 0:
 
-                # DOS & DDOS Protection - Tune And Add Soft Block Time Ranges Using Z_Time And Violation Count
+                # DOS & DDOS Protection - Tune And Add Soft Block Time Ranges Using (Z_Time + n) And Violation Count
                 i = 0
                 for _ in z_time:
 
                     if violation_count[i] < 20:  # DOS & DDOS Protection - Range 0
                         print(str(datetime.datetime.now()) + ' -- ServerClass.listen violation count < 3 (client soft block time 2 seconds) checking time: ' + str(soft_block_ip[i]))
                         print(str(datetime.datetime.now()) + ' -- ServerClass.listen soft block comparing z_time to current time: ' + str(round(time.time() * 1000)), ' --> ', str(z_time[i]))
-                        if round(time.time() * 1000) > (z_time[i] + 2000):
+                        if round(time.time() * 1000) > (z_time[i] + 2000):  # Unblock in n [ TUNABLE Z_Time + n ] N=Milliseconds
                             print(str(datetime.datetime.now()) + ' -- ServerClass.listen unblocking: ' + str(soft_block_ip[i]))
                             del soft_block_ip[i]
                         else:
@@ -1729,7 +1729,7 @@ class ServerClass(QThread):
                     elif violation_count[i] >= 20:  # DOS & DDOS Protection - Range 1
                         print(str(datetime.datetime.now()) + ' -- ServerClass.listen violation count exceeds 3 (client soft block time end of the day) checking time: ' + str(soft_block_ip[i]))
                         print(str(datetime.datetime.now()) + ' -- ServerClass.listen soft block comparing z_time to current time: ' + str(round(time.time() * 1000)), ' --> ', str(z_time[i]))
-                        if round(time.time() * 1000) > (z_time[i] + (86400 * 999)):
+                        if round(time.time() * 1000) > (z_time[i] + (86400 * 999)):  # Unblock in n * n [ TUNABLE Z_Time + (n * n) ] N=Milliseconds
                             print(str(datetime.datetime.now()) + ' -- ServerClass.listen unblocking: ' + str(soft_block_ip[i]))
                             del soft_block_ip[i]
                         else:
@@ -1762,8 +1762,8 @@ class ServerClass(QThread):
                         print('ADDRESS == PREVIOUS ADDRESS:', addr[0])
                         y_time = round(time.time() * 1000)
 
-                        # DOS & DDOS Protection - Compare Y_Time (Now) To X_Time (Last Time) [ TUNABLE X_Time + n ]
-                        if y_time < (x_time + 1000):
+                        # DOS & DDOS Protection - Compare Y_Time (Now) To X_Time (Last Time)
+                        if y_time < (x_time + 1000):  # Throttle Rate = n [ TUNABLE X_Time + n ] N=Milliseconds
                             print(str(datetime.datetime.now()) + ' -- ServerClass.listen checking soft block configuration for:' + str(addr[0]))
 
                             # DOS & DDOS Protection - Add New Entry To Soft Block List
