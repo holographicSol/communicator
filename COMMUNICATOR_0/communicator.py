@@ -175,6 +175,12 @@ tb_0_stylesheet = """QTextBrowser {background-color: rgb(10, 10, 10);
 
 global_self = []
 
+url = QUrl.fromLocalFile("./resources/audio/communicator_0.wav")
+content = QMediaContent(url)
+player = QMediaPlayer()
+player.setMedia(content)
+player.setVolume(100)
+
 
 class App(QMainWindow):
     def __init__(self):
@@ -1494,11 +1500,6 @@ class ServerDataHandlerClass(QThread):
         fo.close()
 
     def play_notification_sound(self):
-        url = QUrl.fromLocalFile("./resources/audio/communicator_0.wav")
-        content = QMediaContent(url)
-        player = QMediaPlayer()
-        player.setMedia(content)
-        player.setVolume(100)
         player.play()
         time.sleep(1)
 
@@ -1512,22 +1513,12 @@ class ServerDataHandlerClass(QThread):
         if self.notification_key == 'green':
             self.server_incoming.setIcon(QIcon("./resources/image/public_FILL1_wght100_GRAD200_opsz40_GREEN.png"))
             if mute_server_notify_cipher_bool is False:
-                url = QUrl.fromLocalFile("./resources/audio/communicator_0.wav")
-                content = QMediaContent(url)
-                player = QMediaPlayer()
-                player.setMedia(content)
-                player.setVolume(100)
-                player.play()
+                self.play_notification_sound()
 
         elif self.notification_key == 'amber':
             self.server_incoming.setIcon(QIcon("./resources/image/public_FILL1_wght100_GRAD200_opsz40_AMBER.png"))
             if mute_server_notify_alien_bool is False:
-                url = QUrl.fromLocalFile("./resources/audio/communicator_0.wav")
-                content = QMediaContent(url)
-                player = QMediaPlayer()
-                player.setMedia(content)
-                player.setVolume(100)
-                player.play()
+                self.play_notification_sound()
 
         time.sleep(1)
         self.server_incoming.setIcon(QIcon("./resources/image/public_FILL1_wght100_GRAD200_opsz40_WHITE.png"))
