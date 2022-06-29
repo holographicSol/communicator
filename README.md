@@ -43,9 +43,13 @@ which is in neither persons favour.
 5. Share a different key and fingerprint for each contact in the address book.
 
 
+DOS & DDOS Protection Framework:
+1. Easily Tunable Communicator Anti-DOS & Anti-DDOS Framework provides a certain level of protection.
+2. Testing for DOS proves working. DDOS remains untested.
+
+
 Python version - 3.9
 Platform - Developed on Windows 10.
-Developed @ Resolution 1920x1080 - No re-scaling functions yet.
 
 Pycrypto Installation:
 1. If encounter error: error: command 'C:\\Program Files\\Microsoft Visual Studio\\2022\\Professional\\VC\\Tools\\MSVC\\14.31.31103\\bin\\HostX86\\x64\\cl.exe' failed with exit code 2
