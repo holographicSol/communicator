@@ -1717,19 +1717,19 @@ class ServerClass(QThread):
                 i = 0
                 for _ in z_time:
 
-                    if violation_count[i] < 20:  # DOS & DDOS Protection - Range 0 [TUNABLE Violation Count[i] < n ] N=Violation Count
+                    if violation_count[i] < 20:  # DOS & DDOS Protection - Range 0 [TUNABLE Violation Count[i] < n ] N=Violation Count Range
                         print(str(datetime.datetime.now()) + ' -- ServerClass.listen violation count < 3 (client soft block time 2 seconds) checking time: ' + str(soft_block_ip[i]))
                         print(str(datetime.datetime.now()) + ' -- ServerClass.listen soft block comparing z_time to current time: ' + str(round(time.time() * 1000)), ' --> ', str(z_time[i]))
-                        if round(time.time() * 1000) > (z_time[i] + 2000):  # Unblock in n [ TUNABLE Z_Time + n ] N=Milliseconds
+                        if round(time.time() * 1000) > (z_time[i] + 2000):  # Unblock in n [ TUNABLE Z_Time + n ] N=Milliseconds Soft Block Time
                             print(str(datetime.datetime.now()) + ' -- ServerClass.listen unblocking: ' + str(soft_block_ip[i]))
                             del soft_block_ip[i]
                         else:
                             print(str(datetime.datetime.now()) + ' -- ServerClass.listen soft block will remain: ' + str(soft_block_ip[i]))
 
-                    elif violation_count[i] >= 20:  # DOS & DDOS Protection - Range 1 [TUNABLE Violation Count[i] < n ] N=Violation Count
+                    elif violation_count[i] >= 20:  # DOS & DDOS Protection - Range 1 [TUNABLE Violation Count[i] < n ] N=Violation Count Range
                         print(str(datetime.datetime.now()) + ' -- ServerClass.listen violation count exceeds 3 (client soft block time end of the day) checking time: ' + str(soft_block_ip[i]))
                         print(str(datetime.datetime.now()) + ' -- ServerClass.listen soft block comparing z_time to current time: ' + str(round(time.time() * 1000)), ' --> ', str(z_time[i]))
-                        if round(time.time() * 1000) > (z_time[i] + (86400 * 999)):  # Unblock in n * n [ TUNABLE Z_Time + (n * n) ] N=Milliseconds
+                        if round(time.time() * 1000) > (z_time[i] + (86400 * 999)):  # Unblock in n * n [ TUNABLE Z_Time + (n * n) ] N=Milliseconds Soft Block Time 
                             print(str(datetime.datetime.now()) + ' -- ServerClass.listen unblocking: ' + str(soft_block_ip[i]))
                             del soft_block_ip[i]
                             del violation_count[i]
