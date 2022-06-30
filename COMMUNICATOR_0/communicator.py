@@ -30,11 +30,6 @@ def NFD(text):
 def canonical_caseless(text):
     return NFD(NFD(text).casefold())
 
-# key, initialization vector and padding
-# crypt_iv = bytes('This is an IV456', 'utf-8')
-# BS = 16
-# pad = lambda s: bytes(s + (BS - len(s) % BS) * chr(BS - len(s) % BS), 'utf-8')
-# unpad = lambda s : s[0:-ord(s[-1:])]
 
 # Socket Instances
 SOCKET_DIAL_OUT = []
@@ -89,6 +84,7 @@ dial_out_log = './log/dial_out_log.txt'
 configuration_thread_key = ''
 configuration_thread_completed = False
 write_configuration_engaged = False
+server_write_configuration_engaged = False
 
 mute_server_notify_alien_bool = False
 mute_server_notify_cipher_bool = False
@@ -129,6 +125,13 @@ standard_communication_count = """QPushButton{background-color: rgb(10, 10, 10);
 
 soft_block_ip_notification_count_stylesheet = """QPushButton{background-color: rgb(10, 10, 10);
                        color: rgb(200, 0, 0);
+                       border-bottom:2px solid rgb(5, 5, 5);
+                       border-right:2px solid rgb(5, 5, 5);
+                       border-top:2px solid rgb(5, 5, 5);
+                       border-left:2px solid rgb(5, 5, 5);}"""
+
+soft_block_ip_notification_alert_stylesheet = """QPushButton{background-color: rgb(200, 0, 0);
+                       color: rgb(0, 0, 0);
                        border-bottom:2px solid rgb(5, 5, 5);
                        border-right:2px solid rgb(5, 5, 5);
                        border-top:2px solid rgb(5, 5, 5);
@@ -437,9 +440,10 @@ class App(QMainWindow):
             print(str(datetime.datetime.now()) + ' -- plugged in: App.start_function')
             global_self.setFocus()
             global server_thread_key
-            server_thread.stop()
-            server_thread_key = 'listen'
-            server_thread.start()
+            if len(server_addresses) > 0:
+                server_thread.stop()
+                server_thread_key = 'listen'
+                server_thread.start()
 
         def stop_function():
             print(str(datetime.datetime.now()) + ' -- plugged in: App.stop_function')
@@ -456,42 +460,26 @@ class App(QMainWindow):
             global server_address
             global server_ip
             global server_port
-            global write_configuration_engaged
             global server_address_index
-            if write_configuration_engaged is False:
 
-                write_configuration_engaged = True
+            server_address_var = self.server_ip_port.text()
+            if server_address_var not in server_addresses:
+                print(str(datetime.datetime.now()) + ' -- new server address detected:', server_address_var)
 
-                server_address_var = self.server_ip_port.text()
-                if server_address_var not in server_addresses:
-                    print(str(datetime.datetime.now()) + ' -- new server address detected:', server_address_var)
-
-                    self.write_var = 'SERVER_ADDRESS ' + self.server_ip_port.text()
-                    print(str(datetime.datetime.now()) + ' -- setting write variable:', self.write_var)
-
-                    with open('./config.txt', 'a') as fo:
-                        fo.write('\n' + self.write_var + '\n')
-                    fo.close()
-
-                    server_addresses.append(server_address_var)
-                    server_ip.append(server_address_var.split()[0])
-                    server_port.append(server_address_var.split()[1])
-                    server_address_index = server_addresses.index(server_address_var)
-                    print(str(datetime.datetime.now()) + ' -- changing server_address_index to:', server_address_index)
-                    server_address = server_addresses[server_address_index]
-                    print(str(datetime.datetime.now()) + ' -- setting server_address using server_address_index:', server_address)
-
-                else:
-                    print(str(datetime.datetime.now()) + ' -- server address already exists:', server_address_var)
-                    server_address_index = server_addresses.index(server_address_var)
-                    print(str(datetime.datetime.now()) + ' -- changing server_address_index to:', server_address_index)
-                    server_address = server_addresses[server_address_index]
-                    print(str(datetime.datetime.now()) + ' -- setting server_address using server_address_index:', server_address)
-
-                write_configuration_engaged = False
+                server_addresses.append(server_address_var)
+                server_ip.append(server_address_var.split()[0])
+                server_port.append(server_address_var.split()[1])
+                server_address_index = server_addresses.index(server_address_var)
+                print(str(datetime.datetime.now()) + ' -- changing server_address_index to:', server_address_index)
+                server_address = server_addresses[server_address_index]
+                print(str(datetime.datetime.now()) + ' -- setting server_address using server_address_index:', server_address)
 
             else:
-                print(str(datetime.datetime.now()) + ' -- write_configuration_engaged:', write_configuration_engaged)
+                print(str(datetime.datetime.now()) + ' -- server address already exists:', server_address_var)
+                server_address_index = server_addresses.index(server_address_var)
+                print(str(datetime.datetime.now()) + ' -- changing server_address_index to:', server_address_index)
+                server_address = server_addresses[server_address_index]
+                print(str(datetime.datetime.now()) + ' -- setting server_address using server_address_index:', server_address)
 
         def server_prev_addr_function():
             print(str(datetime.datetime.now()) + ' -- plugged in: App.server_prev_addr_function')
@@ -502,21 +490,27 @@ class App(QMainWindow):
             LEN_SERVER_ADDRESSES = len(server_addresses)
             print(str(datetime.datetime.now()) + ' -- len(server_addresses):', len(server_addresses))
 
-            # Step through address book
-            if server_address_index == 0:
-                print(str(datetime.datetime.now()) + ' -- server_address_index is zero: setting server_address_index to len(server_addresses)')
-                server_address_index = LEN_SERVER_ADDRESSES - 1
+            if LEN_SERVER_ADDRESSES > 0:
+
+                # Step through address book
+                if server_address_index == 0:
+                    print(str(datetime.datetime.now()) + ' -- server_address_index is zero: setting server_address_index to len(server_addresses)')
+                    server_address_index = LEN_SERVER_ADDRESSES - 1
+                else:
+                    print(str(datetime.datetime.now()) + ' -- server_address_index is not zero: subtracting 1 from server_address_index')
+                    server_address_index = server_address_index - 1
+
+                print(str(datetime.datetime.now()) + ' -- setting server_address_index:', server_address_index)
+                print(str(datetime.datetime.now()) + ' -- setting server_address using server_address_index:', server_addresses[server_address_index])
+
+                server_address = server_addresses[server_address_index]
+                print(str(datetime.datetime.now()) + ' -- server_address:', server_address)
+                self.server_ip_port.setText(server_address)
+                print(str(datetime.datetime.now()) + ' -- set server_ip_port text:', server_address)
+
             else:
-                print(str(datetime.datetime.now()) + ' -- server_address_index is not zero: subtracting 1 from server_address_index')
-                server_address_index = server_address_index - 1
-
-            print(str(datetime.datetime.now()) + ' -- setting server_address_index:', server_address_index)
-            print(str(datetime.datetime.now()) + ' -- setting server_address using server_address_index:', server_addresses[server_address_index])
-
-            server_address = server_addresses[server_address_index]
-            print(str(datetime.datetime.now()) + ' -- server_address:', server_address)
-            self.server_ip_port.setText(server_address)
-            print(str(datetime.datetime.now()) + ' -- set server_ip_port text:', server_address)
+                print(str(datetime.datetime.now()) + ' -- LEN_SERVER_ADDRESSES unpopulated')
+                self.server_ip_port.setText('')
 
         def server_next_addr_function():
             print(str(datetime.datetime.now()) + ' -- plugged in: App.server_next_addr_function')
@@ -528,21 +522,26 @@ class App(QMainWindow):
             LEN_SERVER_ADDRESSES = len(server_addresses)
             print(str(datetime.datetime.now()) + ' -- len(server_addresses):', len(server_addresses))
 
-            # Step through address book
-            if server_address_index == LEN_SERVER_ADDRESSES - 1:
-                print(str(datetime.datetime.now()) + ' -- server_address_index reached max: setting server_address_index to zero')
-                server_address_index = 0
+            if LEN_SERVER_ADDRESSES > 0:
+
+                # Step through address book
+                if server_address_index == LEN_SERVER_ADDRESSES - 1:
+                    print(str(datetime.datetime.now()) + ' -- server_address_index reached max: setting server_address_index to zero')
+                    server_address_index = 0
+                else:
+                    print(str(datetime.datetime.now()) + ' -- server_address_index is not max: adding 1 to server_address_index')
+                    server_address_index += 1
+
+                print(str(datetime.datetime.now()) + ' -- setting server_address_index:', server_address_index)
+                print(str(datetime.datetime.now()) + ' -- setting server_address using server_address_index:', server_addresses[server_address_index])
+
+                server_address = server_addresses[server_address_index]
+                print(str(datetime.datetime.now()) + ' -- server_address:', server_address)
+                self.server_ip_port.setText(server_address)
+                print(str(datetime.datetime.now()) + ' -- set server_ip_port text:', server_address)
             else:
-                print(str(datetime.datetime.now()) + ' -- server_address_index is not max: adding 1 to server_address_index')
-                server_address_index += 1
-
-            print(str(datetime.datetime.now()) + ' -- setting server_address_index:', server_address_index)
-            print(str(datetime.datetime.now()) + ' -- setting server_address using server_address_index:', server_addresses[server_address_index])
-
-            server_address = server_addresses[server_address_index]
-            print(str(datetime.datetime.now()) + ' -- server_address:', server_address)
-            self.server_ip_port.setText(server_address)
-            print(str(datetime.datetime.now()) + ' -- set server_ip_port text:', server_address)
+                print(str(datetime.datetime.now()) + ' -- LEN_SERVER_ADDRESSES unpopulated')
+                self.server_ip_port.setText('')
 
         def dial_out_name_function_set():
             print(str(datetime.datetime.now()) + ' -- plugged in: App.dial_out_name_function_set')
@@ -702,6 +701,118 @@ class App(QMainWindow):
                 self.mute_server_notify_cipher.setIcon(QIcon("./resources/image/volume_off_FILL0_wght100_GRAD200_opsz20.png"))
                 print(str(datetime.datetime.now()) + ' -- plugged in: App.mute_server_notify_alien_function setting mute:', mute_server_notify_cipher_bool)
 
+        def server_add_addr_confirm_function():
+            print(str(datetime.datetime.now()) + ' -- plugged in: App.server_add_addr_confirm_function')
+            global_self.setFocus()
+            global server_addresses
+            global server_address
+            global server_ip
+            global server_port
+            global server_address_index
+            global write_configuration_engaged
+            if write_configuration_engaged is False:
+
+                write_configuration_engaged = True
+
+                server_address_var = self.server_ip_port.text()
+
+                write_bool = True
+
+                with open('./config.txt', 'r') as fo:
+                    for line in fo:
+                        line = line.strip()
+                        line_split = line.split(' ')
+                        if line_split[0] == 'SERVER_ADDRESS':
+                            if str(line_split[1] + ' ' + line_split[2]) == server_address_var:
+                                write_bool = False
+                                break
+                fo.close()
+
+                if write_bool is True:
+                    print(str(datetime.datetime.now()) + ' -- new server address detected:', server_address_var)
+
+                    self.write_var = 'SERVER_ADDRESS ' + self.server_ip_port.text()
+                    print(str(datetime.datetime.now()) + ' -- setting write variable:', self.write_var)
+
+                    if os.path.exists('./config.txt'):
+                        with open('./config.txt', 'a') as fo:
+                            fo.write('\n' + self.write_var + '\n')
+                        fo.close()
+
+                        server_addresses.append(server_address_var)
+                        server_ip.append(server_address_var.split()[0])
+                        server_port.append(server_address_var.split()[1])
+                        server_address_index = server_addresses.index(server_address_var)
+                        print(str(datetime.datetime.now()) + ' -- changing server_address_index to:', server_address_index)
+                        server_address = server_addresses[server_address_index]
+                        print(str(datetime.datetime.now()) + ' -- setting server_address using server_address_index:',
+                              server_address)
+
+                    else:
+                        print('-- could not find communicator configuration file')
+
+                else:
+                    print(str(datetime.datetime.now()) + ' -- server address already exists:', server_address_var)
+                    server_address_index = server_addresses.index(server_address_var)
+                    print(str(datetime.datetime.now()) + ' -- changing server_address_index to:', server_address_index)
+                    server_address = server_addresses[server_address_index]
+                    print(str(datetime.datetime.now()) + ' -- setting server_address using server_address_index:',
+                          server_address)
+
+                write_configuration_engaged = False
+
+            else:
+                print(str(datetime.datetime.now()) + ' -- write_configuration_engaged:', write_configuration_engaged)
+
+        def server_address_ask_confirmation():
+            global server_addresses
+            global server_address
+            global server_ip
+            global server_port
+            global server_address_index
+            global server_write_configuration_engaged
+            
+            if server_write_configuration_engaged is False:
+
+                server_write_configuration_engaged = True
+                print(str(datetime.datetime.now()) + ' -- plugged in: App.server_address_ask_confirmation')
+
+                # Remove focused server address entry
+                var_addresses = []
+                server_text_edit_text = self.server_ip_port.text()
+
+                if os.path.exists('./config.txt'):
+                    with open('./config.txt', 'r') as fo:
+                        for line in fo:
+                            line = line.strip()
+                            if line != '':
+                                line_split = line.split(' ')
+                                if str(line_split[1] + ' ' + line_split[2]) != self.server_ip_port.text():
+                                    var_addresses.append(line)
+                                    print('reading:', line)
+                    fo.close()
+                    open('./config.tmp', 'w').close()
+                    for _ in var_addresses:
+                        print('writing:', _)
+                        with open('./config.tmp', 'a') as fo:
+                            fo.write('\n' + _ + '\n')
+                        fo.close()
+                    os.replace('./config.tmp', './config.txt')
+                    if os.path.exists('./config.txt'):
+                        # ToDo --> check file
+                        print('file exists: check lines')
+
+                    server_address_index = server_addresses.index(server_text_edit_text)
+                    del server_addresses[server_address_index]
+                    del server_ip[server_address_index]
+                    del server_port[server_address_index]
+
+                    server_prev_addr_function()
+
+                else:
+                    print('-- could not find server configuration file')
+                server_write_configuration_engaged = False
+
         # Variable should be set before running write_configuration function
         self.write_var = ''
 
@@ -730,7 +841,26 @@ class App(QMainWindow):
         self.button_spacing_w = 4
         self.zone_spacing_h = 8
 
-        # QPushButton - Confirm REMOVE Address
+        # QPushButton - Dial Out Add Address
+        self.server_add_addr = QPushButton(self)
+        self.server_add_addr.resize(self.button_wh, int(self.button_wh / 2) - 4)
+        self.server_add_addr.move(self.button_spacing_w * 3 + self.server_title_width + self.button_wh, self.zone_spacing_h + 24)
+        self.server_add_addr.setIcon(QIcon("./resources/image/add_FILL0_wght400_GRAD200_opsz18_WHITE.png"))
+        self.server_add_addr.setIconSize(QSize(14, 14))
+        self.server_add_addr.setStyleSheet(button_stylesheet_0)
+        self.server_add_addr.clicked.connect(server_add_addr_confirm_function)
+
+        # QPushButton - Dial Out Remove Address
+        self.server_rem_addr = QPushButton(self)
+        self.server_rem_addr.resize(self.button_wh, int(self.button_wh / 2) - 4)
+        self.server_rem_addr.move(self.button_spacing_w * 2 + self.server_title_width, self.zone_spacing_h + 24)
+        self.server_rem_addr.setFont(self.font_s7b)
+        self.server_rem_addr.setText('DEL')
+        self.server_rem_addr.setIconSize(QSize(14, 14))
+        self.server_rem_addr.setStyleSheet(button_stylesheet_0)
+        self.server_rem_addr.clicked.connect(server_address_ask_confirmation)
+
+        # QPushButton - Soft Block Notification Count
         self.soft_block_ip_notification = QPushButton(self)
         self.soft_block_ip_notification.resize(self.button_wh, self.button_wh)
         self.soft_block_ip_notification.move(self.width - 88, self.zone_spacing_h)
@@ -742,6 +872,7 @@ class App(QMainWindow):
         self.accept_remove_address = QPushButton(self)
         self.accept_remove_address.resize(self.button_wh, int(self.button_wh / 2) - 4)
         self.accept_remove_address.move(self.button_spacing_w * 3 + self.server_title_width + self.button_wh, self.zone_spacing_h * 2 + self.button_wh + int(self.button_wh / 2) + 4)
+        self.accept_remove_address.setFont(self.font_s7b)
         self.accept_remove_address.setText('YES')
         self.accept_remove_address.setStyleSheet(button_stylesheet_0)
         self.accept_remove_address.clicked.connect(remove_address_confirm)
@@ -751,6 +882,7 @@ class App(QMainWindow):
         self.decline_remove_address = QPushButton(self)
         self.decline_remove_address.resize(self.button_wh, int(self.button_wh / 2) - 4)
         self.decline_remove_address.move(self.button_spacing_w * 2 + self.server_title_width, self.zone_spacing_h * 2 + self.button_wh + int(self.button_wh / 2) + 4)
+        self.decline_remove_address.setFont(self.font_s7b)
         self.decline_remove_address.setText('NO')
         self.decline_remove_address.setStyleSheet(button_stylesheet_0)
         self.decline_remove_address.clicked.connect(decline_remove_address)
@@ -760,6 +892,7 @@ class App(QMainWindow):
         self.dial_out_add_addr_confirm = QPushButton(self)
         self.dial_out_add_addr_confirm.resize(self.button_wh, int(self.button_wh / 2) - 4)
         self.dial_out_add_addr_confirm.move(self.button_spacing_w * 3 + self.server_title_width + self.button_wh, self.zone_spacing_h * 2 + self.button_wh + int(self.button_wh / 2) + 4)
+        self.dial_out_add_addr_confirm.setFont(self.font_s7b)
         self.dial_out_add_addr_confirm.setText('YES')
         self.dial_out_add_addr_confirm.setStyleSheet(button_stylesheet_0)
         self.dial_out_add_addr_confirm.clicked.connect(dial_out_add_addr_function)
@@ -769,6 +902,7 @@ class App(QMainWindow):
         self.decline_dial_out_add_addr = QPushButton(self)
         self.decline_dial_out_add_addr.resize(self.button_wh, int(self.button_wh / 2) - 4)
         self.decline_dial_out_add_addr.move(self.button_spacing_w * 2 + self.server_title_width, self.zone_spacing_h * 2 + self.button_wh + int(self.button_wh / 2) + 4)
+        self.decline_dial_out_add_addr.setFont(self.font_s7b)
         self.decline_dial_out_add_addr.setText('NO')
         self.decline_dial_out_add_addr.setStyleSheet(button_stylesheet_0)
         self.decline_dial_out_add_addr.clicked.connect(decline_add_address)
@@ -778,22 +912,25 @@ class App(QMainWindow):
         self.server_title = QLabel(self)
         self.server_title.resize(self.server_title_width, self.button_wh)
         self.server_title.move(self.button_spacing_w, self.zone_spacing_h)
+        self.server_title.setFont(self.font_s7b)
         self.server_title.setText('SERVER')
         self.server_title.setAlignment(Qt.AlignCenter)
         self.server_title.setStyleSheet(server_title_stylesheet_0)
 
         # QPushButton - Server Start
         self.server_start = QPushButton(self)
-        self.server_start.resize(self.button_wh, self.button_wh)
+        self.server_start.resize(self.button_wh, int(self.button_wh / 2))
         self.server_start.move(self.button_spacing_w * 2 + self.server_title_width, self.zone_spacing_h)
+        self.server_start.setFont(self.font_s7b)
         self.server_start.setText('START')
         self.server_start.setStyleSheet(button_stylesheet_0)
         self.server_start.clicked.connect(start_function)
 
         # QPushButton - Server Stop
         self.server_stop = QPushButton(self)
-        self.server_stop.resize(self.button_wh, self.button_wh)
+        self.server_stop.resize(self.button_wh, int(self.button_wh / 2))
         self.server_stop.move(self.button_spacing_w * 3 + self.server_title_width + self.button_wh, self.zone_spacing_h)
+        self.server_stop.setFont(self.font_s7b)
         self.server_stop.setText('STOP')
         self.server_stop.setStyleSheet(button_stylesheet_0)
         self.server_stop.clicked.connect(stop_function)
@@ -803,6 +940,7 @@ class App(QMainWindow):
         self.server_ip_port.resize(self.ip_port_width, self.button_wh)
         self.server_ip_port.move(self.button_spacing_w * 5 + self.server_title_width + self.button_wh * 3, self.zone_spacing_h)
         self.server_ip_port.returnPressed.connect(server_ip_port_write_function)
+        self.server_ip_port.setFont(self.font_s7b)
         self.server_ip_port.setText('')
         self.server_ip_port.setStyleSheet(qline_edit_style_sheet_default)
         self.server_ip_port.setAlignment(Qt.AlignCenter)
@@ -819,6 +957,7 @@ class App(QMainWindow):
         self.dial_out_title = QLabel(self)
         self.dial_out_title.resize(self.server_title_width, self.button_wh)
         self.dial_out_title.move(self.button_spacing_w, self.zone_spacing_h * 2 + self.button_wh)
+        self.dial_out_title.setFont(self.font_s7b)
         self.dial_out_title.setText('DIAL OUT')
         self.dial_out_title.setAlignment(Qt.AlignCenter)
         self.dial_out_title.setStyleSheet(server_title_stylesheet_0)
@@ -828,6 +967,7 @@ class App(QMainWindow):
         self.dial_out_ip_port.resize(self.ip_port_width, self.button_wh)
         self.dial_out_ip_port.move(self.button_spacing_w * 5 + self.server_title_width + self.button_wh * 3, self.zone_spacing_h * 2 + self.button_wh)
         self.dial_out_ip_port.returnPressed.connect(dial_out_ip_port_function_set)
+        self.dial_out_ip_port.setFont(self.font_s7b)
         self.dial_out_ip_port.setText('')
         self.dial_out_ip_port.setStyleSheet(qline_edit_style_sheet_default)
         self.dial_out_ip_port.setAlignment(Qt.AlignCenter)
@@ -872,6 +1012,7 @@ class App(QMainWindow):
         self.dial_out_name = QLineEdit(self)
         self.dial_out_name.resize(self.button_wh * 2 + 4, int(self.button_wh / 2))
         self.dial_out_name.move(self.button_spacing_w * 2 + self.server_title_width, self.zone_spacing_h * 2 + self.button_wh)
+        self.dial_out_name.setFont(self.font_s7b)
         self.dial_out_name.setText('')
         self.dial_out_name.setStyleSheet(qline_edit_style_sheet_default)
         self.dial_out_name.setAlignment(Qt.AlignCenter)
@@ -901,6 +1042,7 @@ class App(QMainWindow):
         self.dial_out_message_title = QLabel(self)
         self.dial_out_message_title.resize(self.server_title_width, self.button_wh)
         self.dial_out_message_title.move(self.button_spacing_w, self.zone_spacing_h * 3 + self.button_wh * 2)
+        self.dial_out_message_title.setFont(self.font_s7b)
         self.dial_out_message_title.setText('MESSAGE')
         self.dial_out_message_title.setAlignment(Qt.AlignCenter)
         self.dial_out_message_title.setStyleSheet(server_title_stylesheet_0)
@@ -909,6 +1051,7 @@ class App(QMainWindow):
         self.dial_out_message = QLineEdit(self)
         self.dial_out_message.resize(448, self.button_wh - 20)
         self.dial_out_message.move(self.button_spacing_w * 2 + self.server_title_width, self.zone_spacing_h * 3 + self.button_wh * 2)
+        self.dial_out_message.setFont(self.font_s7b)
         self.dial_out_message.setText('')
         self.dial_out_message.setStyleSheet(dial_out_message_stylesheet)
 
@@ -944,6 +1087,7 @@ class App(QMainWindow):
         self.server_notify_cipher.resize(self.button_wh, int(self.button_wh / 2))
         self.server_notify_cipher.move(self.button_spacing_w * 7 + self.server_title_width + self.button_wh * 4 + self.ip_port_width, self.zone_spacing_h)
         self.server_notify_cipher.setStyleSheet(standard_communication_count)
+        self.server_notify_cipher.setFont(self.font_s7b)
         self.server_notify_cipher.setText(str(cipher_message_count))
         self.server_notify_cipher.clicked.connect(server_notify_cipher_function)
 
@@ -952,6 +1096,7 @@ class App(QMainWindow):
         self.server_notify_alien.resize(self.button_wh, int(self.button_wh / 2))
         self.server_notify_alien.move(self.button_spacing_w * 7 + self.server_title_width + self.button_wh * 4 + self.ip_port_width, self.zone_spacing_h + int(self.button_wh / 2))
         self.server_notify_alien.setStyleSheet(non_standard_communication_count)
+        self.server_notify_alien.setFont(self.font_s7b)
         self.server_notify_alien.setText(str(alien_message_count))
         self.server_notify_alien.clicked.connect(server_notify_alien_function)
 
@@ -977,6 +1122,7 @@ class App(QMainWindow):
         self.server_status_label = QLabel(self)
         self.server_status_label.resize(156, 20)
         self.server_status_label.move(int(self.width / 2) - int(156 / 2), 134)
+        self.server_status_label.setFont(self.font_s7b)
         self.server_status_label.setText('SERVER STATUS: OFFLINE')
         self.server_status_label.setAlignment(Qt.AlignCenter)
         self.server_status_label.setStyleSheet(server_title_stylesheet_0)
@@ -1643,7 +1789,7 @@ class ServerDataHandlerClass(QThread):
                                 ciphertext = str(ciphertext).replace("b'", '')
                                 if str(ciphertext).endswith("'"):
                                     ciphertext = ciphertext[:len(ciphertext)-1]
-                            messages.append('[' + str(datetime.datetime.now()) + '] [' + str(addr_data) + '] [ALIEN] ' + ciphertext)
+                            messages.append('[' + str(datetime.datetime.now()) + '] [' + str(addr_data) + '] [NON-STANDARD COMMUNICATION] ' + ciphertext)
 
                             if not alien_message_count == '999+':
                                 if alien_message_count < 999:
@@ -1737,7 +1883,7 @@ class ServerClass(QThread):
         while True:
             print('checking soft_block_ip:', soft_block_ip)
             if len(soft_block_ip) > 0:
-
+                
                 # DOS & DDOS Protection - Notify Per IP Address In Soft_Block_IP
                 if len(soft_block_ip) >= 999:
                     soft_block_ip_count = '999+'
