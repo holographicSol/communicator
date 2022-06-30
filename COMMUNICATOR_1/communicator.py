@@ -1680,15 +1680,6 @@ class ServerClass(QThread):
             fo.write('\n' + self.data + '\n')
         fo.close()
 
-    @QtCore.pyqtSlot()
-    def foo(self):
-        self.time_con = 0
-        print('Server.foo:', self.time_con)
-        while True:
-            self.time_con += 1
-            print(self.time_con)
-            time.sleep(1)
-
     def listen(self):
         global server_ip
         global server_port
