@@ -77,6 +77,7 @@ messages = []
 address_server_data = []
 cipher_message_count = 0
 alien_message_count = 0
+soft_block_ip_count = 0
 
 # Public Settings
 server_thread_key = ''
@@ -126,6 +127,13 @@ standard_communication_count = """QPushButton{background-color: rgb(10, 10, 10);
                        border-top:2px solid rgb(5, 5, 5);
                        border-left:2px solid rgb(5, 5, 5);}"""
 
+soft_block_ip_notification_count_stylesheet = """QPushButton{background-color: rgb(10, 10, 10);
+                       color: rgb(200, 0, 0);
+                       border-bottom:2px solid rgb(5, 5, 5);
+                       border-right:2px solid rgb(5, 5, 5);
+                       border-top:2px solid rgb(5, 5, 5);
+                       border-left:2px solid rgb(5, 5, 5);}"""
+
 # Stylesheet - Server Switches (Mode 2)
 dial_out_message_stylesheet = """QLineEdit{background-color: rgb(10, 10, 10);
                        color: rgb(0, 255, 0);
@@ -144,7 +152,15 @@ qline_edit_style_sheet_default = """QLineEdit{background-color: rgb(10, 10, 10);
 
 # Stylesheet - Dial Out LINE_TEST (Mode 2)
 dial_out_add_addr_stylesheet_red = """QPushButton{background-color: rgb(10, 10, 10);
-                       color: rgb(200, 200, 200);
+                       color: rgb(200, 0, 0);
+                       border-bottom:2px solid rgb(5, 5, 5);
+                       border-right:2px solid rgb(5, 5, 5);
+                       border-top:2px solid rgb(5, 5, 5);
+                       border-left:2px solid rgb(5, 5, 5);}"""
+
+# Stylesheet - Dial Out LINE_TEST (Mode 2)
+dial_out_add_addr_stylesheet_green = """QPushButton{background-color: rgb(10, 10, 10);
+                       color: rgb(0, 255, 0);
                        border-bottom:2px solid rgb(5, 5, 5);
                        border-right:2px solid rgb(5, 5, 5);
                        border-top:2px solid rgb(5, 5, 5);
@@ -557,6 +573,14 @@ class App(QMainWindow):
             alien_message_count = 0
             self.server_notify_alien.setText(str(alien_message_count))
 
+        def soft_block_ip_notofication_function():
+            print(str(datetime.datetime.now()) + ' -- plugged in: App.soft_block_ip_notofication_function')
+            global soft_block_ip_count
+            global soft_block_ip
+            soft_block_ip_count = 0
+            self.soft_block_ip_notification.setText(str(soft_block_ip_count))
+            soft_block_ip = []
+
         def dial_out_add_addr_confirm_function():
             print(str(datetime.datetime.now()) + ' -- plugged in: App.dial_out_add_addr_confirm_function')
             print(str(datetime.datetime.now()) + ' -- plugged in: App.dial_out_add_addr_confirm_function add address: waiting for confirmation')
@@ -687,7 +711,7 @@ class App(QMainWindow):
         self.setWindowIcon(QIcon('./resources/image/icon.ico'))
 
         # Window Geometry
-        self.width, self.height = 540, 226
+        self.width, self.height = 584, 226
         app_pos_w, app_pos_h = (GetSystemMetrics(0) / 2 - (self.width / 2)), (GetSystemMetrics(1) / 2 - (self.height / 2))
         self.left, self.top = int(app_pos_w), int(app_pos_h)
         self.setGeometry(self.left, self.top, self.width, self.height)
@@ -705,6 +729,14 @@ class App(QMainWindow):
         self.button_wh = 40
         self.button_spacing_w = 4
         self.zone_spacing_h = 8
+
+        # QPushButton - Confirm REMOVE Address
+        self.soft_block_ip_notification = QPushButton(self)
+        self.soft_block_ip_notification.resize(self.button_wh, self.button_wh)
+        self.soft_block_ip_notification.move(self.width - 88, self.zone_spacing_h)
+        self.soft_block_ip_notification.setText(str(soft_block_ip_count))
+        self.soft_block_ip_notification.setStyleSheet(soft_block_ip_notification_count_stylesheet)
+        self.soft_block_ip_notification.clicked.connect(soft_block_ip_notofication_function)
 
         # QPushButton - Confirm REMOVE Address
         self.accept_remove_address = QPushButton(self)
@@ -875,7 +907,7 @@ class App(QMainWindow):
 
         # QLabel - Dial Out Message
         self.dial_out_message = QLineEdit(self)
-        self.dial_out_message.resize(404, self.button_wh - 20)
+        self.dial_out_message.resize(448, self.button_wh - 20)
         self.dial_out_message.move(self.button_spacing_w * 2 + self.server_title_width, self.zone_spacing_h * 3 + self.button_wh * 2)
         self.dial_out_message.setText('')
         self.dial_out_message.setStyleSheet(dial_out_message_stylesheet)
@@ -950,7 +982,7 @@ class App(QMainWindow):
         self.server_status_label.setStyleSheet(server_title_stylesheet_0)
 
         # Thread - Public Server
-        server_thread = ServerClass(self.server_title, self.server_incoming, self.server_status_label)
+        server_thread = ServerClass(self.server_title, self.server_incoming, self.server_status_label, self.soft_block_ip_notification)
 
         # Thread - ServerDataHandlerClass
         server_data_handler_class = ServerDataHandlerClass(self.server_title, self.server_incoming, self.server_notify_cipher, self.server_notify_alien)
@@ -1080,7 +1112,7 @@ class FingerprintGeneration(QThread):
 
             self.dial_out_add_addr.setStyleSheet(fingerprint_generator_stylesheet)
 
-            forbidden_fname = ['con', 'prn', 'aux', 'nul',
+            forbidden_fname = ['con', 'aux', 'nul', 'prn',
                                'com1', 'com2', 'com3', 'com4', 'com5', 'com6', 'com7', 'com8', 'com9',
                                'lpt1', 'lpt2', 'lpt3', 'lpt4', 'lpt5', 'lpt6', 'lpt7', 'lpt8', 'lpt9']
 
@@ -1115,7 +1147,6 @@ class FingerprintGeneration(QThread):
                     self.entry_address_book = self.entry_address_book + ' ' + finger_print_fname
                     DIAL_OUT_ADDRESSES = self.entry_address_book
                     print(str(datetime.datetime.now()) + ' -- FingerprintGeneration(QThread).run full address book entry string:', self.entry_address_book)
-
 
                     # Write the fingerprint file
                     open(finger_print_fname, 'w').close()
@@ -1171,10 +1202,6 @@ class FingerprintGeneration(QThread):
                         fo.close()
                     print('-' * 200)
 
-                    # self.update_values()
-                    self.dial_out_add_addr.setStyleSheet(qline_edit_style_sheet_default)
-                    time.sleep(1)
-
                     print(str(datetime.datetime.now()) + ' -- FingerprintGeneration(QThread).run -- complete')
 
                     self.update_values()
@@ -1182,13 +1209,13 @@ class FingerprintGeneration(QThread):
                 else:
                     print(str(datetime.datetime.now()) + ' -- FingerprintGeneration(QThread).run invalid address_name[dial_out_address_index] forbidden file name:', address_name_var)
                     self.dial_out_add_addr.setStyleSheet(dial_out_add_addr_stylesheet_red)
-                    time.sleep(1)
             else:
                 print(str(datetime.datetime.now()) + ' -- FingerprintGeneration(QThread).run invalid address_name[dial_out_address_index]:', address_name_var)
                 self.dial_out_add_addr.setStyleSheet(dial_out_add_addr_stylesheet_red)
-                time.sleep(1)
 
+            time.sleep(1)
             self.dial_out_add_addr.setStyleSheet(button_stylesheet_0)
+
         except Exception as e:
             print(str(datetime.datetime.now()) + ' -- :', e)
             self.dial_out_add_addr.setStyleSheet(dial_out_add_addr_stylesheet_red)
@@ -1638,11 +1665,12 @@ class ServerDataHandlerClass(QThread):
 
 
 class ServerClass(QThread):
-    def __init__(self, server_title, server_incoming, server_status_label):
+    def __init__(self, server_title, server_incoming, server_status_label, soft_block_ip_notification):
         QThread.__init__(self)
         self.server_incoming = server_incoming
         self.server_title = server_title
         self.server_status_label = server_status_label
+        self.soft_block_ip_notification = soft_block_ip_notification
         self.data = ''
         self.SERVER_HOST = ''
         self.SERVER_PORT = ''
@@ -1695,6 +1723,7 @@ class ServerClass(QThread):
         global prev_addr
         global soft_block_ip
         global violation_count
+        global soft_block_ip_count
 
         self.server_status_label.setText('SERVER STATUS: ONLINE')
 
@@ -1709,6 +1738,13 @@ class ServerClass(QThread):
             print('checking soft_block_ip:', soft_block_ip)
             if len(soft_block_ip) > 0:
 
+                # DOS & DDOS Protection - Notify Per IP Address In Soft_Block_IP
+                if len(soft_block_ip) >= 999:
+                    soft_block_ip_count = '999+'
+                else:
+                    soft_block_ip_count = len(soft_block_ip)
+                self.soft_block_ip_notification.setText(str(soft_block_ip_count))
+
                 # DOS & DDOS Protection - Tune And Add Soft Block Time Ranges Using (Z_Time + n) And Violation Count
                 i = 0
                 for _ in soft_block_ip:
@@ -1718,6 +1754,14 @@ class ServerClass(QThread):
                         if round(time.time() * 1000) > (soft_block_ip[i][1] + 2000):  # Unblock in n [ Z_Time + TUNABLE n ] N=Milliseconds Soft Block Time
                             print(str(datetime.datetime.now()) + ' -- ServerClass.listen unblocking: ' + str(soft_block_ip[i][0]))
                             del soft_block_ip[i]
+
+                            # DOS & DDOS Protection - Notify Per IP Address In Soft_Block_IP
+                            if len(soft_block_ip) >= 999:
+                                soft_block_ip_count = '999+'
+                            else:
+                                soft_block_ip_count = len(soft_block_ip)
+                            self.soft_block_ip_notification.setText(str(soft_block_ip_count))
+
                         else:
                             print(str(datetime.datetime.now()) + ' -- ServerClass.listen soft block will remain: ' + str(soft_block_ip[i][0]))
 
@@ -1770,7 +1814,7 @@ class ServerClass(QThread):
                                 new_list_entry = [addr[0], _z_time, _violation_count]
                                 soft_block_ip.append(new_list_entry)
 
-                            if addr_exists_already is True:
+                            elif addr_exists_already is True:
 
                                 # DOS & DDOS Protection - Amend Entry For Soft Block IP List
                                 print(str(datetime.datetime.now()) + ' -- ServerClass.listen IP Address already in soft block list: ' + str(addr[0]))
