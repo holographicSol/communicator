@@ -419,10 +419,11 @@ class App(QMainWindow):
             print(str(datetime.datetime.now()) + ' -- plugged in: App.dial_out_line_test_function')
             global_self.setFocus()
             global dial_out_thread_key
-            if dial_out_thread.isRunning() is True:
-                dial_out_thread.stop()
-            dial_out_thread_key = 'LINE_TEST'
-            dial_out_thread.start()
+            if not self.dial_out_message.text() == '':
+                if dial_out_thread.isRunning() is True:
+                    dial_out_thread.stop()
+                dial_out_thread_key = 'LINE_TEST'
+                dial_out_thread.start()
 
         def dial_out_message_send_function():
             print(str(datetime.datetime.now()) + ' -- plugged in: App.dial_out_message_send_function')
@@ -1175,6 +1176,7 @@ class App(QMainWindow):
         self.tb_0.move(4, 154)
         self.tb_0.resize(self.width - 8, 60)
         self.tb_0.setObjectName("tb_0")
+        self.tb_0.setFont(self.font_s7b)
         self.tb_0.setStyleSheet(tb_0_stylesheet)
         self.tb_0.setLineWrapMode(QTextBrowser.NoWrap)
         self.tb_0.horizontalScrollBar().setValue(0)
