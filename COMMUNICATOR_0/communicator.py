@@ -620,51 +620,53 @@ class App(QMainWindow):
 
             print(str(datetime.datetime.now()) + ' -- plugged in: App.remove_address_confirm')
             print(str(datetime.datetime.now()) + ' -- plugged in: App.decline_remove_address remove address: accepted')
-            self.accept_remove_address.hide()
-            self.decline_remove_address.hide()
 
-            var_addresses = []
+            if len(address_name) > 0:
+                self.accept_remove_address.hide()
+                self.decline_remove_address.hide()
 
-            # Remove focused address book entry
-            if os.path.exists('./communicator_address_book.txt'):
-                with open('./communicator_address_book.txt', 'r') as fo:
-                    for line in fo:
-                        line = line.strip()
-                        if line != '':
-                            line_split = line.split(' ')
-                            if line_split[1] != self.dial_out_name.text():
-                                var_addresses.append(line)
-                                print('reading:', line)
-                fo.close()
-                open('./communicator_address_book.tmp', 'w').close()
-                for _ in var_addresses:
-                    print('writing:', _)
-                    with open('./communicator_address_book.tmp', 'a') as fo:
-                        fo.write('\n' + _ + '\n')
-                    fo.close()
-                os.replace('./communicator_address_book.tmp', './communicator_address_book.txt')
+                var_addresses = []
+
+                # Remove focused address book entry
                 if os.path.exists('./communicator_address_book.txt'):
-                    # ToDo --> check file
-                    print('file exists: check lines')
+                    with open('./communicator_address_book.txt', 'r') as fo:
+                        for line in fo:
+                            line = line.strip()
+                            if line != '':
+                                line_split = line.split(' ')
+                                if line_split[1] != self.dial_out_name.text():
+                                    var_addresses.append(line)
+                                    print('reading:', line)
+                    fo.close()
+                    open('./communicator_address_book.tmp', 'w').close()
+                    for _ in var_addresses:
+                        print('writing:', _)
+                        with open('./communicator_address_book.tmp', 'a') as fo:
+                            fo.write('\n' + _ + '\n')
+                        fo.close()
+                    os.replace('./communicator_address_book.tmp', './communicator_address_book.txt')
+                    if os.path.exists('./communicator_address_book.txt'):
+                        # ToDo --> check file
+                        print('file exists: check lines')
 
-            del address_name[dial_out_address_index]
-            del address_ip[dial_out_address_index]
-            del address_port[dial_out_address_index]
-            del address_key[dial_out_address_index]
-            del address_fingerprint[dial_out_address_index]
-            del DIAL_OUT_ADDRESSES[dial_out_address_index]
+                del address_name[dial_out_address_index]
+                del address_ip[dial_out_address_index]
+                del address_port[dial_out_address_index]
+                del address_key[dial_out_address_index]
+                del address_fingerprint[dial_out_address_index]
+                del DIAL_OUT_ADDRESSES[dial_out_address_index]
 
-            print(address_name)
-            print(address_ip)
-            print(address_port)
-            print(address_key)
-            print(address_fingerprint)
-            print(DIAL_OUT_ADDRESSES)
+                print(address_name)
+                print(address_ip)
+                print(address_port)
+                print(address_key)
+                print(address_fingerprint)
+                print(DIAL_OUT_ADDRESSES)
 
-            self.dial_out_name.setText('')
-            self.dial_out_ip_port.setText('')
+                self.dial_out_name.setText('')
+                self.dial_out_ip_port.setText('')
 
-            dial_out_prev_addr_function()
+                dial_out_prev_addr_function()
 
             self.dial_out_add_addr.show()
             self.dial_out_rem_addr.show()
@@ -771,47 +773,49 @@ class App(QMainWindow):
             global server_port
             global server_address_index
             global server_write_configuration_engaged
+
+            if len(server_addresses) > 0:
             
-            if server_write_configuration_engaged is False:
+                if server_write_configuration_engaged is False:
 
-                server_write_configuration_engaged = True
-                print(str(datetime.datetime.now()) + ' -- plugged in: App.server_address_ask_confirmation')
+                    server_write_configuration_engaged = True
+                    print(str(datetime.datetime.now()) + ' -- plugged in: App.server_address_ask_confirmation')
 
-                # Remove focused server address entry
-                var_addresses = []
-                server_text_edit_text = self.server_ip_port.text()
+                    # Remove focused server address entry
+                    var_addresses = []
+                    server_text_edit_text = self.server_ip_port.text()
 
-                if os.path.exists('./config.txt'):
-                    with open('./config.txt', 'r') as fo:
-                        for line in fo:
-                            line = line.strip()
-                            if line != '':
-                                line_split = line.split(' ')
-                                if str(line_split[1] + ' ' + line_split[2]) != self.server_ip_port.text():
-                                    var_addresses.append(line)
-                                    print('reading:', line)
-                    fo.close()
-                    open('./config.tmp', 'w').close()
-                    for _ in var_addresses:
-                        print('writing:', _)
-                        with open('./config.tmp', 'a') as fo:
-                            fo.write('\n' + _ + '\n')
-                        fo.close()
-                    os.replace('./config.tmp', './config.txt')
                     if os.path.exists('./config.txt'):
-                        # ToDo --> check file
-                        print('file exists: check lines')
+                        with open('./config.txt', 'r') as fo:
+                            for line in fo:
+                                line = line.strip()
+                                if line != '':
+                                    line_split = line.split(' ')
+                                    if str(line_split[1] + ' ' + line_split[2]) != self.server_ip_port.text():
+                                        var_addresses.append(line)
+                                        print('reading:', line)
+                        fo.close()
+                        open('./config.tmp', 'w').close()
+                        for _ in var_addresses:
+                            print('writing:', _)
+                            with open('./config.tmp', 'a') as fo:
+                                fo.write('\n' + _ + '\n')
+                            fo.close()
+                        os.replace('./config.tmp', './config.txt')
+                        if os.path.exists('./config.txt'):
+                            # ToDo --> check file
+                            print('file exists: check lines')
 
-                    server_address_index = server_addresses.index(server_text_edit_text)
-                    del server_addresses[server_address_index]
-                    del server_ip[server_address_index]
-                    del server_port[server_address_index]
+                        server_address_index = server_addresses.index(server_text_edit_text)
+                        del server_addresses[server_address_index]
+                        del server_ip[server_address_index]
+                        del server_port[server_address_index]
 
-                    server_prev_addr_function()
+                        server_prev_addr_function()
 
-                else:
-                    print('-- could not find server configuration file')
-                server_write_configuration_engaged = False
+                    else:
+                        print('-- could not find server configuration file')
+                    server_write_configuration_engaged = False
 
         # Variable should be set before running write_configuration function
         self.write_var = ''
