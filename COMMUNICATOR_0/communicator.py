@@ -1668,10 +1668,10 @@ class ServerClass(QThread):
         global server_thread_key
         while True:
             if server_thread_key == 'listen':
-                # try:
-                self.listen()
-                # except Exception as e:
-                #     print(str(datetime.datetime.now()) + ' -- ServerClass.run failed:', e)
+                try:
+                    self.listen()
+                except Exception as e:
+                    print(str(datetime.datetime.now()) + ' -- ServerClass.run failed:', e)
 
     def server_logger(self):
         if not os.path.exists(server_log):
@@ -1719,26 +1719,16 @@ class ServerClass(QThread):
 
                 # DOS & DDOS Protection - Tune And Add Soft Block Time Ranges Using (Z_Time + n) And Violation Count
                 i = 0
-                for _ in z_time:
+                for _ in soft_block_ip:
 
-                    if violation_count[i] < 20:  # DOS & DDOS Protection - Range 0 [TUNABLE Violation Count[i] < n ] N=Violation Count Range
-                        print(str(datetime.datetime.now()) + ' -- ServerClass.listen violation count < 3 (client soft block time 2 seconds) checking time: ' + str(soft_block_ip[i]))
-                        print(str(datetime.datetime.now()) + ' -- ServerClass.listen soft block comparing z_time to current time: ' + str(round(time.time() * 1000)), ' --> ', str(z_time[i]))
-                        if round(time.time() * 1000) > (z_time[i] + 2000):  # Unblock in n [ TUNABLE Z_Time + n ] N=Milliseconds Soft Block Time
-                            print(str(datetime.datetime.now()) + ' -- ServerClass.listen unblocking: ' + str(soft_block_ip[i]))
+                    if soft_block_ip[i][2] < 20:
+                        print(str(datetime.datetime.now()) + ' -- ServerClass.listen [violation < 20] ' + str(soft_block_ip[i][0]))
+                        if round(time.time() * 1000) > (soft_block_ip[i][1] + 2000):  # Unblock in n [ Z_Time + TUNABLE n ] N=Milliseconds Soft Block Time
+                            print(str(datetime.datetime.now()) + ' -- ServerClass.listen unblocking: ' + str(soft_block_ip[i][0]))
                             del soft_block_ip[i]
                         else:
-                            print(str(datetime.datetime.now()) + ' -- ServerClass.listen soft block will remain: ' + str(soft_block_ip[i]))
+                            print(str(datetime.datetime.now()) + ' -- ServerClass.listen soft block will remain: ' + str(soft_block_ip[i][0]))
 
-                    elif violation_count[i] >= 20:  # DOS & DDOS Protection - Range 1 [TUNABLE Violation Count[i] < n ] N=Violation Count Range
-                        print(str(datetime.datetime.now()) + ' -- ServerClass.listen violation count exceeds 3 (client soft block time end of the day) checking time: ' + str(soft_block_ip[i]))
-                        print(str(datetime.datetime.now()) + ' -- ServerClass.listen soft block comparing z_time to current time: ' + str(round(time.time() * 1000)), ' --> ', str(z_time[i]))
-                        if round(time.time() * 1000) > (z_time[i] + (86400 * 999)):  # Unblock in n * n [ TUNABLE Z_Time + (n * n) ] N=Milliseconds Soft Block Time
-                            print(str(datetime.datetime.now()) + ' -- ServerClass.listen unblocking: ' + str(soft_block_ip[i]))
-                            del soft_block_ip[i]
-                            del violation_count[i]
-                        else:
-                            print(str(datetime.datetime.now()) + ' -- ServerClass.listen soft block will remain: ' + str(soft_block_ip[i]))
                     i += 1
 
             try:
@@ -1748,11 +1738,18 @@ class ServerClass(QThread):
                     conn, addr = SOCKET_SERVER.accept()
                     print('SOCKET_SERVER:', SOCKET_SERVER)
 
-                    # DOS & DDOS Protection - Close Socket
-                    if addr[0] in soft_block_ip:
-                        print('BLOCK:', addr[0])
-                        SOCKET_SERVER.close()
-                        print('SOCKET_SERVER AFTER BLOCKED:', SOCKET_SERVER)
+                    addr_exists_already = False
+                    if len(soft_block_ip) > 0:
+                        i = 0
+                        for _ in soft_block_ip:
+                            print('comparing:', soft_block_ip[i][0], ' ---> ', addr[0])
+                            if soft_block_ip[i][0] == addr[0]:
+                                print('BLOCK:', addr[0])
+                                SOCKET_SERVER.close()
+                                print('SOCKET_SERVER AFTER BLOCKED:', SOCKET_SERVER)
+                                soft_block_ip_index = i
+                                addr_exists_already = True
+                            i += 1
 
                     print('ADDRESS:', addr[0])
                     print('PREVIOUS ADDRESS:', prev_addr)
@@ -1771,41 +1768,48 @@ class ServerClass(QThread):
                         if y_time < (x_time + 1000):  # Throttle Rate = n [ TUNABLE X_Time + n ] N=Milliseconds
                             print(str(datetime.datetime.now()) + ' -- ServerClass.listen checking soft block configuration for:' + str(addr[0]))
 
+                            # addr_exists_already = False
+                            # i = 0
+                            # for _ in soft_block_ip:
+                            #     if _[0] == addr[0]:
+                            #         soft_block_ip_index = i
+                            #         addr_exists_already = True
+                            #     i += 1
+
                             # DOS & DDOS Protection - Add New Entry To Soft Block List
-                            if addr[0] not in soft_block_ip:
+                            if addr_exists_already is False:
                                 print(str(datetime.datetime.now()) + ' -- ServerClass.listen adding IP Address to soft block list: ' + str(addr[0]))
-                                soft_block_ip.append(addr[0])
 
                                 # DOS & DDOS Protection - Set Z Time
                                 _z_time = round(time.time() * 1000)
-                                z_time.append(_z_time)
                                 print(str(datetime.datetime.now()) + ' -- ServerClass.listen setting IP Address Z_TIME to current time: ' + str(addr[0]) + ' --> ' + str(_z_time))
 
                                 # DOS & DDOS Protection - Set Violation Count
                                 _violation_count = 1
-                                violation_count.append(_violation_count)
                                 print(str(datetime.datetime.now()) + ' -- ServerClass.listen setting IP Address violation count: ' + str(addr[0]) + ' --> ' + str(_violation_count))
 
-                            elif addr[0] in soft_block_ip:
+                                new_list_entry = [addr[0], _z_time, _violation_count]
+                                soft_block_ip.append(new_list_entry)
 
-                                # DOS & DDOS Protection - Amend Entry In Soft Block List
+                            if addr_exists_already is True:
+
+                                # DOS & DDOS Protection - Amend Entry For Soft Block IP List
                                 print(str(datetime.datetime.now()) + ' -- ServerClass.listen IP Address already in soft block list: ' + str(addr[0]))
-                                soft_block_ip_index = soft_block_ip.index(addr[0])
 
-                                # DOS & DDOS Protection - Amend Entry In Z_Time List
-                                z_time[soft_block_ip_index] = round(time.time() * 1000)
-                                print(str(datetime.datetime.now()) + ' -- ServerClass.listen resetting IP Address Z_TIME to current time: ' + str(addr[0]) + ' --> ' + str(z_time[soft_block_ip_index]))
+                                # DOS & DDOS Protection - Amend Entry For Z_Time
+                                soft_block_ip[soft_block_ip_index][1] = round(time.time() * 1000)
 
-                                # DOS & DDOS Protection - Amend Entry In Violation Count List
-                                violation_count[soft_block_ip_index] += 1
-                                print(str(datetime.datetime.now()) + ' -- ServerClass.listen increasing IP Address violation count: ' + str(addr[0]) + ' --> ' + str(violation_count[soft_block_ip_index]))
+                                # DOS & DDOS Protection - Amend Entry For Violation Count
+                                soft_block_ip[soft_block_ip_index][2] += 1
+
+                                print('-- ammending soft_block_ip[soft_block_ip_index]:', soft_block_ip[soft_block_ip_index])
 
                         # DOS & DDOS Protection - Set X_Time As Time Y_Time
                         x_time = y_time
                         print(str(datetime.datetime.now()) + ' -- ServerClass.listen updating x time: ' + str(addr[0]))
 
                     # Handle Accepted Connection
-                    if addr[0] not in soft_block_ip:
+                    if addr_exists_already is False:
                         # Compile list of addresses not in address book
                         if str(addr[0]) not in address_ip:
                             print(str(datetime.datetime.now()) + ' -- ServerClass.listen incoming wild address:', str(addr[0]), str(addr[1]))
