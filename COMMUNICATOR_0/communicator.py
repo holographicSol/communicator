@@ -1715,6 +1715,7 @@ class ServerClass(QThread):
         x_time = round(time.time() * 1000)
 
         while True:
+            print('checking soft_block_ip:', soft_block_ip)
             if len(soft_block_ip) > 0:
 
                 # DOS & DDOS Protection - Tune And Add Soft Block Time Ranges Using (Z_Time + n) And Violation Count
@@ -1736,7 +1737,7 @@ class ServerClass(QThread):
                     SOCKET_SERVER.bind((self.SERVER_HOST, self.SERVER_PORT))
                     SOCKET_SERVER.listen()
                     conn, addr = SOCKET_SERVER.accept()
-                    print('SOCKET_SERVER:', SOCKET_SERVER)
+                    print(str(datetime.datetime.now()) + ' -- ServerClass.listen conn, addr: ' + str(conn) + str(addr))
 
                     addr_exists_already = False
                     if len(soft_block_ip) > 0:
@@ -1744,37 +1745,24 @@ class ServerClass(QThread):
                         for _ in soft_block_ip:
                             print('comparing:', soft_block_ip[i][0], ' ---> ', addr[0])
                             if soft_block_ip[i][0] == addr[0]:
-                                print('BLOCK:', addr[0])
+                                print(str(datetime.datetime.now()) + ' -- ServerClass.listen SOCKET_SERVER ATTEMPTING BLOCK: ' + str(SOCKET_SERVER))
                                 SOCKET_SERVER.close()
-                                print('SOCKET_SERVER AFTER BLOCKED:', SOCKET_SERVER)
+                                print(str(datetime.datetime.now()) + ' -- ServerClass.listen SOCKET_SERVER AFTER CLOSE ATTEMPT: ' + str(SOCKET_SERVER))
                                 soft_block_ip_index = i
                                 addr_exists_already = True
                             i += 1
 
-                    print('ADDRESS:', addr[0])
-                    print('PREVIOUS ADDRESS:', prev_addr)
-
                     # DOS & DDOS Protection - Set Previous Address
                     if addr[0] != prev_addr:
-                        print('SETTING PREVIOUS ADDRESS')
                         prev_addr = addr[0]
                     elif addr[0] == prev_addr:
 
                         # DOS & DDOS Protection - Initiate Y_Time
-                        print('ADDRESS == PREVIOUS ADDRESS:', addr[0])
                         y_time = round(time.time() * 1000)
 
                         # DOS & DDOS Protection - Compare Y_Time (Now) To X_Time (Last Time)
                         if y_time < (x_time + 1000):  # Throttle Rate = n [ TUNABLE X_Time + n ] N=Milliseconds
                             print(str(datetime.datetime.now()) + ' -- ServerClass.listen checking soft block configuration for:' + str(addr[0]))
-
-                            # addr_exists_already = False
-                            # i = 0
-                            # for _ in soft_block_ip:
-                            #     if _[0] == addr[0]:
-                            #         soft_block_ip_index = i
-                            #         addr_exists_already = True
-                            #     i += 1
 
                             # DOS & DDOS Protection - Add New Entry To Soft Block List
                             if addr_exists_already is False:
