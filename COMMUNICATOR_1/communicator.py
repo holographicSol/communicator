@@ -32,9 +32,9 @@ def canonical_caseless(text):
 
 # key, initialization vector and padding
 # crypt_iv = bytes('This is an IV456', 'utf-8')
-BS = 16
-pad = lambda s: bytes(s + (BS - len(s) % BS) * chr(BS - len(s) % BS), 'utf-8')
-unpad = lambda s : s[0:-ord(s[-1:])]
+# BS = 16
+# pad = lambda s: bytes(s + (BS - len(s) % BS) * chr(BS - len(s) % BS), 'utf-8')
+# unpad = lambda s : s[0:-ord(s[-1:])]
 
 # Socket Instances
 SOCKET_DIAL_OUT = []
@@ -1305,10 +1305,14 @@ class AESCipher:
     def __init__(self, KEY):
         self.key = KEY
 
+        self.BS = 16
+        self.pad = lambda s: bytes(s + (self.BS - len(s) % self.BS) * chr(self.BS - len(s) % self.BS), 'utf-8')
+        self.unpad = lambda s: s[0:-ord(s[-1:])]
+
     def encrypt(self, raw):
         print(str(datetime.datetime.now()) + ' -- AESCipher encrypting using key:', self.key)
         try:
-            raw = pad(raw)
+            raw = self.pad(raw)
             iv = Random.new().read(AES.block_size)
             cipher = AES.new(self.key, AES.MODE_CBC, iv)
             return base64.b64encode(iv + cipher.encrypt(raw))
@@ -1322,7 +1326,7 @@ class AESCipher:
             enc = base64.b64decode(enc)
             iv = enc[:16]
             cipher = AES.new(self.key, AES.MODE_CBC, iv)
-            return unpad(cipher.decrypt(enc[16:])).decode('utf-8')
+            return self.unpad(cipher.decrypt(enc[16:])).decode('utf-8')
 
         except Exception as e:
             print('AESCipher.decrypt:', e)
@@ -1729,7 +1733,7 @@ class ServerClass(QThread):
                     elif violation_count[i] >= 20:  # DOS & DDOS Protection - Range 1 [TUNABLE Violation Count[i] < n ] N=Violation Count Range
                         print(str(datetime.datetime.now()) + ' -- ServerClass.listen violation count exceeds 3 (client soft block time end of the day) checking time: ' + str(soft_block_ip[i]))
                         print(str(datetime.datetime.now()) + ' -- ServerClass.listen soft block comparing z_time to current time: ' + str(round(time.time() * 1000)), ' --> ', str(z_time[i]))
-                        if round(time.time() * 1000) > (z_time[i] + (86400 * 999)):  # Unblock in n * n [ TUNABLE Z_Time + (n * n) ] N=Milliseconds Soft Block Time 
+                        if round(time.time() * 1000) > (z_time[i] + (86400 * 999)):  # Unblock in n * n [ TUNABLE Z_Time + (n * n) ] N=Milliseconds Soft Block Time
                             print(str(datetime.datetime.now()) + ' -- ServerClass.listen unblocking: ' + str(soft_block_ip[i]))
                             del soft_block_ip[i]
                             del violation_count[i]
