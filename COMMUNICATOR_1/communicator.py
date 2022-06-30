@@ -1732,6 +1732,7 @@ class ServerClass(QThread):
                         if round(time.time() * 1000) > (z_time[i] + (86400 * 999)):  # Unblock in n * n [ TUNABLE Z_Time + (n * n) ] N=Milliseconds
                             print(str(datetime.datetime.now()) + ' -- ServerClass.listen unblocking: ' + str(soft_block_ip[i]))
                             del soft_block_ip[i]
+                            del violation_count[i]
                         else:
                             print(str(datetime.datetime.now()) + ' -- ServerClass.listen soft block will remain: ' + str(soft_block_ip[i]))
                     i += 1
