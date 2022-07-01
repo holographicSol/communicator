@@ -319,7 +319,7 @@ class App(QMainWindow):
 
                         # Use Save Mode
                         if address_save_mode == 'basic':
-                            fo_list.append('DATA ' + self.dial_out_name.text() + ' ' + str(self.dial_out_ip_port.text() + 'x' + 'x'))
+                            fo_list.append('DATA ' + self.dial_out_name.text() + ' ' + str(self.dial_out_ip_port.text() + ' x' + ' x'))
                             client_address.append([str(self.dial_out_name.text()), str(self.dial_out_ip_port.text().split(' ')[0]), int(self.dial_out_ip_port.text().split(' ')[1]), bytes('x', 'utf-8'), 'x'])
                             client_address_index = len(client_address)-1
 
@@ -1218,10 +1218,13 @@ class DialOutClass(QThread):
             with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as SOCKET_DIAL_OUT:
                 SOCKET_DIAL_OUT.connect((self.HOST_SEND, self.PORT_SEND))
 
-                if 'x' in str(client_address[client_address_index]).split(' ')[3]:
+                # dial_out_dial_out_cipher_bool = False
+                if bytes('x', 'utf-8') == client_address[client_address_index][3]:
                     dial_out_dial_out_cipher_bool = False
                 else:
                     dial_out_dial_out_cipher_bool = True
+
+                print('dial_out_dial_out_cipher_bool:', dial_out_dial_out_cipher_bool)
 
                 if dial_out_dial_out_cipher_bool is True:
                     print(str(datetime.datetime.now()) + ' -- DialOutClass.message_send: handing message to AESCipher')
