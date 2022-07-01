@@ -1,1 +1,4 @@
-DATA hansolo 192.168.1.11 55554 C@~=ZGa_GiQ@orj=s%Q,Xg~p?UO!,LJe ./fingerprints/chewy.txt
+DATA hansolo 192.168.1.11 55554 Ol%N=.QOxH:XHg\PAOGW.:V]Xgu[*:fI ./fingerprints/chew_2.txt
+DATA basic 192.168.1.11 55554 x x
+DATA hansolo2 192.168.1.11 55554 Ol%N=.QOxH:XHg\PAOGW.:V]Xgu[*:fI ./fingerprints/chew_2.txt
+DATA basic2 192.168.1.11 55554 x x
