@@ -1,0 +1,1 @@
+DATA chewy 192.168.1.11 55555 C@~=ZGa_GiQ@orj=s%Q,Xg~p?UO!,LJe ./fingerprints/chewy.txt
