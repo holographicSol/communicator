@@ -36,6 +36,8 @@ client_address = []
 server_address_index = 0
 client_address_index = 0
 
+address_save_mode = 'basic'
+
 # Socket Instances
 SOCKET_DIAL_OUT = []
 SOCKET_SERVER = []
@@ -64,7 +66,7 @@ dial_out_log = './log/dial_out_log.txt'
 dial_out_dial_out_cipher_bool = True
 configuration_thread_completed = False
 write_server_configuration_engaged = False
-write_configuration_engaged = False
+write_client_configuration_engaged = False
 mute_server_notify_alien_bool = False
 mute_server_notify_cipher_bool = False
 
@@ -253,6 +255,94 @@ class App(QMainWindow):
             else:
                 print(str(datetime.datetime.now()) + ' -- send_message_function: blocking empty message send')
 
+        def client_remove_address():
+            print(str(datetime.datetime.now()) + ' -- plugged in: App.client_remove_addresss')
+            global write_client_configuration_engaged
+            global client_address
+            global client_address_index
+
+            if write_client_configuration_engaged is False:
+                write_client_configuration_engaged = True
+
+                if os.path.exists('./communicator_address_book.txt'):
+                    fo_list = []
+                    with open('./communicator_address_book.txt', 'r') as fo:
+                        for line in fo:
+                            line = line.strip()
+                            line_split = line.split(' ')
+                            if len(line_split) >= 1:
+                                if line != '':
+                                    if line_split[1] != client_address[client_address_index][0]:
+                                        fo_list.append(line)
+                    open('./communicator_address_book.tmp', 'w').close()
+                    with open('./communicator_address_book.tmp', 'w') as fo:
+                        for _ in fo_list:
+                            fo.write(str(_) + '\n')
+                    fo.close()
+                    if os.path.exists('./communicator_address_book.tmp'):
+                        os.replace('./communicator_address_book.tmp', './communicator_address_book.txt')
+                    del client_address[client_address_index]
+                    client_previous_address_function()
+
+            write_client_configuration_engaged = False
+
+        def client_save_address():
+            print(str(datetime.datetime.now()) + ' -- plugged in: App.client_save_address')
+            global write_client_configuration_engaged
+            global client_address
+            global client_address_index
+            global internal_messages
+            global address_save_mode
+
+            name_non_duplicate = True
+            for _ in client_address:
+                if _[0] == self.dial_out_name.text():
+                    print('-- comparing:', _[0], ' --> ', self.dial_out_name.text())
+                    name_non_duplicate = False
+                    break
+
+            if write_client_configuration_engaged is False and name_non_duplicate is True:
+                write_client_configuration_engaged = True
+
+                if self.dial_out_name.text() != '':
+                    if self.dial_out_ip_port.text() != '':
+
+                        fo_list = []
+                        with open('./communicator_address_book.txt', 'r') as fo:
+                            for line in fo:
+                                line = line.strip()
+                                if line != '':
+                                    if not line.replace('DATA ', '') == str(
+                                            client_address[client_address_index][0]) + ' ' + str(
+                                            client_address[client_address_index][1]):
+                                        fo_list.append(line)
+
+                        # Use Save Mode
+                        if address_save_mode == 'basic':
+                            fo_list.append('DATA ' + self.dial_out_name.text() + ' ' + str(self.dial_out_ip_port.text() + 'x' + 'x'))
+                            client_address.append([str(self.dial_out_name.text()), str(self.dial_out_ip_port.text().split(' ')[0]), int(self.dial_out_ip_port.text().split(' ')[1]), bytes('x', 'utf-8'), 'x'])
+                            client_address_index = len(client_address)-1
+
+                        with open('./communicator_address_book.txt', 'w') as fo:
+                            for _ in fo_list:
+                                fo.write(_ + '\n')
+                        fo.close()
+                        success_write = []
+                        if os.path.exists('./communicator_address_book.txt'):
+                            with open('./communicator_address_book.txt', 'r') as fo:
+                                i = 0
+                                for line in fo:
+                                    line = line.strip()
+                                    if not line.replace('DATA ', '') == fo_list[i]:
+                                        success_write.append(False)
+                    else:
+                        print('-- ip and port should not be empty!')
+                else:
+                    print('-- name should not be empty!')
+
+                # Save as
+            write_client_configuration_engaged = False
+
         def server_prev_addr_function():
             print(str(datetime.datetime.now()) + ' -- plugged in: App.server_prev_addr_function')
             global_self.setFocus()
@@ -300,8 +390,11 @@ class App(QMainWindow):
                     client_address_index = client_address_index - 1
                 print(str(datetime.datetime.now()) + ' -- client_address_index setting client_address_index:', client_address_index)
                 self.dial_out_ip_port.setText(client_address[client_address_index][1] + ' ' + str(client_address[client_address_index][2]))
+                self.dial_out_name.setText(str(client_address[client_address_index][0]))
+                print(self.dial_out_ip_port.text())
             else:
                 print(str(datetime.datetime.now()) + ' -- client_address unpopulated')
+            # print(str(datetime.datetime.now()) + ' -- client_next_address_function client_address[client_address_index]:', str(client_address[client_address_index]))
 
         def client_next_address_function():
             print(str(datetime.datetime.now()) + ' -- plugged in: App.client_next_address_function')
@@ -315,9 +408,10 @@ class App(QMainWindow):
                     client_address_index += 1
                 print(str(datetime.datetime.now()) + ' -- client_address_index setting client_address_index:', client_address_index)
                 self.dial_out_ip_port.setText(client_address[client_address_index][1] + ' ' + str(client_address[client_address_index][2]))
-
+                self.dial_out_name.setText(str(client_address[client_address_index][0]))
             else:
                 print(str(datetime.datetime.now()) + ' -- client_address unpopulated')
+            # print(str(datetime.datetime.now()) + ' -- client_next_address_function client_address[client_address_index]:', str(client_address[client_address_index]))
 
         def server_line_edit_return_pressed():
             print(str(datetime.datetime.now()) + ' -- plugged in: App.server_line_edit_return_pressed')
@@ -498,26 +592,6 @@ class App(QMainWindow):
         self.btn_140 = 140
         self.btn_240 = 240
 
-        # QPushButton - Confirm Add Address
-        self.dial_out_add_addr_confirm = QPushButton(self)
-        self.dial_out_add_addr_confirm.resize(self.btn_40, int(self.btn_40 / 2) - 4)
-        self.dial_out_add_addr_confirm.move(self.btn_4 * 3 + self.btn_80 + self.btn_40, self.btn_8 * 2 + self.btn_40 + int(self.btn_40 / 2) + 4)
-        self.dial_out_add_addr_confirm.setFont(self.font_s7b)
-        self.dial_out_add_addr_confirm.setText('YES')
-        self.dial_out_add_addr_confirm.setStyleSheet(button_stylesheet_default)
-        # self.dial_out_add_addr_confirm.clicked.connect(dial_out_add_addr_function)
-        self.dial_out_add_addr_confirm.hide()
-
-        # QPushButton - Decline Add Address
-        self.decline_dial_out_add_addr = QPushButton(self)
-        self.decline_dial_out_add_addr.resize(self.btn_40, int(self.btn_40 / 2) - 4)
-        self.decline_dial_out_add_addr.move(self.btn_4 * 2 + self.btn_80, self.btn_8 * 2 + self.btn_40 + int(self.btn_40 / 2) + 4)
-        self.decline_dial_out_add_addr.setFont(self.font_s7b)
-        self.decline_dial_out_add_addr.setText('NO')
-        self.decline_dial_out_add_addr.setStyleSheet(button_stylesheet_default)
-        # self.decline_dial_out_add_addr.clicked.connect(decline_add_address)
-        self.decline_dial_out_add_addr.hide()
-
         # QPushButton - Dial Out Set Encryption Boolean
         # self.dial_out_cipher_bool_btn = QPushButton(self)
         # self.dial_out_cipher_bool_btn.resize(self.btn_40 * 2 + 4, self.btn_40)
@@ -603,7 +677,7 @@ class App(QMainWindow):
         self.dial_out_add_addr.setFont(self.font_s7b)
         self.dial_out_add_addr.setText('SAVE')
         self.dial_out_add_addr.setStyleSheet(button_stylesheet_default)
-        # self.dial_out_add_addr.clicked.connect(dial_out_add_addr_confirm_function)
+        self.dial_out_add_addr.clicked.connect(client_save_address)
 
         # QPushButton - Dial Out Remove Address
         self.dial_out_rem_addr = QPushButton(self)
@@ -612,7 +686,7 @@ class App(QMainWindow):
         self.dial_out_rem_addr.setFont(self.font_s7b)
         self.dial_out_rem_addr.setText('DELETE')
         self.dial_out_rem_addr.setStyleSheet(button_stylesheet_default)
-        # self.dial_out_rem_addr.clicked.connect(remove_address_ask_confirmation)
+        self.dial_out_rem_addr.clicked.connect(client_remove_address)
 
         # QLabel - Server Status
         self.server_status_label = QLabel(self)
@@ -1143,6 +1217,11 @@ class DialOutClass(QThread):
             data_response = ''
             with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as SOCKET_DIAL_OUT:
                 SOCKET_DIAL_OUT.connect((self.HOST_SEND, self.PORT_SEND))
+
+                if 'x' in str(client_address[client_address_index]).split(' ')[3]:
+                    dial_out_dial_out_cipher_bool = False
+                else:
+                    dial_out_dial_out_cipher_bool = True
 
                 if dial_out_dial_out_cipher_bool is True:
                     print(str(datetime.datetime.now()) + ' -- DialOutClass.message_send: handing message to AESCipher')
