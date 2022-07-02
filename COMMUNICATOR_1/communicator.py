@@ -75,6 +75,13 @@ address_override_string = ''
 # Threads
 configuration_thread = []
 
+label_stylesheet_black_bg_text_white = """QLabel{background-color: rgb(0, 0, 0);
+                       color: rgb(200, 200, 200);
+                       border-bottom:0px solid rgb(5, 5, 5);
+                       border-right:0px solid rgb(5, 5, 5);
+                       border-top:0px solid rgb(5, 5, 5);
+                       border-left:0px solid rgb(5, 5, 5);}"""
+
 title_stylesheet_default = """QLabel{background-color: rgb(10, 10, 10);
                        color: rgb(200, 200, 200);
                        border-bottom:2px solid rgb(5, 5, 5);
@@ -166,6 +173,7 @@ class App(QMainWindow):
         global_self = self
 
         self.font_s7b = QFont("Segoe UI", 7, QFont.Bold)
+        self.font_s8b = QFont("Segoe UI", 8, QFont.Bold)
 
         self.setStyleSheet("""
                                     QScrollBar:vertical {width: 11px;
@@ -498,19 +506,31 @@ class App(QMainWindow):
 
             server_address_var = self.server_ip_port.text()
             bool_address_match = False
+            server_address_match_index = 0
 
+            i = 0
             for _ in server_address:
                 if str(_[0] + ' ' + str(_[1])) == server_address_var:
                     bool_address_match = True
+                    server_address_match_index = i
+                i += 1
 
             if bool_address_match is False:
                 print(str(datetime.datetime.now()) + ' -- new server address detected:', server_address_var)
                 server_address.append([server_address_var.split(' ')[0], int(server_address_var.split(' ')[1])])
                 server_address_index = len(server_address)-1
                 print(str(datetime.datetime.now()) + ' -- changing server_address_index to:', server_address_index)
+                self.server_status_label_ip_in_use.setText(str(server_address[server_address_index][0]) + ' ' + str(server_address[server_address_index][1]))
+                server_thread.stop()
+                server_thread.start()
 
             else:
                 print(str(datetime.datetime.now()) + ' -- server address already exists:', server_address_var)
+                print('server_address_match_index:', server_address_match_index)
+                self.server_status_label_ip_in_use.setText(str(server_address[server_address_match_index][0]) + ' ' + str(server_address[server_address_match_index][1]))
+                server_address_index = server_address_match_index
+                server_thread.stop()
+                server_thread.start()
 
         def server_notify_cipher_function():
             print(str(datetime.datetime.now()) + ' -- plugged in: App.server_notify_cipher_function')
@@ -576,14 +596,22 @@ class App(QMainWindow):
                     for _ in fo_list:
                         fo.write(_ + '\n')
                 fo.close()
-                success_write = []
+                non_success_write = []
                 if os.path.exists('./config.txt'):
                     with open('./config.txt', 'r') as fo:
                         i = 0
                         for line in fo:
                             line = line.strip()
-                            if not line.replace('SERVER_ADDRESS ', '') == fo_list[i]:
-                                success_write.append(False)
+                            print('-- comparing line:')
+                            print('fo_line:      ', line)
+                            print('fo_list_line: ', str(fo_list[i]))
+                            if not line == fo_list[i]:
+                                non_success_write.append(False)
+                            i += 1
+                if not False in non_success_write:
+                    print('-- server address saved successfully')
+                else:
+                    print('-- server address save failed')
             write_server_configuration_engaged = False
 
         def server_delete_function():
@@ -872,6 +900,15 @@ class App(QMainWindow):
         self.server_status_label.setAlignment(Qt.AlignCenter)
         self.server_status_label.setStyleSheet(title_stylesheet_default)
 
+        # QLabel - Server Status
+        self.server_status_label_ip_in_use = QLabel(self)
+        self.server_status_label_ip_in_use.resize(self.btn_140, 20)
+        self.server_status_label_ip_in_use.move((self.width / 2) - (self.btn_140 / 2), 52)
+        self.server_status_label_ip_in_use.setFont(self.font_s7b)
+        self.server_status_label_ip_in_use.setText('')
+        self.server_status_label_ip_in_use.setAlignment(Qt.AlignCenter)
+        self.server_status_label_ip_in_use.setStyleSheet(label_stylesheet_black_bg_text_white)
+
         # QPushButton - Server Start
         self.server_start = QPushButton(self)
         self.server_start.resize(60, int(self.btn_40 / 2))
@@ -1025,6 +1062,7 @@ class App(QMainWindow):
 
         if len(server_address) > 0:
             self.server_ip_port.setText(server_address[0][0] + ' ' + str(server_address[0][1]))
+            self.server_status_label_ip_in_use.setText(str(server_address[0][0] + ' ' + str(server_address[0][1])))
 
         global client_address
         global dial_out_dial_out_cipher_bool
