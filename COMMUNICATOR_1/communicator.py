@@ -295,30 +295,33 @@ class App(QMainWindow):
             global client_address
             global client_address_index
 
-            if write_client_configuration_engaged is False:
-                write_client_configuration_engaged = True
+            if self.dial_out_name.text() != '':
+                if self.dial_out_ip_port.text() != '':
 
-                if os.path.exists('./communicator_address_book.txt'):
-                    fo_list = []
-                    with open('./communicator_address_book.txt', 'r') as fo:
-                        for line in fo:
-                            line = line.strip()
-                            line_split = line.split(' ')
-                            if len(line_split) >= 1:
-                                if line != '':
-                                    if line_split[1] != client_address[client_address_index][0]:
-                                        fo_list.append(line)
-                    open('./communicator_address_book.tmp', 'w').close()
-                    with open('./communicator_address_book.tmp', 'w') as fo:
-                        for _ in fo_list:
-                            fo.write(str(_) + '\n')
-                    fo.close()
-                    if os.path.exists('./communicator_address_book.tmp'):
-                        os.replace('./communicator_address_book.tmp', './communicator_address_book.txt')
-                    del client_address[client_address_index]
-                    client_previous_address_function()
+                    if write_client_configuration_engaged is False:
+                        write_client_configuration_engaged = True
 
-            write_client_configuration_engaged = False
+                        if os.path.exists('./communicator_address_book.txt'):
+                            fo_list = []
+                            with open('./communicator_address_book.txt', 'r') as fo:
+                                for line in fo:
+                                    line = line.strip()
+                                    line_split = line.split(' ')
+                                    if len(line_split) >= 1:
+                                        if line != '':
+                                            if line_split[1] != client_address[client_address_index][0]:
+                                                fo_list.append(line)
+                            open('./communicator_address_book.tmp', 'w').close()
+                            with open('./communicator_address_book.tmp', 'w') as fo:
+                                for _ in fo_list:
+                                    fo.write(str(_) + '\n')
+                            fo.close()
+                            if os.path.exists('./communicator_address_book.tmp'):
+                                os.replace('./communicator_address_book.tmp', './communicator_address_book.txt')
+                            del client_address[client_address_index]
+                            client_previous_address_function()
+
+                    write_client_configuration_engaged = False
 
         def client_save_address():
             print(str(datetime.datetime.now()) + ' -- plugged in: App.client_save_address')
