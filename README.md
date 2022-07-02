@@ -1,6 +1,12 @@
 Communicator - Written by Benjamin Jack Cullen
 
-Project in early development.
+A Very Powerful Communications Tool - Project in early development.
+
+Communicator is capable of communicating with any IPv4 Address running and or not running a Communicator, this makes
+the Communicator very powerful. Use wisely.
+
+The Communicator is a very powerful Communications Tool. The Communicator is not a place to meet people, it not a
+chat lobby or meeting place and is certainly not a chat app.
 
 Communicator Standard Communication:
 1. Messages encrypted with AES-256 32 bytes shared key.
