@@ -1,6 +1,6 @@
 Communicator - Written by Benjamin Jack Cullen
 
-A Very Powerful Communications Tool - Project in early development.
+A Very Powerful Universal Communications Tool - Project in early development.
 
 Communicator is capable of communicating with any IPv4 Address running and or not running a Communicator, this makes
 the Communicator very powerful. Use wisely.
