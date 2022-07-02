@@ -70,7 +70,7 @@ write_client_configuration_engaged = False
 mute_server_notify_alien_bool = False
 mute_server_notify_cipher_bool = False
 bool_dial_out_override = False
-address_override_string = False
+address_override_string = ''
 
 # Threads
 configuration_thread = []
@@ -665,6 +665,8 @@ class App(QMainWindow):
             global client_address
             global client_address_index
             global bool_dial_out_override
+            global address_override_string
+
             if bool_dial_out_override is True:
                 bool_dial_out_override = False
 
@@ -708,7 +710,7 @@ class App(QMainWindow):
                 self.dial_out_rem_addr.hide()
 
                 self.dial_out_name.hide()
-                self.dial_out_ip_port.setText('')
+                self.dial_out_ip_port.setText(address_override_string)
 
                 self.dial_out_cipher_bool_btn.hide()
 
