@@ -402,7 +402,6 @@ class App(QMainWindow):
             if not False in non_success_write:
                 print('-- address appears to have save successfully')
             print('about to run default')
-
             write_client_configuration_engaged = False
 
         def server_prev_addr_function():
@@ -536,6 +535,7 @@ class App(QMainWindow):
                 server_address_index = len(server_address)-1
                 print(str(datetime.datetime.now()) + ' -- changing server_address_index to:', server_address_index)
                 self.server_status_label_ip_in_use.setText(str(server_address[server_address_index][0]) + ' ' + str(server_address[server_address_index][1]))
+                self.server_add_addr.setStyleSheet(button_stylesheet_white_text_high)
                 server_thread.stop()
                 server_thread.start()
 
@@ -544,6 +544,7 @@ class App(QMainWindow):
                 print('server_address_match_index:', server_address_match_index)
                 self.server_status_label_ip_in_use.setText(str(server_address[server_address_match_index][0]) + ' ' + str(server_address[server_address_match_index][1]))
                 server_address_index = server_address_match_index
+                self.server_add_addr.setStyleSheet(button_stylesheet_white_text_low)
                 server_thread.stop()
                 server_thread.start()
 
@@ -628,6 +629,7 @@ class App(QMainWindow):
                 else:
                     print('-- server address save failed')
             write_server_configuration_engaged = False
+            self.server_add_addr.setStyleSheet(button_stylesheet_white_text_low)
 
         def server_delete_function():
             print(str(datetime.datetime.now()) + ' -- plugged in: App.server_delete_function')
@@ -981,7 +983,7 @@ class App(QMainWindow):
         self.server_add_addr.move((self.width / 2) - (self.btn_140 / 2), 100)
         self.server_add_addr.setFont(self.font_s7b)
         self.server_add_addr.setText('SAVE')
-        self.server_add_addr.setStyleSheet(button_stylesheet_default)
+        self.server_add_addr.setStyleSheet(button_stylesheet_white_text_low)
         self.server_add_addr.clicked.connect(server_save_function)
         # self.server_add_addr.hide()
 
