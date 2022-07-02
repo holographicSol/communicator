@@ -657,28 +657,30 @@ class App(QMainWindow):
             global server_address
             global server_address_index
 
-            if write_server_configuration_engaged is False:
-                write_server_configuration_engaged = True
+            if self.server_ip_port.text() != '':
 
-                if os.path.exists('./config.txt'):
-                    fo_list = []
-                    with open('./config.txt', 'r') as fo:
-                        for line in fo:
-                            line = line.strip()
-                            if line != '':
-                                if not line.replace('SERVER_ADDRESS ', '') == str(server_address[server_address_index][0]) + ' ' + str(server_address[server_address_index][1]):
-                                    fo_list.append(line)
-                    open('./config.tmp', 'w').close()
-                    with open('./config.tmp', 'w') as fo:
-                        for _ in fo_list:
-                            fo.write(str(_) + '\n')
-                    fo.close()
-                    if os.path.exists('./config.tmp'):
-                        os.replace('./config.tmp', './config.txt')
-                    del server_address[server_address_index]
-                    server_prev_addr_function()
+                if write_server_configuration_engaged is False:
+                    write_server_configuration_engaged = True
 
-                write_server_configuration_engaged = False
+                    if os.path.exists('./config.txt'):
+                        fo_list = []
+                        with open('./config.txt', 'r') as fo:
+                            for line in fo:
+                                line = line.strip()
+                                if line != '':
+                                    if not line.replace('SERVER_ADDRESS ', '') == str(server_address[server_address_index][0]) + ' ' + str(server_address[server_address_index][1]):
+                                        fo_list.append(line)
+                        open('./config.tmp', 'w').close()
+                        with open('./config.tmp', 'w') as fo:
+                            for _ in fo_list:
+                                fo.write(str(_) + '\n')
+                        fo.close()
+                        if os.path.exists('./config.tmp'):
+                            os.replace('./config.tmp', './config.txt')
+                        del server_address[server_address_index]
+                        server_prev_addr_function()
+
+                    write_server_configuration_engaged = False
 
         def start_function():
             print(str(datetime.datetime.now()) + ' -- plugged in: App.start_function')
