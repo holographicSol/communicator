@@ -329,82 +329,85 @@ class App(QMainWindow):
             global button_stylesheet_green_text
             global internal_messages
 
-            non_success_write = []
+            if self.dial_out_name.text() != '':
+                if self.dial_out_ip_port.text() != '':
 
-            name_non_duplicate = True
-            for _ in client_address:
-                if _[0] == self.dial_out_name.text():
-                    print('-- comparing:', _[0], ' --> ', self.dial_out_name.text())
-                    name_non_duplicate = False
-                    break
+                    non_success_write = []
 
-            if write_client_configuration_engaged is False and name_non_duplicate is True:
-                write_client_configuration_engaged = True
+                    name_non_duplicate = True
+                    for _ in client_address:
+                        if _[0] == self.dial_out_name.text():
+                            print('-- comparing:', _[0], ' --> ', self.dial_out_name.text())
+                            name_non_duplicate = False
+                            break
 
-                if self.dial_out_name.text() != '':
-                    if self.dial_out_ip_port.text() != '':
+                    if write_client_configuration_engaged is False and name_non_duplicate is True:
+                        write_client_configuration_engaged = True
 
-                        fo_list = []
-                        with open('./communicator_address_book.txt', 'r') as fo:
-                            for line in fo:
-                                line = line.strip()
-                                if line != '':
-                                    if not line.replace('DATA ', '') == str(client_address[client_address_index][0]) + ' ' + str(client_address[client_address_index][1]):
-                                        fo_list.append(line)
+                        if self.dial_out_name.text() != '':
+                            if self.dial_out_ip_port.text() != '':
 
-                        # Use Save Mode Basic
-                        if address_save_mode == 'basic':
-                            fo_list.append('DATA ' + self.dial_out_name.text() + ' ' + str(self.dial_out_ip_port.text() + ' x' + ' x'))
-                            client_address.append([str(self.dial_out_name.text()), str(self.dial_out_ip_port.text().split(' ')[0]), int(self.dial_out_ip_port.text().split(' ')[1]), bytes('x', 'utf-8'), 'x'])
-                            client_address_index = len(client_address)-1
+                                fo_list = []
+                                with open('./communicator_address_book.txt', 'r') as fo:
+                                    for line in fo:
+                                        line = line.strip()
+                                        if line != '':
+                                            if not line.replace('DATA ', '') == str(client_address[client_address_index][0]) + ' ' + str(client_address[client_address_index][1]):
+                                                fo_list.append(line)
 
-                        with open('./communicator_address_book.txt', 'w') as fo:
-                            for _ in fo_list:
-                                fo.write(_ + '\n')
-                        fo.close()
-                        if os.path.exists('./communicator_address_book.txt'):
-                            with open('./communicator_address_book.txt', 'r') as fo:
-                                i = 0
-                                for line in fo:
-                                    line = line.strip()
-                                    print('-- comparing line:')
-                                    print('fo_line:      ', line)
-                                    print('fo_list_line: ', str(fo_list[i]))
-                                    if not line == fo_list[i]:
-                                        non_success_write.append(False)
-                                    i += 1
-                    else:
-                        print('-- ip and port should not be empty!')
-                else:
-                    print('-- name should not be empty!')
+                                # Use Save Mode Basic
+                                if address_save_mode == 'basic':
+                                    fo_list.append('DATA ' + self.dial_out_name.text() + ' ' + str(self.dial_out_ip_port.text() + ' x' + ' x'))
+                                    client_address.append([str(self.dial_out_name.text()), str(self.dial_out_ip_port.text().split(' ')[0]), int(self.dial_out_ip_port.text().split(' ')[1]), bytes('x', 'utf-8'), 'x'])
+                                    client_address_index = len(client_address)-1
 
-                # Save as
-            global dial_out_dial_out_cipher_bool
-            # # First Check If The Address Entry HAS A Key And Fingerprint
-            self.dial_out_cipher_bool_btn.setStyleSheet(button_stylesheet_red_text)
-            dial_out_dial_out_cipher_bool = False
-            self.dial_out_cipher_bool_btn.setEnabled(False)
+                                with open('./communicator_address_book.txt', 'w') as fo:
+                                    for _ in fo_list:
+                                        fo.write(_ + '\n')
+                                fo.close()
+                                if os.path.exists('./communicator_address_book.txt'):
+                                    with open('./communicator_address_book.txt', 'r') as fo:
+                                        i = 0
+                                        for line in fo:
+                                            line = line.strip()
+                                            print('-- comparing line:')
+                                            print('fo_line:      ', line)
+                                            print('fo_list_line: ', str(fo_list[i]))
+                                            if not line == fo_list[i]:
+                                                non_success_write.append(False)
+                                            i += 1
+                            else:
+                                print('-- ip and port should not be empty!')
+                        else:
+                            print('-- name should not be empty!')
 
-            if dial_out_dial_out_cipher_bool is False:
-                if client_address[client_address_index][3] != '#' and len(
-                        client_address[client_address_index][3]) == 32:
-                    print(str(datetime.datetime.now()) + ' -- address entry appears to have a key:',
-                          client_address[client_address_index][3])
-                    if client_address[client_address_index][4] != '#' and len(
-                            client_address[client_address_index][4]) == 1024:
-                        print(str(datetime.datetime.now()) + ' -- address entry appears to have a fingerprint:',
-                              client_address[client_address_index][4])
-                        self.dial_out_cipher_bool_btn.setStyleSheet(button_stylesheet_green_text)
-                        dial_out_dial_out_cipher_bool = True
-                        self.dial_out_cipher_bool_btn.setEnabled(True)
-            print(str(datetime.datetime.now()) + ' -- dial_out_dial_out_cipher_bool:', dial_out_dial_out_cipher_bool)
+                        # Save as
+                    global dial_out_dial_out_cipher_bool
+                    # # First Check If The Address Entry HAS A Key And Fingerprint
+                    self.dial_out_cipher_bool_btn.setStyleSheet(button_stylesheet_red_text)
+                    dial_out_dial_out_cipher_bool = False
+                    self.dial_out_cipher_bool_btn.setEnabled(False)
 
-            # # ToDo --> Display save success stylesheet then set stylesheet default
-            print('-- non_success_write:', non_success_write)
-            if not False in non_success_write:
-                print('-- address appears to have save successfully')
-            print('about to run default')
-            write_client_configuration_engaged = False
+                    if dial_out_dial_out_cipher_bool is False:
+                        if client_address[client_address_index][3] != '#' and len(
+                                client_address[client_address_index][3]) == 32:
+                            print(str(datetime.datetime.now()) + ' -- address entry appears to have a key:',
+                                  client_address[client_address_index][3])
+                            if client_address[client_address_index][4] != '#' and len(
+                                    client_address[client_address_index][4]) == 1024:
+                                print(str(datetime.datetime.now()) + ' -- address entry appears to have a fingerprint:',
+                                      client_address[client_address_index][4])
+                                self.dial_out_cipher_bool_btn.setStyleSheet(button_stylesheet_green_text)
+                                dial_out_dial_out_cipher_bool = True
+                                self.dial_out_cipher_bool_btn.setEnabled(True)
+                    print(str(datetime.datetime.now()) + ' -- dial_out_dial_out_cipher_bool:', dial_out_dial_out_cipher_bool)
+
+                    # # ToDo --> Display save success stylesheet then set stylesheet default
+                    print('-- non_success_write:', non_success_write)
+                    if not False in non_success_write:
+                        print('-- address appears to have save successfully')
+                    print('about to run default')
+                    write_client_configuration_engaged = False
 
         def server_prev_addr_function():
             print(str(datetime.datetime.now()) + ' -- plugged in: App.server_prev_addr_function')
