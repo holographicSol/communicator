@@ -20,6 +20,7 @@ from Crypto import Random
 import random
 import string
 import unicodedata
+global server_save_bool
 
 
 def NFD(text):
@@ -70,6 +71,7 @@ write_client_configuration_engaged = False
 mute_server_notify_alien_bool = False
 mute_server_notify_cipher_bool = False
 bool_dial_out_override = False
+server_save_bool = False
 address_override_string = ''
 
 # Threads
@@ -410,6 +412,9 @@ class App(QMainWindow):
             global server_address_index
             global server_address
 
+            self.server_add_addr.setStyleSheet(button_stylesheet_white_text_low)
+            self.server_add_addr.setEnabled(False)
+
             if len(server_address) > 0:
                 if server_address_index == 0:
                     server_address_index = len(server_address) - 1
@@ -427,6 +432,9 @@ class App(QMainWindow):
 
             global server_address_index
             global server_address
+
+            self.server_add_addr.setStyleSheet(button_stylesheet_white_text_low)
+            self.server_add_addr.setEnabled(False)
 
             if len(server_address) > 0:
                 if server_address_index == len(server_address) - 1:
@@ -517,6 +525,7 @@ class App(QMainWindow):
             global_self.setFocus()
             global server_address
             global server_address_index
+            global server_save_bool
 
             server_address_var = self.server_ip_port.text()
             bool_address_match = False
@@ -536,6 +545,8 @@ class App(QMainWindow):
                 print(str(datetime.datetime.now()) + ' -- changing server_address_index to:', server_address_index)
                 self.server_status_label_ip_in_use.setText(str(server_address[server_address_index][0]) + ' ' + str(server_address[server_address_index][1]))
                 self.server_add_addr.setStyleSheet(button_stylesheet_white_text_high)
+                server_save_bool = True
+                self.server_add_addr.setEnabled(True)
                 server_thread.stop()
                 server_thread.start()
 
@@ -545,6 +556,8 @@ class App(QMainWindow):
                 self.server_status_label_ip_in_use.setText(str(server_address[server_address_match_index][0]) + ' ' + str(server_address[server_address_match_index][1]))
                 server_address_index = server_address_match_index
                 self.server_add_addr.setStyleSheet(button_stylesheet_white_text_low)
+                server_save_bool = False
+                self.server_add_addr.setEnabled(False)
                 server_thread.stop()
                 server_thread.start()
 
@@ -597,39 +610,44 @@ class App(QMainWindow):
             global write_server_configuration_engaged
             global server_address
             global server_address_index
+            global server_save_bool
 
-            if write_server_configuration_engaged is False:
-                write_server_configuration_engaged = True
-                fo_list = []
-                with open('./config.txt', 'r') as fo:
-                    for line in fo:
-                        line = line.strip()
-                        if line != '':
-                            if not line.replace('SERVER_ADDRESS ', '') == str(server_address[server_address_index][0]) + ' ' + str(server_address[server_address_index][1]):
-                                fo_list.append(line)
-                fo_list.append('SERVER_ADDRESS ' + str(self.server_ip_port.text()))
-                with open('./config.txt', 'w') as fo:
-                    for _ in fo_list:
-                        fo.write(_ + '\n')
-                fo.close()
-                non_success_write = []
-                if os.path.exists('./config.txt'):
+            self.server_add_addr.setEnabled(False)
+
+            if server_save_bool is True:
+
+                if write_server_configuration_engaged is False:
+                    write_server_configuration_engaged = True
+                    fo_list = []
                     with open('./config.txt', 'r') as fo:
-                        i = 0
                         for line in fo:
                             line = line.strip()
-                            print('-- comparing line:')
-                            print('fo_line:      ', line)
-                            print('fo_list_line: ', str(fo_list[i]))
-                            if not line == fo_list[i]:
-                                non_success_write.append(False)
-                            i += 1
-                if not False in non_success_write:
-                    print('-- server address saved successfully')
-                else:
-                    print('-- server address save failed')
-            write_server_configuration_engaged = False
-            self.server_add_addr.setStyleSheet(button_stylesheet_white_text_low)
+                            if line != '':
+                                if not line.replace('SERVER_ADDRESS ', '') == str(server_address[server_address_index][0]) + ' ' + str(server_address[server_address_index][1]):
+                                    fo_list.append(line)
+                    fo_list.append('SERVER_ADDRESS ' + str(self.server_ip_port.text()))
+                    with open('./config.txt', 'w') as fo:
+                        for _ in fo_list:
+                            fo.write(_ + '\n')
+                    fo.close()
+                    non_success_write = []
+                    if os.path.exists('./config.txt'):
+                        with open('./config.txt', 'r') as fo:
+                            i = 0
+                            for line in fo:
+                                line = line.strip()
+                                print('-- comparing line:')
+                                print('fo_line:      ', line)
+                                print('fo_list_line: ', str(fo_list[i]))
+                                if not line == fo_list[i]:
+                                    non_success_write.append(False)
+                                i += 1
+                    if not False in non_success_write:
+                        print('-- server address saved successfully')
+                    else:
+                        print('-- server address save failed')
+                write_server_configuration_engaged = False
+                self.server_add_addr.setStyleSheet(button_stylesheet_white_text_low)
 
         def server_delete_function():
             print(str(datetime.datetime.now()) + ' -- plugged in: App.server_delete_function')
