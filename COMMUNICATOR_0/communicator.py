@@ -117,8 +117,15 @@ button_stylesheet_amber_text = """QPushButton{background-color: rgb(10, 10, 10);
                        border-top:2px solid rgb(5, 5, 5);
                        border-left:2px solid rgb(5, 5, 5);}"""
 
-button_stylesheet_white_text = """QPushButton{background-color: rgb(10, 10, 10);
+button_stylesheet_white_text_high = """QPushButton{background-color: rgb(10, 10, 10);
                        color: rgb(255, 255, 255);
+                       border-bottom:2px solid rgb(5, 5, 5);
+                       border-right:2px solid rgb(5, 5, 5);
+                       border-top:2px solid rgb(5, 5, 5);
+                       border-left:2px solid rgb(5, 5, 5);}"""
+
+button_stylesheet_white_text_low = """QPushButton{background-color: rgb(10, 10, 10);
+                       color: rgb(100, 100, 100);
                        border-bottom:2px solid rgb(5, 5, 5);
                        border-right:2px solid rgb(5, 5, 5);
                        border-top:2px solid rgb(5, 5, 5);
@@ -521,16 +528,18 @@ class App(QMainWindow):
                 server_address_index = len(server_address)-1
                 print(str(datetime.datetime.now()) + ' -- changing server_address_index to:', server_address_index)
                 self.server_status_label_ip_in_use.setText(str(server_address[server_address_index][0]) + ' ' + str(server_address[server_address_index][1]))
-                server_thread.stop()
-                server_thread.start()
+                if server_thread.isRunning():
+                    server_thread.stop()
+                    server_thread.start()
 
             else:
                 print(str(datetime.datetime.now()) + ' -- server address already exists:', server_address_var)
                 print('server_address_match_index:', server_address_match_index)
                 self.server_status_label_ip_in_use.setText(str(server_address[server_address_match_index][0]) + ' ' + str(server_address[server_address_match_index][1]))
                 server_address_index = server_address_match_index
-                server_thread.stop()
-                server_thread.start()
+                if server_thread.isRunning():
+                    server_thread.stop()
+                    server_thread.start()
 
         def server_notify_cipher_function():
             print(str(datetime.datetime.now()) + ' -- plugged in: App.server_notify_cipher_function')
@@ -980,6 +989,7 @@ class App(QMainWindow):
         self.server_add_addr.setText('SAVE')
         self.server_add_addr.setStyleSheet(button_stylesheet_default)
         self.server_add_addr.clicked.connect(server_save_function)
+        # self.server_add_addr.hide()
 
         # QPushButton - Dial Out Remove Address
         self.server_rem_addr = QPushButton(self)
@@ -995,7 +1005,7 @@ class App(QMainWindow):
         self.server_incoming = QPushButton(self)
         self.server_incoming.resize(68, 68)
         self.server_incoming.move(self.width - 72, 52)
-        self.server_incoming.setIcon(QIcon("./resources/image/public_FILL0_wght100_GRAD-25_opsz48_WHITE.png"))
+        self.server_incoming.setIcon(QIcon("./resources/image/public_OFF_FILL0_wght100_GRAD-25_opsz48_WHITE.png"))
         self.server_incoming.setIconSize(QSize(48, 48))
         self.server_incoming.setStyleSheet(button_stylesheet_background_matching)
 
@@ -1020,7 +1030,7 @@ class App(QMainWindow):
         self.server_notify_cipher = QPushButton(self)
         self.server_notify_cipher.resize(60, int(self.btn_40 / 2))
         self.server_notify_cipher.move(self.width - 136, 52)
-        self.server_notify_cipher.setStyleSheet(button_stylesheet_white_text)
+        self.server_notify_cipher.setStyleSheet(button_stylesheet_default)
         self.server_notify_cipher.setFont(self.font_s7b)
         self.server_notify_cipher.setText(str(cipher_message_count))
         self.server_notify_cipher.clicked.connect(server_notify_cipher_function)
@@ -1029,7 +1039,7 @@ class App(QMainWindow):
         self.mute_server_notify_cipher = QPushButton(self)
         self.mute_server_notify_cipher.resize(60, int(self.btn_40 / 2))
         self.mute_server_notify_cipher.move(self.width - 200, 52)
-        self.mute_server_notify_cipher.setStyleSheet(button_stylesheet_white_text)
+        self.mute_server_notify_cipher.setStyleSheet(button_stylesheet_default)
         self.mute_server_notify_cipher.setIcon(QIcon("./resources/image/volume_up_FILL0_wght100_GRAD200_opsz20.png"))
         self.mute_server_notify_cipher.setIconSize(QSize(14, 14))
         self.mute_server_notify_cipher.clicked.connect(mute_server_notify_cipher_function)
