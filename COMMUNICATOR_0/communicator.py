@@ -900,6 +900,14 @@ class App(QMainWindow):
         self.server_status_label.setAlignment(Qt.AlignCenter)
         self.server_status_label.setStyleSheet(title_stylesheet_default)
 
+        self.server_status_label_ = QLabel(self)
+        self.server_status_label.resize(self.width - 8, 20)
+        self.server_status_label.move(4, 28)
+        self.server_status_label.setFont(self.font_s7b)
+        self.server_status_label.setText('SERVER STATUS:  OFFLINE')
+        self.server_status_label.setAlignment(Qt.AlignCenter)
+        self.server_status_label.setStyleSheet(title_stylesheet_default)
+
         # QLabel - Server Status
         self.server_status_label_ip_in_use = QLabel(self)
         self.server_status_label_ip_in_use.resize(self.btn_140, 20)
@@ -1036,7 +1044,7 @@ class App(QMainWindow):
         self.mute_server_notify_alien.clicked.connect(mute_server_notify_alien_function)
 
         # Thread - Public Server
-        server_thread = ServerClass(self.server_incoming, self.server_status_label, self.soft_block_ip_notification)
+        server_thread = ServerClass(self.server_incoming, self.server_status_label, self.soft_block_ip_notification, self.server_status_label_ip_in_use)
 
         # Thread - ServerDataHandlerClass
         server_data_handler_class = ServerDataHandlerClass(self.server_incoming, self.server_notify_cipher, self.server_notify_alien)
@@ -1653,11 +1661,12 @@ class ServerDataHandlerClass(QThread):
 
 
 class ServerClass(QThread):
-    def __init__(self, server_incoming, server_status_label, soft_block_ip_notification):
+    def __init__(self, server_incoming, server_status_label, soft_block_ip_notification, server_status_label_ip_in_use):
         QThread.__init__(self)
         self.server_incoming = server_incoming
         self.server_status_label = server_status_label
         self.soft_block_ip_notification = soft_block_ip_notification
+        self.server_status_label_ip_in_use = server_status_label_ip_in_use
         self.data = ''
         self.SERVER_HOST = ''
         self.SERVER_PORT = ''
@@ -1667,6 +1676,8 @@ class ServerClass(QThread):
         print(str(datetime.datetime.now()) + ' -- ServerClass.run: plugged in:')
         global server_address
         global server_address_index
+
+        self.server_status_label_ip_in_use.setText(str(server_address[server_address_index][0] + ' ' + str(server_address[server_address_index][1])))
 
         self.SERVER_HOST = server_address[server_address_index][0]
         print(str(datetime.datetime.now()) + ' -- ServerClass.run: SERVER_HOST:', self.SERVER_HOST)
@@ -1683,6 +1694,9 @@ class ServerClass(QThread):
                 self.listen()
             except Exception as e:
                 print(str(datetime.datetime.now()) + ' -- ServerClass.run failed:', e)
+                self.server_status_label.setText('SERVER STATUS: TRYING TO START')
+                self.server_incoming.setIcon(QIcon('./resources/image/public_FILL0_wght100_GRAD-25_opsz48_YELLOW'))
+                break
 
     def server_logger(self):
         if not os.path.exists(server_log):
@@ -1706,9 +1720,6 @@ class ServerClass(QThread):
         global soft_block_ip
         global violation_count
         global soft_block_ip_count
-
-        self.server_status_label.setText('SERVER STATUS: ONLINE')
-        self.server_incoming.setIcon(QIcon('./resources/image/public_FILL0_wght100_GRAD-25_opsz48_WHITE.png'))
 
         print('-' * 200)
         print(str(datetime.datetime.now()) + ' -- ServerClass.listen SERVER_HOST:', self.SERVER_HOST)
@@ -1753,6 +1764,8 @@ class ServerClass(QThread):
             try:
                 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as SOCKET_SERVER:
                     SOCKET_SERVER.bind((self.SERVER_HOST, self.SERVER_PORT))
+                    self.server_status_label.setText('SERVER STATUS: ONLINE')
+                    self.server_incoming.setIcon(QIcon('./resources/image/public_FILL0_wght100_GRAD-25_opsz48_WHITE.png'))
                     SOCKET_SERVER.listen()
                     conn, addr = SOCKET_SERVER.accept()
                     print(str(datetime.datetime.now()) + ' -- ServerClass.listen conn, addr: ' + str(conn) + str(addr))
@@ -1764,7 +1777,10 @@ class ServerClass(QThread):
                             print('comparing:', soft_block_ip[i][0], ' ---> ', addr[0])
                             if soft_block_ip[i][0] == addr[0]:
                                 print(str(datetime.datetime.now()) + ' -- ServerClass.listen SOCKET_SERVER ATTEMPTING BLOCK: ' + str(SOCKET_SERVER))
-                                SOCKET_SERVER.close()
+                                try:
+                                    SOCKET_SERVER.close()
+                                except Exception as e:
+                                    print(str(datetime.datetime.now()) + ' -- ServerClass.stop failed:', e)
                                 print(str(datetime.datetime.now()) + ' -- ServerClass.listen SOCKET_SERVER AFTER CLOSE ATTEMPT: ' + str(SOCKET_SERVER))
                                 soft_block_ip_index = i
                                 addr_exists_already = True
@@ -1846,14 +1862,19 @@ class ServerClass(QThread):
                                 except Exception as e:
                                     print(str(datetime.datetime.now()) + ' ' + str(e))
                                     textbox_0_messages.append('[' + str(datetime.datetime.now()) + '] ' + str(e))
+                                    print(str(datetime.datetime.now()) + ' -- ServerClass.listen failed:', e)
+                                    textbox_0_messages.append('[' + str(datetime.datetime.now()) + '] ' + str(e))
+                                    self.server_status_label.setText('SERVER STATUS: TRYING TO START')
+                                    self.server_incoming.setIcon(QIcon('./resources/image/public_FILL0_wght100_GRAD-25_opsz48_YELLOW'))
                                     break
 
             except Exception as e:
                 print(str(datetime.datetime.now()) + ' -- ServerClass.listen failed:', e)
                 textbox_0_messages.append('[' + str(datetime.datetime.now()) + '] ' + str(e))
-                self.server_status_label.setText('SERVER STATUS: OFFLINE')
-                self.server_incoming.setIcon(QIcon('./resources/image/public_OFF_FILL0_wght100_GRAD-25_opsz48_WHITE.png'))
+                self.server_status_label.setText('SERVER STATUS: TRYING TO START')
+                self.server_incoming.setIcon(QIcon('./resources/image/public_FILL0_wght100_GRAD-25_opsz48_YELLOW'))
                 global_self.setFocus()
+                break
 
     def stop(self):
         global SOCKET_SERVER
