@@ -340,6 +340,26 @@ class App(QMainWindow):
                     print('-- name should not be empty!')
 
                 # Save as
+            global dial_out_dial_out_cipher_bool
+            # # First Check If The Address Entry HAS A Key And Fingerprint
+            self.dial_out_cipher_bool_btn.setStyleSheet(button_stylesheet_red_text)
+            dial_out_dial_out_cipher_bool = False
+            self.dial_out_cipher_bool_btn.setEnabled(False)
+
+            if dial_out_dial_out_cipher_bool is False:
+                if client_address[client_address_index][3] != '#' and len(
+                        client_address[client_address_index][3]) == 32:
+                    print(str(datetime.datetime.now()) + ' -- address entry appears to have a key:',
+                          client_address[client_address_index][3])
+                    if client_address[client_address_index][4] != '#' and len(
+                            client_address[client_address_index][4]) == 1024:
+                        print(str(datetime.datetime.now()) + ' -- address entry appears to have a fingerprint:',
+                              client_address[client_address_index][4])
+                        self.dial_out_cipher_bool_btn.setStyleSheet(button_stylesheet_green_text)
+                        dial_out_dial_out_cipher_bool = True
+                        self.dial_out_cipher_bool_btn.setEnabled(True)
+            print(str(datetime.datetime.now()) + ' -- dial_out_dial_out_cipher_bool:', dial_out_dial_out_cipher_bool)
+
             write_client_configuration_engaged = False
 
         def server_prev_addr_function():
@@ -833,7 +853,7 @@ class App(QMainWindow):
         self.server_incoming = QPushButton(self)
         self.server_incoming.resize(68, 68)
         self.server_incoming.move(self.width - 72, 52)
-        self.server_incoming.setIcon(QIcon("./resources/image/public_OFF_FILL0_wght100_GRAD-25_opsz48_WHITE.png"))
+        self.server_incoming.setIcon(QIcon("./resources/image/public_FILL0_wght100_GRAD-25_opsz48_WHITE.png"))
         self.server_incoming.setIconSize(QSize(48, 48))
         self.server_incoming.setStyleSheet(button_stylesheet_background_matching)
 
