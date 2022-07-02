@@ -1304,7 +1304,6 @@ class DialOutClass(QThread):
                     data_response = SOCKET_DIAL_OUT.recv(2048)
                 except Exception as e:
                     print(str(datetime.datetime.now()) + ' -- DialOutClass.message_send failed:', e)
-                    self.dial_out_line_test.setIcon(QIcon("./resources/image/cell_tower_FILL1_wght200_GRAD200_opsz40_RED.png"))
                     self.data = '[' + str(datetime.datetime.now()) + '] [SENDING FAILED] [' + str(self.HOST_SEND) + ':' + str(self.PORT_SEND) + ']'
                     textbox_0_messages.append(self.data)
                     self.dial_out_logger()
