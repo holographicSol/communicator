@@ -8,14 +8,13 @@ import time
 import datetime
 import socket
 from win32api import GetSystemMetrics
-from PyQt5.QtCore import Qt, QThread, QSize, QPoint, QCoreApplication, QObject, QTimer
+from PyQt5.QtCore import Qt, QThread, QSize, QTimer
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtMultimedia import *
 from PyQt5 import QtCore
 from Crypto.Cipher import AES
-from hashlib import sha256
 import base64
 from Crypto import Random
 import random
@@ -31,167 +30,106 @@ def canonical_caseless(text):
     return NFD(NFD(text).casefold())
 
 
+# Addresses
+server_address = []
+client_address = []
+server_address_index = 0
+client_address_index = 0
+
+address_save_mode = 'basic'
+
 # Socket Instances
 SOCKET_DIAL_OUT = []
 SOCKET_SERVER = []
 
-# Addresses
-DIAL_OUT_ADDRESSES = []
-server_data = []
-
-# NEW ADDRESS SETTINGS
-server_addresses = []
-server_address = ''
-server_address_index = 0
-server_ip = []
-server_port = []
-
-# Dial Out Settings
-dial_out_thread_key = ''
-dial_out_address = ''
-dial_out_address_index = 0
-address_name = []
-address_ip = []
-address_port = []
-address_key = []
-address_fingerprint = []
-dial_out_dial_out_cipher_bool = True
-dial_out_using_address_book_bool = True
-
+# Soft Blocking Variables
 x_time = round(time.time() * 1000)
 z_time = []
 prev_addr = []
 soft_block_ip = []
 violation_count = []
 
-# Wild Addresses
-wild_addresses_ip = []
-
-# Messages
-messages = []
-address_server_data = []
+# textbox_0_Messages
+server_messages = []
+textbox_0_messages = []
+server_address_messages = []
+internal_messages = []
 cipher_message_count = 0
 alien_message_count = 0
 soft_block_ip_count = 0
 
-# Public Settings
-server_thread_key = ''
-send_thread_key = ''
+# Files
 server_log = './log/server_log.txt'
 dial_out_log = './log/dial_out_log.txt'
 
-# Configuration Settings
-configuration_thread_key = ''
+# Boolean
+dial_out_dial_out_cipher_bool = True
 configuration_thread_completed = False
-write_configuration_engaged = False
-server_write_configuration_engaged = False
-
+write_server_configuration_engaged = False
+write_client_configuration_engaged = False
 mute_server_notify_alien_bool = False
 mute_server_notify_cipher_bool = False
 
-server_rate_limiting_bool = True
-
+# Threads
 configuration_thread = []
 
-# Stylesheet - Server Title (Mode 0)
-server_title_stylesheet_0 = """QLabel{background-color: rgb(10, 10, 10);
+title_stylesheet_default = """QLabel{background-color: rgb(10, 10, 10);
                        color: rgb(200, 200, 200);
                        border-bottom:2px solid rgb(5, 5, 5);
                        border-right:2px solid rgb(5, 5, 5);
                        border-top:2px solid rgb(5, 5, 5);
                        border-left:2px solid rgb(5, 5, 5);}"""
 
-# Stylesheet - Server Switches (Mode 0)
-button_stylesheet_0 = """QPushButton{background-color: rgb(10, 10, 10);
+button_stylesheet_default = """QPushButton{background-color: rgb(10, 10, 10);
                        color: rgb(200, 200, 200);
                        border-bottom:2px solid rgb(5, 5, 5);
                        border-right:2px solid rgb(5, 5, 5);
                        border-top:2px solid rgb(5, 5, 5);
                        border-left:2px solid rgb(5, 5, 5);}"""
 
-non_standard_communication_count = """QPushButton{background-color: rgb(10, 10, 10);
+button_stylesheet_background_matching = """QPushButton{background-color: rgb(0, 0, 0);
+                       color: rgb(200, 200, 200);
+                       border-bottom:0px solid rgb(5, 5, 5);
+                       border-right:0px solid rgb(5, 5, 5);
+                       border-top:0px solid rgb(5, 5, 5);
+                       border-left:0px solid rgb(5, 5, 5);}"""
+
+button_stylesheet_amber_text = """QPushButton{background-color: rgb(10, 10, 10);
                        color: rgb(200, 100, 0);
                        border-bottom:2px solid rgb(5, 5, 5);
                        border-right:2px solid rgb(5, 5, 5);
                        border-top:2px solid rgb(5, 5, 5);
                        border-left:2px solid rgb(5, 5, 5);}"""
 
-standard_communication_count = """QPushButton{background-color: rgb(10, 10, 10);
-                       color: rgb(200, 200, 200);
+button_stylesheet_white_text = """QPushButton{background-color: rgb(10, 10, 10);
+                       color: rgb(255, 255, 255);
                        border-bottom:2px solid rgb(5, 5, 5);
                        border-right:2px solid rgb(5, 5, 5);
                        border-top:2px solid rgb(5, 5, 5);
                        border-left:2px solid rgb(5, 5, 5);}"""
 
-soft_block_ip_notification_count_stylesheet = """QPushButton{background-color: rgb(10, 10, 10);
+button_stylesheet_red_text = """QPushButton{background-color: rgb(10, 10, 10);
                        color: rgb(200, 0, 0);
                        border-bottom:2px solid rgb(5, 5, 5);
                        border-right:2px solid rgb(5, 5, 5);
                        border-top:2px solid rgb(5, 5, 5);
                        border-left:2px solid rgb(5, 5, 5);}"""
 
-soft_block_ip_notification_alert_stylesheet = """QPushButton{background-color: rgb(200, 0, 0);
-                       color: rgb(0, 0, 0);
-                       border-bottom:2px solid rgb(5, 5, 5);
-                       border-right:2px solid rgb(5, 5, 5);
-                       border-top:2px solid rgb(5, 5, 5);
-                       border-left:2px solid rgb(5, 5, 5);}"""
-
-# Stylesheet - Server Switches (Mode 2)
-dial_out_message_stylesheet = """QLineEdit{background-color: rgb(10, 10, 10);
+button_stylesheet_green_text = """QPushButton{background-color: rgb(10, 10, 10);
                        color: rgb(0, 255, 0);
                        border-bottom:2px solid rgb(5, 5, 5);
                        border-right:2px solid rgb(5, 5, 5);
                        border-top:2px solid rgb(5, 5, 5);
                        border-left:2px solid rgb(5, 5, 5);}"""
 
-# Stylesheet - QLineEdit Default
-qline_edit_style_sheet_default = """QLineEdit{background-color: rgb(10, 10, 10);
+line_edit_stylesheet_white_text = """QLineEdit{background-color: rgb(10, 10, 10);
                        color: rgb(200, 200, 200);
                        border-bottom:2px solid rgb(5, 5, 5);
                        border-right:2px solid rgb(5, 5, 5);
                        border-top:2px solid rgb(5, 5, 5);
                        border-left:2px solid rgb(5, 5, 5);}"""
 
-# Stylesheet - Dial Out LINE_TEST (Mode 2)
-dial_out_add_addr_stylesheet_red = """QPushButton{background-color: rgb(10, 10, 10);
-                       color: rgb(200, 0, 0);
-                       border-bottom:2px solid rgb(5, 5, 5);
-                       border-right:2px solid rgb(5, 5, 5);
-                       border-top:2px solid rgb(5, 5, 5);
-                       border-left:2px solid rgb(5, 5, 5);}"""
-
-# Stylesheet - Dial Out LINE_TEST (Mode 2)
-dial_out_add_addr_stylesheet_green = """QPushButton{background-color: rgb(10, 10, 10);
-                       color: rgb(0, 255, 0);
-                       border-bottom:2px solid rgb(5, 5, 5);
-                       border-right:2px solid rgb(5, 5, 5);
-                       border-top:2px solid rgb(5, 5, 5);
-                       border-left:2px solid rgb(5, 5, 5);}"""
-
-# Stylesheet - Fingerprint Gen (Mode 0)
-fingerprint_generator_stylesheet = """QPushButton{background-color: rgb(255, 120, 0);
-                       color: rgb(200, 200, 200);
-                       border-bottom:2px solid rgb(5, 5, 5);
-                       border-right:2px solid rgb(5, 5, 5);
-                       border-top:2px solid rgb(5, 5, 5);
-                       border-left:2px solid rgb(5, 5, 5);}"""
-
-dial_out_cipher_stylesheet_0 = """QPushButton{background-color: rgb(10, 10, 10);
-                       color: rgb(255, 0, 0);
-                       border-bottom:2px solid rgb(5, 5, 5);
-                       border-right:2px solid rgb(5, 5, 5);
-                       border-top:2px solid rgb(5, 5, 5);
-                       border-left:2px solid rgb(5, 5, 5);}"""
-
-dial_out_cipher_stylesheet_1 = """QPushButton{background-color: rgb(10, 10, 10);
-                       color: rgb(0, 255, 0);
-                       border-bottom:2px solid rgb(5, 5, 5);
-                       border-right:2px solid rgb(5, 5, 5);
-                       border-top:2px solid rgb(5, 5, 5);
-                       border-left:2px solid rgb(5, 5, 5);}"""
-
-tb_0_stylesheet = """QTextBrowser {background-color: rgb(10, 10, 10);
+textbox_stylesheet_default = """QTextBrowser {background-color: rgb(10, 10, 10);
                 selection-color: black;
                 selection-background-color: rgb(0, 180, 0);
                 color: rgb(200, 200, 200);
@@ -202,17 +140,20 @@ tb_0_stylesheet = """QTextBrowser {background-color: rgb(10, 10, 10);
 
 global_self = []
 
-url = QUrl.fromLocalFile("./resources/audio/communicator_0.wav")
-content = QMediaContent(url)
-player = QMediaPlayer()
-player.setMedia(content)
-player.setVolume(100)
+# Initialize Notification Player_default In Memory
+player_url_default = QUrl.fromLocalFile("./resources/audio/communicator_0.wav")
+player_content_default = QMediaContent(player_url_default)
+player_default = QMediaPlayer()
+player_default.setMedia(player_content_default)
+player_default.setVolume(100)
 
 
 class App(QMainWindow):
     def __init__(self):
         super(App, self).__init__()
         global global_self
+        global server_address
+        global client_address
         global_self = self
 
         self.font_s7b = QFont("Segoe UI", 7, QFont.Bold)
@@ -304,262 +245,232 @@ class App(QMainWindow):
                                    border-left:0px solid rgb(0, 0, 0);}"""
         self.setStyleSheet(self.tooltip_style)
 
-        def dial_out_prev_addr_function():
-            print(str(datetime.datetime.now()) + ' -- plugged in: App.dial_out_prev_addr_function')
+        def send_message_function():
+            print(str(datetime.datetime.now()) + ' -- plugged in: App.send_message_function')
             global_self.setFocus()
-            global dial_out_address, dial_out_address_index
-            global address_name, address_ip, address_port, address_key, address_fingerprint
-            global dial_out_using_address_book_bool
-            global dial_out_dial_out_cipher_bool
-
-            dial_out_using_address_book_bool = True
-            dial_out_dial_out_cipher_bool = False
-            self.dial_out_cipher_bool_btn.setEnabled(True)
-            dial_out_dial_out_cipher_bool_btn_function()
-
-            # Get length of address book
-            LEN_DIAL_OUT_ADDRESSES = len(DIAL_OUT_ADDRESSES)
-            print(str(datetime.datetime.now()) + ' -- len(DIAL_OUT_ADDRESSES):', len(DIAL_OUT_ADDRESSES))
-
-            if LEN_DIAL_OUT_ADDRESSES > 0:
-
-                # Step through address book
-                if dial_out_address_index == 0:
-                    print(str(datetime.datetime.now()) + ' -- dial_out_address_index is zero: setting dial_out_address_index to len(DIAL_OUT_ADDRESSES)')
-                    dial_out_address_index = LEN_DIAL_OUT_ADDRESSES - 1
-                else:
-                    print(str(datetime.datetime.now()) + ' -- dial_out_address_index is not zero: subtracting 1 from DIAL_OUT_ADDRESSES')
-                    dial_out_address_index = dial_out_address_index - 1
-
-                print(str(datetime.datetime.now()) + ' -- setting dial_out_address_index:', dial_out_address_index)
-                print(str(datetime.datetime.now()) + ' -- setting dial_out_address using dial_out_address_index:', DIAL_OUT_ADDRESSES[dial_out_address_index])
-
-                dial_out_address = address_ip[dial_out_address_index] + ' ' + str(address_port[dial_out_address_index])
-                print(str(datetime.datetime.now()) + ' -- dial_out_address:', dial_out_address)
-                self.dial_out_ip_port.setText(dial_out_address)
-                print(str(datetime.datetime.now()) + ' -- set dial_out_ip_port text:', dial_out_address)
-                self.dial_out_name.setText(address_name[dial_out_address_index])
-                print(str(datetime.datetime.now()) + ' -- set dial_out_name text:', address_name[dial_out_address_index])
-
-            else:
-                print(str(datetime.datetime.now()) + ' -- DIAL_OUT_ADDRESSES unpopulated')
-
-            if len(address_name) > 0:
-                print('')
-                print('address_name', address_name[dial_out_address_index])
-                print('address_ip', address_ip[dial_out_address_index])
-                print('address_port', address_port[dial_out_address_index])
-                print('address_key', address_key[dial_out_address_index])
-                print('address_fingerprint', address_fingerprint[dial_out_address_index])
-                print('')
-
-        def dial_out_next_addr_function():
-            global address_name, address_ip, address_port, address_key, address_fingerprint
-            print(str(datetime.datetime.now()) + ' -- plugged in: App.dial_out_next_addr_function')
-            global_self.setFocus()
-            global dial_out_address, dial_out_address_index
-            global dial_out_using_address_book_bool
-            global dial_out_dial_out_cipher_bool
-
-            dial_out_using_address_book_bool = True
-            dial_out_dial_out_cipher_bool = False
-            self.dial_out_cipher_bool_btn.setEnabled(True)
-            dial_out_dial_out_cipher_bool_btn_function()
-
-            # Get length of address book
-            LEN_DIAL_OUT_ADDRESSES = len(DIAL_OUT_ADDRESSES)
-            print(str(datetime.datetime.now()) + ' -- len(DIAL_OUT_ADDRESSES):', len(DIAL_OUT_ADDRESSES))
-
-            if LEN_DIAL_OUT_ADDRESSES > 0:
-
-                # Step through address book
-                if dial_out_address_index == LEN_DIAL_OUT_ADDRESSES - 1:
-                    print(str(datetime.datetime.now()) + ' -- dial_out_address_index is reached max: setting dial_out_address_index to zero')
-                    dial_out_address_index = 0
-                else:
-                    print(str(datetime.datetime.now()) + ' -- dial_out_address_index is not max: adding 1 to dial_out_address_index')
-                    dial_out_address_index += 1
-
-                print(str(datetime.datetime.now()) + ' -- setting dial_out_address_index:', dial_out_address_index)
-                print(str(datetime.datetime.now()) + ' -- setting dial_out_address using dial_out_address_index:', DIAL_OUT_ADDRESSES[dial_out_address_index])
-
-                dial_out_address = address_ip[dial_out_address_index] + ' ' + str(address_port[dial_out_address_index])
-                print(str(datetime.datetime.now()) + ' -- dial_out_address:', dial_out_address)
-                self.dial_out_ip_port.setText(dial_out_address)
-                print(str(datetime.datetime.now()) + ' -- set dial_out_ip_port text:', dial_out_address)
-                self.dial_out_name.setText(address_name[dial_out_address_index])
-                print(str(datetime.datetime.now()) + ' -- set dial_out_name text:', address_name[dial_out_address_index])
-            else:
-                print(str(datetime.datetime.now()) + ' -- DIAL_OUT_ADDRESSES unpopulated')
-
-            if len(address_name) > 0:
-                print('')
-                print('address_name', address_name[dial_out_address_index])
-                print('address_ip', address_ip[dial_out_address_index])
-                print('address_port', address_port[dial_out_address_index])
-                print('address_key', address_key[dial_out_address_index])
-                print('address_fingerprint', address_fingerprint[dial_out_address_index])
-                print('')
-
-        def dial_out_ip_port_function_set():
-            print(str(datetime.datetime.now()) + ' -- plugged in: App.dial_out_ip_port_function_set')
-            global_self.setFocus()
-            global dial_out_address
-            global dial_out_using_address_book_bool
-            global dial_out_dial_out_cipher_bool
-            dial_out_address = self.dial_out_ip_port.text()
-            print(str(datetime.datetime.now()) + ' -- setting dial out address:', dial_out_address)
-            self.dial_out_name.setText('-- -- --')
-            dial_out_using_address_book_bool = False
-            dial_out_dial_out_cipher_bool = True
-            self.dial_out_cipher_bool_btn.setEnabled(False)
-            dial_out_dial_out_cipher_bool_btn_function()
-
-        def dial_out_line_test_function():
-            print(str(datetime.datetime.now()) + ' -- plugged in: App.dial_out_line_test_function')
-            global_self.setFocus()
-            global dial_out_thread_key
-            if not self.dial_out_message.text() == '':
+            if self.dial_out_message.text() != '':
                 if dial_out_thread.isRunning() is True:
                     dial_out_thread.stop()
-                dial_out_thread_key = 'LINE_TEST'
-                dial_out_thread.start()
-
-        def dial_out_message_send_function():
-            print(str(datetime.datetime.now()) + ' -- plugged in: App.dial_out_message_send_function')
-            global_self.setFocus()
-            global dial_out_thread_key
-            if not self.dial_out_message.text() == '':
-                if dial_out_thread.isRunning() is True:
-                    dial_out_thread.stop()
-                dial_out_thread_key = 'MESSAGE'
                 dial_out_thread.start()
             else:
-                print(str(datetime.datetime.now()) + ' -- dial_out_message_send_function: blocking empty message send')
+                print(str(datetime.datetime.now()) + ' -- send_message_function: blocking empty message send')
 
-        def start_function():
-            print(str(datetime.datetime.now()) + ' -- plugged in: App.start_function')
-            global_self.setFocus()
-            global server_thread_key
-            if len(server_addresses) > 0:
-                server_thread.stop()
-                server_thread_key = 'listen'
-                server_thread.start()
+        def client_remove_address():
+            print(str(datetime.datetime.now()) + ' -- plugged in: App.client_remove_addresss')
+            global write_client_configuration_engaged
+            global client_address
+            global client_address_index
 
-        def stop_function():
-            print(str(datetime.datetime.now()) + ' -- plugged in: App.stop_function')
-            global_self.setFocus()
-            if server_thread.isRunning() is True:
-                server_thread.stop()
-            else:
-                print('public server: already stopped')
+            if write_client_configuration_engaged is False:
+                write_client_configuration_engaged = True
 
-        def server_ip_port_write_function():
-            print(str(datetime.datetime.now()) + ' -- plugged in: App.server_ip_port_write_function')
-            global_self.setFocus()
-            global server_addresses
-            global server_address
-            global server_ip
-            global server_port
-            global server_address_index
+                if os.path.exists('./communicator_address_book.txt'):
+                    fo_list = []
+                    with open('./communicator_address_book.txt', 'r') as fo:
+                        for line in fo:
+                            line = line.strip()
+                            line_split = line.split(' ')
+                            if len(line_split) >= 1:
+                                if line != '':
+                                    if line_split[1] != client_address[client_address_index][0]:
+                                        fo_list.append(line)
+                    open('./communicator_address_book.tmp', 'w').close()
+                    with open('./communicator_address_book.tmp', 'w') as fo:
+                        for _ in fo_list:
+                            fo.write(str(_) + '\n')
+                    fo.close()
+                    if os.path.exists('./communicator_address_book.tmp'):
+                        os.replace('./communicator_address_book.tmp', './communicator_address_book.txt')
+                    del client_address[client_address_index]
+                    client_previous_address_function()
 
-            server_address_var = self.server_ip_port.text()
-            if server_address_var not in server_addresses:
-                print(str(datetime.datetime.now()) + ' -- new server address detected:', server_address_var)
+            write_client_configuration_engaged = False
 
-                server_addresses.append(server_address_var)
-                server_ip.append(server_address_var.split()[0])
-                server_port.append(server_address_var.split()[1])
-                server_address_index = server_addresses.index(server_address_var)
-                print(str(datetime.datetime.now()) + ' -- changing server_address_index to:', server_address_index)
-                server_address = server_addresses[server_address_index]
-                print(str(datetime.datetime.now()) + ' -- setting server_address using server_address_index:', server_address)
+        def client_save_address():
+            print(str(datetime.datetime.now()) + ' -- plugged in: App.client_save_address')
+            global write_client_configuration_engaged
+            global client_address
+            global client_address_index
+            global address_save_mode
 
-            else:
-                print(str(datetime.datetime.now()) + ' -- server address already exists:', server_address_var)
-                server_address_index = server_addresses.index(server_address_var)
-                print(str(datetime.datetime.now()) + ' -- changing server_address_index to:', server_address_index)
-                server_address = server_addresses[server_address_index]
-                print(str(datetime.datetime.now()) + ' -- setting server_address using server_address_index:', server_address)
+            name_non_duplicate = True
+            for _ in client_address:
+                if _[0] == self.dial_out_name.text():
+                    print('-- comparing:', _[0], ' --> ', self.dial_out_name.text())
+                    name_non_duplicate = False
+                    break
+
+            if write_client_configuration_engaged is False and name_non_duplicate is True:
+                write_client_configuration_engaged = True
+
+                if self.dial_out_name.text() != '':
+                    if self.dial_out_ip_port.text() != '':
+
+                        fo_list = []
+                        with open('./communicator_address_book.txt', 'r') as fo:
+                            for line in fo:
+                                line = line.strip()
+                                if line != '':
+                                    if not line.replace('DATA ', '') == str(
+                                            client_address[client_address_index][0]) + ' ' + str(
+                                        client_address[client_address_index][1]):
+                                        fo_list.append(line)
+
+                        # Use Save Mode
+                        if address_save_mode == 'basic':
+                            fo_list.append('DATA ' + self.dial_out_name.text() + ' ' + str(self.dial_out_ip_port.text() + ' x' + ' x'))
+                            client_address.append([str(self.dial_out_name.text()), str(self.dial_out_ip_port.text().split(' ')[0]), int(self.dial_out_ip_port.text().split(' ')[1]), bytes('x', 'utf-8'), 'x'])
+                            client_address_index = len(client_address)-1
+
+                        with open('./communicator_address_book.txt', 'w') as fo:
+                            for _ in fo_list:
+                                fo.write(_ + '\n')
+                        fo.close()
+                        success_write = []
+                        if os.path.exists('./communicator_address_book.txt'):
+                            with open('./communicator_address_book.txt', 'r') as fo:
+                                i = 0
+                                for line in fo:
+                                    line = line.strip()
+                                    if not line.replace('DATA ', '') == fo_list[i]:
+                                        success_write.append(False)
+                    else:
+                        print('-- ip and port should not be empty!')
+                else:
+                    print('-- name should not be empty!')
+
+                # Save as
+            write_client_configuration_engaged = False
 
         def server_prev_addr_function():
             print(str(datetime.datetime.now()) + ' -- plugged in: App.server_prev_addr_function')
             global_self.setFocus()
-            global server_address, server_address_index, server_addresses
-            global server_ip, server_port
+            global server_address_index
+            global server_address
 
-            LEN_SERVER_ADDRESSES = len(server_addresses)
-            print(str(datetime.datetime.now()) + ' -- len(server_addresses):', len(server_addresses))
-
-            if LEN_SERVER_ADDRESSES > 0:
-
-                # Step through address book
+            if len(server_address) > 0:
                 if server_address_index == 0:
-                    print(str(datetime.datetime.now()) + ' -- server_address_index is zero: setting server_address_index to len(server_addresses)')
-                    server_address_index = LEN_SERVER_ADDRESSES - 1
+                    server_address_index = len(server_address) - 1
                 else:
-                    print(str(datetime.datetime.now()) + ' -- server_address_index is not zero: subtracting 1 from server_address_index')
                     server_address_index = server_address_index - 1
-
                 print(str(datetime.datetime.now()) + ' -- setting server_address_index:', server_address_index)
-                print(str(datetime.datetime.now()) + ' -- setting server_address using server_address_index:', server_addresses[server_address_index])
-
-                server_address = server_addresses[server_address_index]
-                print(str(datetime.datetime.now()) + ' -- server_address:', server_address)
-                self.server_ip_port.setText(server_address)
-                print(str(datetime.datetime.now()) + ' -- set server_ip_port text:', server_address)
-
+                self.server_ip_port.setText(server_address[server_address_index][0] + ' ' + str(server_address[server_address_index][1]))
             else:
-                print(str(datetime.datetime.now()) + ' -- LEN_SERVER_ADDRESSES unpopulated')
+                print(str(datetime.datetime.now()) + ' -- server_address unpopulated')
                 self.server_ip_port.setText('')
 
         def server_next_addr_function():
             print(str(datetime.datetime.now()) + ' -- plugged in: App.server_next_addr_function')
             global_self.setFocus()
-            global server_address, server_address_index, server_addresses
-            global server_ip, server_port
 
-            # Get length of address book
-            LEN_SERVER_ADDRESSES = len(server_addresses)
-            print(str(datetime.datetime.now()) + ' -- len(server_addresses):', len(server_addresses))
+            global server_address_index
+            global server_address
 
-            if LEN_SERVER_ADDRESSES > 0:
-
-                # Step through address book
-                if server_address_index == LEN_SERVER_ADDRESSES - 1:
-                    print(str(datetime.datetime.now()) + ' -- server_address_index reached max: setting server_address_index to zero')
+            if len(server_address) > 0:
+                if server_address_index == len(server_address) - 1:
                     server_address_index = 0
                 else:
-                    print(str(datetime.datetime.now()) + ' -- server_address_index is not max: adding 1 to server_address_index')
                     server_address_index += 1
-
                 print(str(datetime.datetime.now()) + ' -- setting server_address_index:', server_address_index)
-                print(str(datetime.datetime.now()) + ' -- setting server_address using server_address_index:', server_addresses[server_address_index])
-
-                server_address = server_addresses[server_address_index]
-                print(str(datetime.datetime.now()) + ' -- server_address:', server_address)
-                self.server_ip_port.setText(server_address)
-                print(str(datetime.datetime.now()) + ' -- set server_ip_port text:', server_address)
+                self.server_ip_port.setText(server_address[server_address_index][0] + ' ' + str(server_address[server_address_index][1]))
             else:
-                print(str(datetime.datetime.now()) + ' -- LEN_SERVER_ADDRESSES unpopulated')
+                print(str(datetime.datetime.now()) + ' -- server_address unpopulated')
                 self.server_ip_port.setText('')
 
-        def dial_out_name_function_set():
-            print(str(datetime.datetime.now()) + ' -- plugged in: App.dial_out_name_function_set')
-            if self.dial_out_name.text() not in address_name:
-                print('-- accepting name as name does not already exist')
-
-        def dial_out_dial_out_cipher_bool_btn_function():
-            global dial_out_dial_out_cipher_bool
-            print(str(datetime.datetime.now()) + ' -- plugged in: App.dial_out_dial_out_cipher_bool_function')
-            if dial_out_dial_out_cipher_bool is True:
-                dial_out_dial_out_cipher_bool = False
-                self.dial_out_cipher_bool_btn.setStyleSheet(dial_out_cipher_stylesheet_0)
-                print(str(datetime.datetime.now()) + ' -- setting dial_out_dial_out_cipher_bool:', dial_out_dial_out_cipher_bool)
+        def client_previous_address_function():
+            print(str(datetime.datetime.now()) + ' -- plugged in: App.client_previous_address_function')
+            global_self.setFocus()
+            global client_address
+            global client_address_index
+            print(str(datetime.datetime.now()) + ' -- len(client_address):', len(client_address))
+            if len(client_address) > 0:
+                if client_address_index == 0:
+                    client_address_index = len(client_address) - 1
+                else:
+                    client_address_index = client_address_index - 1
+                print(str(datetime.datetime.now()) + ' -- client_address_index setting client_address_index:', client_address_index)
+                self.dial_out_ip_port.setText(client_address[client_address_index][1] + ' ' + str(client_address[client_address_index][2]))
+                self.dial_out_name.setText(str(client_address[client_address_index][0]))
+                print(self.dial_out_ip_port.text())
             else:
-                dial_out_dial_out_cipher_bool = True
-                self.dial_out_cipher_bool_btn.setStyleSheet(dial_out_cipher_stylesheet_1)
-                print(str(datetime.datetime.now()) + ' -- setting dial_out_dial_out_cipher_bool:', dial_out_dial_out_cipher_bool)
+                print(str(datetime.datetime.now()) + ' -- client_address unpopulated')
+            # print(str(datetime.datetime.now()) + ' -- client_next_address_function client_address[client_address_index]:', str(client_address[client_address_index]))
+
+            print(str(datetime.datetime.now()) + ' -- current client_address updated')
+
+            global dial_out_dial_out_cipher_bool
+            # # First Check If The Address Entry HAS A Key And Fingerprint
+            self.dial_out_cipher_bool_btn.setStyleSheet(button_stylesheet_red_text)
+            dial_out_dial_out_cipher_bool = False
+            self.dial_out_cipher_bool_btn.setEnabled(False)
+
+            if dial_out_dial_out_cipher_bool is False:
+                if client_address[client_address_index][3] != '#' and len(client_address[client_address_index][3]) == 32:
+                    print(str(datetime.datetime.now()) + ' -- address entry appears to have a key:', client_address[client_address_index][3])
+                    if client_address[client_address_index][4] != '#' and len(client_address[client_address_index][4]) == 1024:
+                        print(str(datetime.datetime.now()) + ' -- address entry appears to have a fingerprint:', client_address[client_address_index][4])
+                        self.dial_out_cipher_bool_btn.setStyleSheet(button_stylesheet_green_text)
+                        dial_out_dial_out_cipher_bool = True
+                        self.dial_out_cipher_bool_btn.setEnabled(True)
+            print(str(datetime.datetime.now()) + ' -- dial_out_dial_out_cipher_bool:', dial_out_dial_out_cipher_bool)
+
+        def client_next_address_function():
+            print(str(datetime.datetime.now()) + ' -- plugged in: App.client_next_address_function')
+            global_self.setFocus()
+            global client_address
+            global client_address_index
+            print(str(datetime.datetime.now()) + ' -- len(client_address):', len(client_address))
+            if len(client_address) > 0:
+                if client_address_index == len(client_address) - 1:
+                    client_address_index = 0
+                else:
+                    client_address_index += 1
+                print(str(datetime.datetime.now()) + ' -- client_address_index setting client_address_index:', client_address_index)
+                self.dial_out_ip_port.setText(client_address[client_address_index][1] + ' ' + str(client_address[client_address_index][2]))
+                self.dial_out_name.setText(str(client_address[client_address_index][0]))
+            else:
+                print(str(datetime.datetime.now()) + ' -- client_address unpopulated')
+            # print(str(datetime.datetime.now()) + ' -- client_next_address_function client_address[client_address_index]:', str(client_address[client_address_index]))
+
+            print(str(datetime.datetime.now()) + ' -- current client_address updated')
+
+            global dial_out_dial_out_cipher_bool
+            # # First Check If The Address Entry HAS A Key And Fingerprint
+            self.dial_out_cipher_bool_btn.setStyleSheet(button_stylesheet_red_text)
+            dial_out_dial_out_cipher_bool = False
+            self.dial_out_cipher_bool_btn.setEnabled(False)
+
+            if dial_out_dial_out_cipher_bool is False:
+                if client_address[client_address_index][3] != '#' and len(client_address[client_address_index][3]) == 32:
+                    print(str(datetime.datetime.now()) + ' -- address entry appears to have a key:', client_address[client_address_index][3])
+                    if client_address[client_address_index][4] != '#' and len(client_address[client_address_index][4]) == 1024:
+                        print(str(datetime.datetime.now()) + ' -- address entry appears to have a fingerprint:', client_address[client_address_index][4])
+                        self.dial_out_cipher_bool_btn.setStyleSheet(button_stylesheet_green_text)
+                        dial_out_dial_out_cipher_bool = True
+                        self.dial_out_cipher_bool_btn.setEnabled(True)
+            print(str(datetime.datetime.now()) + ' -- dial_out_dial_out_cipher_bool:', dial_out_dial_out_cipher_bool)
+
+        def server_line_edit_return_pressed():
+            print(str(datetime.datetime.now()) + ' -- plugged in: App.server_line_edit_return_pressed')
+            global_self.setFocus()
+            global server_address
+            global server_address_index
+
+            server_address_var = self.server_ip_port.text()
+            bool_address_match = False
+
+            for _ in server_address:
+                if str(_[0] + ' ' + str(_[1])) == server_address_var:
+                    bool_address_match = True
+
+            if bool_address_match is False:
+                print(str(datetime.datetime.now()) + ' -- new server address detected:', server_address_var)
+                server_address.append([server_address_var.split(' ')[0], int(server_address_var.split(' ')[1])])
+                server_address_index = len(server_address)-1
+                print(str(datetime.datetime.now()) + ' -- changing server_address_index to:', server_address_index)
+
+            else:
+                print(str(datetime.datetime.now()) + ' -- server address already exists:', server_address_var)
 
         def server_notify_cipher_function():
             print(str(datetime.datetime.now()) + ' -- plugged in: App.server_notify_cipher_function')
@@ -580,105 +491,6 @@ class App(QMainWindow):
             soft_block_ip_count = 0
             self.soft_block_ip_notification.setText(str(soft_block_ip_count))
             soft_block_ip = []
-
-        def dial_out_add_addr_confirm_function():
-            print(str(datetime.datetime.now()) + ' -- plugged in: App.dial_out_add_addr_confirm_function')
-            print(str(datetime.datetime.now()) + ' -- plugged in: App.dial_out_add_addr_confirm_function add address: waiting for confirmation')
-            self.dial_out_add_addr.hide()
-            self.dial_out_rem_addr.hide()
-            self.dial_out_add_addr_confirm.show()
-            self.decline_dial_out_add_addr.show()
-
-        def decline_add_address():
-            print(str(datetime.datetime.now()) + ' -- plugged in: App.decline_add_address')
-            print(
-                str(datetime.datetime.now()) + ' -- plugged in: App.dial_out_add_addr_confirm_function add address: aborted')
-            self.dial_out_add_addr_confirm.hide()
-            self.decline_dial_out_add_addr.hide()
-            self.dial_out_add_addr.show()
-            self.dial_out_rem_addr.show()
-
-        def dial_out_add_addr_function():
-            print(str(datetime.datetime.now()) + ' -- plugged in: App.dial_out_add_addr_function')
-            print(str(datetime.datetime.now()) + ' -- plugged in: App.dial_out_add_addr_confirm_function add address: accepted')
-            finger_print_gen_thread.start()
-            self.dial_out_add_addr_confirm.hide()
-            self.decline_dial_out_add_addr.hide()
-            self.dial_out_add_addr.show()
-            self.dial_out_rem_addr.show()
-
-        def decline_remove_address():
-            print(str(datetime.datetime.now()) + ' -- plugged in: App.decline_remove_address')
-            print(str(datetime.datetime.now()) + ' -- plugged in: App.decline_remove_address remove address: aborted')
-            self.accept_remove_address.hide()
-            self.decline_remove_address.hide()
-            self.dial_out_add_addr.show()
-            self.dial_out_rem_addr.show()
-
-        def remove_address_confirm():
-            global dial_out_address_index
-            global address_name, address_ip, address_port, address_key, address_fingerprint
-
-            print(str(datetime.datetime.now()) + ' -- plugged in: App.remove_address_confirm')
-            print(str(datetime.datetime.now()) + ' -- plugged in: App.decline_remove_address remove address: accepted')
-
-            if len(address_name) > 0:
-                self.accept_remove_address.hide()
-                self.decline_remove_address.hide()
-
-                var_addresses = []
-
-                # Remove focused address book entry
-                if os.path.exists('./communicator_address_book.txt'):
-                    with open('./communicator_address_book.txt', 'r') as fo:
-                        for line in fo:
-                            line = line.strip()
-                            if line != '':
-                                line_split = line.split(' ')
-                                if line_split[1] != self.dial_out_name.text():
-                                    var_addresses.append(line)
-                                    print('reading:', line)
-                    fo.close()
-                    open('./communicator_address_book.tmp', 'w').close()
-                    for _ in var_addresses:
-                        print('writing:', _)
-                        with open('./communicator_address_book.tmp', 'a') as fo:
-                            fo.write('\n' + _ + '\n')
-                        fo.close()
-                    os.replace('./communicator_address_book.tmp', './communicator_address_book.txt')
-                    if os.path.exists('./communicator_address_book.txt'):
-                        # ToDo --> check file
-                        print('file exists: check lines')
-
-                del address_name[dial_out_address_index]
-                del address_ip[dial_out_address_index]
-                del address_port[dial_out_address_index]
-                del address_key[dial_out_address_index]
-                del address_fingerprint[dial_out_address_index]
-                del DIAL_OUT_ADDRESSES[dial_out_address_index]
-
-                print(address_name)
-                print(address_ip)
-                print(address_port)
-                print(address_key)
-                print(address_fingerprint)
-                print(DIAL_OUT_ADDRESSES)
-
-                self.dial_out_name.setText('')
-                self.dial_out_ip_port.setText('')
-
-                dial_out_prev_addr_function()
-
-            self.dial_out_add_addr.show()
-            self.dial_out_rem_addr.show()
-
-        def remove_address_ask_confirmation():
-            print(str(datetime.datetime.now()) + ' -- plugged in: App.remove_address_ask_confirmation')
-            print(str(datetime.datetime.now()) + ' -- plugged in: App.decline_remove_address remove address: waiting for confirmation')
-            self.dial_out_add_addr.hide()
-            self.dial_out_rem_addr.hide()
-            self.accept_remove_address.show()
-            self.decline_remove_address.show()
 
         def mute_server_notify_alien_function():
             print(str(datetime.datetime.now()) + ' -- plugged in: App.mute_server_notify_alien_function')
@@ -704,119 +516,109 @@ class App(QMainWindow):
                 self.mute_server_notify_cipher.setIcon(QIcon("./resources/image/volume_off_FILL0_wght100_GRAD200_opsz20.png"))
                 print(str(datetime.datetime.now()) + ' -- plugged in: App.mute_server_notify_alien_function setting mute:', mute_server_notify_cipher_bool)
 
-        def server_add_addr_confirm_function():
-            print(str(datetime.datetime.now()) + ' -- plugged in: App.server_add_addr_confirm_function')
-            global_self.setFocus()
-            global server_addresses
+        def server_save_function():
+            print(str(datetime.datetime.now()) + ' -- plugged in: App.server_save_function')
+            global write_server_configuration_engaged
             global server_address
-            global server_ip
-            global server_port
             global server_address_index
-            global write_configuration_engaged
-            if write_configuration_engaged is False:
 
-                write_configuration_engaged = True
-
-                server_address_var = self.server_ip_port.text()
-
-                write_bool = True
-
+            if write_server_configuration_engaged is False:
+                write_server_configuration_engaged = True
+                fo_list = []
                 with open('./config.txt', 'r') as fo:
                     for line in fo:
                         line = line.strip()
-                        line_split = line.split(' ')
-                        if line_split[0] == 'SERVER_ADDRESS':
-                            if str(line_split[1] + ' ' + line_split[2]) == server_address_var:
-                                write_bool = False
-                                break
+                        if line != '':
+                            if not line.replace('SERVER_ADDRESS ', '') == str(server_address[server_address_index][0]) + ' ' + str(server_address[server_address_index][1]):
+                                fo_list.append(line)
+                fo_list.append('SERVER_ADDRESS ' + str(self.server_ip_port.text()))
+                with open('./config.txt', 'w') as fo:
+                    for _ in fo_list:
+                        fo.write(_ + '\n')
                 fo.close()
+                success_write = []
+                if os.path.exists('./config.txt'):
+                    with open('./config.txt', 'r') as fo:
+                        i = 0
+                        for line in fo:
+                            line = line.strip()
+                            if not line.replace('SERVER_ADDRESS ', '') == fo_list[i]:
+                                success_write.append(False)
+            write_server_configuration_engaged = False
 
-                if write_bool is True:
-                    print(str(datetime.datetime.now()) + ' -- new server address detected:', server_address_var)
-
-                    self.write_var = 'SERVER_ADDRESS ' + self.server_ip_port.text()
-                    print(str(datetime.datetime.now()) + ' -- setting write variable:', self.write_var)
-
-                    if os.path.exists('./config.txt'):
-                        with open('./config.txt', 'a') as fo:
-                            fo.write('\n' + self.write_var + '\n')
-                        fo.close()
-
-                        server_addresses.append(server_address_var)
-                        server_ip.append(server_address_var.split()[0])
-                        server_port.append(server_address_var.split()[1])
-                        server_address_index = server_addresses.index(server_address_var)
-                        print(str(datetime.datetime.now()) + ' -- changing server_address_index to:', server_address_index)
-                        server_address = server_addresses[server_address_index]
-                        print(str(datetime.datetime.now()) + ' -- setting server_address using server_address_index:',
-                              server_address)
-
-                    else:
-                        print('-- could not find communicator configuration file')
-
-                else:
-                    print(str(datetime.datetime.now()) + ' -- server address already exists:', server_address_var)
-                    server_address_index = server_addresses.index(server_address_var)
-                    print(str(datetime.datetime.now()) + ' -- changing server_address_index to:', server_address_index)
-                    server_address = server_addresses[server_address_index]
-                    print(str(datetime.datetime.now()) + ' -- setting server_address using server_address_index:',
-                          server_address)
-
-                write_configuration_engaged = False
-
-            else:
-                print(str(datetime.datetime.now()) + ' -- write_configuration_engaged:', write_configuration_engaged)
-
-        def server_address_ask_confirmation():
-            global server_addresses
+        def server_delete_function():
+            print(str(datetime.datetime.now()) + ' -- plugged in: App.server_delete_function')
+            global write_server_configuration_engaged
             global server_address
-            global server_ip
-            global server_port
             global server_address_index
-            global server_write_configuration_engaged
 
-            if len(server_addresses) > 0:
-            
-                if server_write_configuration_engaged is False:
+            if write_server_configuration_engaged is False:
+                write_server_configuration_engaged = True
 
-                    server_write_configuration_engaged = True
-                    print(str(datetime.datetime.now()) + ' -- plugged in: App.server_address_ask_confirmation')
-
-                    # Remove focused server address entry
-                    var_addresses = []
-                    server_text_edit_text = self.server_ip_port.text()
-
-                    if os.path.exists('./config.txt'):
-                        with open('./config.txt', 'r') as fo:
-                            for line in fo:
-                                line = line.strip()
-                                if line != '':
-                                    line_split = line.split(' ')
-                                    if str(line_split[1] + ' ' + line_split[2]) != self.server_ip_port.text():
-                                        var_addresses.append(line)
-                                        print('reading:', line)
-                        fo.close()
-                        open('./config.tmp', 'w').close()
-                        for _ in var_addresses:
-                            print('writing:', _)
-                            with open('./config.tmp', 'a') as fo:
-                                fo.write('\n' + _ + '\n')
-                            fo.close()
+                if os.path.exists('./config.txt'):
+                    fo_list = []
+                    with open('./config.txt', 'r') as fo:
+                        for line in fo:
+                            line = line.strip()
+                            if line != '':
+                                if not line.replace('SERVER_ADDRESS ', '') == str(server_address[server_address_index][0]) + ' ' + str(server_address[server_address_index][1]):
+                                    fo_list.append(line)
+                    open('./config.tmp', 'w').close()
+                    with open('./config.tmp', 'w') as fo:
+                        for _ in fo_list:
+                            fo.write(str(_) + '\n')
+                    fo.close()
+                    if os.path.exists('./config.tmp'):
                         os.replace('./config.tmp', './config.txt')
-                        if os.path.exists('./config.txt'):
-                            # ToDo --> check file
-                            print('file exists: check lines')
+                    del server_address[server_address_index]
+                    server_prev_addr_function()
 
-                        server_address_index = server_addresses.index(server_text_edit_text)
-                        del server_addresses[server_address_index]
-                        del server_ip[server_address_index]
-                        del server_port[server_address_index]
+                write_server_configuration_engaged = False
 
-                        server_prev_addr_function()
+        def start_function():
+            print(str(datetime.datetime.now()) + ' -- plugged in: App.start_function')
+            global_self.setFocus()
+            if len(server_address) > 0:
+                if server_thread.isRunning() is True:
+                    server_thread.stop()
+                server_thread.start()
 
-                    else:
-                        print('-- could not find server configuration file')
-                    server_write_configuration_engaged = False
+        def stop_function():
+            print(str(datetime.datetime.now()) + ' -- plugged in: App.stop_function')
+            global_self.setFocus()
+            if server_thread.isRunning() is True:
+                server_thread.stop()
+            else:
+                print('server: already stopped')
+
+        def restart_function():
+            print(str(datetime.datetime.now()) + ' -- plugged in: App.restart_function')
+            if server_thread.isRunning() is True:
+                server_thread.stop()
+            server_thread.start()
+
+        def dial_out_cipher_btn_function():
+            print(str(datetime.datetime.now()) + ' -- plugged in: App.dial_out_cipher_btn_function')
+            global client_address
+            global client_address_index
+            global dial_out_dial_out_cipher_bool
+
+            print('len(client_address[client_address_index][3]:', len(client_address[client_address_index][3]))
+            print('len(client_address[client_address_index][4]:', len(client_address[client_address_index][4]))
+
+            # First Check If The Address Entry HAS A Key And Fingerprint
+            if client_address[client_address_index][3] != '#' and len(client_address[client_address_index][3]) == 32:
+                print(str(datetime.datetime.now()) + ' -- address entry appears to have a key:', client_address[client_address_index][3])
+                if client_address[client_address_index][4] != '#' and len(client_address[client_address_index][4]) == 1024:
+                    print(str(datetime.datetime.now()) + ' -- address entry appears to have a fingerprint:', client_address[client_address_index][4])
+
+                    if dial_out_dial_out_cipher_bool is False:
+                        dial_out_dial_out_cipher_bool = True
+                        self.dial_out_cipher_bool_btn.setStyleSheet(button_stylesheet_green_text)
+                    elif dial_out_dial_out_cipher_bool is True:
+                        dial_out_dial_out_cipher_bool = False
+                        self.dial_out_cipher_bool_btn.setStyleSheet(button_stylesheet_red_text)
+                    print(str(datetime.datetime.now()) + ' -- setting dial_out_dial_out_cipher_bool:', dial_out_dial_out_cipher_bool)
 
         # Variable should be set before running write_configuration function
         self.write_var = ''
@@ -827,7 +629,7 @@ class App(QMainWindow):
         self.setWindowIcon(QIcon('./resources/image/icon.ico'))
 
         # Window Geometry
-        self.width, self.height = 584, 226
+        self.width, self.height = 720, 402
         app_pos_w, app_pos_h = (GetSystemMetrics(0) / 2 - (self.width / 2)), (GetSystemMetrics(1) / 2 - (self.height / 2))
         self.left, self.top = int(app_pos_w), int(app_pos_h)
         self.setGeometry(self.left, self.top, self.width, self.height)
@@ -839,322 +641,263 @@ class App(QMainWindow):
         self.setPalette(p)
 
         # Object Geometry
-        self.server_title_width = 80
-        self.ip_port_width = 140
-        self.ip_port_height = 40
-        self.button_wh = 40
-        self.button_spacing_w = 4
-        self.zone_spacing_h = 8
+        self.btn_4 = 4
+        self.btn_8 = 8
+        self.btn_20 = 20
+        self.btn_40 = 40
+        self.btn_60 = 60
+        self.btn_80 = 80
+        self.btn_140 = 140
+        self.btn_240 = 240
+
+        self.dial_out_label = QLabel(self)
+        self.dial_out_label.resize(self.width - 8, 20)
+        self.dial_out_label.move(4, 280)
+        self.dial_out_label.setFont(self.font_s7b)
+        self.dial_out_label.setText('TRANSMIT')
+        self.dial_out_label.setAlignment(Qt.AlignCenter)
+        self.dial_out_label.setStyleSheet(title_stylesheet_default)
+
+        # QLabel - Dial Out Message
+        self.dial_out_message = QLineEdit(self)
+        self.dial_out_message.resize(self.btn_240, self.btn_20)
+        self.dial_out_message.move((self.width / 2) - (self.btn_240 / 2), 328)
+        self.dial_out_message.setFont(self.font_s7b)
+        self.dial_out_message.setText('')
+        self.dial_out_message.setStyleSheet(line_edit_stylesheet_white_text)
+
+        # QLabel - Dial Out Message Send
+        self.dial_out_message_send = QPushButton(self)
+        self.dial_out_message_send.resize(self.btn_60, self.btn_20)
+        self.dial_out_message_send.move((self.width / 2) + (self.btn_240 / 2) + self.btn_4, 328)
+        self.dial_out_message_send.setIcon(QIcon("./resources/image/send_FILL1_wght100_GRAD-25_opsz40_WHITE.png"))
+        self.dial_out_message_send.setIconSize(QSize(self.btn_20, self.btn_20))
+        self.dial_out_message_send.setStyleSheet(button_stylesheet_default)
+        self.dial_out_message_send.clicked.connect(send_message_function)
+
+        # QPushButton - Dial Out Set Encryption Boolean
+        self.dial_out_cipher_bool_btn = QPushButton(self)
+        self.dial_out_cipher_bool_btn.resize(self.btn_60, self.btn_20)
+        self.dial_out_cipher_bool_btn.move((self.width / 2) + (self.btn_240 / 2) + self.btn_4 + self.btn_60 + self.btn_4, 328)
+        self.dial_out_cipher_bool_btn.setText('CIPHER')
+        self.dial_out_cipher_bool_btn.setFont(self.font_s7b)
+        self.dial_out_cipher_bool_btn.setStyleSheet(button_stylesheet_green_text)
+        self.dial_out_cipher_bool_btn.clicked.connect(dial_out_cipher_btn_function)
+
+        self.address_book_label = QLabel(self)
+        self.address_book_label.resize(self.width - 8, 20)
+        self.address_book_label.move(4, 140)
+        self.address_book_label.setFont(self.font_s7b)
+        self.address_book_label.setText('ADDRESS BOOK')
+        self.address_book_label.setAlignment(Qt.AlignCenter)
+        self.address_book_label.setStyleSheet(title_stylesheet_default)
+
+        # QPushButton - Dial Out Name
+        self.dial_out_name = QLineEdit(self)
+        self.dial_out_name.resize(140, 20)
+        self.dial_out_name.move((self.width / 2) - (self.btn_140 / 2), 188)
+        self.dial_out_name.setFont(self.font_s7b)
+        self.dial_out_name.setText('')
+        self.dial_out_name.setStyleSheet(line_edit_stylesheet_white_text)
+        self.dial_out_name.setAlignment(Qt.AlignCenter)
+
+        # QLineEdit - Dial Out Address
+        self.dial_out_ip_port = QLineEdit(self)
+        self.dial_out_ip_port.resize(140, 20)
+        self.dial_out_ip_port.move((self.width / 2) - (self.btn_140 / 2), 212)
+        self.dial_out_ip_port.setFont(self.font_s7b)
+        self.dial_out_ip_port.setText('')
+        self.dial_out_ip_port.setStyleSheet(line_edit_stylesheet_white_text)
+        self.dial_out_ip_port.setAlignment(Qt.AlignCenter)
+
+        # QPushButton - Dial Out Previous Address
+        self.dial_out_prev_addr = QPushButton(self)
+        self.dial_out_prev_addr.resize(20, 20)
+        self.dial_out_prev_addr.move((self.width / 2) - (self.btn_140 / 2) - self.btn_20 - self.btn_4, 212)
+        self.dial_out_prev_addr.setIcon(QIcon("./resources/image/baseline_keyboard_arrow_left_white_18dp.png"))
+        self.dial_out_prev_addr.setIconSize(QSize(20, 20))
+        self.dial_out_prev_addr.setStyleSheet(button_stylesheet_default)
+        self.dial_out_prev_addr.clicked.connect(client_previous_address_function)
+
+        # QPushButton - Dial Out Next Address
+        self.dial_out_next_addr = QPushButton(self)
+        self.dial_out_next_addr.resize(20, 20)
+        self.dial_out_next_addr.move((self.width / 2) + (self.btn_140 / 2) + self.btn_4, 212)
+        self.dial_out_next_addr.setIcon(QIcon("./resources/image/baseline_keyboard_arrow_right_white_18dp.png"))
+        self.dial_out_next_addr.setIconSize(QSize(20, 20))
+        self.dial_out_next_addr.setStyleSheet(button_stylesheet_default)
+        self.dial_out_next_addr.clicked.connect(client_next_address_function)
 
         # QPushButton - Dial Out Add Address
-        self.server_add_addr = QPushButton(self)
-        self.server_add_addr.resize(self.button_wh, int(self.button_wh / 2) - 4)
-        self.server_add_addr.move(self.button_spacing_w * 3 + self.server_title_width + self.button_wh, self.zone_spacing_h + 24)
-        self.server_add_addr.setIcon(QIcon("./resources/image/add_FILL0_wght400_GRAD200_opsz18_WHITE.png"))
-        self.server_add_addr.setIconSize(QSize(14, 14))
-        self.server_add_addr.setStyleSheet(button_stylesheet_0)
-        self.server_add_addr.clicked.connect(server_add_addr_confirm_function)
+        self.dial_out_add_addr = QPushButton(self)
+        self.dial_out_add_addr.resize(60, 20)
+        self.dial_out_add_addr.move((self.width / 2) - (self.btn_140 / 2), 236)
+        self.dial_out_add_addr.setFont(self.font_s7b)
+        self.dial_out_add_addr.setText('SAVE')
+        self.dial_out_add_addr.setStyleSheet(button_stylesheet_default)
+        self.dial_out_add_addr.clicked.connect(client_save_address)
 
         # QPushButton - Dial Out Remove Address
-        self.server_rem_addr = QPushButton(self)
-        self.server_rem_addr.resize(self.button_wh, int(self.button_wh / 2) - 4)
-        self.server_rem_addr.move(self.button_spacing_w * 2 + self.server_title_width, self.zone_spacing_h + 24)
-        self.server_rem_addr.setFont(self.font_s7b)
-        self.server_rem_addr.setText('DEL')
-        self.server_rem_addr.setIconSize(QSize(14, 14))
-        self.server_rem_addr.setStyleSheet(button_stylesheet_0)
-        self.server_rem_addr.clicked.connect(server_address_ask_confirmation)
+        self.dial_out_rem_addr = QPushButton(self)
+        self.dial_out_rem_addr.resize(60, 20)
+        self.dial_out_rem_addr.move((self.width / 2) + 10, 236)
+        self.dial_out_rem_addr.setFont(self.font_s7b)
+        self.dial_out_rem_addr.setText('DELETE')
+        self.dial_out_rem_addr.setStyleSheet(button_stylesheet_default)
+        self.dial_out_rem_addr.clicked.connect(client_remove_address)
 
-        # QPushButton - Soft Block Notification Count
-        self.soft_block_ip_notification = QPushButton(self)
-        self.soft_block_ip_notification.resize(self.button_wh, self.button_wh)
-        self.soft_block_ip_notification.move(self.width - 88, self.zone_spacing_h)
-        self.soft_block_ip_notification.setText(str(soft_block_ip_count))
-        self.soft_block_ip_notification.setStyleSheet(soft_block_ip_notification_count_stylesheet)
-        self.soft_block_ip_notification.clicked.connect(soft_block_ip_notofication_function)
-
-        # QPushButton - Confirm REMOVE Address
-        self.accept_remove_address = QPushButton(self)
-        self.accept_remove_address.resize(self.button_wh, int(self.button_wh / 2) - 4)
-        self.accept_remove_address.move(self.button_spacing_w * 3 + self.server_title_width + self.button_wh, self.zone_spacing_h * 2 + self.button_wh + int(self.button_wh / 2) + 4)
-        self.accept_remove_address.setFont(self.font_s7b)
-        self.accept_remove_address.setText('YES')
-        self.accept_remove_address.setStyleSheet(button_stylesheet_0)
-        self.accept_remove_address.clicked.connect(remove_address_confirm)
-        self.accept_remove_address.hide()
-
-        # QPushButton - Decline REMOVE Address
-        self.decline_remove_address = QPushButton(self)
-        self.decline_remove_address.resize(self.button_wh, int(self.button_wh / 2) - 4)
-        self.decline_remove_address.move(self.button_spacing_w * 2 + self.server_title_width, self.zone_spacing_h * 2 + self.button_wh + int(self.button_wh / 2) + 4)
-        self.decline_remove_address.setFont(self.font_s7b)
-        self.decline_remove_address.setText('NO')
-        self.decline_remove_address.setStyleSheet(button_stylesheet_0)
-        self.decline_remove_address.clicked.connect(decline_remove_address)
-        self.decline_remove_address.hide()
-
-        # QPushButton - Confirm Add Address
-        self.dial_out_add_addr_confirm = QPushButton(self)
-        self.dial_out_add_addr_confirm.resize(self.button_wh, int(self.button_wh / 2) - 4)
-        self.dial_out_add_addr_confirm.move(self.button_spacing_w * 3 + self.server_title_width + self.button_wh, self.zone_spacing_h * 2 + self.button_wh + int(self.button_wh / 2) + 4)
-        self.dial_out_add_addr_confirm.setFont(self.font_s7b)
-        self.dial_out_add_addr_confirm.setText('YES')
-        self.dial_out_add_addr_confirm.setStyleSheet(button_stylesheet_0)
-        self.dial_out_add_addr_confirm.clicked.connect(dial_out_add_addr_function)
-        self.dial_out_add_addr_confirm.hide()
-
-        # QPushButton - Decline Add Address
-        self.decline_dial_out_add_addr = QPushButton(self)
-        self.decline_dial_out_add_addr.resize(self.button_wh, int(self.button_wh / 2) - 4)
-        self.decline_dial_out_add_addr.move(self.button_spacing_w * 2 + self.server_title_width, self.zone_spacing_h * 2 + self.button_wh + int(self.button_wh / 2) + 4)
-        self.decline_dial_out_add_addr.setFont(self.font_s7b)
-        self.decline_dial_out_add_addr.setText('NO')
-        self.decline_dial_out_add_addr.setStyleSheet(button_stylesheet_0)
-        self.decline_dial_out_add_addr.clicked.connect(decline_add_address)
-        self.decline_dial_out_add_addr.hide()
-
-        # QLabel - Server Title
-        self.server_title = QLabel(self)
-        self.server_title.resize(self.server_title_width, self.button_wh)
-        self.server_title.move(self.button_spacing_w, self.zone_spacing_h)
-        self.server_title.setFont(self.font_s7b)
-        self.server_title.setText('SERVER')
-        self.server_title.setAlignment(Qt.AlignCenter)
-        self.server_title.setStyleSheet(server_title_stylesheet_0)
+        # QLabel - Server Status
+        self.server_status_label = QLabel(self)
+        self.server_status_label.resize(self.width - 8, 20)
+        self.server_status_label.move(4, 28)
+        self.server_status_label.setFont(self.font_s7b)
+        self.server_status_label.setText('SERVER STATUS:  OFFLINE')
+        self.server_status_label.setAlignment(Qt.AlignCenter)
+        self.server_status_label.setStyleSheet(title_stylesheet_default)
 
         # QPushButton - Server Start
         self.server_start = QPushButton(self)
-        self.server_start.resize(self.button_wh, int(self.button_wh / 2))
-        self.server_start.move(self.button_spacing_w * 2 + self.server_title_width, self.zone_spacing_h)
+        self.server_start.resize(60, int(self.btn_40 / 2))
+        self.server_start.move(28, 52)
         self.server_start.setFont(self.font_s7b)
         self.server_start.setText('START')
-        self.server_start.setStyleSheet(button_stylesheet_0)
+        self.server_start.setStyleSheet(button_stylesheet_default)
         self.server_start.clicked.connect(start_function)
 
         # QPushButton - Server Stop
         self.server_stop = QPushButton(self)
-        self.server_stop.resize(self.button_wh, int(self.button_wh / 2))
-        self.server_stop.move(self.button_spacing_w * 3 + self.server_title_width + self.button_wh, self.zone_spacing_h)
+        self.server_stop.resize(60, int(self.btn_40 / 2))
+        self.server_stop.move(28, 76)
         self.server_stop.setFont(self.font_s7b)
         self.server_stop.setText('STOP')
-        self.server_stop.setStyleSheet(button_stylesheet_0)
+        self.server_stop.setStyleSheet(button_stylesheet_default)
         self.server_stop.clicked.connect(stop_function)
 
-        # QLineEdit - Public Server IP
+        # QPushButton - Server Stop
+        self.server_restart = QPushButton(self)
+        self.server_restart.resize(60, int(self.btn_40 / 2))
+        self.server_restart.move(28, 100)
+        self.server_restart.setFont(self.font_s7b)
+        self.server_restart.setText('RESTART')
+        self.server_restart.setStyleSheet(button_stylesheet_default)
+        self.server_restart.clicked.connect(restart_function)
+
+        # QLineEdit - Server IP
         self.server_ip_port = QLineEdit(self)
-        self.server_ip_port.resize(self.ip_port_width, self.button_wh)
-        self.server_ip_port.move(self.button_spacing_w * 5 + self.server_title_width + self.button_wh * 3, self.zone_spacing_h)
-        self.server_ip_port.returnPressed.connect(server_ip_port_write_function)
+        self.server_ip_port.resize(self.btn_140, 20)
+        self.server_ip_port.move((self.width / 2) - (self.btn_140 / 2), 76)
+        self.server_ip_port.returnPressed.connect(server_line_edit_return_pressed)
         self.server_ip_port.setFont(self.font_s7b)
         self.server_ip_port.setText('')
-        self.server_ip_port.setStyleSheet(qline_edit_style_sheet_default)
+        self.server_ip_port.setStyleSheet(line_edit_stylesheet_white_text)
         self.server_ip_port.setAlignment(Qt.AlignCenter)
-
-        # QPushButton - Server Received Communication
-        self.server_incoming = QPushButton(self)
-        self.server_incoming.resize(self.button_wh, self.button_wh)
-        self.server_incoming.move(self.width - self.button_wh - self.button_spacing_w, self.zone_spacing_h)
-        self.server_incoming.setIcon(QIcon("./resources/image/public_FILL1_wght100_GRAD200_opsz40_WHITE.png"))
-        self.server_incoming.setIconSize(QSize(self.button_wh - 8, self.button_wh - 8))
-        self.server_incoming.setStyleSheet(button_stylesheet_0)
-
-        # QLabel - Dial Out Title
-        self.dial_out_title = QLabel(self)
-        self.dial_out_title.resize(self.server_title_width, self.button_wh)
-        self.dial_out_title.move(self.button_spacing_w, self.zone_spacing_h * 2 + self.button_wh)
-        self.dial_out_title.setFont(self.font_s7b)
-        self.dial_out_title.setText('DIAL OUT')
-        self.dial_out_title.setAlignment(Qt.AlignCenter)
-        self.dial_out_title.setStyleSheet(server_title_stylesheet_0)
-
-        # QLineEdit - Dial Out Address
-        self.dial_out_ip_port = QLineEdit(self)
-        self.dial_out_ip_port.resize(self.ip_port_width, self.button_wh)
-        self.dial_out_ip_port.move(self.button_spacing_w * 5 + self.server_title_width + self.button_wh * 3, self.zone_spacing_h * 2 + self.button_wh)
-        self.dial_out_ip_port.returnPressed.connect(dial_out_ip_port_function_set)
-        self.dial_out_ip_port.setFont(self.font_s7b)
-        self.dial_out_ip_port.setText('')
-        self.dial_out_ip_port.setStyleSheet(qline_edit_style_sheet_default)
-        self.dial_out_ip_port.setAlignment(Qt.AlignCenter)
-
-        # QPushButton - Dial Out Send LINE_TEST message
-        self.dial_out_line_test = QPushButton(self)
-        self.dial_out_line_test.resize(self.button_wh, self.button_wh)
-        self.dial_out_line_test.move(self.width - self.button_wh - self.button_spacing_w, self.zone_spacing_h * 2 + self.button_wh)
-        self.dial_out_line_test.setIcon(QIcon("./resources/image/cell_tower_FILL1_wght200_GRAD200_opsz40_WHITE.png"))
-        self.dial_out_line_test.setIconSize(QSize(self.button_wh - 12, self.button_wh - 12))
-        self.dial_out_line_test.setStyleSheet(button_stylesheet_0)
-        self.dial_out_line_test.clicked.connect(dial_out_line_test_function)
-
-        # QPushButton - Dial Out Previous Address
-        self.dial_out_prev_addr = QPushButton(self)
-        self.dial_out_prev_addr.resize(self.button_wh, self.button_wh)
-        self.dial_out_prev_addr.move(self.button_spacing_w * 4 + self.server_title_width + self.button_wh * 2, self.zone_spacing_h * 2 + self.button_wh)
-        self.dial_out_prev_addr.setIcon(QIcon("./resources/image/baseline_keyboard_arrow_left_white_18dp.png"))
-        self.dial_out_prev_addr.setIconSize(QSize(self.button_wh, self.button_wh))
-        self.dial_out_prev_addr.setStyleSheet(button_stylesheet_0)
-        self.dial_out_prev_addr.clicked.connect(dial_out_prev_addr_function)
-
-        # QPushButton - Dial Out Next Address
-        self.dial_out_next_addr = QPushButton(self)
-        self.dial_out_next_addr.resize(self.button_wh, self.button_wh)
-        self.dial_out_next_addr.move(self.button_spacing_w * 6 + self.server_title_width + self.button_wh * 3 + self.ip_port_width, self.zone_spacing_h * 2 + self.button_wh)
-        self.dial_out_next_addr.setIcon(QIcon("./resources/image/baseline_keyboard_arrow_right_white_18dp.png"))
-        self.dial_out_next_addr.setIconSize(QSize(self.button_wh, self.button_wh))
-        self.dial_out_next_addr.setStyleSheet(button_stylesheet_0)
-        self.dial_out_next_addr.clicked.connect(dial_out_next_addr_function)
-
-        # QPushButton - Dial Out Set Encryption Boolean
-        self.dial_out_cipher_bool_btn = QPushButton(self)
-        self.dial_out_cipher_bool_btn.resize(self.button_wh * 2 + 4, self.button_wh)
-        self.dial_out_cipher_bool_btn.move(self.button_spacing_w * 7 + self.server_title_width + self.button_wh * 4 + self.ip_port_width, self.zone_spacing_h * 2 + self.button_wh)
-        self.dial_out_cipher_bool_btn.setText('CIPHER')
-        self.dial_out_cipher_bool_btn.setFont(self.font_s7b)
-        self.dial_out_cipher_bool_btn.setStyleSheet(dial_out_cipher_stylesheet_1)
-        self.dial_out_cipher_bool_btn.clicked.connect(dial_out_dial_out_cipher_bool_btn_function)
-
-        # QPushButton - Dial Out Name
-        self.dial_out_name = QLineEdit(self)
-        self.dial_out_name.resize(self.button_wh * 2 + 4, int(self.button_wh / 2))
-        self.dial_out_name.move(self.button_spacing_w * 2 + self.server_title_width, self.zone_spacing_h * 2 + self.button_wh)
-        self.dial_out_name.setFont(self.font_s7b)
-        self.dial_out_name.setText('')
-        self.dial_out_name.setStyleSheet(qline_edit_style_sheet_default)
-        self.dial_out_name.setAlignment(Qt.AlignCenter)
-        self.dial_out_name.returnPressed.connect(dial_out_name_function_set)
-
-        # QPushButton - Dial Out Add Address
-        self.dial_out_add_addr = QPushButton(self)
-        self.dial_out_add_addr.resize(self.button_wh, int(self.button_wh / 2) - 4)
-        self.dial_out_add_addr.move(self.button_spacing_w * 3 + self.server_title_width + self.button_wh, self.zone_spacing_h * 2 + self.button_wh + int(self.button_wh / 2) + 4)
-        self.dial_out_add_addr.setIcon(QIcon("./resources/image/add_FILL0_wght400_GRAD200_opsz18_WHITE.png"))
-        self.dial_out_add_addr.setIconSize(QSize(14, 14))
-        self.dial_out_add_addr.setStyleSheet(button_stylesheet_0)
-        self.dial_out_add_addr.clicked.connect(dial_out_add_addr_confirm_function)
-        self.dial_out_add_addr.setToolTip(" ADD ADDRESS\n\n 1. Enter Name\n 2. Enter IP & Port\n 3. Then press this button if you wish to add to the address book.\n\n An entry in the address book will be created with a key and a path to a generated fingerprint file.\n You may then share the fingerprint with the contact and they can add you as the key name in their address book.\n\n WARNING! Use a unique name to avoid an existing matching name being overwritten!")
-
-        # QPushButton - Dial Out Remove Address
-        self.dial_out_rem_addr = QPushButton(self)
-        self.dial_out_rem_addr.resize(self.button_wh, int(self.button_wh / 2) - 4)
-        self.dial_out_rem_addr.move(self.button_spacing_w * 2 + self.server_title_width, self.zone_spacing_h * 2 + self.button_wh + int(self.button_wh / 2) + 4)
-        self.dial_out_rem_addr.setFont(self.font_s7b)
-        self.dial_out_rem_addr.setText('DEL')
-        self.dial_out_rem_addr.setIconSize(QSize(14, 14))
-        self.dial_out_rem_addr.setStyleSheet(button_stylesheet_0)
-        self.dial_out_rem_addr.clicked.connect(remove_address_ask_confirmation)
-
-        # QLabel - Dial Out Message Title
-        self.dial_out_message_title = QLabel(self)
-        self.dial_out_message_title.resize(self.server_title_width, self.button_wh)
-        self.dial_out_message_title.move(self.button_spacing_w, self.zone_spacing_h * 3 + self.button_wh * 2)
-        self.dial_out_message_title.setFont(self.font_s7b)
-        self.dial_out_message_title.setText('MESSAGE')
-        self.dial_out_message_title.setAlignment(Qt.AlignCenter)
-        self.dial_out_message_title.setStyleSheet(server_title_stylesheet_0)
-
-        # QLabel - Dial Out Message
-        self.dial_out_message = QLineEdit(self)
-        self.dial_out_message.resize(448, self.button_wh - 20)
-        self.dial_out_message.move(self.button_spacing_w * 2 + self.server_title_width, self.zone_spacing_h * 3 + self.button_wh * 2)
-        self.dial_out_message.setFont(self.font_s7b)
-        self.dial_out_message.setText('')
-        self.dial_out_message.setStyleSheet(dial_out_message_stylesheet)
-
-        # QLabel - Dial Out Message Send
-        self.dial_out_message_send = QPushButton(self)
-        self.dial_out_message_send.resize(self.button_wh, self.button_wh)
-        self.dial_out_message_send.move(self.width - self.button_wh - self.button_spacing_w, self.zone_spacing_h * 3 + self.button_wh * 2)
-        self.dial_out_message_send.setIcon(QIcon("./resources/image/send_FILL1_wght100_GRAD-25_opsz40_WHITE.png"))
-        self.dial_out_message_send.setIconSize(QSize(self.button_wh - 14, self.button_wh - 14))
-        self.dial_out_message_send.setStyleSheet(button_stylesheet_0)
-        self.dial_out_message_send.clicked.connect(dial_out_message_send_function)
 
         # QPushButton - Server Previous Address
         self.server_prev_addr = QPushButton(self)
-        self.server_prev_addr.resize(self.button_wh, self.button_wh)
-        self.server_prev_addr.move(self.button_spacing_w * 4 + self.server_title_width + self.button_wh * 2, self.zone_spacing_h)
+        self.server_prev_addr.resize(self.btn_20, 20)
+        self.server_prev_addr.move((self.width / 2) - (self.btn_140 / 2) - self.btn_20 - self.btn_4, 76)
         self.server_prev_addr.setIcon(QIcon("./resources/image/baseline_keyboard_arrow_left_white_18dp.png"))
-        self.server_prev_addr.setIconSize(QSize(self.button_wh, self.button_wh))
-        self.server_prev_addr.setStyleSheet(button_stylesheet_0)
+        self.server_prev_addr.setIconSize(QSize(20, 20))
+        self.server_prev_addr.setStyleSheet(button_stylesheet_default)
         self.server_prev_addr.clicked.connect(server_prev_addr_function)
 
         # QPushButton - Server Out Next Address
         self.server_next_addr = QPushButton(self)
-        self.server_next_addr.resize(self.button_wh, self.button_wh)
-        self.server_next_addr.move(self.button_spacing_w * 6 + self.server_title_width + self.button_wh * 3 + self.ip_port_width, self.zone_spacing_h)
+        self.server_next_addr.resize(20, 20)
+        self.server_next_addr.move((self.width / 2) + (self.btn_140 / 2) + self.btn_4, 76)
         self.server_next_addr.setIcon(QIcon("./resources/image/baseline_keyboard_arrow_right_white_18dp.png"))
-        self.server_next_addr.setIconSize(QSize(self.button_wh, self.button_wh))
-        self.server_next_addr.setStyleSheet(button_stylesheet_0)
+        self.server_next_addr.setIconSize(QSize(20, 20))
+        self.server_next_addr.setStyleSheet(button_stylesheet_default)
         self.server_next_addr.clicked.connect(server_next_addr_function)
 
-        # QPushButton - Server Cipher Message Count
-        self.server_notify_cipher = QPushButton(self)
-        self.server_notify_cipher.resize(self.button_wh, int(self.button_wh / 2))
-        self.server_notify_cipher.move(self.button_spacing_w * 7 + self.server_title_width + self.button_wh * 4 + self.ip_port_width, self.zone_spacing_h)
-        self.server_notify_cipher.setStyleSheet(standard_communication_count)
-        self.server_notify_cipher.setFont(self.font_s7b)
-        self.server_notify_cipher.setText(str(cipher_message_count))
-        self.server_notify_cipher.clicked.connect(server_notify_cipher_function)
+        # QPushButton - Dial Out Add Address
+        self.server_add_addr = QPushButton(self)
+        self.server_add_addr.resize(60, int(self.btn_40 / 2))
+        self.server_add_addr.move((self.width / 2) - (self.btn_140 / 2), 100)
+        self.server_add_addr.setFont(self.font_s7b)
+        self.server_add_addr.setText('SAVE')
+        self.server_add_addr.setStyleSheet(button_stylesheet_default)
+        self.server_add_addr.clicked.connect(server_save_function)
+
+        # QPushButton - Dial Out Remove Address
+        self.server_rem_addr = QPushButton(self)
+        self.server_rem_addr.resize(60, int(self.btn_40 / 2))
+        self.server_rem_addr.move((self.width / 2) + 10, 100)
+        self.server_rem_addr.setFont(self.font_s7b)
+        self.server_rem_addr.setText('DELETE')
+        self.server_rem_addr.setIconSize(QSize(14, 14))
+        self.server_rem_addr.setStyleSheet(button_stylesheet_default)
+        self.server_rem_addr.clicked.connect(server_delete_function)
+
+        # QPushButton - Server Received Communication
+        self.server_incoming = QPushButton(self)
+        self.server_incoming.resize(68, 68)
+        self.server_incoming.move(self.width - 72, 52)
+        self.server_incoming.setIcon(QIcon("./resources/image/public_OFF_FILL0_wght100_GRAD-25_opsz48_WHITE.png"))
+        self.server_incoming.setIconSize(QSize(48, 48))
+        self.server_incoming.setStyleSheet(button_stylesheet_background_matching)
+
+        # QPushButton - Soft Block Notification Count
+        self.soft_block_ip_notification = QPushButton(self)
+        self.soft_block_ip_notification.resize(60, 20)
+        self.soft_block_ip_notification.move(self.width - 136, 100)
+        self.soft_block_ip_notification.setText(str(soft_block_ip_count))
+        self.soft_block_ip_notification.setStyleSheet(button_stylesheet_red_text)
+        self.soft_block_ip_notification.clicked.connect(soft_block_ip_notofication_function)
 
         # QPushButton - Server Alien Message
         self.server_notify_alien = QPushButton(self)
-        self.server_notify_alien.resize(self.button_wh, int(self.button_wh / 2))
-        self.server_notify_alien.move(self.button_spacing_w * 7 + self.server_title_width + self.button_wh * 4 + self.ip_port_width, self.zone_spacing_h + int(self.button_wh / 2))
-        self.server_notify_alien.setStyleSheet(non_standard_communication_count)
+        self.server_notify_alien.resize(60, int(self.btn_40 / 2))
+        self.server_notify_alien.move(self.width - 136, 76)
+        self.server_notify_alien.setStyleSheet(button_stylesheet_amber_text)
         self.server_notify_alien.setFont(self.font_s7b)
         self.server_notify_alien.setText(str(alien_message_count))
         self.server_notify_alien.clicked.connect(server_notify_alien_function)
 
-        # QPushButton - Server Alien Message Toggle Mute
-        self.mute_server_notify_alien = QPushButton(self)
-        self.mute_server_notify_alien.resize(self.button_wh, int(self.button_wh / 2))
-        self.mute_server_notify_alien.move(self.button_spacing_w * 8 + self.server_title_width + self.button_wh * 5 + self.ip_port_width, self.zone_spacing_h + int(self.button_wh / 2))
-        self.mute_server_notify_alien.setStyleSheet(non_standard_communication_count)
-        self.mute_server_notify_alien.setIcon(QIcon("./resources/image/volume_up_FILL0_wght100_GRAD200_opsz20.png"))
-        self.mute_server_notify_alien.setIconSize(QSize(14, 14))
-        self.mute_server_notify_alien.clicked.connect(mute_server_notify_alien_function)
+        # QPushButton - Server Cipher Message Count
+        self.server_notify_cipher = QPushButton(self)
+        self.server_notify_cipher.resize(60, int(self.btn_40 / 2))
+        self.server_notify_cipher.move(self.width - 136, 52)
+        self.server_notify_cipher.setStyleSheet(button_stylesheet_white_text)
+        self.server_notify_cipher.setFont(self.font_s7b)
+        self.server_notify_cipher.setText(str(cipher_message_count))
+        self.server_notify_cipher.clicked.connect(server_notify_cipher_function)
 
         # QPushButton - Server Cipher Message Toggle Mute
         self.mute_server_notify_cipher = QPushButton(self)
-        self.mute_server_notify_cipher.resize(self.button_wh, int(self.button_wh / 2))
-        self.mute_server_notify_cipher.move(self.button_spacing_w * 8 + self.server_title_width + self.button_wh * 5 + self.ip_port_width,self.zone_spacing_h)
-        self.mute_server_notify_cipher.setStyleSheet(standard_communication_count)
+        self.mute_server_notify_cipher.resize(60, int(self.btn_40 / 2))
+        self.mute_server_notify_cipher.move(self.width - 200, 52)
+        self.mute_server_notify_cipher.setStyleSheet(button_stylesheet_white_text)
         self.mute_server_notify_cipher.setIcon(QIcon("./resources/image/volume_up_FILL0_wght100_GRAD200_opsz20.png"))
         self.mute_server_notify_cipher.setIconSize(QSize(14, 14))
         self.mute_server_notify_cipher.clicked.connect(mute_server_notify_cipher_function)
 
-        # QLabel - Server Status
-        self.server_status_label = QLabel(self)
-        self.server_status_label.resize(156, 20)
-        self.server_status_label.move(int(self.width / 2) - int(156 / 2), 134)
-        self.server_status_label.setFont(self.font_s7b)
-        self.server_status_label.setText('SERVER STATUS: OFFLINE')
-        self.server_status_label.setAlignment(Qt.AlignCenter)
-        self.server_status_label.setStyleSheet(server_title_stylesheet_0)
+        # QPushButton - Server Alien Message Toggle Mute
+        self.mute_server_notify_alien = QPushButton(self)
+        self.mute_server_notify_alien.resize(60, int(self.btn_40 / 2))
+        self.mute_server_notify_alien.move(self.width - 200, 76)
+        self.mute_server_notify_alien.setStyleSheet(button_stylesheet_amber_text)
+        self.mute_server_notify_alien.setIcon(QIcon("./resources/image/volume_up_FILL0_wght100_GRAD200_opsz20.png"))
+        self.mute_server_notify_alien.setIconSize(QSize(14, 14))
+        self.mute_server_notify_alien.clicked.connect(mute_server_notify_alien_function)
 
         # Thread - Public Server
-        server_thread = ServerClass(self.server_title, self.server_incoming, self.server_status_label, self.soft_block_ip_notification)
+        server_thread = ServerClass(self.server_incoming, self.server_status_label, self.soft_block_ip_notification)
 
         # Thread - ServerDataHandlerClass
-        server_data_handler_class = ServerDataHandlerClass(self.server_title, self.server_incoming, self.server_notify_cipher, self.server_notify_alien)
+        server_data_handler_class = ServerDataHandlerClass(self.server_incoming, self.server_notify_cipher, self.server_notify_alien)
         server_data_handler_class.start()
 
         # Thread - Dial_Out
-        dial_out_thread = DialOutClass(self.dial_out_title, self.dial_out_line_test, self.dial_out_message_send, self.dial_out_message)
+        dial_out_thread = DialOutClass(self.dial_out_message_send, self.dial_out_message)
 
         # Thread - Configuration
         global configuration_thread
         configuration_thread_ = ConfigurationClass()
         configuration_thread.append(configuration_thread_)
-
-        finger_print_gen_thread = FingerprintGeneration(self.dial_out_name, self.dial_out_ip_port, self.dial_out_add_addr)
-
-        # Configuration Thread - Set Configuration Key
-        global configuration_thread_key, server_addresses
-        configuration_thread_key = 'ALL'
-
-        # Configuration Thread - Run Configuration Thread
         configuration_thread[0].start()
+
+        # finger_print_gen_thread = FingerprintGeneration(self.dial_out_name, self.dial_out_ip_port, self.dial_out_add_addr)
 
         # Configuration Thread - Wait For Configuration Thread To Complete
         global configuration_thread_completed
@@ -1163,35 +906,51 @@ class App(QMainWindow):
             time.sleep(1)
         print(str(datetime.datetime.now()) + ' configuration_thread_completed:', configuration_thread_completed)
 
-        if len(server_addresses) > 0:
-            self.server_ip_port.setText(server_addresses[server_address_index])
+        if len(server_address) > 0:
+            self.server_ip_port.setText(server_address[0][0] + ' ' + str(server_address[0][1]))
 
-        if len(address_name) > 0:
-            self.dial_out_name.setText(address_name[dial_out_address_index])
-        if len(address_ip) > 0 and len(address_port) > 0:
-            self.dial_out_ip_port.setText(address_ip[dial_out_address_index] + ' ' + str(address_port[dial_out_address_index]))
+        global client_address
+        global dial_out_dial_out_cipher_bool
+
+        self.dial_out_cipher_bool_btn.setStyleSheet(button_stylesheet_red_text)
+        dial_out_dial_out_cipher_bool = False
+        self.dial_out_cipher_bool_btn.setEnabled(False)
+
+        if len(client_address) > 0:
+            self.dial_out_name.setText(client_address[0][0])
+            self.dial_out_ip_port.setText(client_address[0][1] + ' ' + str(client_address[0][2]))
+
+            if client_address[0][3] != '#' and len(client_address[0][3]) == 32:
+                print(str(datetime.datetime.now()) + ' -- address entry appears to have a key:', client_address[0][3])
+                if client_address[client_address_index][4] != '#' and len(client_address[client_address_index][4]) == 1024:
+                    print(str(datetime.datetime.now()) + ' -- address entry appears to have a fingerprint:', client_address[client_address_index][4])
+                    self.dial_out_cipher_bool_btn.setStyleSheet(button_stylesheet_green_text)
+                    dial_out_dial_out_cipher_bool = True
+                    self.dial_out_cipher_bool_btn.setEnabled(True)
+            print(str(datetime.datetime.now()) + ' -- dial_out_dial_out_cipher_bool:', dial_out_dial_out_cipher_bool)
 
         # QTextBrowser - Message Output
         self.tb_0 = QTextBrowser(self)
-        self.tb_0.move(4, 154)
+        self.tb_0.move(4, self.height - 60)
         self.tb_0.resize(self.width - 8, 60)
         self.tb_0.setObjectName("tb_0")
         self.tb_0.setFont(self.font_s7b)
-        self.tb_0.setStyleSheet(tb_0_stylesheet)
+        self.tb_0.setStyleSheet(textbox_stylesheet_default)
         self.tb_0.setLineWrapMode(QTextBrowser.NoWrap)
         self.tb_0.horizontalScrollBar().setValue(0)
+        self.tb_0.hide()
 
         # QTimer - Used For Appending To tb_0 Using QtSlots
         self.timer_0 = QTimer(self)
         self.timer_0.setInterval(0)
         self.timer_0.timeout.connect(self.update_tb)
-
-        # Remove Comments To Enable Output Only When Server Online
-        # self.server_start.clicked.connect(self.jumpstart_1)
-        # self.server_stop.clicked.connect(self.stop_timer_1)
-
-        # Comment If Removing Comments Above
         self.jumpstart_1()
+
+        # QTimer - Used For Internal Message System
+        self.timer_1 = QTimer(self)
+        self.timer_1.setInterval(0)
+        self.timer_1.timeout.connect(self.internal_message_system)
+        self.jumpstart_2()
 
         self.initUI()
 
@@ -1201,17 +960,26 @@ class App(QMainWindow):
     def stop_timer_1(self):
         self.timer_0.stop()
 
-    # Step 2 Connects To Here
     @QtCore.pyqtSlot()
     def jumpstart_1(self):
         self.timer_0.start()
 
-    # Step 3 Connects To Here
     @QtCore.pyqtSlot()
     def update_tb(self):
-        if messages:
-            self.tb_0.append(messages[-1])
-            messages.remove(messages[-1])
+        if textbox_0_messages:
+            self.tb_0.append(textbox_0_messages[-1])
+            textbox_0_messages.remove(textbox_0_messages[-1])
+
+    @QtCore.pyqtSlot()
+    def jumpstart_2(self):
+        self.timer_1.start()
+
+    @QtCore.pyqtSlot()
+    def internal_message_system(self):
+        if internal_messages:
+            if internal_messages[-1] == 'server_save':
+                print('internal_messages: server_save')
+                internal_messages.remove(internal_messages[-1])
 
 
 class FingerprintGeneration(QThread):
@@ -1227,8 +995,8 @@ class FingerprintGeneration(QThread):
         self.fingerprint_str = ''
 
     def update_values(self):
-        global dial_out_address_index
-        global dial_out_address
+        global client_address_index
+        global client_address
         global configuration_thread_completed
 
         configuration_thread_completed = False
@@ -1239,8 +1007,11 @@ class FingerprintGeneration(QThread):
         while configuration_thread_completed is False:
             time.sleep(1)
 
-        dial_out_address_index = address_name.index(self.dial_out_name.text())
-        dial_out_address = self.dial_out_ip_port.text()
+        i = 0
+        for _ in client_address:
+            if _[0] == self.dial_out_name.text():
+                client_address_index = i
+            i += 1
 
     def randStr(self, chars=string.ascii_uppercase + string.digits, N=32):
         return ''.join(random.choice(chars) for _ in range(N))
@@ -1253,16 +1024,15 @@ class FingerprintGeneration(QThread):
     def run(self):
         print('-' * 200)
         print(str(datetime.datetime.now()) + ' [ thread started: FingerprintGeneration(QThread).run(self) ]')
-        global address_name
-        global dial_out_address_index
-        global DIAL_OUT_ADDRESSES
+        global client_address_index
+        global client_address
         global configuration_thread
 
         self.fingerprint_var = []
 
         try:
 
-            self.dial_out_add_addr.setStyleSheet(fingerprint_generator_stylesheet)
+            self.dial_out_add_addr.setStyleSheet(button_stylesheet_amber_text)
 
             forbidden_fname = ['con', 'aux', 'nul', 'prn',
                                'com1', 'com2', 'com3', 'com4', 'com5', 'com6', 'com7', 'com8', 'com9',
@@ -1272,7 +1042,7 @@ class FingerprintGeneration(QThread):
             if str(address_name_var).isalnum():
                 address_name_var = str(self.dial_out_name.text())
                 if canonical_caseless(address_name_var) not in forbidden_fname:
-                    print(str(datetime.datetime.now()) + ' -- FingerprintGeneration(QThread).run address_name[dial_out_address_index]: is not in forbidden_fname')
+                    print(str(datetime.datetime.now()) + ' -- FingerprintGeneration(QThread).run address_name[client_address_index]: is not in forbidden_fname')
 
                     # Create initial address book entry consisting of name ip and port
                     self.entry_address_book = 'DATA ' + str(address_name_var) + ' ' + str(self.dial_out_ip_port.text())
@@ -1297,7 +1067,7 @@ class FingerprintGeneration(QThread):
 
                     self.new_full_dial_out_address = self.entry_address_book + ' ' + self.fingerprint_str
                     self.entry_address_book = self.entry_address_book + ' ' + finger_print_fname
-                    DIAL_OUT_ADDRESSES = self.entry_address_book
+                    client_address = self.entry_address_book
                     print(str(datetime.datetime.now()) + ' -- FingerprintGeneration(QThread).run full address book entry string:', self.entry_address_book)
 
                     # Write the fingerprint file
@@ -1325,7 +1095,13 @@ class FingerprintGeneration(QThread):
 
                     # If name in address book, overwrite existing entry in the address book
                     print('-' * 200)
-                    if address_name_var in address_name:
+                    address_name_match = False
+                    for _ in client_address:
+                        if _[0] == address_name_var:
+                            address_name_match = True
+                            break
+
+                    if address_name_match is True:
                         print(str(datetime.datetime.now()) + ' -- FingerprintGeneration(QThread).run attempting to overwrite existing address book entry')
                         addr_var = []
                         if os.path.exists('./communicator_address_book.txt'):
@@ -1359,20 +1135,15 @@ class FingerprintGeneration(QThread):
                     self.update_values()
 
                 else:
-                    print(str(datetime.datetime.now()) + ' -- FingerprintGeneration(QThread).run invalid address_name[dial_out_address_index] forbidden file name:', address_name_var)
-                    self.dial_out_add_addr.setStyleSheet(dial_out_add_addr_stylesheet_red)
+                    print(str(datetime.datetime.now()) + ' -- FingerprintGeneration(QThread).run invalid address_name[client_address_index] forbidden file name:', address_name_var)
             else:
-                print(str(datetime.datetime.now()) + ' -- FingerprintGeneration(QThread).run invalid address_name[dial_out_address_index]:', address_name_var)
-                self.dial_out_add_addr.setStyleSheet(dial_out_add_addr_stylesheet_red)
+                print(str(datetime.datetime.now()) + ' -- FingerprintGeneration(QThread).run invalid address_name[client_address_index]:', address_name_var)
 
             time.sleep(1)
-            self.dial_out_add_addr.setStyleSheet(button_stylesheet_0)
+            self.dial_out_add_addr.setStyleSheet(button_stylesheet_default)
 
         except Exception as e:
             print(str(datetime.datetime.now()) + ' -- :', e)
-            self.dial_out_add_addr.setStyleSheet(dial_out_add_addr_stylesheet_red)
-            time.sleep(1)
-            self.dial_out_add_addr.setStyleSheet(button_stylesheet_0)
 
 
 class ConfigurationClass(QThread):
@@ -1382,99 +1153,50 @@ class ConfigurationClass(QThread):
     def run(self):
         print('-' * 200)
         print(str(datetime.datetime.now()) + ' [ thread started: ConfigurationClass(QThread).run(self) ]')
-        global configuration_thread_key, configuration_thread_completed
-        global DIAL_OUT_ADDRESSES
-
-        global server_ip
-        global server_port
+        global configuration_thread_completed
         global server_address
-        global server_addresses
+        global client_address
 
-        global address_name
-        global address_ip
-        global address_port
-        global address_key
-        global address_fingerprint
+        print('-' * 200)
+        print(str(datetime.datetime.now()) + ' ConfigurationClass(QThread): updating all values from configuration file...')
 
-        server_ip = []
-        server_port = []
+        # Read And Set Server Configuration
         server_address = []
-        server_addresses = []
+        with open('./config.txt', 'r') as fo:
+            for line in fo:
+                line = line.strip()
+                print('configuration server:', line)
+                line = line.split(' ')
+                if str(line[0]) == 'SERVER_ADDRESS':
+                    if len(line) == 3:
+                        server_address.append([str(line[1]), int(line[2])])
+                        print(str(datetime.datetime.now()) + ' ConfigurationClass(QThread) adding server_address: ' + str(server_address[-1]))
+        fo.close()
 
-        address_name = []
-        address_ip = []
-        address_port = []
-        address_key = []
-        address_fingerprint = []
+        print('-' * 200)
+        print(str(datetime.datetime.now()) + ' ConfigurationClass(QThread): updating all values from communicator address book...')
 
-        if configuration_thread_key == 'ALL':
-            server_addresses = []
-            server_ip = []
-            server_port = []
-            print('-' * 200)
-            print(str(datetime.datetime.now()) + ' ConfigurationClass(QThread): updating all values from configuration file...')
+        # Read And Set Client Configuration
+        client_address = []
+        with open('./communicator_address_book.txt', 'r') as fo:
+            for line in fo:
+                line = line.strip()
+                line = line.split(' ')
+                if str(line[0]) == 'DATA':
+                    if len(line) == 6:
+                        client_address.append([str(line[1]), str(line[2]), int(line[3]), bytes(line[4], 'utf-8'), line[5]])
+                        print(client_address[-1])
 
-            with open('./config.txt', 'r') as fo:
-                for line in fo:
-                    line = line.strip()
-                    line = line.split(' ')
-
-                    if str(line[0]) == 'SERVER_ADDRESS':
-                        if len(line) == 3:
-                            server_ip.append(str(line[1]))
-                            server_port.append(int((line[2])))
-                            server_addresses.append(str(line[1]) + ' ' + str(line[2]))
-                            print(str(datetime.datetime.now()) + ' server_ip:', str(line[1]), 'server_port:', str(line[2]))
-            fo.close()
-            print('-' * 200)
-            print(str(datetime.datetime.now()) + ' ConfigurationClass(QThread): updating all values from communicator address book...')
-
-            DIAL_OUT_ADDRESSES = []
-
-            with open('./communicator_address_book.txt', 'r') as fo:
-                for line in fo:
-                    line = line.strip()
-
-                    if line.startswith('DATA'):
-                        DIAL_OUT_ADDRESSES.append(line)
-
-            for _ in DIAL_OUT_ADDRESSES:
-
-                # ToDo --> Sanitize Strings and check len(dial_out_address_split) before calling index ints
-
-                # Split address
-                dial_out_address_split = _.split(' ')
-                print(str(datetime.datetime.now()) + ' dial_out_address_split:', dial_out_address_split)
-
-                if len(dial_out_address_split) == 6:
-
-                    # Name
-                    print(str(datetime.datetime.now()) + ' setting dial out name:', dial_out_address_split[1])
-                    address_name.append(dial_out_address_split[1])
-
-                    # IP
-                    print(str(datetime.datetime.now()) + ' setting dial out ip:', dial_out_address_split[2])
-                    address_ip.append(dial_out_address_split[2])
-
-                    # Port
-                    print(str(datetime.datetime.now()) + ' setting dial out port:', dial_out_address_split[3])
-                    address_port.append(int(dial_out_address_split[3]))
-
-                    # Key
-                    print(str(datetime.datetime.now()) + ' address_key:', dial_out_address_split[4])
-                    address_key.append(bytes(dial_out_address_split[4], 'utf-8'))
-
-                    # Fingerprint
-                    fingerprint_file = dial_out_address_split[5]
-                    print(str(datetime.datetime.now()) + ' reading fingerprint_file:', fingerprint_file)
-                    address_fingerprint_string = ''
-                    if os.path.exists(fingerprint_file):
-                        with open(fingerprint_file, 'r') as fingerprint_fo:
-                            for line in fingerprint_fo:
-                                address_fingerprint_string = address_fingerprint_string + line
-                                print(line.strip())
-                        fingerprint_fo.close()
-                        address_fingerprint.append(bytes(address_fingerprint_string, 'utf-8'))
+        for _ in client_address:
+            if os.path.exists(_[-1]):
+                address_fingerprint_string = ''
+                with open(_[-1], 'r') as fo:
+                    for line in fo:
+                        line = line.strip()
+                        address_fingerprint_string = address_fingerprint_string + line
+                fo.close()
+                _[-1] = address_fingerprint_string
+                print(_)
 
         configuration_thread_completed = True
 
@@ -1512,12 +1234,9 @@ class AESCipher:
 
 
 class DialOutClass(QThread):
-    def __init__(self, dial_out_title, dial_out_line_test, dial_out_message_send, dial_out_message):
+    def __init__(self, dial_out_message_send, dial_out_message):
         QThread.__init__(self)
-        global address_name, address_ip, address_port, address_key, address_fingerprint
 
-        self.dial_out_title = dial_out_title
-        self.dial_out_line_test = dial_out_line_test
         self.dial_out_message_send = dial_out_message_send
         self.dial_out_message = dial_out_message
 
@@ -1525,45 +1244,23 @@ class DialOutClass(QThread):
         self.PORT_SEND = ''
         self.KEY = ''
         self.FINGERPRINT = ''
-
-        self.message_snd = ''
+        self.MESSAGE_CONTENT = ''
 
     def run(self):
         print('-' * 200)
         print(str(datetime.datetime.now()) + ' [ thread started: DialOutClass(QThread).run(self) ]')
-        global dial_out_address
-        global dial_out_thread_key
-        global dial_out_using_address_book_bool
+        global client_address
+        global client_address_index
 
-        if dial_out_using_address_book_bool is True:
-            self.HOST_SEND = address_ip[dial_out_address_index]
-            self.PORT_SEND = address_port[dial_out_address_index]
-            self.KEY = address_key[dial_out_address_index]
-            self.FINGERPRINT = address_fingerprint[dial_out_address_index]
+        print(str(datetime.datetime.now()) + ' -- DialOutClass.run client_address_index:', client_address_index)
 
-        elif dial_out_using_address_book_bool is False:
-            self.HOST_SEND = dial_out_address.split(' ')[0]
-            self.PORT_SEND = int(dial_out_address.split(' ')[1])
+        self.HOST_SEND = client_address[client_address_index][1]
+        self.PORT_SEND = client_address[client_address_index][2]
+        self.KEY = client_address[client_address_index][3]
+        self.FINGERPRINT = client_address[client_address_index][4]
+        self.MESSAGE_CONTENT = str(self.dial_out_message.text())
 
-        print(address_name[dial_out_address_index])
-        print(self.HOST_SEND)
-        print(self.PORT_SEND)
-        print(self.KEY)
-        print(self.FINGERPRINT)
-
-        self.message_snd = ''
-        self.data = ''
-
-        if dial_out_thread_key == 'LINE_TEST':
-            self.message_snd = '[LINE TEST]'
-            self.message_send()
-
-        elif dial_out_thread_key == 'MESSAGE':
-            self.message_snd = str(self.dial_out_message.text())
-            self.message_send()
-
-        else:
-            print(str(datetime.datetime.now()) + ' -- DialOutClass.run: dial_out_thread_key has no key')
+        self.message_send()
 
     def dial_out_logger(self):
         if not os.path.exists(dial_out_log):
@@ -1575,9 +1272,7 @@ class DialOutClass(QThread):
     def message_send(self):
         global SOCKET_DIAL_OUT
         global dial_out_dial_out_cipher_bool
-        global dial_out_thread_key
 
-        dial_out_thread_key = ''
         print('-' * 200)
         print(str(datetime.datetime.now()) + f" -- DialOutClass.message_send outgoing to: {self.HOST_SEND} : {self.PORT_SEND}")
 
@@ -1591,14 +1286,12 @@ class DialOutClass(QThread):
                     print(str(datetime.datetime.now()) + ' -- DialOutClass.message_send using KEY:', self.KEY)
                     print(str(datetime.datetime.now()) + ' -- DialOutClass.message_send using FINGERPRINT:', self.FINGERPRINT)
                     cipher = AESCipher(self.KEY)
-                    ciphertext = cipher.encrypt(str(self.FINGERPRINT) + self.message_snd)
+                    ciphertext = cipher.encrypt(str(self.FINGERPRINT) + self.MESSAGE_CONTENT)
                     print(str(datetime.datetime.now()) + ' -- DialOutClass.message_send ciphertext:', str(ciphertext))
-                    messages.append('[' + str(datetime.datetime.now()) + '] [SENDING ENCRYPTED] [' + str(self.HOST_SEND) + ':' + str(self.PORT_SEND) + ']')
+                    textbox_0_messages.append('[' + str(datetime.datetime.now()) + '] [SENDING ENCRYPTED] [' + str(self.HOST_SEND) + ':' + str(self.PORT_SEND) + ']')
                 else:
-                    ciphertext = bytes(self.message_snd, 'utf-8')
-                    messages.append('[' + str(datetime.datetime.now()) + '] [SENDING UNENCRYPTED] [' + str(self.HOST_SEND) + ':' + str(self.PORT_SEND) + ']')
-
-                self.dial_out_message.setText('')
+                    ciphertext = bytes(self.MESSAGE_CONTENT, 'utf-8')
+                    textbox_0_messages.append('[' + str(datetime.datetime.now()) + '] [SENDING UNENCRYPTED] [' + str(self.HOST_SEND) + ':' + str(self.PORT_SEND) + ']')
 
                 print(str(datetime.datetime.now()) + ' -- DialOutClass.message_send: attempting to send ciphertext')
 
@@ -1613,50 +1306,35 @@ class DialOutClass(QThread):
                     print(str(datetime.datetime.now()) + ' -- DialOutClass.message_send failed:', e)
                     self.dial_out_line_test.setIcon(QIcon("./resources/image/cell_tower_FILL1_wght200_GRAD200_opsz40_RED.png"))
                     self.data = '[' + str(datetime.datetime.now()) + '] [SENDING FAILED] [' + str(self.HOST_SEND) + ':' + str(self.PORT_SEND) + ']'
-                    messages.append(self.data)
+                    textbox_0_messages.append(self.data)
                     self.dial_out_logger()
 
             if data_response == ciphertext:
+                self.dial_out_message.setText('')
                 self.data = '[' + str(datetime.datetime.now()) + '] [DELIVERY CONFIRMATION] [' + str(self.HOST_SEND) + ':' + str(self.PORT_SEND) + ']'
-                messages.append(self.data)
-                if self.message_snd == '[LINE TEST]':
-                    print(str(datetime.datetime.now()) + ' -- DialOutClass.message_send response from recipient equals ciphertext:', data_response)
-                    self.dial_out_line_test.setIcon(QIcon("./resources/image/cell_tower_FILL1_wght200_GRAD200_opsz40_GREEN.png"))
-                    time.sleep(1)
-                    self.dial_out_line_test.setIcon(QIcon("./resources/image/cell_tower_FILL1_wght200_GRAD200_opsz40_WHITE.png"))
-                else:
-                    print(str(datetime.datetime.now()) + ' -- DialOutClass.message_send response from recipient equals ciphertext:', data_response)
-                    self.dial_out_message_send.setIcon(QIcon("./resources/image/send_FILL1_wght100_GRAD-25_opsz40_GREEN.png"))
-                    time.sleep(1)
-                    self.dial_out_message_send.setIcon(QIcon("./resources/image/send_FILL1_wght100_GRAD-25_opsz40_WHITE.png"))
-                global_self.setFocus()
+                textbox_0_messages.append(self.data)
 
-            else:
-                self.data = '[' + str(datetime.datetime.now()) + '] [WARNING] [MESSAGE RECEIVED DOES NOT MATCH MESSAGE SENT] [' + str(self.HOST_SEND) + ':' + str(self.PORT_SEND) + '] ' + str(data_response)
-                print(self.data)
-                messages.append(self.data)
-                self.dial_out_logger()
-                if self.message_snd == '[LINE TEST]':
-                    self.dial_out_line_test.setIcon(QIcon("./resources/image/cell_tower_FILL1_wght200_GRAD200_opsz40_YELLOW.png"))
-                    time.sleep(1)
-                    self.dial_out_line_test.setIcon(QIcon("./resources/image/cell_tower_FILL1_wght200_GRAD200_opsz40_WHITE.png"))
-                else:
-                    self.dial_out_message_send.setIcon(QIcon("./resources/image/send_FILL1_wght100_GRAD-25_opsz40_YELLOW.png"))
-                    time.sleep(1)
-                    self.dial_out_message_send.setIcon(QIcon("./resources/image/send_FILL1_wght100_GRAD-25_opsz40_WHITE.png"))
-
-        except Exception as e:
-
-            if self.message_snd == '[LINE TEST]':
-                print(str(datetime.datetime.now()) + ' -- DialOutClass.message_send failed:', e)
-                self.dial_out_line_test.setIcon(QIcon("./resources/image/cell_tower_FILL1_wght200_GRAD200_opsz40_RED.png"))
-                time.sleep(1)
-                self.dial_out_line_test.setIcon(QIcon("./resources/image/cell_tower_FILL1_wght200_GRAD200_opsz40_WHITE.png"))
-            else:
-                print(str(datetime.datetime.now()) + ' -- DialOutClass.message_send failed:', e)
-                self.dial_out_message_send.setIcon(QIcon("./resources/image/send_FILL1_wght100_GRAD-25_opsz40_RED.png"))
+                print(str(datetime.datetime.now()) + ' -- DialOutClass.message_send response from recipient equals ciphertext:', data_response)
+                self.dial_out_message_send.setIcon(QIcon("./resources/image/send_FILL1_wght100_GRAD-25_opsz40_GREEN.png"))
                 time.sleep(1)
                 self.dial_out_message_send.setIcon(QIcon("./resources/image/send_FILL1_wght100_GRAD-25_opsz40_WHITE.png"))
+
+            else:
+                self.dial_out_message.setText('')
+                self.data = '[' + str(datetime.datetime.now()) + '] [WARNING] [MESSAGE RECEIVED DOES NOT MATCH MESSAGE SENT] [' + str(self.HOST_SEND) + ':' + str(self.PORT_SEND) + '] ' + str(data_response)
+                print(self.data)
+                textbox_0_messages.append(self.data)
+                self.dial_out_logger()
+
+                self.dial_out_message_send.setIcon(QIcon("./resources/image/send_FILL1_wght100_GRAD-25_opsz40_YELLOW.png"))
+                time.sleep(1)
+                self.dial_out_message_send.setIcon(QIcon("./resources/image/send_FILL1_wght100_GRAD-25_opsz40_WHITE.png"))
+
+        except Exception as e:
+            print(str(datetime.datetime.now()) + ' -- DialOutClass.message_send failed:', e)
+            self.dial_out_message_send.setIcon(QIcon("./resources/image/send_FILL1_wght100_GRAD-25_opsz40_RED.png"))
+            time.sleep(1)
+            self.dial_out_message_send.setIcon(QIcon("./resources/image/send_FILL1_wght100_GRAD-25_opsz40_WHITE.png"))
             global_self.setFocus()
 
     def stop(self):
@@ -1672,10 +1350,9 @@ class DialOutClass(QThread):
 
 
 class ServerDataHandlerClass(QThread):
-    def __init__(self, server_title, server_incoming, server_notify_cipher, server_notify_alien):
+    def __init__(self, server_incoming, server_notify_cipher, server_notify_alien):
         QThread.__init__(self)
         self.server_incoming = server_incoming
-        self.server_title = server_title
         self.server_notify_cipher = server_notify_cipher
         self.server_notify_alien = server_notify_alien
         self.server_data_0 = []
@@ -1690,7 +1367,7 @@ class ServerDataHandlerClass(QThread):
         fo.close()
 
     def play_notification_sound(self):
-        player.play()
+        player_default.play()
         time.sleep(1)
 
     def notification(self):
@@ -1710,32 +1387,30 @@ class ServerDataHandlerClass(QThread):
             if mute_server_notify_alien_bool is False:
                 self.play_notification_sound()
 
-        time.sleep(1)
         self.server_incoming.setIcon(QIcon("./resources/image/public_FILL1_wght100_GRAD200_opsz40_WHITE.png"))
 
     def run(self):
         print('-' * 200)
         self.data = str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run: plugged in'
         print(self.data)
-        global server_data
-        global address_key
-        global messages
-        global address_server_data
+        global server_messages
+        global textbox_0_messages
+        global server_address_messages
         global cipher_message_count
         global alien_message_count
 
         while True:
             try:
-                self.server_data_0 = server_data
+                self.server_data_0 = server_messages
                 i_0 = 0
                 for self.server_data_0s in self.server_data_0:
                     try:
                         ciphertext = self.server_data_0[i_0]
-                        addr_data = address_server_data[i_0]
+                        addr_data = server_address_messages[i_0]
 
-                        # remove currently iterated over item from server_data to keep the list low and performance high
-                        server_data.remove(ciphertext)
-                        address_server_data.remove(addr_data)
+                        # remove currently iterated over item from server_messages to keep the list low and performance high
+                        server_messages.remove(ciphertext)
+                        server_address_messages.remove(addr_data)
 
                         decrypted = ''
                         decrypted_message = ''
@@ -1746,11 +1421,11 @@ class ServerDataHandlerClass(QThread):
 
                             # Use Keys in address book to attempt decryption (dictionary attack the message)
                             i_1 = 0
-                            for _ in address_key:
-                                print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run trying key:', _)
+                            for _ in client_address:
+                                print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run trying key:', str(_[3]))
                                 try:
                                     print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run: handing message to AESCipher')
-                                    cipher = AESCipher(_)
+                                    cipher = AESCipher(_[3])
                                     decrypted = cipher.decrypt(ciphertext)
                                 except Exception as e:
                                     print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run (address_key loop): ' + str(e))
@@ -1759,11 +1434,11 @@ class ServerDataHandlerClass(QThread):
                                 # If decrypted then display the name associated with the key else try next key
                                 if decrypted:
                                     print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run: successfully decrypted message')
-                                    print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run searching incoming message for fingerprint associated with:', address_name[i_1])
-                                    if decrypted.startswith(str(address_fingerprint[i_1])):
-                                        print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run fingerprint: validated as', address_name[i_1])
-                                        decrypted_message = decrypted.replace(str(address_fingerprint[i_1]), '')
-                                        messages.append('[' + str(datetime.datetime.now()) + '] [[DECIPHERED] [' + str(addr_data) + '] [' + address_name[i_1] + '] ' + decrypted_message)
+                                    print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run searching incoming message for fingerprint associated with:', str(_[0]))
+                                    if decrypted.startswith(str(_[-1])):
+                                        print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run fingerprint: validated as', str(_[0]))
+                                        decrypted_message = decrypted.replace(str(_[-1]), '')
+                                        textbox_0_messages.append('[' + str(datetime.datetime.now()) + '] [[DECIPHERED] [' + str(addr_data) + '] [' + str(_[0]) + '] ' + decrypted_message)
                                         print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run decrypted_message:', decrypted_message)
 
                                         if not cipher_message_count == '999+':
@@ -1791,11 +1466,7 @@ class ServerDataHandlerClass(QThread):
                             self.data = str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run message is not encrypted using keys in address book: ' + str(ciphertext)
                             print(self.data)
                             self.server_logger()
-                            if str(ciphertext).startswith("b'"):
-                                ciphertext = str(ciphertext).replace("b'", '')
-                                if str(ciphertext).endswith("'"):
-                                    ciphertext = ciphertext[:len(ciphertext)-1]
-                            messages.append('[' + str(datetime.datetime.now()) + '] [' + str(addr_data) + '] [NON-STANDARD COMMUNICATION] ' + ciphertext)
+                            textbox_0_messages.append('[' + str(datetime.datetime.now()) + '] [' + str(addr_data) + '] [NON-STANDARD COMMUNICATION] ' + str(ciphertext))
 
                             if not alien_message_count == '999+':
                                 if alien_message_count < 999:
@@ -1817,10 +1488,9 @@ class ServerDataHandlerClass(QThread):
 
 
 class ServerClass(QThread):
-    def __init__(self, server_title, server_incoming, server_status_label, soft_block_ip_notification):
+    def __init__(self, server_incoming, server_status_label, soft_block_ip_notification):
         QThread.__init__(self)
         self.server_incoming = server_incoming
-        self.server_title = server_title
         self.server_status_label = server_status_label
         self.soft_block_ip_notification = soft_block_ip_notification
         self.data = ''
@@ -1829,29 +1499,25 @@ class ServerClass(QThread):
         self.time_con = 0
 
     def run(self):
-
-        global server_ip
-        global server_port
+        print(str(datetime.datetime.now()) + ' -- ServerClass.run: plugged in:')
+        global server_address
         global server_address_index
 
-        print(server_ip)
-        print(server_port)
-
-        self.SERVER_HOST = server_ip[server_address_index]
-        self.SERVER_PORT = int(server_port[server_address_index])
+        self.SERVER_HOST = server_address[server_address_index][0]
+        print(str(datetime.datetime.now()) + ' -- ServerClass.run: SERVER_HOST:', self.SERVER_HOST)
+        self.SERVER_PORT = server_address[server_address_index][1]
+        print(str(datetime.datetime.now()) + ' -- ServerClass.run: SERVER_PORT:', self.SERVER_PORT)
 
         print('-' * 200)
         self.data = str(datetime.datetime.now()) + ' -- ServerClass.run: public server started'
         print(self.data)
         self.server_logger()
 
-        global server_thread_key
         while True:
-            if server_thread_key == 'listen':
-                try:
-                    self.listen()
-                except Exception as e:
-                    print(str(datetime.datetime.now()) + ' -- ServerClass.run failed:', e)
+            try:
+                self.listen()
+            except Exception as e:
+                print(str(datetime.datetime.now()) + ' -- ServerClass.run failed:', e)
 
     def server_logger(self):
         if not os.path.exists(server_log):
@@ -1861,14 +1527,13 @@ class ServerClass(QThread):
         fo.close()
 
     def listen(self):
-        global server_ip
-        global server_port
         global SOCKET_SERVER
-        global DIAL_OUT_ADDRESSES
-        global server_data
-        global wild_addresses_ip
-        global address_server_data
-        global server_rate_limiting_bool
+
+        global client_address
+        global client_address_index
+
+        global server_messages
+        global server_address_messages
 
         global x_time
         global z_time
@@ -1878,6 +1543,7 @@ class ServerClass(QThread):
         global soft_block_ip_count
 
         self.server_status_label.setText('SERVER STATUS: ONLINE')
+        self.server_incoming.setIcon(QIcon('./resources/image/public_FILL0_wght100_GRAD-25_opsz48_WHITE.png'))
 
         print('-' * 200)
         print(str(datetime.datetime.now()) + ' -- ServerClass.listen SERVER_HOST:', self.SERVER_HOST)
@@ -1889,7 +1555,7 @@ class ServerClass(QThread):
         while True:
             print('checking soft_block_ip:', soft_block_ip)
             if len(soft_block_ip) > 0:
-                
+
                 # DOS & DDOS Protection - Notify Per IP Address In Soft_Block_IP
                 if len(soft_block_ip) >= 999:
                     soft_block_ip_count = '999+'
@@ -1985,15 +1651,11 @@ class ServerClass(QThread):
 
                     # Handle Accepted Connection
                     if addr_exists_already is False:
-                        # Compile list of addresses not in address book
-                        if str(addr[0]) not in address_ip:
-                            print(str(datetime.datetime.now()) + ' -- ServerClass.listen incoming wild address:', str(addr[0]), str(addr[1]))
-                            wild_addresses_ip.append(str(addr[0]) + ' ' + str(addr[1]))
 
                         with conn:
                             print('-' * 200)
                             self.data = str(datetime.datetime.now()) + ' -- ServerClass.listen incoming connection: ' + str(addr)
-                            messages.append('[' + str(datetime.datetime.now()) + '] [INCOMING CONNECTION] [' + str(addr[0]) + ':' + str(addr[1]) + ']')
+                            textbox_0_messages.append('[' + str(datetime.datetime.now()) + '] [INCOMING CONNECTION] [' + str(addr[0]) + ':' + str(addr[1]) + ']')
                             print(self.data)
                             self.server_logger()
                             while True:
@@ -2004,11 +1666,11 @@ class ServerClass(QThread):
                                         break
 
                                     # dump server_data_0 into a stack for the server_data_handler
-                                    server_data.append(server_data_0)
-                                    address_server_data.append(str(addr[0]) + ' ' + str(addr[1]))
+                                    server_messages.append(server_data_0)
+                                    server_address_messages.append(str(addr[0]) + ' ' + str(addr[1]))
 
                                     # show connection received data
-                                    self.data = str(datetime.datetime.now()) + ' -- ServerClass.listen connection received server_data: ' + str(addr) + ' server_data: ' + str(server_data_0)
+                                    self.data = str(datetime.datetime.now()) + ' -- ServerClass.listen connection received server_messages: ' + str(addr) + ' server_messages: ' + str(server_data_0)
                                     print(self.data)
                                     self.server_logger()
 
@@ -2018,13 +1680,14 @@ class ServerClass(QThread):
 
                                 except Exception as e:
                                     print(str(datetime.datetime.now()) + ' ' + str(e))
-                                    messages.append('[' + str(datetime.datetime.now()) + '] ' + str(e))
+                                    textbox_0_messages.append('[' + str(datetime.datetime.now()) + '] ' + str(e))
                                     break
 
             except Exception as e:
                 print(str(datetime.datetime.now()) + ' -- ServerClass.listen failed:', e)
-                messages.append('[' + str(datetime.datetime.now()) + '] ' + str(e))
+                textbox_0_messages.append('[' + str(datetime.datetime.now()) + '] ' + str(e))
                 self.server_status_label.setText('SERVER STATUS: OFFLINE')
+                self.server_incoming.setIcon(QIcon('./resources/image/public_OFF_FILL0_wght100_GRAD-25_opsz48_WHITE.png'))
                 global_self.setFocus()
 
     def stop(self):
@@ -2038,6 +1701,7 @@ class ServerClass(QThread):
         except Exception as e:
             print(str(datetime.datetime.now()) + ' -- ServerClass.stop failed:', e)
         self.server_status_label.setText('SERVER STATUS: OFFLINE')
+        self.server_incoming.setIcon(QIcon('./resources/image/public_OFF_FILL0_wght100_GRAD-25_opsz48_WHITE.png'))
         global_self.setFocus()
         self.terminate()
 
