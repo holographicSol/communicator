@@ -528,18 +528,16 @@ class App(QMainWindow):
                 server_address_index = len(server_address)-1
                 print(str(datetime.datetime.now()) + ' -- changing server_address_index to:', server_address_index)
                 self.server_status_label_ip_in_use.setText(str(server_address[server_address_index][0]) + ' ' + str(server_address[server_address_index][1]))
-                if server_thread.isRunning():
-                    server_thread.stop()
-                    server_thread.start()
+                server_thread.stop()
+                server_thread.start()
 
             else:
                 print(str(datetime.datetime.now()) + ' -- server address already exists:', server_address_var)
                 print('server_address_match_index:', server_address_match_index)
                 self.server_status_label_ip_in_use.setText(str(server_address[server_address_match_index][0]) + ' ' + str(server_address[server_address_match_index][1]))
                 server_address_index = server_address_match_index
-                if server_thread.isRunning():
-                    server_thread.stop()
-                    server_thread.start()
+                server_thread.stop()
+                server_thread.start()
 
         def server_notify_cipher_function():
             print(str(datetime.datetime.now()) + ' -- plugged in: App.server_notify_cipher_function')
