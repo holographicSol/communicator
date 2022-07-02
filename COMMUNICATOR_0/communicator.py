@@ -528,38 +528,40 @@ class App(QMainWindow):
             global server_save_bool
 
             server_address_var = self.server_ip_port.text()
-            bool_address_match = False
-            server_address_match_index = 0
 
-            i = 0
-            for _ in server_address:
-                if str(_[0] + ' ' + str(_[1])) == server_address_var:
-                    bool_address_match = True
-                    server_address_match_index = i
-                i += 1
+            if server_address_var != '':
+                bool_address_match = False
+                server_address_match_index = 0
 
-            if bool_address_match is False:
-                print(str(datetime.datetime.now()) + ' -- new server address detected:', server_address_var)
-                server_address.append([server_address_var.split(' ')[0], int(server_address_var.split(' ')[1])])
-                server_address_index = len(server_address)-1
-                print(str(datetime.datetime.now()) + ' -- changing server_address_index to:', server_address_index)
-                self.server_status_label_ip_in_use.setText(str(server_address[server_address_index][0]) + ' ' + str(server_address[server_address_index][1]))
-                self.server_add_addr.setStyleSheet(button_stylesheet_white_text_high)
-                server_save_bool = True
-                self.server_add_addr.setEnabled(True)
-                server_thread.stop()
-                server_thread.start()
+                i = 0
+                for _ in server_address:
+                    if str(_[0] + ' ' + str(_[1])) == server_address_var:
+                        bool_address_match = True
+                        server_address_match_index = i
+                    i += 1
 
-            else:
-                print(str(datetime.datetime.now()) + ' -- server address already exists:', server_address_var)
-                print('server_address_match_index:', server_address_match_index)
-                self.server_status_label_ip_in_use.setText(str(server_address[server_address_match_index][0]) + ' ' + str(server_address[server_address_match_index][1]))
-                server_address_index = server_address_match_index
-                self.server_add_addr.setStyleSheet(button_stylesheet_white_text_low)
-                server_save_bool = False
-                self.server_add_addr.setEnabled(False)
-                server_thread.stop()
-                server_thread.start()
+                if bool_address_match is False:
+                    print(str(datetime.datetime.now()) + ' -- new server address detected:', server_address_var)
+                    server_address.append([server_address_var.split(' ')[0], int(server_address_var.split(' ')[1])])
+                    server_address_index = len(server_address)-1
+                    print(str(datetime.datetime.now()) + ' -- changing server_address_index to:', server_address_index)
+                    self.server_status_label_ip_in_use.setText(str(server_address[server_address_index][0]) + ' ' + str(server_address[server_address_index][1]))
+                    self.server_add_addr.setStyleSheet(button_stylesheet_white_text_high)
+                    server_save_bool = True
+                    self.server_add_addr.setEnabled(True)
+                    server_thread.stop()
+                    server_thread.start()
+
+                else:
+                    print(str(datetime.datetime.now()) + ' -- server address already exists:', server_address_var)
+                    print('server_address_match_index:', server_address_match_index)
+                    self.server_status_label_ip_in_use.setText(str(server_address[server_address_match_index][0]) + ' ' + str(server_address[server_address_match_index][1]))
+                    server_address_index = server_address_match_index
+                    self.server_add_addr.setStyleSheet(button_stylesheet_white_text_low)
+                    server_save_bool = False
+                    self.server_add_addr.setEnabled(False)
+                    server_thread.stop()
+                    server_thread.start()
 
         def server_notify_cipher_function():
             print(str(datetime.datetime.now()) + ' -- plugged in: App.server_notify_cipher_function')
