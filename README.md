@@ -13,7 +13,7 @@ The Communicator is a Decentralized communications tool. Communicate to potentia
 The Communicator is a very powerful Communications Tool. The Communicator is not a place to meet people, it not a
 chat lobby or meeting place and is certainly not a chat app.
 
-Communicator may require port forwarding to receive incoming communications depending on your router's setting, however
+Communicator may require port forwarding to receive incoming communications depending on your router's settings, however
 outgoing payloads should be fine under normal default network configurations. 
 
 Communicator Standard Communication:
