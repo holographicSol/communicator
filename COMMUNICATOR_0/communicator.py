@@ -138,6 +138,13 @@ button_stylesheet_red_text = """QPushButton{background-color: rgb(10, 10, 10);
                        border-top:2px solid rgb(5, 5, 5);
                        border-left:2px solid rgb(5, 5, 5);}"""
 
+button_stylesheet_red_text_low = """QPushButton{background-color: rgb(10, 10, 10);
+                       color: rgb(200, 0, 0);
+                       border-bottom:0px solid rgb(177, 177, 177);
+                       border-right:2px solid rgb(5, 5, 5);
+                       border-top:2px solid rgb(5, 5, 5);
+                       border-left:2px solid rgb(5, 5, 5);}"""
+
 button_stylesheet_green_text = """QPushButton{background-color: rgb(10, 10, 10);
                        color: rgb(0, 255, 0);
                        border-bottom:2px solid rgb(5, 5, 5);
@@ -180,6 +187,7 @@ class App(QMainWindow):
         global_self = self
 
         self.font_s7b = QFont("Segoe UI", 7, QFont.Bold)
+        self.font_s7 = QFont("Segoe UI", 7)
         self.font_s8b = QFont("Segoe UI", 8, QFont.Bold)
 
         self.setStyleSheet("""
@@ -706,12 +714,8 @@ class App(QMainWindow):
                 bool_dial_out_override = False
 
                 self.dial_override.setStyleSheet(button_stylesheet_default)
-
                 self.address_book_label.setText('ADDRESS BOOK')
-                # self.address_book_label.setStyleSheet(title_stylesheet_default)
-                #
                 self.dial_out_label.setText('TRANSMIT')
-                # self.dial_out_label.setStyleSheet(title_stylesheet_default)
 
                 self.dial_out_prev_addr.show()
                 self.dial_out_next_addr.show()
@@ -731,12 +735,8 @@ class App(QMainWindow):
                 bool_dial_out_override = True
 
                 self.dial_override.setStyleSheet(button_stylesheet_red_text)
-
                 self.address_book_label.setText('[ OVERRIDE ]')
-                # self.address_book_label.setStyleSheet(label_stylesheet_red_text)
-                #
                 self.dial_out_label.setText('[ TRANSMIT OVERRIDE ]')
-                # self.dial_out_label.setStyleSheet(label_stylesheet_red_text)
 
                 self.dial_out_prev_addr.hide()
                 self.dial_out_next_addr.hide()
@@ -758,10 +758,6 @@ class App(QMainWindow):
             if bool_dial_out_override is True:
                 address_override_string = self.dial_out_ip_port.text()
                 print(str(datetime.datetime.now()) + ' -- App.dial_out_override_function setting address_override_string:', address_override_string)
-
-
-        # Variable should be set before running write_configuration function
-        self.write_var = ''
 
         # Window Title
         self.title = "Communicator"
