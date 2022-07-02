@@ -69,12 +69,21 @@ write_server_configuration_engaged = False
 write_client_configuration_engaged = False
 mute_server_notify_alien_bool = False
 mute_server_notify_cipher_bool = False
+bool_dial_out_override = False
+address_override_string = False
 
 # Threads
 configuration_thread = []
 
 title_stylesheet_default = """QLabel{background-color: rgb(10, 10, 10);
                        color: rgb(200, 200, 200);
+                       border-bottom:2px solid rgb(5, 5, 5);
+                       border-right:2px solid rgb(5, 5, 5);
+                       border-top:2px solid rgb(5, 5, 5);
+                       border-left:2px solid rgb(5, 5, 5);}"""
+
+label_stylesheet_red_text = """QLabel{background-color: rgb(10, 10, 10);
+                       color: rgb(190, 0, 0);
                        border-bottom:2px solid rgb(5, 5, 5);
                        border-right:2px solid rgb(5, 5, 5);
                        border-top:2px solid rgb(5, 5, 5);
@@ -292,6 +301,10 @@ class App(QMainWindow):
             global client_address
             global client_address_index
             global address_save_mode
+            global button_stylesheet_green_text
+            global internal_messages
+
+            non_success_write = []
 
             name_non_duplicate = True
             for _ in client_address:
@@ -311,12 +324,10 @@ class App(QMainWindow):
                             for line in fo:
                                 line = line.strip()
                                 if line != '':
-                                    if not line.replace('DATA ', '') == str(
-                                            client_address[client_address_index][0]) + ' ' + str(
-                                        client_address[client_address_index][1]):
+                                    if not line.replace('DATA ', '') == str(client_address[client_address_index][0]) + ' ' + str(client_address[client_address_index][1]):
                                         fo_list.append(line)
 
-                        # Use Save Mode
+                        # Use Save Mode Basic
                         if address_save_mode == 'basic':
                             fo_list.append('DATA ' + self.dial_out_name.text() + ' ' + str(self.dial_out_ip_port.text() + ' x' + ' x'))
                             client_address.append([str(self.dial_out_name.text()), str(self.dial_out_ip_port.text().split(' ')[0]), int(self.dial_out_ip_port.text().split(' ')[1]), bytes('x', 'utf-8'), 'x'])
@@ -326,14 +337,17 @@ class App(QMainWindow):
                             for _ in fo_list:
                                 fo.write(_ + '\n')
                         fo.close()
-                        success_write = []
                         if os.path.exists('./communicator_address_book.txt'):
                             with open('./communicator_address_book.txt', 'r') as fo:
                                 i = 0
                                 for line in fo:
                                     line = line.strip()
-                                    if not line.replace('DATA ', '') == fo_list[i]:
-                                        success_write.append(False)
+                                    print('-- comparing line:')
+                                    print('fo_line:      ', line)
+                                    print('fo_list_line: ', str(fo_list[i]))
+                                    if not line == fo_list[i]:
+                                        non_success_write.append(False)
+                                    i += 1
                     else:
                         print('-- ip and port should not be empty!')
                 else:
@@ -359,6 +373,12 @@ class App(QMainWindow):
                         dial_out_dial_out_cipher_bool = True
                         self.dial_out_cipher_bool_btn.setEnabled(True)
             print(str(datetime.datetime.now()) + ' -- dial_out_dial_out_cipher_bool:', dial_out_dial_out_cipher_bool)
+
+            # # ToDo --> Display save success stylesheet then set stylesheet default
+            print('-- non_success_write:', non_success_write)
+            if not False in non_success_write:
+                print('-- address appears to have save successfully')
+            print('about to run default')
 
             write_client_configuration_engaged = False
 
@@ -640,6 +660,69 @@ class App(QMainWindow):
                         self.dial_out_cipher_bool_btn.setStyleSheet(button_stylesheet_red_text)
                     print(str(datetime.datetime.now()) + ' -- setting dial_out_dial_out_cipher_bool:', dial_out_dial_out_cipher_bool)
 
+        def dial_out_override_function():
+            print(str(datetime.datetime.now()) + ' -- plugged in: App.dial_out_override_function')
+            global client_address
+            global client_address_index
+            global bool_dial_out_override
+            if bool_dial_out_override is True:
+                bool_dial_out_override = False
+
+                self.dial_override.setStyleSheet(button_stylesheet_default)
+
+                self.address_book_label.setText('ADDRESS BOOK')
+                self.address_book_label.setStyleSheet(title_stylesheet_default)
+
+                self.dial_out_label.setText('TRANSMIT')
+                self.dial_out_label.setStyleSheet(title_stylesheet_default)
+
+                self.dial_out_prev_addr.show()
+                self.dial_out_next_addr.show()
+
+                self.dial_out_add_addr.show()
+                self.dial_out_rem_addr.show()
+
+                self.dial_out_name.show()
+
+                if len(client_address) > 0:
+                    self.dial_out_name.setText(client_address[client_address_index][0])
+                    self.dial_out_ip_port.setText(client_address[client_address_index][1] + ' ' + str(client_address[client_address_index][2]))
+
+                self.dial_out_cipher_bool_btn.show()
+
+            elif bool_dial_out_override is False:
+                bool_dial_out_override = True
+
+                self.dial_override.setStyleSheet(button_stylesheet_red_text)
+
+                self.address_book_label.setText('[ OVERRIDE ]')
+                self.address_book_label.setStyleSheet(label_stylesheet_red_text)
+
+                self.dial_out_label.setText('[ TRANSMIT OVERRIDE ]')
+                self.dial_out_label.setStyleSheet(label_stylesheet_red_text)
+
+                self.dial_out_prev_addr.hide()
+                self.dial_out_next_addr.hide()
+
+                self.dial_out_add_addr.hide()
+                self.dial_out_rem_addr.hide()
+
+                self.dial_out_name.hide()
+                self.dial_out_ip_port.setText('')
+
+                self.dial_out_cipher_bool_btn.hide()
+
+            print(str(datetime.datetime.now()) + ' -- App.dial_out_override_function setting bool_dial_out_override:', bool_dial_out_override)
+
+        def dial_out_ip_port_return_funtion():
+            global bool_dial_out_override
+            global address_override_string
+            print(str(datetime.datetime.now()) + ' -- plugged in: App.dial_out_ip_port_return_funtion')
+            if bool_dial_out_override is True:
+                address_override_string = self.dial_out_ip_port.text()
+                print(str(datetime.datetime.now()) + ' -- App.dial_out_override_function setting address_override_string:', address_override_string)
+
+
         # Variable should be set before running write_configuration function
         self.write_var = ''
 
@@ -678,10 +761,21 @@ class App(QMainWindow):
         self.dial_out_label.setAlignment(Qt.AlignCenter)
         self.dial_out_label.setStyleSheet(title_stylesheet_default)
 
+        # QLabel - Dial Out OVERRIDE
+        self.dial_override = QPushButton(self)
+        self.dial_override.resize(self.btn_60, self.btn_20)
+        self.dial_override.move((self.width / 2) - (self.btn_240 / 2), 328)
+        # self.dial_override.setIcon(QIcon("./resources/image/send_FILL1_wght100_GRAD-25_opsz40_WHITE.png"))
+        # self.dial_override.setIconSize(QSize(self.btn_20, self.btn_20))
+        self.dial_override.setStyleSheet(button_stylesheet_default)
+        self.dial_override.setText('OVERRIDE')
+        self.dial_override.setFont(self.font_s7b)
+        self.dial_override.clicked.connect(dial_out_override_function)
+
         # QLabel - Dial Out Message
         self.dial_out_message = QLineEdit(self)
         self.dial_out_message.resize(self.btn_240, self.btn_20)
-        self.dial_out_message.move((self.width / 2) - (self.btn_240 / 2), 328)
+        self.dial_out_message.move((self.width / 2) - (self.btn_240 / 2), 352)
         self.dial_out_message.setFont(self.font_s7b)
         self.dial_out_message.setText('')
         self.dial_out_message.setStyleSheet(line_edit_stylesheet_white_text)
@@ -689,7 +783,7 @@ class App(QMainWindow):
         # QLabel - Dial Out Message Send
         self.dial_out_message_send = QPushButton(self)
         self.dial_out_message_send.resize(self.btn_60, self.btn_20)
-        self.dial_out_message_send.move((self.width / 2) + (self.btn_240 / 2) + self.btn_4, 328)
+        self.dial_out_message_send.move((self.width / 2) + (self.btn_240 / 2) + self.btn_4, 352)
         self.dial_out_message_send.setIcon(QIcon("./resources/image/send_FILL1_wght100_GRAD-25_opsz40_WHITE.png"))
         self.dial_out_message_send.setIconSize(QSize(self.btn_20, self.btn_20))
         self.dial_out_message_send.setStyleSheet(button_stylesheet_default)
@@ -698,7 +792,7 @@ class App(QMainWindow):
         # QPushButton - Dial Out Set Encryption Boolean
         self.dial_out_cipher_bool_btn = QPushButton(self)
         self.dial_out_cipher_bool_btn.resize(self.btn_60, self.btn_20)
-        self.dial_out_cipher_bool_btn.move((self.width / 2) + (self.btn_240 / 2) + self.btn_4 + self.btn_60 + self.btn_4, 328)
+        self.dial_out_cipher_bool_btn.move((self.width / 2) + (self.btn_240 / 2) + self.btn_4 + self.btn_60 + self.btn_4, 352)
         self.dial_out_cipher_bool_btn.setText('CIPHER')
         self.dial_out_cipher_bool_btn.setFont(self.font_s7b)
         self.dial_out_cipher_bool_btn.setStyleSheet(button_stylesheet_green_text)
@@ -729,6 +823,7 @@ class App(QMainWindow):
         self.dial_out_ip_port.setText('')
         self.dial_out_ip_port.setStyleSheet(line_edit_stylesheet_white_text)
         self.dial_out_ip_port.setAlignment(Qt.AlignCenter)
+        self.dial_out_ip_port.returnPressed.connect(dial_out_ip_port_return_funtion)
 
         # QPushButton - Dial Out Previous Address
         self.dial_out_prev_addr = QPushButton(self)
@@ -909,7 +1004,7 @@ class App(QMainWindow):
         server_data_handler_class.start()
 
         # Thread - Dial_Out
-        dial_out_thread = DialOutClass(self.dial_out_message_send, self.dial_out_message)
+        dial_out_thread = DialOutClass(self.dial_out_message_send, self.dial_out_message, self.dial_out_ip_port)
 
         # Thread - Configuration
         global configuration_thread
@@ -997,9 +1092,7 @@ class App(QMainWindow):
     @QtCore.pyqtSlot()
     def internal_message_system(self):
         if internal_messages:
-            if internal_messages[-1] == 'server_save':
-                print('internal_messages: server_save')
-                internal_messages.remove(internal_messages[-1])
+            print('internal_message_system received message:', internal_messages[-1])
 
 
 class FingerprintGeneration(QThread):
@@ -1254,11 +1347,12 @@ class AESCipher:
 
 
 class DialOutClass(QThread):
-    def __init__(self, dial_out_message_send, dial_out_message):
+    def __init__(self, dial_out_message_send, dial_out_message, dial_out_ip_port):
         QThread.__init__(self)
 
         self.dial_out_message_send = dial_out_message_send
         self.dial_out_message = dial_out_message
+        self.dial_out_ip_port = dial_out_ip_port
 
         self.HOST_SEND = ''
         self.PORT_SEND = ''
@@ -1271,14 +1365,25 @@ class DialOutClass(QThread):
         print(str(datetime.datetime.now()) + ' [ thread started: DialOutClass(QThread).run(self) ]')
         global client_address
         global client_address_index
+        global address_override_string
 
-        print(str(datetime.datetime.now()) + ' -- DialOutClass.run client_address_index:', client_address_index)
+        print(str(datetime.datetime.now()) + ' -- DialOutClass.run bool_dial_out_override:', bool_dial_out_override)
 
-        self.HOST_SEND = client_address[client_address_index][1]
-        self.PORT_SEND = client_address[client_address_index][2]
-        self.KEY = client_address[client_address_index][3]
-        self.FINGERPRINT = client_address[client_address_index][4]
-        self.MESSAGE_CONTENT = str(self.dial_out_message.text())
+        if bool_dial_out_override is True:
+            print(str(datetime.datetime.now()) + ' -- DialOutClass.run using address_override_string:', address_override_string)
+            self.HOST_SEND = address_override_string.split(' ')[0]
+            self.PORT_SEND = int(address_override_string.split(' ')[1])
+            self.KEY = bytes('#', 'utf-8')
+            self.FINGERPRINT = bytes('#', 'utf-8')
+            self.MESSAGE_CONTENT = str(self.dial_out_message.text())
+
+        elif bool_dial_out_override is False:
+            print(str(datetime.datetime.now()) + ' -- DialOutClass.run using client_address_index:', client_address_index)
+            self.HOST_SEND = client_address[client_address_index][1]
+            self.PORT_SEND = client_address[client_address_index][2]
+            self.KEY = client_address[client_address_index][3]
+            self.FINGERPRINT = client_address[client_address_index][4]
+            self.MESSAGE_CONTENT = str(self.dial_out_message.text())
 
         self.message_send()
 
@@ -1292,6 +1397,7 @@ class DialOutClass(QThread):
     def message_send(self):
         global SOCKET_DIAL_OUT
         global dial_out_dial_out_cipher_bool
+        global bool_dial_out_override
 
         print('-' * 200)
         print(str(datetime.datetime.now()) + f" -- DialOutClass.message_send outgoing to: {self.HOST_SEND} : {self.PORT_SEND}")
@@ -1301,7 +1407,7 @@ class DialOutClass(QThread):
             with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as SOCKET_DIAL_OUT:
                 SOCKET_DIAL_OUT.connect((self.HOST_SEND, self.PORT_SEND))
 
-                if dial_out_dial_out_cipher_bool is True:
+                if dial_out_dial_out_cipher_bool is True and bool_dial_out_override is False:
                     print(str(datetime.datetime.now()) + ' -- DialOutClass.message_send: handing message to AESCipher')
                     print(str(datetime.datetime.now()) + ' -- DialOutClass.message_send using KEY:', self.KEY)
                     print(str(datetime.datetime.now()) + ' -- DialOutClass.message_send using FINGERPRINT:', self.FINGERPRINT)
