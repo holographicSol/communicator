@@ -673,10 +673,10 @@ class App(QMainWindow):
                 self.dial_override.setStyleSheet(button_stylesheet_default)
 
                 self.address_book_label.setText('ADDRESS BOOK')
-                self.address_book_label.setStyleSheet(title_stylesheet_default)
-
+                # self.address_book_label.setStyleSheet(title_stylesheet_default)
+                #
                 self.dial_out_label.setText('TRANSMIT')
-                self.dial_out_label.setStyleSheet(title_stylesheet_default)
+                # self.dial_out_label.setStyleSheet(title_stylesheet_default)
 
                 self.dial_out_prev_addr.show()
                 self.dial_out_next_addr.show()
@@ -698,10 +698,10 @@ class App(QMainWindow):
                 self.dial_override.setStyleSheet(button_stylesheet_red_text)
 
                 self.address_book_label.setText('[ OVERRIDE ]')
-                self.address_book_label.setStyleSheet(label_stylesheet_red_text)
-
+                # self.address_book_label.setStyleSheet(label_stylesheet_red_text)
+                #
                 self.dial_out_label.setText('[ TRANSMIT OVERRIDE ]')
-                self.dial_out_label.setStyleSheet(label_stylesheet_red_text)
+                # self.dial_out_label.setStyleSheet(label_stylesheet_red_text)
 
                 self.dial_out_prev_addr.hide()
                 self.dial_out_next_addr.hide()
