@@ -3,7 +3,7 @@ Communicator - Written by Benjamin Jack Cullen
 A Very Powerful Universal Communications Tool - Project in early development.
 
 Communicator is capable of communicating with any IPv4 Address running and or not running a Communicator, this makes
-the Communicator very powerful and. Use wisely.
+the Communicator very powerful and truly universal. Use wisely.
 
 Communicator has the potential to communicate with you even if your on Mars. Providing the Martians have internet,
 connected to us.
