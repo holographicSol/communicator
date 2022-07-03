@@ -842,6 +842,8 @@ class App(QMainWindow):
 
                 self.dial_out_name.show()
 
+                self.address_clear_form.show()
+
                 if len(client_address) > 0:
                     self.dial_out_name.setText(client_address[client_address_index][0])
                     self.dial_out_ip_port.setText(client_address[client_address_index][1] + ' ' + str(client_address[client_address_index][2]))
@@ -877,6 +879,8 @@ class App(QMainWindow):
                 self.tb_fingerprint.hide()
                 self.reveal_btn.hide()
                 self.dial_out_save_with_key.hide()
+
+                self.address_clear_form.hide()
 
             print(str(datetime.datetime.now()) + ' -- App.dial_out_override_function setting bool_dial_out_override:', bool_dial_out_override)
 
