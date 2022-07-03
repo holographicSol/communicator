@@ -305,22 +305,22 @@ class App(QMainWindow):
             global client_address
             global client_address_index
 
-            if write_client_configuration_engaged is False:
-                write_client_configuration_engaged = True
+            if self.dial_out_name.text() != '':
+                if self.dial_out_ip_port.text() != '':
 
-                bool_allow_delete = False
-                print('')
-                print('self.dial_out_name.text():', self.dial_out_name.text())
-                print('self.dial_out_ip_port.text().split(' ')[0]:', self.dial_out_ip_port.text().split(' ')[0])
-                print('self.dial_out_ip_port.text().split(' ')[1]:', str(self.dial_out_ip_port.text().split(' ')[1]))
-                print('')
-                print('client_address[client_address_index][0]:', client_address[client_address_index][0])
-                print('client_address[client_address_index][1]:', client_address[client_address_index][1])
-                print('client_address[client_address_index][2]:', str(client_address[client_address_index][2]))
-                print('')
+                    if write_client_configuration_engaged is False:
+                        write_client_configuration_engaged = True
 
-                if self.dial_out_name.text() != '':
-                    if self.dial_out_ip_port.text() != '':
+                        bool_allow_delete = False
+                        print('')
+                        print('self.dial_out_name.text():', self.dial_out_name.text())
+                        print('self.dial_out_ip_port.text().split(' ')[0]:', self.dial_out_ip_port.text().split(' ')[0])
+                        print('self.dial_out_ip_port.text().split(' ')[1]:', str(self.dial_out_ip_port.text().split(' ')[1]))
+                        print('')
+                        print('client_address[client_address_index][0]:', client_address[client_address_index][0])
+                        print('client_address[client_address_index][1]:', client_address[client_address_index][1])
+                        print('client_address[client_address_index][2]:', str(client_address[client_address_index][2]))
+                        print('')
 
                         if self.dial_out_name.text() == client_address[client_address_index][0]:
                             print('bool_allow_delete 1:', bool_allow_delete)
@@ -330,48 +330,48 @@ class App(QMainWindow):
                                     print('bool_allow_delete 3', bool_allow_delete)
                                     bool_allow_delete = True
 
-                print('-- bool_allow_delete:', bool_allow_delete)
+                        print('-- bool_allow_delete:', bool_allow_delete)
 
-                if bool_allow_delete is True:
-                    write_client_configuration_engaged = True
+                        if bool_allow_delete is True:
+                            write_client_configuration_engaged = True
 
-                    var_addr = [client_address[client_address_index][0],
-                                                               client_address[client_address_index][1],
-                                                               int(client_address[client_address_index][2]),
-                                                               str(client_address[client_address_index][3], 'utf-8')]
-                    print('')
+                            var_addr = [client_address[client_address_index][0],
+                                                                       client_address[client_address_index][1],
+                                                                       int(client_address[client_address_index][2]),
+                                                                       str(client_address[client_address_index][3], 'utf-8')]
+                            print('')
 
-                    if os.path.exists('./communicator_address_book.txt'):
-                        fo_list = []
-                        with open('./communicator_address_book.txt', 'r') as fo:
-                            for line in fo:
-                                line = line.strip()
-                                line_split = line.split(' ')
-                                if len(line_split) >= 1:
-                                    if line != '':
-                                        var_line = [line_split[1], line_split[2], int(line_split[3]), str(line_split[4])]
-                                        print('var_addr:', var_addr)
-                                        print('var_line:', var_line)
-                                        if var_line != var_addr:
-                                            fo_list.append(line)
-                                            print('keeping:', line)
-                                            print('')
-                                        else:
-                                            print('target remove:', line)
-                                            print('')
-                        open('./communicator_address_book.tmp', 'w').close()
-                        with open('./communicator_address_book.tmp', 'w') as fo:
-                            for _ in fo_list:
-                                fo.write(str(_) + '\n')
-                        fo.close()
+                            if os.path.exists('./communicator_address_book.txt'):
+                                fo_list = []
+                                with open('./communicator_address_book.txt', 'r') as fo:
+                                    for line in fo:
+                                        line = line.strip()
+                                        line_split = line.split(' ')
+                                        if len(line_split) >= 1:
+                                            if line != '':
+                                                var_line = [line_split[1], line_split[2], int(line_split[3]), str(line_split[4])]
+                                                print('var_addr:', var_addr)
+                                                print('var_line:', var_line)
+                                                if var_line != var_addr:
+                                                    fo_list.append(line)
+                                                    print('keeping:', line)
+                                                    print('')
+                                                else:
+                                                    print('target remove:', line)
+                                                    print('')
+                                open('./communicator_address_book.tmp', 'w').close()
+                                with open('./communicator_address_book.tmp', 'w') as fo:
+                                    for _ in fo_list:
+                                        fo.write(str(_) + '\n')
+                                fo.close()
 
-                        # ToDo --> Check each line (currently exist)
-                        if os.path.exists('./communicator_address_book.tmp'):
-                            os.replace('./communicator_address_book.tmp', './communicator_address_book.txt')
-                        del client_address[client_address_index]
-                        client_previous_address_function()
+                                # ToDo --> Check each line (currently exist)
+                                if os.path.exists('./communicator_address_book.tmp'):
+                                    os.replace('./communicator_address_book.tmp', './communicator_address_book.txt')
+                                del client_address[client_address_index]
+                                client_previous_address_function()
 
-                write_client_configuration_engaged = False
+                        write_client_configuration_engaged = False
 
         def client_save_address():
             print(str(datetime.datetime.now()) + ' -- plugged in: App.client_save_address')
@@ -941,7 +941,7 @@ class App(QMainWindow):
                     if len(client_address[client_address_index][4]) == 1024:
                         print('3')
                         finger_print_var = str(client_address[client_address_index][4])
-                        split_strings = [finger_print_var[index: index + 32] for index in range(0, len(finger_print_var), 32)]
+                        split_strings = [finger_print_var[index: index + 64] for index in range(0, len(finger_print_var), 64)]
                         print(split_strings)
                         for _ in split_strings:
                             self.tb_fingerprint.append(_)
@@ -985,13 +985,20 @@ class App(QMainWindow):
 
             print(str(datetime.datetime.now()) + ' -- setting address_reveal_bool:', address_reveal_bool)
 
+        def address_clear_form_function():
+            print(str(datetime.datetime.now()) + ' -- plugged in: App.address_clear_form_function')
+            self.dial_out_name.setText('')
+            self.dial_out_ip_port.setText('')
+            self.address_key.setText('')
+            self.tb_fingerprint.setText('')
+
         # Window Title
         self.title = "Communicator"
         self.setWindowTitle('Communicator')
         self.setWindowIcon(QIcon('./resources/image/icon.ico'))
 
         # Window Geometry
-        self.width, self.height = 720, 402
+        self.width, self.height = 1132, 402
         app_pos_w, app_pos_h = (GetSystemMetrics(0) / 2 - (self.width / 2)), (GetSystemMetrics(1) / 2 - (self.height / 2))
         self.left, self.top = int(app_pos_w), int(app_pos_h)
         self.setGeometry(self.left, self.top, self.width, self.height)
@@ -1009,9 +1016,28 @@ class App(QMainWindow):
         self.btn_40 = 40
         self.btn_60 = 60
         self.btn_80 = 80
+        self.btn_100 = 100
         self.btn_140 = 140
         self.btn_180 = 180
         self.btn_240 = 240
+        self.btn_280 = 280
+        self.btn_360 = 360
+
+        # self.dev_space_check = QLabel(self)
+        # self.dev_space_check.resize(self.btn_60, 20)
+        # self.dev_space_check.move((self.width / 2) + (self.btn_140 / 2) + self.btn_4, 164)
+        # self.dev_space_check.setFont(self.font_s7b)
+        # self.dev_space_check.setText('DEV')
+        # self.dev_space_check.setAlignment(Qt.AlignCenter)
+        # self.dev_space_check.setStyleSheet(title_stylesheet_default)
+        #
+        # self.dev_space_check = QLabel(self)
+        # self.dev_space_check.resize(self.btn_60, 20)
+        # self.dev_space_check.move((self.width / 2) + (self.btn_140 / 2) + self.btn_4 + self.btn_60 + self.btn_4, 164)
+        # self.dev_space_check.setFont(self.font_s7b)
+        # self.dev_space_check.setText('DEV')
+        # self.dev_space_check.setAlignment(Qt.AlignCenter)
+        # self.dev_space_check.setStyleSheet(title_stylesheet_default)
 
         self.dial_out_label = QLabel(self)
         self.dial_out_label.resize(self.width - 8, 20)
@@ -1066,12 +1092,22 @@ class App(QMainWindow):
 
         self.reveal_btn = QPushButton(self)
         self.reveal_btn.resize(self.btn_60, self.btn_20)
-        self.reveal_btn.move((self.width / 2) - (self.btn_140 / 2), 164)
+        self.reveal_btn.move(28, 164)
         self.reveal_btn.setIcon(QIcon("./resources/image/visibility_off_FILL0_wght200_GRAD0_opsz20_WHITE.png"))
         self.reveal_btn.setIconSize(QSize(self.btn_20 - 8, self.btn_20 - 8))
         self.reveal_btn.setFont(self.font_s7b)
         self.reveal_btn.setStyleSheet(button_stylesheet_white_text_low)
         self.reveal_btn.clicked.connect(reveal_btn_function)
+
+        self.address_clear_form = QPushButton(self)
+        self.address_clear_form.resize(self.btn_60, self.btn_20)
+        self.address_clear_form.move((self.width / 2) - (self.btn_140 / 2), 164)
+        # self.address_clear_form.setIcon(QIcon("./resources/image/visibility_off_FILL0_wght200_GRAD0_opsz20_WHITE.png"))
+        # self.address_clear_form.setIconSize(QSize(self.btn_20 - 8, self.btn_20 - 8))
+        self.address_clear_form.setText('NEW')
+        self.address_clear_form.setFont(self.font_s7b)
+        self.address_clear_form.setStyleSheet(button_stylesheet_white_text_low)
+        self.address_clear_form.clicked.connect(address_clear_form_function)
 
         # QPushButton - Dial Out Name
         self.dial_out_name = QLineEdit(self)
@@ -1095,8 +1131,8 @@ class App(QMainWindow):
 
         # QLineEdit - Fingerprint Label
         self.address_fingerprint_label = QLabel(self)
-        self.address_fingerprint_label.resize(self.btn_180, 20)
-        self.address_fingerprint_label.move((self.width / 2) + (self.btn_140 / 2) + self.btn_4 + self.btn_20 + self.btn_4 + self.btn_20 + self.btn_4, 164)
+        self.address_fingerprint_label.resize(self.btn_360, 20)
+        self.address_fingerprint_label.move(self.width - self.btn_360 - self.btn_4, 188)
         self.address_fingerprint_label.setFont(self.font_s7b)
         self.address_fingerprint_label.setText('FINGERPRINT')
         self.address_fingerprint_label.setAlignment(Qt.AlignCenter)
@@ -1105,8 +1141,8 @@ class App(QMainWindow):
 
         # QLineEdit - Fingerprint
         self.tb_fingerprint = QTextBrowser(self)
-        self.tb_fingerprint.move((self.width / 2) + (self.btn_140 / 2) + self.btn_4 + self.btn_20 + self.btn_4 + self.btn_20 + self.btn_4, 188)
-        self.tb_fingerprint.resize(self.btn_180, 68)
+        self.tb_fingerprint.move(self.width - self.btn_360 - self.btn_4, 208)
+        self.tb_fingerprint.resize(self.btn_360, 68)
         self.tb_fingerprint.setObjectName("tb_fingerprint")
         self.tb_fingerprint.setFont(self.font_s7b)
         self.tb_fingerprint.setStyleSheet(textbox_stylesheet_black_bg)
@@ -1116,8 +1152,8 @@ class App(QMainWindow):
 
         # QLineEdit - Key Label
         self.address_key_label = QLabel(self)
-        self.address_key_label.resize(self.btn_180, 20)
-        self.address_key_label.move((self.width / 2) - (self.btn_140 / 2) - self.btn_4 - self.btn_20 - self.btn_4 - self.btn_4 - self.btn_20 - self.btn_180, 164)
+        self.address_key_label.resize(self.btn_80-4, 20)
+        self.address_key_label.move(self.width - self.btn_360 - self.btn_4, 164)
         self.address_key_label.setFont(self.font_s7b)
         self.address_key_label.setText('KEY')
         self.address_key_label.setAlignment(Qt.AlignCenter)
@@ -1125,14 +1161,11 @@ class App(QMainWindow):
         self.address_key_label.hide()
 
         # QLineEdit - Key
-        self.address_key = QTextBrowser(self)
-        self.address_key.move((self.width / 2) - (self.btn_140 / 2) - self.btn_4 - self.btn_20 - self.btn_4 - self.btn_4 - self.btn_20 - self.btn_180, 188)
-        self.address_key.resize(self.btn_180, 44)
-        self.address_key.setObjectName("tb_key")
+        self.address_key = QLineEdit(self)
+        self.address_key.move(self.width - self.btn_280 - self.btn_4, 164)
+        self.address_key.resize(self.btn_280, 20)
         self.address_key.setFont(self.font_s7b)
-        self.address_key.setStyleSheet(textbox_stylesheet_black_bg)
-        self.address_key.setLineWrapMode(QTextBrowser.NoWrap)
-        self.address_key.horizontalScrollBar().setValue(0)
+        self.address_key.setStyleSheet(line_edit_stylesheet_white_text)
         self.address_key.hide()
 
         # QPushButton - Address Save With A Key And Fingerprint
@@ -1479,7 +1512,7 @@ class FingerprintGeneration(QThread):
                 if len(client_address[client_address_index][3]) == 32:
                     print('key:    ', client_address[client_address_index][3])
                     print('key len:', len(client_address[client_address_index][3]))
-                    self.address_key.append(str(client_address[client_address_index][3], 'utf-8'))
+                    self.address_key.setText(str(client_address[client_address_index][3], 'utf-8'))
                 else:
                     print('self.key_str:', self.key_string)
                     format_pass.append(False)
