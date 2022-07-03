@@ -1895,7 +1895,7 @@ class ServerDataHandlerClass(QThread):
         global mute_server_notify_alien_bool
 
         print('mute_server_notify_cipher_bool:', mute_server_notify_cipher_bool)
-        
+
         if self.notification_key == 'green':
             self.server_incoming.setIcon(QIcon("./resources/image/public_FILL1_wght100_GRAD200_opsz40_GREEN.png"))
             if mute_server_notify_cipher_bool is False:
@@ -1943,38 +1943,39 @@ class ServerDataHandlerClass(QThread):
                             # Use Keys in address book to attempt decryption (dictionary attack the message)
                             i_1 = 0
                             for _ in client_address:
-                                print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run trying key:', str(_[3]))
-                                try:
-                                    print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run: handing message to AESCipher')
-                                    cipher = AESCipher(_[3])
-                                    decrypted = cipher.decrypt(ciphertext)
-                                except Exception as e:
-                                    print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run (address_key loop): ' + str(e))
-                                    break
-
-                                # If decrypted then display the name associated with the key else try next key
-                                if decrypted:
-                                    print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run: successfully decrypted message')
-                                    print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run searching incoming message for fingerprint associated with:', str(_[0]))
-                                    if decrypted.startswith(str(_[-1])):
-                                        print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run fingerprint: validated as', str(_[0]))
-                                        decrypted_message = decrypted.replace(str(_[-1]), '')
-                                        textbox_0_messages.append('[' + str(datetime.datetime.now()) + '] [[DECIPHERED] [' + str(addr_data) + '] [' + str(_[0]) + '] ' + decrypted_message)
-                                        print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run decrypted_message:', decrypted_message)
-
-                                        if not cipher_message_count == '999+':
-                                            if cipher_message_count < 999:
-                                                cipher_message_count += 1
-                                            else:
-                                                cipher_message_count = str('999+')
-                                        self.server_notify_cipher.setText(str(cipher_message_count))
-
+                                if _[3] != bytes('x', 'utf-8'):
+                                    print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run trying key:', str(_[3]))
+                                    try:
+                                        print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run: handing message to AESCipher')
+                                        cipher = AESCipher(_[3])
+                                        decrypted = cipher.decrypt(ciphertext)
+                                    except Exception as e:
+                                        print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run (address_key loop): ' + str(e))
                                         break
+
+                                    # If decrypted then display the name associated with the key else try next key
+                                    if decrypted:
+                                        print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run: successfully decrypted message')
+                                        print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run searching incoming message for fingerprint associated with:', str(_[0]))
+                                        if decrypted.startswith(str(_[-1])):
+                                            print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run fingerprint: validated as', str(_[0]))
+                                            decrypted_message = decrypted.replace(str(_[-1]), '')
+                                            textbox_0_messages.append('[' + str(datetime.datetime.now()) + '] [[DECIPHERED] [' + str(addr_data) + '] [' + str(_[0]) + '] ' + decrypted_message)
+                                            print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run decrypted_message:', decrypted_message)
+
+                                            if not cipher_message_count == '999+':
+                                                if cipher_message_count < 999:
+                                                    cipher_message_count += 1
+                                                else:
+                                                    cipher_message_count = str('999+')
+                                            self.server_notify_cipher.setText(str(cipher_message_count))
+
+                                            break
+                                        else:
+                                            print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run fingerprint: missing or invalid')
                                     else:
-                                        print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run fingerprint: missing or invalid')
-                                else:
-                                    print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run decrypt: empty (try another key)')
-                                i_1 += 1
+                                        print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run decrypt: empty (try another key)')
+                                    i_1 += 1
 
                         # Display Server incoming message's
                         if len(decrypted_message) > 0:
