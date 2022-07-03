@@ -1851,15 +1851,16 @@ class ServerDataHandlerClass(QThread):
 
         print('mute_server_notify_cipher_bool:', mute_server_notify_cipher_bool)
 
-        if self.notification_key == 'green':
-            self.server_incoming.setIcon(QIcon("./resources/image/public_FILL1_wght100_GRAD200_opsz40_GREEN.png"))
-            if mute_server_notify_cipher_bool is False:
-                self.play_notification_sound()
-
-        elif self.notification_key == 'amber':
-            self.server_incoming.setIcon(QIcon("./resources/image/public_FILL1_wght100_GRAD200_opsz40_AMBER.png"))
-            if mute_server_notify_alien_bool is False:
-                self.play_notification_sound()
+        # ToDo --> Change notification object to none or if keep below code, change notification object (keep online visualization server_incoming_online on the wire in server thread)
+        # if self.notification_key == 'green':
+        #     self.server_incoming.setIcon(QIcon("./resources/image/public_FILL1_wght100_GRAD200_opsz40_GREEN.png"))
+        #     if mute_server_notify_cipher_bool is False:
+        #         self.play_notification_sound()
+        #
+        # elif self.notification_key == 'amber':
+        #     self.server_incoming.setIcon(QIcon("./resources/image/public_FILL1_wght100_GRAD200_opsz40_AMBER.png"))
+        #     if mute_server_notify_alien_bool is False:
+        #         self.play_notification_sound()
 
         time.sleep(1)
 
@@ -2069,8 +2070,9 @@ class ServerClass(QThread):
                 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as SOCKET_SERVER:
                     SOCKET_SERVER.bind((self.SERVER_HOST, self.SERVER_PORT))
                     self.server_status_label.setText('SERVER STATUS: ONLINE')
-                    SOCKET_SERVER.listen()
                     self.server_incoming.setIcon(QIcon('./resources/image/public_FILL0_wght100_GRAD-25_opsz48_WHITE.png'))
+                    SOCKET_SERVER.listen()
+                    # ToDo --> set another object for incoming connection to keep server incoming object free to set on the wire every time
                     conn, addr = SOCKET_SERVER.accept()
                     print(str(datetime.datetime.now()) + ' -- ServerClass.listen conn, addr: ' + str(conn) + str(addr))
 
