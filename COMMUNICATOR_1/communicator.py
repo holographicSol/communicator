@@ -1999,6 +1999,7 @@ class ServerClass(QThread):
                 print(str(datetime.datetime.now()) + ' -- ServerClass.run failed:', e)
                 self.server_status_label.setText('SERVER STATUS: TRYING TO START')
                 self.server_incoming.setIcon(QIcon('./resources/image/public_FILL0_wght100_GRAD-25_opsz48_YELLOW'))
+                time.sleep(1)
                 break
 
     def server_logger(self):
@@ -2169,6 +2170,7 @@ class ServerClass(QThread):
                                     textbox_0_messages.append('[' + str(datetime.datetime.now()) + '] ' + str(e))
                                     self.server_status_label.setText('SERVER STATUS: TRYING TO START')
                                     self.server_incoming.setIcon(QIcon('./resources/image/public_FILL0_wght100_GRAD-25_opsz48_YELLOW'))
+                                    time.sleep(1)
                                     break
 
             except Exception as e:
@@ -2176,7 +2178,7 @@ class ServerClass(QThread):
                 textbox_0_messages.append('[' + str(datetime.datetime.now()) + '] ' + str(e))
                 self.server_status_label.setText('SERVER STATUS: TRYING TO START')
                 self.server_incoming.setIcon(QIcon('./resources/image/public_FILL0_wght100_GRAD-25_opsz48_YELLOW'))
-                global_self.setFocus()
+                time.sleep(1)
                 break
 
     def stop(self):
