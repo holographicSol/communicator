@@ -924,21 +924,11 @@ class App(QMainWindow):
             if address_save_mode is 'basic':
                 address_save_mode = 'advanced'
                 address_reveal_bool = True
-                # self.reveal_btn.setIcon(QIcon("./resources/image/visibility_FILL0_wght200_GRAD0_opsz20_WHITE.png"))
-                # self.address_key.show()
-                # self.address_key_label.show()
-                # self.address_fingerprint_label.show()
-                # self.tb_fingerprint.show()
-                self.dial_out_save_with_key.setStyleSheet(button_stylesheet_white_text_low)
+                self.dial_out_save_with_key.setStyleSheet(button_stylesheet_white_text_high)
             elif address_save_mode is 'advanced':
                 address_save_mode = 'basic'
                 address_reveal_bool = False
-                # self.reveal_btn.setIcon(QIcon("./resources/image/visibility_off_FILL0_wght200_GRAD0_opsz20_WHITE.png"))
-                # self.address_key.hide()
-                # self.address_key_label.hide()
-                # self.address_fingerprint_label.hide()
-                # self.tb_fingerprint.hide()
-                self.dial_out_save_with_key.setStyleSheet(button_stylesheet_white_text_high)
+                self.dial_out_save_with_key.setStyleSheet(button_stylesheet_white_text_low)
             print(str(datetime.datetime.now()) + ' -- setting address_save_mode:', address_save_mode)
 
         def format_fingerprint():
