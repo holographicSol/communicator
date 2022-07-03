@@ -1526,7 +1526,7 @@ class FingerprintGeneration(QThread):
 
                     # Generate Fingerprint
                     i = 0
-                    while i < 31:
+                    while i < 32:
                         self.iter_rand()
                         i += 1
 
