@@ -1895,15 +1895,14 @@ class ServerDataHandlerClass(QThread):
         global mute_server_notify_alien_bool
 
         print('mute_server_notify_cipher_bool:', mute_server_notify_cipher_bool)
-
-        # ToDo --> Change notification object to none or if keep below code, change notification object (keep online visualization server_incoming_online on the wire in server thread for security reasons)
+        
         if self.notification_key == 'green':
-            # self.server_incoming.setIcon(QIcon("./resources/image/public_FILL1_wght100_GRAD200_opsz40_GREEN.png"))
+            self.server_incoming.setIcon(QIcon("./resources/image/public_FILL1_wght100_GRAD200_opsz40_GREEN.png"))
             if mute_server_notify_cipher_bool is False:
                 self.play_notification_sound()
 
         elif self.notification_key == 'amber':
-            # self.server_incoming.setIcon(QIcon("./resources/image/public_FILL1_wght100_GRAD200_opsz40_AMBER.png"))
+            self.server_incoming.setIcon(QIcon("./resources/image/public_FILL1_wght100_GRAD200_opsz40_AMBER.png"))
             if mute_server_notify_alien_bool is False:
                 self.play_notification_sound()
 
@@ -2020,6 +2019,8 @@ class ServerClass(QThread):
         self.SERVER_HOST = ''
         self.SERVER_PORT = ''
         self.time_con = 0
+        self.server_status_current = False
+        self.server_status_prev = None
 
     def run(self):
         print(str(datetime.datetime.now()) + ' -- ServerClass.run: plugged in:')
@@ -2078,6 +2079,9 @@ class ServerClass(QThread):
 
         x_time = round(time.time() * 1000)
 
+        self.server_status_current = False
+        self.server_status_prev = None
+
         while True:
             print('checking soft_block_ip:', soft_block_ip)
             if len(soft_block_ip) > 0:
@@ -2114,9 +2118,14 @@ class ServerClass(QThread):
             try:
                 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as SOCKET_SERVER:
                     SOCKET_SERVER.bind((self.SERVER_HOST, self.SERVER_PORT))
-                    self.server_status_label.setText('SERVER STATUS: ONLINE')
-                    self.server_incoming.setIcon(QIcon('./resources/image/public_FILL0_wght100_GRAD-25_opsz48_WHITE.png'))
+                    if self.server_status_current != self.server_status_prev:
+                        self.server_status_prev = self.server_status_current
+                        self.server_status_label.setText('SERVER STATUS: ONLINE')
+                        self.server_incoming.setIcon(QIcon('./resources/image/public_FILL0_wght100_GRAD-25_opsz48_WHITE.png'))
+
                     SOCKET_SERVER.listen()
+
+                    self.server_status_current = True
                     # ToDo --> set another object for incoming connection to keep server incoming object free to set on the wire every time
                     conn, addr = SOCKET_SERVER.accept()
                     print(str(datetime.datetime.now()) + ' -- ServerClass.listen conn, addr: ' + str(conn) + str(addr))
@@ -2211,6 +2220,7 @@ class ServerClass(QThread):
                                     conn.sendall(server_data_0)
 
                                 except Exception as e:
+                                    self.server_status_current = False
                                     print(str(datetime.datetime.now()) + ' ' + str(e))
                                     textbox_0_messages.append('[' + str(datetime.datetime.now()) + '] ' + str(e))
                                     print(str(datetime.datetime.now()) + ' -- ServerClass.listen failed:', e)
@@ -2221,6 +2231,7 @@ class ServerClass(QThread):
                                     break
 
             except Exception as e:
+                self.server_status_current = False
                 print(str(datetime.datetime.now()) + ' -- ServerClass.listen failed:', e)
                 textbox_0_messages.append('[' + str(datetime.datetime.now()) + '] ' + str(e))
                 self.server_status_label.setText('SERVER STATUS: TRYING TO START')
