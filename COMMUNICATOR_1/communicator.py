@@ -1851,7 +1851,7 @@ class ServerDataHandlerClass(QThread):
 
         print('mute_server_notify_cipher_bool:', mute_server_notify_cipher_bool)
 
-        # ToDo --> Change notification object to none or if keep below code, change notification object (keep online visualization server_incoming_online on the wire in server thread)
+        # ToDo --> Change notification object to none or if keep below code, change notification object (keep online visualization server_incoming_online on the wire in server thread for security reasons)
         # if self.notification_key == 'green':
         #     self.server_incoming.setIcon(QIcon("./resources/image/public_FILL1_wght100_GRAD200_opsz40_GREEN.png"))
         #     if mute_server_notify_cipher_bool is False:
