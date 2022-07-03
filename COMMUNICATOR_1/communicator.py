@@ -1861,6 +1861,8 @@ class ServerDataHandlerClass(QThread):
             if mute_server_notify_alien_bool is False:
                 self.play_notification_sound()
 
+        time.sleep(1)
+
         self.server_incoming.setIcon(QIcon("./resources/image/public_FILL1_wght100_GRAD200_opsz40_WHITE.png"))
 
     def run(self):
@@ -2066,8 +2068,8 @@ class ServerClass(QThread):
                 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as SOCKET_SERVER:
                     SOCKET_SERVER.bind((self.SERVER_HOST, self.SERVER_PORT))
                     self.server_status_label.setText('SERVER STATUS: ONLINE')
-                    self.server_incoming.setIcon(QIcon('./resources/image/public_FILL0_wght100_GRAD-25_opsz48_WHITE.png'))
                     SOCKET_SERVER.listen()
+                    self.server_incoming.setIcon(QIcon('./resources/image/public_FILL0_wght100_GRAD-25_opsz48_WHITE.png'))
                     conn, addr = SOCKET_SERVER.accept()
                     print(str(datetime.datetime.now()) + ' -- ServerClass.listen conn, addr: ' + str(conn) + str(addr))
 
