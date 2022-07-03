@@ -415,10 +415,10 @@ class App(QMainWindow):
                                 if address_save_mode == 'basic':
                                     self.address_key.setText('')
                                     self.tb_fingerprint.setText('')
-                                    self.address_key_label.hide()
-                                    self.address_key.hide()
-                                    self.address_fingerprint_label.hide()
-                                    self.tb_fingerprint.hide()
+                                    # self.address_key_label.hide()
+                                    # self.address_key.hide()
+                                    # self.address_fingerprint_label.hide()
+                                    # self.tb_fingerprint.hide()
                                     fo_list.append('DATA ' + self.dial_out_name.text() + ' ' + str(self.dial_out_ip_port.text() + ' x' + ' x'))
                                     client_address.append([str(self.dial_out_name.text()), str(self.dial_out_ip_port.text().split(' ')[0]), int(self.dial_out_ip_port.text().split(' ')[1]), bytes('x', 'utf-8'), 'x'])
                                     client_address_index = len(client_address)-1
@@ -443,10 +443,10 @@ class App(QMainWindow):
                                 elif address_save_mode == 'advanced':
                                     self.address_key.setText('')
                                     self.tb_fingerprint.setText('')
-                                    self.address_key_label.show()
-                                    self.address_key.show()
-                                    self.address_fingerprint_label.show()
-                                    self.tb_fingerprint.show()
+                                    # self.address_key_label.show()
+                                    # self.address_key.show()
+                                    # self.address_fingerprint_label.show()
+                                    # self.tb_fingerprint.show()
                                     finger_print_gen_thread.start()
                             else:
                                 print('-- ip and port should not be empty!')
@@ -945,13 +945,6 @@ class App(QMainWindow):
                         print(split_strings)
                         for _ in split_strings:
                             self.tb_fingerprint.append(_)
-                        if address_reveal_bool is True:
-                            self.address_fingerprint_label.show()
-                            self.tb_fingerprint.show()
-                        format_pass = True
-            if format_pass is False:
-                self.address_fingerprint_label.hide()
-                self.tb_fingerprint.hide()
 
         def check_key():
             global address_reveal_bool
@@ -971,16 +964,10 @@ class App(QMainWindow):
             global address_reveal_bool
             if address_reveal_bool is True:
                 address_reveal_bool = False
-                self.address_key_label.hide()
-                self.address_fingerprint_label.hide()
-                self.tb_fingerprint.hide()
-                self.address_key.hide()
                 self.reveal_btn.setIcon(QIcon("./resources/image/visibility_off_FILL0_wght200_GRAD0_opsz20_WHITE.png"))
 
             elif address_reveal_bool is False:
                 address_reveal_bool = True
-                check_key()
-                format_fingerprint()
                 self.reveal_btn.setIcon(QIcon("./resources/image/visibility_FILL0_wght200_GRAD0_opsz20_WHITE.png"))
 
             print(str(datetime.datetime.now()) + ' -- setting address_reveal_bool:', address_reveal_bool)
@@ -1102,11 +1089,9 @@ class App(QMainWindow):
         self.address_clear_form = QPushButton(self)
         self.address_clear_form.resize(self.btn_60, self.btn_20)
         self.address_clear_form.move((self.width / 2) - (self.btn_140 / 2), 164)
-        # self.address_clear_form.setIcon(QIcon("./resources/image/visibility_off_FILL0_wght200_GRAD0_opsz20_WHITE.png"))
-        # self.address_clear_form.setIconSize(QSize(self.btn_20 - 8, self.btn_20 - 8))
         self.address_clear_form.setText('NEW')
         self.address_clear_form.setFont(self.font_s7b)
-        self.address_clear_form.setStyleSheet(button_stylesheet_white_text_low)
+        self.address_clear_form.setStyleSheet(button_stylesheet_white_text_high)
         self.address_clear_form.clicked.connect(address_clear_form_function)
 
         # QPushButton - Dial Out Name
@@ -1137,7 +1122,7 @@ class App(QMainWindow):
         self.address_fingerprint_label.setText('FINGERPRINT')
         self.address_fingerprint_label.setAlignment(Qt.AlignCenter)
         self.address_fingerprint_label.setStyleSheet(title_stylesheet_default)
-        self.address_fingerprint_label.hide()
+        # self.address_fingerprint_label.hide()
 
         # QLineEdit - Fingerprint
         self.tb_fingerprint = QTextBrowser(self)
@@ -1148,7 +1133,7 @@ class App(QMainWindow):
         self.tb_fingerprint.setStyleSheet(textbox_stylesheet_black_bg)
         self.tb_fingerprint.setLineWrapMode(QTextBrowser.NoWrap)
         self.tb_fingerprint.horizontalScrollBar().setValue(0)
-        self.tb_fingerprint.hide()
+        # self.tb_fingerprint.hide()
 
         # QLineEdit - Key Label
         self.address_key_label = QLabel(self)
@@ -1158,7 +1143,7 @@ class App(QMainWindow):
         self.address_key_label.setText('KEY')
         self.address_key_label.setAlignment(Qt.AlignCenter)
         self.address_key_label.setStyleSheet(title_stylesheet_default)
-        self.address_key_label.hide()
+        # self.address_key_label.hide()
 
         # QLineEdit - Key
         self.address_key = QLineEdit(self)
@@ -1166,7 +1151,7 @@ class App(QMainWindow):
         self.address_key.resize(self.btn_280, 20)
         self.address_key.setFont(self.font_s7b)
         self.address_key.setStyleSheet(line_edit_stylesheet_white_text)
-        self.address_key.hide()
+        # self.address_key.hide()
 
         # QPushButton - Address Save With A Key And Fingerprint
         self.dial_out_save_with_key = QPushButton(self)
