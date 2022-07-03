@@ -1349,7 +1349,7 @@ class App(QMainWindow):
         configuration_thread.append(configuration_thread_)
         configuration_thread[0].start()
 
-        finger_print_gen_thread = FingerprintGeneration(self.dial_out_name, self.dial_out_ip_port, self.dial_out_add_addr, self.tb_fingerprint, self.address_key)
+        finger_print_gen_thread = FingerprintGeneration(self.dial_out_name, self.dial_out_ip_port, self.dial_out_add_addr, self.tb_fingerprint, self.address_key, self.dial_out_cipher_bool_btn)
 
         # Configuration Thread - Wait For Configuration Thread To Complete
         global configuration_thread_completed
@@ -1437,7 +1437,7 @@ class App(QMainWindow):
 
 
 class FingerprintGeneration(QThread):
-    def __init__(self, dial_out_name, dial_out_ip_port, dial_out_add_addr, tb_fingerprint, address_key):
+    def __init__(self, dial_out_name, dial_out_ip_port, dial_out_add_addr, tb_fingerprint, address_key, dial_out_cipher_bool_btn):
         QThread.__init__(self)
         self.fingerprint_var = []
         self.dial_out_ip_port = dial_out_ip_port
@@ -1445,6 +1445,7 @@ class FingerprintGeneration(QThread):
         self.dial_out_add_addr = dial_out_add_addr
         self.tb_fingerprint = tb_fingerprint
         self.address_key = address_key
+        self.dial_out_cipher_bool_btn = dial_out_cipher_bool_btn
         self.key_string = ''
         self.entry_address_book = ''
         self.new_full_dial_out_address = ''
@@ -1455,10 +1456,10 @@ class FingerprintGeneration(QThread):
         global client_address_index
 
         client_address[client_address_index][4] = self.fingerprint_str
-        # client_address[client_address_index][3] = self.key_string
+
         print(str(datetime.datetime.now()) + ' -- plugged in: App.format_fingerprint')
-        # self.address_key.append(bytes(self.key_string), 'utf-8')
-        format_pass = False
+        format_pass = []
+
         if len(client_address) > 0:
             print('1')
             if len(client_address[client_address_index]) == 5:
@@ -1472,19 +1473,21 @@ class FingerprintGeneration(QThread):
                     print(split_strings)
                     for _ in split_strings:
                         self.tb_fingerprint.append(_)
-                    # if address_reveal_bool is True:
-                        # self.address_fingerprint_label.show()
-                        # self.tb_fingerprint.show()
-                    format_pass = True
+                else:
+                    format_pass.append(False)
                 if len(client_address[client_address_index][3]) == 32:
                     print('key:    ', client_address[client_address_index][3])
                     print('key len:', len(client_address[client_address_index][3]))
                     self.address_key.append(str(client_address[client_address_index][3], 'utf-8'))
                 else:
                     print('self.key_str:', self.key_string)
-        # if format_pass is False:
-            # self.address_fingerprint_label.hide()
-            # self.tb_fingerprint.hide()
+                    format_pass.append(False)
+        if False in format_pass:
+            self.dial_out_cipher_bool_btn.setStyleSheet(button_stylesheet_red_text)
+            self.dial_out_cipher_bool_btn.setEnabled(False)
+        else:
+            self.dial_out_cipher_bool_btn.setStyleSheet(button_stylesheet_green_text)
+            self.dial_out_cipher_bool_btn.setEnabled(True)
 
     def update_values(self):
         global client_address_index
