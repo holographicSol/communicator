@@ -72,6 +72,8 @@ mute_server_notify_alien_bool = False
 mute_server_notify_cipher_bool = False
 bool_dial_out_override = False
 server_save_bool = False
+dial_out_save_with_key_bool = False
+address_reveal_bool = False
 address_override_string = ''
 
 # Threads
@@ -162,6 +164,15 @@ line_edit_stylesheet_white_text = """QLineEdit{background-color: rgb(10, 10, 10)
                        border-left:2px solid rgb(5, 5, 5);}"""
 
 textbox_stylesheet_default = """QTextBrowser {background-color: rgb(10, 10, 10);
+                selection-color: black;
+                selection-background-color: rgb(0, 180, 0);
+                color: rgb(200, 200, 200);
+                border-bottom:2px solid rgb(5, 5, 5);
+                border-right:2px solid rgb(5, 5, 5);
+                border-top:2px solid rgb(5, 5, 5);
+                border-left:2px solid rgb(5, 5, 5);}"""
+
+textbox_stylesheet_black_bg = """QTextBrowser {background-color: rgb(0, 0, 0);
                 selection-color: black;
                 selection-background-color: rgb(0, 180, 0);
                 color: rgb(200, 200, 200);
@@ -294,34 +305,75 @@ class App(QMainWindow):
             global write_client_configuration_engaged
             global client_address
             global client_address_index
+            global dial_out_save_with_key_bool
 
-            if self.dial_out_name.text() != '':
-                if self.dial_out_ip_port.text() != '':
+            if write_client_configuration_engaged is False:
+                write_client_configuration_engaged = True
 
-                    if write_client_configuration_engaged is False:
-                        write_client_configuration_engaged = True
+                bool_allow_delete = False
+                print('')
+                print('self.dial_out_name.text():', self.dial_out_name.text())
+                print('self.dial_out_ip_port.text().split(' ')[0]:', self.dial_out_ip_port.text().split(' ')[0])
+                print('self.dial_out_ip_port.text().split(' ')[1]:', str(self.dial_out_ip_port.text().split(' ')[1]))
+                print('')
+                print('client_address[client_address_index][0]:', client_address[client_address_index][0])
+                print('client_address[client_address_index][1]:', client_address[client_address_index][1])
+                print('client_address[client_address_index][2]:', str(client_address[client_address_index][2]))
+                print('')
 
-                        if os.path.exists('./communicator_address_book.txt'):
-                            fo_list = []
-                            with open('./communicator_address_book.txt', 'r') as fo:
-                                for line in fo:
-                                    line = line.strip()
-                                    line_split = line.split(' ')
-                                    if len(line_split) >= 1:
-                                        if line != '':
-                                            if line_split[1] != client_address[client_address_index][0]:
-                                                fo_list.append(line)
-                            open('./communicator_address_book.tmp', 'w').close()
-                            with open('./communicator_address_book.tmp', 'w') as fo:
-                                for _ in fo_list:
-                                    fo.write(str(_) + '\n')
-                            fo.close()
-                            if os.path.exists('./communicator_address_book.tmp'):
-                                os.replace('./communicator_address_book.tmp', './communicator_address_book.txt')
-                            del client_address[client_address_index]
-                            client_previous_address_function()
+                if self.dial_out_name.text() != '':
+                    if self.dial_out_ip_port.text() != '':
 
-                    write_client_configuration_engaged = False
+                        if self.dial_out_name.text() == client_address[client_address_index][0]:
+                            print('bool_allow_delete 1:', bool_allow_delete)
+                            if self.dial_out_ip_port.text().split(' ')[0] == client_address[client_address_index][1]:
+                                print('bool_allow_delete 2:', bool_allow_delete)
+                                if int(self.dial_out_ip_port.text().split(' ')[1]) == client_address[client_address_index][2]:
+                                    print('bool_allow_delete 3', bool_allow_delete)
+                                    bool_allow_delete = True
+
+                print('-- bool_allow_delete:', bool_allow_delete)
+
+                if bool_allow_delete is True:
+                    write_client_configuration_engaged = True
+
+                    var_addr = [client_address[client_address_index][0],
+                                                               client_address[client_address_index][1],
+                                                               int(client_address[client_address_index][2]),
+                                                               str(client_address[client_address_index][3], 'utf-8')]
+                    print('')
+
+                    if os.path.exists('./communicator_address_book.txt'):
+                        fo_list = []
+                        with open('./communicator_address_book.txt', 'r') as fo:
+                            for line in fo:
+                                line = line.strip()
+                                line_split = line.split(' ')
+                                if len(line_split) >= 1:
+                                    if line != '':
+                                        var_line = [line_split[1], line_split[2], int(line_split[3]), str(line_split[4])]
+                                        print('var_addr:', var_addr)
+                                        print('var_line:', var_line)
+                                        if var_line != var_addr:
+                                            fo_list.append(line)
+                                            print('keeping:', line)
+                                            print('')
+                                        else:
+                                            print('target remove:', line)
+                                            print('')
+                        open('./communicator_address_book.tmp', 'w').close()
+                        with open('./communicator_address_book.tmp', 'w') as fo:
+                            for _ in fo_list:
+                                fo.write(str(_) + '\n')
+                        fo.close()
+
+                        # ToDo --> Check each line (currently exist)
+                        if os.path.exists('./communicator_address_book.tmp'):
+                            os.replace('./communicator_address_book.tmp', './communicator_address_book.txt')
+                        del client_address[client_address_index]
+                        client_previous_address_function()
+
+                write_client_configuration_engaged = False
 
         def client_save_address():
             print(str(datetime.datetime.now()) + ' -- plugged in: App.client_save_address')
@@ -331,86 +383,100 @@ class App(QMainWindow):
             global address_save_mode
             global button_stylesheet_green_text
             global internal_messages
+            global dial_out_save_with_key_bool
 
-            if self.dial_out_name.text() != '':
-                if self.dial_out_ip_port.text() != '':
+            if write_client_configuration_engaged is False:
+                write_client_configuration_engaged = True
 
-                    non_success_write = []
+                if dial_out_save_with_key_bool is False:
 
-                    name_non_duplicate = True
-                    for _ in client_address:
-                        if _[0] == self.dial_out_name.text():
-                            print('-- comparing:', _[0], ' --> ', self.dial_out_name.text())
-                            name_non_duplicate = False
-                            break
+                    if self.dial_out_name.text() != '':
+                        if self.dial_out_ip_port.text() != '':
 
-                    if write_client_configuration_engaged is False and name_non_duplicate is True:
-                        write_client_configuration_engaged = True
+                            non_success_write = []
 
-                        if self.dial_out_name.text() != '':
-                            if self.dial_out_ip_port.text() != '':
+                            name_non_duplicate = True
+                            for _ in client_address:
+                                if _[0] == self.dial_out_name.text():
+                                    print('-- comparing:', _[0], ' --> ', self.dial_out_name.text())
+                                    name_non_duplicate = False
+                                    break
 
-                                fo_list = []
-                                with open('./communicator_address_book.txt', 'r') as fo:
-                                    for line in fo:
-                                        line = line.strip()
-                                        if line != '':
-                                            if not line.replace('DATA ', '') == str(client_address[client_address_index][0]) + ' ' + str(client_address[client_address_index][1]):
-                                                fo_list.append(line)
+                            if self.dial_out_name.text() != '':
+                                if self.dial_out_ip_port.text() != '':
 
-                                # Use Save Mode Basic
-                                if address_save_mode == 'basic':
-                                    fo_list.append('DATA ' + self.dial_out_name.text() + ' ' + str(self.dial_out_ip_port.text() + ' x' + ' x'))
-                                    client_address.append([str(self.dial_out_name.text()), str(self.dial_out_ip_port.text().split(' ')[0]), int(self.dial_out_ip_port.text().split(' ')[1]), bytes('x', 'utf-8'), 'x'])
-                                    client_address_index = len(client_address)-1
-
-                                with open('./communicator_address_book.txt', 'w') as fo:
-                                    for _ in fo_list:
-                                        fo.write(_ + '\n')
-                                fo.close()
-                                if os.path.exists('./communicator_address_book.txt'):
+                                    fo_list = []
                                     with open('./communicator_address_book.txt', 'r') as fo:
-                                        i = 0
                                         for line in fo:
                                             line = line.strip()
-                                            print('-- comparing line:')
-                                            print('fo_line:      ', line)
-                                            print('fo_list_line: ', str(fo_list[i]))
-                                            if not line == fo_list[i]:
-                                                non_success_write.append(False)
-                                            i += 1
+                                            if line != '':
+                                                if not line.replace('DATA ', '') == str(client_address[client_address_index][0]) + ' ' + str(client_address[client_address_index][1]):
+                                                    fo_list.append(line)
+
+                                    # Use Save Mode Basic
+                                    if address_save_mode == 'basic':
+                                        fo_list.append('DATA ' + self.dial_out_name.text() + ' ' + str(self.dial_out_ip_port.text() + ' x' + ' x'))
+                                        client_address.append([str(self.dial_out_name.text()), str(self.dial_out_ip_port.text().split(' ')[0]), int(self.dial_out_ip_port.text().split(' ')[1]), bytes('x', 'utf-8'), 'x'])
+                                        client_address_index = len(client_address)-1
+
+                                    with open('./communicator_address_book.txt', 'w') as fo:
+                                        for _ in fo_list:
+                                            fo.write(_ + '\n')
+                                    fo.close()
+                                    if os.path.exists('./communicator_address_book.txt'):
+                                        with open('./communicator_address_book.txt', 'r') as fo:
+                                            i = 0
+                                            for line in fo:
+                                                line = line.strip()
+                                                print('-- comparing line:')
+                                                print('fo_line:      ', line)
+                                                print('fo_list_line: ', str(fo_list[i]))
+                                                if not line == fo_list[i]:
+                                                    non_success_write.append(False)
+                                                i += 1
+                                else:
+                                    print('-- ip and port should not be empty!')
                             else:
-                                print('-- ip and port should not be empty!')
-                        else:
-                            print('-- name should not be empty!')
+                                print('-- name should not be empty!')
 
-                        # Save as
-                    global dial_out_dial_out_cipher_bool
-                    # # First Check If The Address Entry HAS A Key And Fingerprint
-                    self.dial_out_cipher_bool_btn.setStyleSheet(button_stylesheet_red_text)
-                    dial_out_dial_out_cipher_bool = False
-                    self.dial_out_cipher_bool_btn.setEnabled(False)
+                            # Save as
+                        global dial_out_dial_out_cipher_bool
+                        # # First Check If The Address Entry HAS A Key And Fingerprint
+                        self.dial_out_cipher_bool_btn.setStyleSheet(button_stylesheet_red_text)
+                        dial_out_dial_out_cipher_bool = False
+                        self.dial_out_cipher_bool_btn.setEnabled(False)
 
-                    if dial_out_dial_out_cipher_bool is False:
-                        if client_address[client_address_index][3] != '#' and len(
-                                client_address[client_address_index][3]) == 32:
-                            print(str(datetime.datetime.now()) + ' -- address entry appears to have a key:',
-                                  client_address[client_address_index][3])
-                            if client_address[client_address_index][4] != '#' and len(
-                                    client_address[client_address_index][4]) == 1024:
-                                print(str(datetime.datetime.now()) + ' -- address entry appears to have a fingerprint:',
-                                      client_address[client_address_index][4])
-                                self.dial_out_cipher_bool_btn.setStyleSheet(button_stylesheet_green_text)
-                                dial_out_dial_out_cipher_bool = True
-                                self.dial_out_cipher_bool_btn.setEnabled(True)
-                    print(str(datetime.datetime.now()) + ' -- dial_out_dial_out_cipher_bool:', dial_out_dial_out_cipher_bool)
+                        if dial_out_dial_out_cipher_bool is False:
+                            if client_address[client_address_index][3] != '#' and len(
+                                    client_address[client_address_index][3]) == 32:
+                                print(str(datetime.datetime.now()) + ' -- address entry appears to have a key:',
+                                      client_address[client_address_index][3])
+                                if client_address[client_address_index][4] != '#' and len(
+                                        client_address[client_address_index][4]) == 1024:
+                                    print(str(datetime.datetime.now()) + ' -- address entry appears to have a fingerprint:',
+                                          client_address[client_address_index][4])
+                                    self.dial_out_cipher_bool_btn.setStyleSheet(button_stylesheet_green_text)
+                                    dial_out_dial_out_cipher_bool = True
+                                    self.dial_out_cipher_bool_btn.setEnabled(True)
+                        print(str(datetime.datetime.now()) + ' -- dial_out_dial_out_cipher_bool:', dial_out_dial_out_cipher_bool)
 
-                    # # ToDo --> Display save success stylesheet then set stylesheet default
-                    print('-- non_success_write:', non_success_write)
-                    if not False in non_success_write:
-                        print('-- address appears to have save successfully')
-                    print('about to run default')
+                        # # ToDo --> Display save success stylesheet then set stylesheet default
+                        print('-- non_success_write:', non_success_write)
+                        if not False in non_success_write:
+                            print('-- address appears to have save successfully')
+                        print('about to run default')
+                        self.dial_out_add_addr.setStyleSheet(button_stylesheet_white_text_low)
+                        self.dial_out_add_addr.setEnabled(False)
+                        write_client_configuration_engaged = False
+                        # self.dial_out_save_with_key.hide()
+                elif dial_out_save_with_key_bool is True:
+                    print('-- using advanced save feature')
+                    self.dial_out_add_addr.setStyleSheet(button_stylesheet_white_text_low)
+                    self.dial_out_add_addr.setEnabled(False)
                     write_client_configuration_engaged = False
+                    # self.dial_out_save_with_key.hide()
+                    # finger_print_gen_thread.start()
+                write_client_configuration_engaged = False
 
         def server_prev_addr_function():
             print(str(datetime.datetime.now()) + ' -- plugged in: App.server_prev_addr_function')
@@ -458,6 +524,15 @@ class App(QMainWindow):
             global_self.setFocus()
             global client_address
             global client_address_index
+
+            self.dial_out_add_addr.setStyleSheet(button_stylesheet_white_text_low)
+            self.dial_out_add_addr.setEnabled(False)
+
+            self.dial_out_name.setText('')
+            self.dial_out_ip_port.setText('')
+            self.address_key.setText('')
+            self.tb_fingerprint.setText('')
+
             print(str(datetime.datetime.now()) + ' -- len(client_address):', len(client_address))
             if len(client_address) > 0:
                 if client_address_index == 0:
@@ -465,8 +540,11 @@ class App(QMainWindow):
                 else:
                     client_address_index = client_address_index - 1
                 print(str(datetime.datetime.now()) + ' -- client_address_index setting client_address_index:', client_address_index)
+
                 self.dial_out_ip_port.setText(client_address[client_address_index][1] + ' ' + str(client_address[client_address_index][2]))
                 self.dial_out_name.setText(str(client_address[client_address_index][0]))
+                check_key()
+                format_fingerprint()
                 print(self.dial_out_ip_port.text())
             else:
                 print(str(datetime.datetime.now()) + ' -- client_address unpopulated')
@@ -495,6 +573,15 @@ class App(QMainWindow):
             global_self.setFocus()
             global client_address
             global client_address_index
+
+            self.dial_out_add_addr.setStyleSheet(button_stylesheet_white_text_low)
+            self.dial_out_add_addr.setEnabled(False)
+
+            self.dial_out_name.setText('')
+            self.dial_out_ip_port.setText('')
+            self.address_key.setText('')
+            self.tb_fingerprint.setText('')
+
             print(str(datetime.datetime.now()) + ' -- len(client_address):', len(client_address))
             if len(client_address) > 0:
                 if client_address_index == len(client_address) - 1:
@@ -502,8 +589,13 @@ class App(QMainWindow):
                 else:
                     client_address_index += 1
                 print(str(datetime.datetime.now()) + ' -- client_address_index setting client_address_index:', client_address_index)
+
                 self.dial_out_ip_port.setText(client_address[client_address_index][1] + ' ' + str(client_address[client_address_index][2]))
                 self.dial_out_name.setText(str(client_address[client_address_index][0]))
+
+                self.address_key.setText(str(client_address[client_address_index][3], 'utf-8'))
+                check_key()
+                format_fingerprint()
             else:
                 print(str(datetime.datetime.now()) + ' -- client_address unpopulated')
             # print(str(datetime.datetime.now()) + ' -- client_next_address_function client_address[client_address_index]:', str(client_address[client_address_index]))
@@ -761,6 +853,13 @@ class App(QMainWindow):
 
                 self.dial_out_cipher_bool_btn.show()
 
+                self.address_key_label.show()
+                self.address_fingerprint_label.show()
+                check_key()
+                format_fingerprint()
+                self.reveal_btn.show()
+                self.dial_out_save_with_key.show()
+
             elif bool_dial_out_override is False:
                 bool_dial_out_override = True
 
@@ -779,6 +878,13 @@ class App(QMainWindow):
 
                 self.dial_out_cipher_bool_btn.hide()
 
+                self.address_key_label.hide()
+                self.address_key.hide()
+                self.address_fingerprint_label.hide()
+                self.tb_fingerprint.hide()
+                self.reveal_btn.hide()
+                self.dial_out_save_with_key.hide()
+
             print(str(datetime.datetime.now()) + ' -- App.dial_out_override_function setting bool_dial_out_override:', bool_dial_out_override)
 
         def dial_out_ip_port_return_funtion():
@@ -788,6 +894,93 @@ class App(QMainWindow):
             if bool_dial_out_override is True:
                 address_override_string = self.dial_out_ip_port.text()
                 print(str(datetime.datetime.now()) + ' -- App.dial_out_override_function setting address_override_string:', address_override_string)
+            else:
+                dial_out_name_check_details()
+
+        def dial_out_name_return_funtion():
+            print(str(datetime.datetime.now()) + ' -- plugged in: App.dial_out_name_return_funtion')
+            dial_out_name_check_details()
+
+        def dial_out_name_check_details():
+            print(str(datetime.datetime.now()) + ' -- plugged in: App.dial_out_name_check_details')
+            print(self.dial_out_name.text())
+            print(self.dial_out_ip_port.text())
+            var_dial_out_name = [str(self.dial_out_name.text()), str(self.dial_out_ip_port.text().split(' ')[0]), int(self.dial_out_ip_port.text().split(' ')[1]), bytes('x', 'utf-8'), str('x')]
+            if var_dial_out_name not in client_address:
+                print('-- basic name and ip not in client_address')
+                self.dial_out_add_addr.setStyleSheet(button_stylesheet_white_text_high)
+                self.dial_out_add_addr.setEnabled(True)
+                # self.dial_out_save_with_key.show()
+            else:
+                self.dial_out_add_addr.setStyleSheet(button_stylesheet_white_text_low)
+                self.dial_out_add_addr.setEnabled(False)
+                # self.dial_out_save_with_key.hide()
+
+        def dial_out_save_with_key_function():
+            print(str(datetime.datetime.now()) + ' -- plugged in: App.dial_out_save_with_key_function')
+            global dial_out_save_with_key_bool
+
+            if dial_out_save_with_key_bool is True:
+                dial_out_save_with_key_bool = False
+                self.dial_out_save_with_key.setStyleSheet(button_stylesheet_white_text_low)
+            elif dial_out_save_with_key_bool is False:
+                dial_out_save_with_key_bool = True
+                self.dial_out_save_with_key.setStyleSheet(button_stylesheet_white_text_high)
+            print(str(datetime.datetime.now()) + ' -- setting dial_out_save_with_key_bool:', dial_out_save_with_key_bool)
+
+        def format_fingerprint():
+            print(str(datetime.datetime.now()) + ' -- plugged in: App.format_fingerprint')
+            format_pass = False
+            if len(client_address) > 0:
+                print('1')
+                if len(client_address[client_address_index]) == 5:
+                    print('2')
+                    if len(client_address[client_address_index][4]) == 1024:
+                        print('3')
+                        finger_print_var = str(client_address[client_address_index][4])
+                        split_strings = [finger_print_var[index: index + 32] for index in range(0, len(finger_print_var), 32)]
+                        print(split_strings)
+                        for _ in split_strings:
+                            self.tb_fingerprint.append(_)
+                        if address_reveal_bool is True:
+                            self.address_fingerprint_label.show()
+                            self.tb_fingerprint.show()
+                        format_pass = True
+            if format_pass is False:
+                self.address_fingerprint_label.hide()
+                self.tb_fingerprint.hide()
+
+        def check_key():
+            global address_reveal_bool
+            print(str(datetime.datetime.now()) + ' -- plugged in: App.check_key')
+            self.address_key.hide()
+            self.address_key.setText(str(client_address[client_address_index][3], 'utf-8'))
+            if str(client_address[client_address_index][3], 'utf-8') != 'x':
+                if address_reveal_bool is True:
+                    self.address_key_label.show()
+                    self.address_key.show()
+            else:
+                self.address_key_label.hide()
+                self.address_key.hide()
+
+        def reveal_btn_function():
+            print(str(datetime.datetime.now()) + ' -- plugged in: App.reveal_btn_function')
+            global address_reveal_bool
+            if address_reveal_bool is True:
+                address_reveal_bool = False
+                self.address_key_label.hide()
+                self.address_fingerprint_label.hide()
+                self.tb_fingerprint.hide()
+                self.address_key.hide()
+                self.reveal_btn.setIcon(QIcon("./resources/image/visibility_off_FILL0_wght200_GRAD0_opsz20_WHITE.png"))
+
+            elif address_reveal_bool is False:
+                address_reveal_bool = True
+                check_key()
+                format_fingerprint()
+                self.reveal_btn.setIcon(QIcon("./resources/image/visibility_FILL0_wght200_GRAD0_opsz20_WHITE.png"))
+
+            print(str(datetime.datetime.now()) + ' -- setting address_reveal_bool:', address_reveal_bool)
 
         # Window Title
         self.title = "Communicator"
@@ -814,6 +1007,7 @@ class App(QMainWindow):
         self.btn_60 = 60
         self.btn_80 = 80
         self.btn_140 = 140
+        self.btn_180 = 180
         self.btn_240 = 240
 
         self.dial_out_label = QLabel(self)
@@ -869,6 +1063,15 @@ class App(QMainWindow):
         self.address_book_label.setAlignment(Qt.AlignCenter)
         self.address_book_label.setStyleSheet(title_stylesheet_default)
 
+        self.reveal_btn = QPushButton(self)
+        self.reveal_btn.resize(self.btn_60, self.btn_20)
+        self.reveal_btn.move((self.width / 2) - (self.btn_140 / 2), 164)
+        self.reveal_btn.setIcon(QIcon("./resources/image/visibility_off_FILL0_wght200_GRAD0_opsz20_WHITE.png"))
+        self.reveal_btn.setIconSize(QSize(self.btn_20 - 8, self.btn_20 - 8))
+        self.reveal_btn.setFont(self.font_s7b)
+        self.reveal_btn.setStyleSheet(button_stylesheet_white_text_low)
+        self.reveal_btn.clicked.connect(reveal_btn_function)
+
         # QPushButton - Dial Out Name
         self.dial_out_name = QLineEdit(self)
         self.dial_out_name.resize(140, 20)
@@ -877,16 +1080,72 @@ class App(QMainWindow):
         self.dial_out_name.setText('')
         self.dial_out_name.setStyleSheet(line_edit_stylesheet_white_text)
         self.dial_out_name.setAlignment(Qt.AlignCenter)
+        self.dial_out_name.returnPressed.connect(dial_out_name_return_funtion)
 
         # QLineEdit - Dial Out Address
         self.dial_out_ip_port = QLineEdit(self)
-        self.dial_out_ip_port.resize(140, 20)
+        self.dial_out_ip_port.resize(self.btn_140, 20)
         self.dial_out_ip_port.move((self.width / 2) - (self.btn_140 / 2), 212)
         self.dial_out_ip_port.setFont(self.font_s7b)
         self.dial_out_ip_port.setText('')
         self.dial_out_ip_port.setStyleSheet(line_edit_stylesheet_white_text)
         self.dial_out_ip_port.setAlignment(Qt.AlignCenter)
         self.dial_out_ip_port.returnPressed.connect(dial_out_ip_port_return_funtion)
+
+        # QLineEdit - Fingerprint Label
+        self.address_fingerprint_label = QLabel(self)
+        self.address_fingerprint_label.resize(self.btn_180, 20)
+        self.address_fingerprint_label.move((self.width / 2) + (self.btn_140 / 2) + self.btn_4 + self.btn_20 + self.btn_4 + self.btn_20 + self.btn_4, 164)
+        self.address_fingerprint_label.setFont(self.font_s7b)
+        self.address_fingerprint_label.setText('FINGERPRINT')
+        self.address_fingerprint_label.setAlignment(Qt.AlignCenter)
+        self.address_fingerprint_label.setStyleSheet(title_stylesheet_default)
+        self.address_fingerprint_label.hide()
+
+        # QLineEdit - Fingerprint
+        self.tb_fingerprint = QTextBrowser(self)
+        self.tb_fingerprint.move((self.width / 2) + (self.btn_140 / 2) + self.btn_4 + self.btn_20 + self.btn_4 + self.btn_20 + self.btn_4, 188)
+        self.tb_fingerprint.resize(self.btn_180, 68)
+        self.tb_fingerprint.setObjectName("tb_fingerprint")
+        self.tb_fingerprint.setFont(self.font_s7b)
+        self.tb_fingerprint.setStyleSheet(textbox_stylesheet_black_bg)
+        self.tb_fingerprint.setLineWrapMode(QTextBrowser.NoWrap)
+        self.tb_fingerprint.horizontalScrollBar().setValue(0)
+        self.tb_fingerprint.hide()
+
+        # QLineEdit - Key Label
+        self.address_key_label = QLabel(self)
+        self.address_key_label.resize(self.btn_180, 20)
+        self.address_key_label.move((self.width / 2) - (self.btn_140 / 2) - self.btn_4 - self.btn_20 - self.btn_4 - self.btn_4 - self.btn_20 - self.btn_180, 164)
+        self.address_key_label.setFont(self.font_s7b)
+        self.address_key_label.setText('KEY')
+        self.address_key_label.setAlignment(Qt.AlignCenter)
+        self.address_key_label.setStyleSheet(title_stylesheet_default)
+        self.address_key_label.hide()
+
+        # QLineEdit - Key
+        self.address_key = QTextBrowser(self)
+        self.address_key.move((self.width / 2) - (self.btn_140 / 2) - self.btn_4 - self.btn_20 - self.btn_4 - self.btn_4 - self.btn_20 - self.btn_180, 188)
+        self.address_key.resize(self.btn_180, 44)
+        self.address_key.setObjectName("tb_key")
+        self.address_key.setFont(self.font_s7b)
+        self.address_key.setStyleSheet(textbox_stylesheet_black_bg)
+        self.address_key.setLineWrapMode(QTextBrowser.NoWrap)
+        self.address_key.horizontalScrollBar().setValue(0)
+        self.address_key.hide()
+        # self.address_key.returnPressed.connect(dial_out_ip_port_return_funtion)
+
+        # QPushButton - Address Save With A Key And Fingerprint
+        self.dial_out_save_with_key = QPushButton(self)
+        self.dial_out_save_with_key.resize(self.btn_60, 20)
+        self.dial_out_save_with_key.move((self.width / 2) + 10, 164)
+        # self.dial_out_save_with_key.setIcon(QIcon("./resources/image/baseline_keyboard_arrow_left_white_18dp.png"))
+        # self.dial_out_save_with_key.setIconSize(QSize(20, 20))
+        self.dial_out_save_with_key.setFont(self.font_s7b)
+        self.dial_out_save_with_key.setText('GEN')
+        self.dial_out_save_with_key.setStyleSheet(button_stylesheet_white_text_low)
+        self.dial_out_save_with_key.clicked.connect(dial_out_save_with_key_function)
+        # self.dial_out_save_with_key.hide()
 
         # QPushButton - Dial Out Previous Address
         self.dial_out_prev_addr = QPushButton(self)
@@ -912,8 +1171,9 @@ class App(QMainWindow):
         self.dial_out_add_addr.move((self.width / 2) - (self.btn_140 / 2), 236)
         self.dial_out_add_addr.setFont(self.font_s7b)
         self.dial_out_add_addr.setText('SAVE')
-        self.dial_out_add_addr.setStyleSheet(button_stylesheet_default)
+        self.dial_out_add_addr.setStyleSheet(button_stylesheet_white_text_low)
         self.dial_out_add_addr.clicked.connect(client_save_address)
+        self.dial_out_add_addr.setEnabled(False)
 
         # QPushButton - Dial Out Remove Address
         self.dial_out_rem_addr = QPushButton(self)
@@ -1093,7 +1353,7 @@ class App(QMainWindow):
         configuration_thread.append(configuration_thread_)
         configuration_thread[0].start()
 
-        # finger_print_gen_thread = FingerprintGeneration(self.dial_out_name, self.dial_out_ip_port, self.dial_out_add_addr)
+        finger_print_gen_thread = FingerprintGeneration(self.dial_out_name, self.dial_out_ip_port, self.dial_out_add_addr)
 
         # Configuration Thread - Wait For Configuration Thread To Complete
         global configuration_thread_completed
@@ -1117,13 +1377,20 @@ class App(QMainWindow):
             self.dial_out_name.setText(client_address[0][0])
             self.dial_out_ip_port.setText(client_address[0][1] + ' ' + str(client_address[0][2]))
 
-            if client_address[0][3] != '#' and len(client_address[0][3]) == 32:
+            if client_address[0][4] != '#' and len(client_address[0][4]) == 1024:
+                # self.address_fingerprint_label.show()
+                # self.tb_fingerprint.show()
+                format_fingerprint()
                 print(str(datetime.datetime.now()) + ' -- address entry appears to have a key:', client_address[0][3])
                 if client_address[client_address_index][4] != '#' and len(client_address[client_address_index][4]) == 1024:
                     print(str(datetime.datetime.now()) + ' -- address entry appears to have a fingerprint:', client_address[client_address_index][4])
                     self.dial_out_cipher_bool_btn.setStyleSheet(button_stylesheet_green_text)
                     dial_out_dial_out_cipher_bool = True
                     self.dial_out_cipher_bool_btn.setEnabled(True)
+            # if client_address[0][3] != '#' and len(client_address[0][3]) == 32:
+            #     self.address_key_label.show()
+            #     self.address_key.show()
+            #     self.address_key.setText(str(client_address[0][3]))
             print(str(datetime.datetime.now()) + ' -- dial_out_dial_out_cipher_bool:', dial_out_dial_out_cipher_bool)
 
         # QTextBrowser - Message Output
