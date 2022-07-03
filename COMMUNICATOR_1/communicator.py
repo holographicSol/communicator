@@ -1452,6 +1452,7 @@ class FingerprintGeneration(QThread):
         self.fingerprint_str = ''
 
     def format_fingerprint(self):
+        global dial_out_dial_out_cipher_bool
         global client_address
         global client_address_index
 
@@ -1483,9 +1484,11 @@ class FingerprintGeneration(QThread):
                     print('self.key_str:', self.key_string)
                     format_pass.append(False)
         if False in format_pass:
+            dial_out_dial_out_cipher_bool = False
             self.dial_out_cipher_bool_btn.setStyleSheet(button_stylesheet_red_text)
             self.dial_out_cipher_bool_btn.setEnabled(False)
         else:
+            dial_out_dial_out_cipher_bool = True
             self.dial_out_cipher_bool_btn.setStyleSheet(button_stylesheet_green_text)
             self.dial_out_cipher_bool_btn.setEnabled(True)
 
