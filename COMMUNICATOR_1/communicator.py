@@ -983,7 +983,7 @@ class App(QMainWindow):
                 if len(client_address) > 0:
                     if len(client_address[client_address_index]) == 5:
                         if client_address[client_address_index][3] != bytes('x', 'utf-8'):
-                            self.address_key.setText(str(client_address[client_address_index][3]))
+                            self.address_key.setText(str(client_address[client_address_index][3], 'utf-8'))
                         if client_address[client_address_index][4] != 'x':
                             format_fingerprint()
                 self.reveal_btn.setIcon(QIcon("./resources/image/visibility_FILL0_wght200_GRAD0_opsz20_WHITE.png"))
