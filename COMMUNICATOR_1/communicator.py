@@ -1522,6 +1522,8 @@ class FingerprintGeneration(QThread):
                     # Add key to address book entry string
                     self.entry_address_book = self.entry_address_book + ' ' + self.key_string
 
+                    self.fingerprint_str = ''
+
                     # Generate Fingerprint
                     i = 0
                     while i < 31:
