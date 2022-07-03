@@ -415,10 +415,6 @@ class App(QMainWindow):
                                 if address_save_mode == 'basic':
                                     self.address_key.setText('')
                                     self.tb_fingerprint.setText('')
-                                    # self.address_key_label.hide()
-                                    # self.address_key.hide()
-                                    # self.address_fingerprint_label.hide()
-                                    # self.tb_fingerprint.hide()
                                     fo_list.append('DATA ' + self.dial_out_name.text() + ' ' + str(self.dial_out_ip_port.text() + ' x' + ' x'))
                                     client_address.append([str(self.dial_out_name.text()), str(self.dial_out_ip_port.text().split(' ')[0]), int(self.dial_out_ip_port.text().split(' ')[1]), bytes('x', 'utf-8'), 'x'])
                                     client_address_index = len(client_address)-1
@@ -443,10 +439,6 @@ class App(QMainWindow):
                                 elif address_save_mode == 'advanced':
                                     self.address_key.setText('')
                                     self.tb_fingerprint.setText('')
-                                    # self.address_key_label.show()
-                                    # self.address_key.show()
-                                    # self.address_fingerprint_label.show()
-                                    # self.tb_fingerprint.show()
                                     finger_print_gen_thread.start()
                             else:
                                 print('-- ip and port should not be empty!')
@@ -598,7 +590,6 @@ class App(QMainWindow):
                 self.dial_out_ip_port.setText(client_address[client_address_index][1] + ' ' + str(client_address[client_address_index][2]))
                 self.dial_out_name.setText(str(client_address[client_address_index][0]))
 
-                self.address_key.setText(str(client_address[client_address_index][3], 'utf-8'))
                 check_key()
                 format_fingerprint()
             else:
@@ -935,28 +926,30 @@ class App(QMainWindow):
             global client_address
             global client_address_index
             print(str(datetime.datetime.now()) + ' -- plugged in: App.format_fingerprint')
-            if len(client_address) > 0:
-                print('1')
-                if len(client_address[client_address_index]) == 5:
-                    print('2')
-                    if len(client_address[client_address_index][4]) == 1024:
-                        print('3')
-                        self.tb_fingerprint.setText('')
-                        finger_print_var = str(client_address[client_address_index][4])
-                        split_strings = [finger_print_var[index: index + 64] for index in range(0, len(finger_print_var), 64)]
-                        print(split_strings)
-                        for _ in split_strings:
-                            self.tb_fingerprint.append(_)
+            if address_reveal_bool is True:
+                if len(client_address) > 0:
+                    print('1')
+                    if len(client_address[client_address_index]) == 5:
+                        print('2')
+                        if len(client_address[client_address_index][4]) == 1024:
+                            print('3')
+                            self.tb_fingerprint.setText('')
+                            finger_print_var = str(client_address[client_address_index][4])
+                            split_strings = [finger_print_var[index: index + 64] for index in range(0, len(finger_print_var), 64)]
+                            print(split_strings)
+                            for _ in split_strings:
+                                self.tb_fingerprint.append(_)
 
         def check_key():
             global address_reveal_bool
             global client_address
             global client_address_index
             print(str(datetime.datetime.now()) + ' -- plugged in: App.check_key')
-            if len(client_address) > 0:
-                if len(client_address[client_address_index]) == 5:
-                    if client_address[client_address_index][3] != bytes('x', 'utf-8'):
-                        self.address_key.setText(str(client_address[client_address_index][3], 'utf-8'))
+            if address_reveal_bool is True:
+                if len(client_address) > 0:
+                    if len(client_address[client_address_index]) == 5:
+                        if client_address[client_address_index][3] != bytes('x', 'utf-8'):
+                            self.address_key.setText(str(client_address[client_address_index][3], 'utf-8'))
 
         def address_clear_form_function():
             print(str(datetime.datetime.now()) + ' -- plugged in: App.address_clear_form_function')
