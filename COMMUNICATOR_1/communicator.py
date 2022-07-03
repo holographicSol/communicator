@@ -1552,6 +1552,10 @@ class FingerprintGeneration(QThread):
 
                     self.fingerprint_str = ''
 
+                    self.key_string = ''
+
+                    self.fingerprint_var = []
+
                     # Generate Fingerprint
                     i = 0
                     while i < 32:
