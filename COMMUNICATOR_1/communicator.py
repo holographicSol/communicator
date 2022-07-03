@@ -924,20 +924,20 @@ class App(QMainWindow):
             if address_save_mode is 'basic':
                 address_save_mode = 'advanced'
                 address_reveal_bool = True
-                self.reveal_btn.setIcon(QIcon("./resources/image/visibility_FILL0_wght200_GRAD0_opsz20_WHITE.png"))
-                self.address_key.show()
-                self.address_key_label.show()
-                self.address_fingerprint_label.show()
-                self.tb_fingerprint.show()
+                # self.reveal_btn.setIcon(QIcon("./resources/image/visibility_FILL0_wght200_GRAD0_opsz20_WHITE.png"))
+                # self.address_key.show()
+                # self.address_key_label.show()
+                # self.address_fingerprint_label.show()
+                # self.tb_fingerprint.show()
                 self.dial_out_save_with_key.setStyleSheet(button_stylesheet_white_text_low)
             elif address_save_mode is 'advanced':
                 address_save_mode = 'basic'
                 address_reveal_bool = False
-                self.reveal_btn.setIcon(QIcon("./resources/image/visibility_off_FILL0_wght200_GRAD0_opsz20_WHITE.png"))
-                self.address_key.hide()
-                self.address_key_label.hide()
-                self.address_fingerprint_label.hide()
-                self.tb_fingerprint.hide()
+                # self.reveal_btn.setIcon(QIcon("./resources/image/visibility_off_FILL0_wght200_GRAD0_opsz20_WHITE.png"))
+                # self.address_key.hide()
+                # self.address_key_label.hide()
+                # self.address_fingerprint_label.hide()
+                # self.tb_fingerprint.hide()
                 self.dial_out_save_with_key.setStyleSheet(button_stylesheet_white_text_high)
             print(str(datetime.datetime.now()) + ' -- setting address_save_mode:', address_save_mode)
 
@@ -1482,9 +1482,9 @@ class FingerprintGeneration(QThread):
                     print(split_strings)
                     for _ in split_strings:
                         self.tb_fingerprint.append(_)
-                    if address_reveal_bool is True:
+                    # if address_reveal_bool is True:
                         # self.address_fingerprint_label.show()
-                        self.tb_fingerprint.show()
+                        # self.tb_fingerprint.show()
                     format_pass = True
                 if len(client_address[client_address_index][3]) == 32:
                     print('key:    ', client_address[client_address_index][3])
@@ -1492,9 +1492,9 @@ class FingerprintGeneration(QThread):
                     self.address_key.append(str(client_address[client_address_index][3], 'utf-8'))
                 else:
                     print('self.key_str:', self.key_string)
-        if format_pass is False:
+        # if format_pass is False:
             # self.address_fingerprint_label.hide()
-            self.tb_fingerprint.hide()
+            # self.tb_fingerprint.hide()
 
     def update_values(self):
         global client_address_index
