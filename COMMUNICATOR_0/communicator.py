@@ -932,14 +932,16 @@ class App(QMainWindow):
             print(str(datetime.datetime.now()) + ' -- setting address_save_mode:', address_save_mode)
 
         def format_fingerprint():
+            global client_address
+            global client_address_index
             print(str(datetime.datetime.now()) + ' -- plugged in: App.format_fingerprint')
-            format_pass = False
             if len(client_address) > 0:
                 print('1')
                 if len(client_address[client_address_index]) == 5:
                     print('2')
                     if len(client_address[client_address_index][4]) == 1024:
                         print('3')
+                        self.tb_fingerprint.setText('')
                         finger_print_var = str(client_address[client_address_index][4])
                         split_strings = [finger_print_var[index: index + 64] for index in range(0, len(finger_print_var), 64)]
                         print(split_strings)
@@ -948,29 +950,13 @@ class App(QMainWindow):
 
         def check_key():
             global address_reveal_bool
+            global client_address
+            global client_address_index
             print(str(datetime.datetime.now()) + ' -- plugged in: App.check_key')
-            self.address_key.hide()
-            self.address_key.setText(str(client_address[client_address_index][3], 'utf-8'))
-            if str(client_address[client_address_index][3], 'utf-8') != 'x':
-                if address_reveal_bool is True:
-                    self.address_key_label.show()
-                    self.address_key.show()
-            else:
-                self.address_key_label.hide()
-                self.address_key.hide()
-
-        def reveal_btn_function():
-            print(str(datetime.datetime.now()) + ' -- plugged in: App.reveal_btn_function')
-            global address_reveal_bool
-            if address_reveal_bool is True:
-                address_reveal_bool = False
-                self.reveal_btn.setIcon(QIcon("./resources/image/visibility_off_FILL0_wght200_GRAD0_opsz20_WHITE.png"))
-
-            elif address_reveal_bool is False:
-                address_reveal_bool = True
-                self.reveal_btn.setIcon(QIcon("./resources/image/visibility_FILL0_wght200_GRAD0_opsz20_WHITE.png"))
-
-            print(str(datetime.datetime.now()) + ' -- setting address_reveal_bool:', address_reveal_bool)
+            if len(client_address) > 0:
+                if len(client_address[client_address_index]) == 5:
+                    if client_address[client_address_index][3] != bytes('x', 'utf-8'):
+                        self.address_key.setText(str(client_address[client_address_index][3], 'utf-8'))
 
         def address_clear_form_function():
             print(str(datetime.datetime.now()) + ' -- plugged in: App.address_clear_form_function')
@@ -978,6 +964,32 @@ class App(QMainWindow):
             self.dial_out_ip_port.setText('')
             self.address_key.setText('')
             self.tb_fingerprint.setText('')
+
+        def address_clear_form_sensitive_function():
+            print(str(datetime.datetime.now()) + ' -- plugged in: App.address_clear_form_sensitive_function')
+            global address_reveal_bool
+            global client_address
+            global client_address_index
+
+            print(str(datetime.datetime.now()) + ' -- address_reveal_bool is currently set at:', address_reveal_bool)
+
+            if address_reveal_bool is True:
+                address_reveal_bool = False
+                self.address_key.setText('')
+                self.tb_fingerprint.setText('')
+                self.reveal_btn.setIcon(QIcon("./resources/image/visibility_off_FILL0_wght200_GRAD0_opsz20_WHITE.png"))
+
+            elif address_reveal_bool is False:
+                address_reveal_bool = True
+                if len(client_address) > 0:
+                    if len(client_address[client_address_index]) == 5:
+                        if client_address[client_address_index][3] != bytes('x', 'utf-8'):
+                            self.address_key.setText(str(client_address[client_address_index][3]))
+                        if client_address[client_address_index][4] != 'x':
+                            format_fingerprint()
+                self.reveal_btn.setIcon(QIcon("./resources/image/visibility_FILL0_wght200_GRAD0_opsz20_WHITE.png"))
+
+            print(str(datetime.datetime.now()) + ' -- setting address_reveal_bool:', address_reveal_bool)
 
         # Window Title
         self.title = "Communicator"
@@ -1084,7 +1096,7 @@ class App(QMainWindow):
         self.reveal_btn.setIconSize(QSize(self.btn_20 - 8, self.btn_20 - 8))
         self.reveal_btn.setFont(self.font_s7b)
         self.reveal_btn.setStyleSheet(button_stylesheet_white_text_low)
-        self.reveal_btn.clicked.connect(reveal_btn_function)
+        self.reveal_btn.clicked.connect(address_clear_form_sensitive_function)
 
         self.address_clear_form = QPushButton(self)
         self.address_clear_form.resize(self.btn_60, self.btn_20)
@@ -1133,7 +1145,6 @@ class App(QMainWindow):
         self.tb_fingerprint.setStyleSheet(textbox_stylesheet_black_bg)
         self.tb_fingerprint.setLineWrapMode(QTextBrowser.NoWrap)
         self.tb_fingerprint.horizontalScrollBar().setValue(0)
-        # self.tb_fingerprint.hide()
 
         # QLineEdit - Key Label
         self.address_key_label = QLabel(self)
@@ -1143,7 +1154,6 @@ class App(QMainWindow):
         self.address_key_label.setText('KEY')
         self.address_key_label.setAlignment(Qt.AlignCenter)
         self.address_key_label.setStyleSheet(title_stylesheet_default)
-        # self.address_key_label.hide()
 
         # QLineEdit - Key
         self.address_key = QLineEdit(self)
@@ -1151,7 +1161,6 @@ class App(QMainWindow):
         self.address_key.resize(self.btn_280, 20)
         self.address_key.setFont(self.font_s7b)
         self.address_key.setStyleSheet(line_edit_stylesheet_white_text)
-        # self.address_key.hide()
 
         # QPushButton - Address Save With A Key And Fingerprint
         self.dial_out_save_with_key = QPushButton(self)
@@ -1392,15 +1401,12 @@ class App(QMainWindow):
             self.dial_out_ip_port.setText(client_address[0][1] + ' ' + str(client_address[0][2]))
 
             if client_address[0][4] != '#' and len(client_address[0][4]) == 1024:
-                format_fingerprint()
                 print(str(datetime.datetime.now()) + ' -- address entry appears to have a key:', client_address[0][3])
                 if client_address[client_address_index][4] != '#' and len(client_address[client_address_index][4]) == 1024:
                     print(str(datetime.datetime.now()) + ' -- address entry appears to have a fingerprint:', client_address[client_address_index][4])
                     self.dial_out_cipher_bool_btn.setStyleSheet(button_stylesheet_green_text)
                     dial_out_dial_out_cipher_bool = True
                     self.dial_out_cipher_bool_btn.setEnabled(True)
-            if client_address[0][3] != '#' and len(client_address[0][3]) == 32:
-                self.address_key.setText(str(client_address[0][3]))
             print(str(datetime.datetime.now()) + ' -- dial_out_dial_out_cipher_bool:', dial_out_dial_out_cipher_bool)
 
         # QTextBrowser - Message Output
