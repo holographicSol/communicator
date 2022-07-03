@@ -850,8 +850,10 @@ class App(QMainWindow):
 
                 self.dial_out_cipher_bool_btn.show()
 
-                check_key()
-                format_fingerprint()
+                self.address_key.show()
+                self.address_key_label.show()
+                self.address_fingerprint_label.show()
+                self.tb_fingerprint.show()
                 self.reveal_btn.show()
                 self.dial_out_save_with_key.show()
 
