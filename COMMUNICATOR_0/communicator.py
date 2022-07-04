@@ -1590,6 +1590,8 @@ class FingerprintGeneration(QThread):
                             print('-- name already exists:', _)
                             name_already_exists_bool = True
                     i += 1
+                if name_already_exists_bool is False:
+                    address_fingerprint_fname_var = str(address_name_var)
                 print('new fingerprint file path name:', address_fingerprint_fname_var)
 
                 if canonical_caseless(address_name_var) not in forbidden_fname:
