@@ -1562,9 +1562,26 @@ class FingerprintGeneration(QThread):
                                'com1', 'com2', 'com3', 'com4', 'com5', 'com6', 'com7', 'com8', 'com9',
                                'lpt1', 'lpt2', 'lpt3', 'lpt4', 'lpt5', 'lpt6', 'lpt7', 'lpt8', 'lpt9']
 
-            address_name_var = str(self.dial_out_name.text()).replace('_', '')
+            address_name_var = str(self.dial_out_name.text()).replace('_', '').replace(' ', '')
             if str(address_name_var).isalnum():
-                address_name_var = str(self.dial_out_name.text())
+                address_name_var = str(self.dial_out_name.text()).replace(' ', '')
+
+                name_already_exists_bool = False
+                for _ in client_address:
+                    if address_name_var in _:
+                        print('-- name already exists:', _)
+                        name_already_exists_bool = True
+                i = 0
+                while name_already_exists_bool is True:
+                    name_already_exists_bool = False
+                    address_fingerprint_fname_var = str(address_name_var)+str(i)
+                    for _ in client_address:
+                        if address_fingerprint_fname_var in _:
+                            print('-- name already exists:', _)
+                            name_already_exists_bool = True
+                    i += 1
+                print('new fingerprint file path name:', address_fingerprint_fname_var)
+
                 if canonical_caseless(address_name_var) not in forbidden_fname:
                     print(str(datetime.datetime.now()) + ' -- FingerprintGeneration(QThread).run address_name[client_address_index]: is not in forbidden_fname')
 
@@ -1592,12 +1609,15 @@ class FingerprintGeneration(QThread):
                         i += 1
 
                     print(str(datetime.datetime.now()) + ' -- FingerprintGeneration(QThread).run: fingerprint generated')
-                    finger_print_fname = str('./fingerprints/' + str(address_name_var) + '.txt')
+
+                    finger_print_fname = str('./fingerprints/' + str(address_fingerprint_fname_var) + '.txt')
                     print(str(datetime.datetime.now()) + ' -- FingerprintGeneration(QThread).run generated finger_print_fname:', finger_print_fname)
 
                     self.new_full_dial_out_address = self.entry_address_book + ' ' + self.fingerprint_str
+
                     self.entry_address_book = self.entry_address_book + ' ' + finger_print_fname
                     client_address = self.entry_address_book
+
                     print(str(datetime.datetime.now()) + ' -- FingerprintGeneration(QThread).run full address book entry string:', self.entry_address_book)
 
                     # Write the fingerprint file
