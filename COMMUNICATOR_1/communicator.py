@@ -417,7 +417,7 @@ class App(QMainWindow):
                                     self.tb_fingerprint.setText('')
                                     fo_list.append('DATA ' + self.dial_out_name.text() + ' ' + str(self.dial_out_ip_port.text() + ' x' + ' x'))
                                     client_address.append([str(self.dial_out_name.text()), str(self.dial_out_ip_port.text().split(' ')[0]), int(self.dial_out_ip_port.text().split(' ')[1]), bytes('x', 'utf-8'), 'x'])
-                                    client_address_index = len(client_address)-1
+                                    # client_address_index = len(client_address)-1
 
                                     with open('./communicator_address_book.txt', 'w') as fo:
                                         for _ in fo_list:
@@ -434,6 +434,10 @@ class App(QMainWindow):
                                                 if not line == fo_list[i]:
                                                     non_success_write.append(False)
                                                 i += 1
+                                    print('-- current index before sorting:', client_address_index)
+                                    client_address.sort(key=lambda x: x[0])
+                                    client_address_index = client_address.index([str(self.dial_out_name.text()), str(self.dial_out_ip_port.text().split(' ')[0]), int(self.dial_out_ip_port.text().split(' ')[1]), bytes('x', 'utf-8'), 'x'])
+                                    print('-- current index after sorting:', client_address_index)
 
                                 # Use Advanced  Mode Basic
                                 elif address_save_mode == 'advanced':
@@ -474,7 +478,6 @@ class App(QMainWindow):
                     self.dial_out_add_addr.setStyleSheet(button_stylesheet_white_text_low)
                     self.dial_out_add_addr.setEnabled(False)
                     write_client_configuration_engaged = False
-
 
         def server_prev_addr_function():
             print(str(datetime.datetime.now()) + ' -- plugged in: App.server_prev_addr_function')
@@ -1515,6 +1518,12 @@ class FingerprintGeneration(QThread):
             self.dial_out_cipher_bool_btn.setStyleSheet(button_stylesheet_green_text)
             self.dial_out_cipher_bool_btn.setEnabled(True)
 
+            print('-- current index before sorting:', client_address_index)
+            find_index = client_address[client_address_index]
+            client_address.sort(key=lambda x: x[0])
+            client_address_index = client_address.index(find_index)
+            print('-- current index after sorting:', client_address_index)
+
     def update_values(self):
         global client_address_index
         global client_address
@@ -1571,6 +1580,7 @@ class FingerprintGeneration(QThread):
                     if address_name_var in _:
                         print('-- name already exists:', _)
                         name_already_exists_bool = True
+                address_fingerprint_fname_var = ''
                 i = 0
                 while name_already_exists_bool is True:
                     name_already_exists_bool = False
@@ -1735,7 +1745,10 @@ class ConfigurationClass(QThread):
                 if str(line[0]) == 'DATA':
                     if len(line) == 6:
                         client_address.append([str(line[1]), str(line[2]), int(line[3]), bytes(line[4], 'utf-8'), line[5]])
-                        print(client_address[-1])
+                        print('entry:', client_address[-1])
+
+        client_address.sort(key=lambda x: x[0])
+        print('')
 
         for _ in client_address:
             if os.path.exists(_[-1]):
@@ -1746,7 +1759,7 @@ class ConfigurationClass(QThread):
                         address_fingerprint_string = address_fingerprint_string + line
                 fo.close()
                 _[-1] = address_fingerprint_string
-                print(_)
+            print('sorted:', _)
 
         configuration_thread_completed = True
 
