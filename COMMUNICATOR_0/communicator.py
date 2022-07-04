@@ -449,7 +449,6 @@ class App(QMainWindow):
                                 if len(self.fingerprint_str) == 1024:
                                     fo_list.append('DATA ' + self.dial_out_name.text() + ' ' + str(self.dial_out_ip_port.text()) + ' ' + self.address_key.text() + ' ' + fingerprint_fname)
                                     client_address.append([str(self.dial_out_name.text()), str(self.dial_out_ip_port.text().split(' ')[0]), int(self.dial_out_ip_port.text().split(' ')[1]), bytes(self.address_key.text(), 'utf-8'), self.fingerprint_str])
-
                                     split_strings = [self.fingerprint_str[index: index + 32] for index in range(0, len(self.fingerprint_str), 32)]
                                     if not os.path.exists(fingerprint_fname):
                                         open(fingerprint_fname, 'w').close()
@@ -479,7 +478,10 @@ class App(QMainWindow):
                                         i += 1
                             print('-- current index before sorting:', client_address_index)
                             client_address.sort(key=lambda x: x[0])
-                            client_address_index = client_address.index([str(self.dial_out_name.text()), str(self.dial_out_ip_port.text().split(' ')[0]), int(self.dial_out_ip_port.text().split(' ')[1]), bytes('x', 'utf-8'), 'x'])
+                            if address_save_mode == 'basic':
+                                client_address_index = client_address.index([str(self.dial_out_name.text()), str(self.dial_out_ip_port.text().split(' ')[0]), int(self.dial_out_ip_port.text().split(' ')[1]), bytes('x', 'utf-8'), 'x'])
+                            elif address_save_mode == 'advanced':
+                                client_address_index = client_address.index([str(self.dial_out_name.text()), str(self.dial_out_ip_port.text().split(' ')[0]), int(self.dial_out_ip_port.text().split(' ')[1]), bytes(self.address_key.text(), 'utf-8'), self.fingerprint_str])
                             print('-- current index after sorting:', client_address_index)
                 else:
                     print('-- ip and port should not be empty!')
