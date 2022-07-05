@@ -86,7 +86,7 @@ label_stylesheet_black_bg_text_white = """QLabel{background-color: rgb(0, 0, 0);
                        border-left:0px solid rgb(5, 5, 5);}"""
 
 title_stylesheet_default = """QLabel{background-color: rgb(10, 10, 10);
-                       color: rgb(200, 200, 200);
+                       color: rgb(255, 255, 255);
                        border-bottom:2px solid rgb(5, 5, 5);
                        border-right:2px solid rgb(5, 5, 5);
                        border-top:2px solid rgb(5, 5, 5);
@@ -868,6 +868,10 @@ class App(QMainWindow):
                 self.reveal_btn.show()
                 self.dial_out_save_with_key.show()
 
+                self.address_book_name_label.show()
+                self.generate_fingerprint.show()
+                self.generate_key.show()
+
             elif bool_dial_out_override is False:
                 bool_dial_out_override = True
 
@@ -894,6 +898,10 @@ class App(QMainWindow):
                 self.dial_out_save_with_key.hide()
 
                 self.address_clear_form.hide()
+
+                self.address_book_name_label.hide()
+                self.generate_fingerprint.hide()
+                self.generate_key.hide()
 
             print(str(datetime.datetime.now()) + ' -- App.dial_out_override_function setting bool_dial_out_override:', bool_dial_out_override)
 
@@ -953,6 +961,7 @@ class App(QMainWindow):
                             print(split_strings)
                             for _ in split_strings:
                                 self.tb_fingerprint.append(_)
+                            self.tb_fingerprint.verticalScrollBar().setValue(0)
 
         def check_key():
             global address_reveal_bool
@@ -1028,6 +1037,7 @@ class App(QMainWindow):
             self.tb_fingerprint.setText('')
             for _ in split_strings:
                 self.tb_fingerprint.append(str(_).strip())
+            self.tb_fingerprint.verticalScrollBar().setValue(0)
             
             print('fingerprint_str:', len(self.fingerprint_str))
 
@@ -1143,7 +1153,7 @@ class App(QMainWindow):
         self.address_clear_form.move((self.width / 2) - (self.btn_140 / 2), 164)
         self.address_clear_form.setText('NEW')
         self.address_clear_form.setFont(self.font_s7b)
-        self.address_clear_form.setStyleSheet(button_stylesheet_white_text_high)
+        self.address_clear_form.setStyleSheet(button_stylesheet_default)
         self.address_clear_form.clicked.connect(address_clear_form_function)
 
         # QPushButton - Dial Out Name Label
@@ -1221,6 +1231,7 @@ class App(QMainWindow):
         self.tb_fingerprint.setStyleSheet(textbox_stylesheet_black_bg)
         self.tb_fingerprint.setLineWrapMode(QTextBrowser.NoWrap)
         self.tb_fingerprint.horizontalScrollBar().setValue(0)
+        self.tb_fingerprint.verticalScrollBar().setValue(0)
 
         # QLineEdit - Key Label
         self.address_key_label = QLabel(self)
@@ -1271,7 +1282,7 @@ class App(QMainWindow):
         self.dial_out_add_addr.move((self.width / 2) - (self.btn_140 / 2), 236)
         self.dial_out_add_addr.setFont(self.font_s7b)
         self.dial_out_add_addr.setText('SAVE')
-        self.dial_out_add_addr.setStyleSheet(button_stylesheet_white_text_low)
+        self.dial_out_add_addr.setStyleSheet(button_stylesheet_default)
         self.dial_out_add_addr.clicked.connect(client_save_address)
         self.dial_out_add_addr.setEnabled(True)
 
