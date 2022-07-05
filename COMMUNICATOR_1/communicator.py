@@ -935,11 +935,23 @@ class App(QMainWindow):
             if address_save_mode is 'basic':
                 address_save_mode = 'advanced'
                 address_reveal_bool = True
-                self.dial_out_save_with_key.setStyleSheet(button_stylesheet_white_text_high)
+                self.generate_key.setEnabled(True)
+                self.generate_fingerprint.setEnabled(True)
+                self.dial_out_save_with_key.setIcon(QIcon("./resources/image/mfg_nest_yale_lock_FILL0_wght200_GRAD0_opsz20GREEN.png"))
+                self.generate_key.setStyleSheet(button_stylesheet_white_text_high)
+                self.generate_fingerprint.setStyleSheet(button_stylesheet_white_text_high)
+                self.dial_out_add_addr.resize(self.btn_120, self.btn_20)
+                self.dial_out_add_addr.setText('ADVANCED SAVE')
             elif address_save_mode is 'advanced':
                 address_save_mode = 'basic'
                 address_reveal_bool = False
-                self.dial_out_save_with_key.setStyleSheet(button_stylesheet_white_text_low)
+                self.generate_key.setEnabled(False)
+                self.generate_fingerprint.setEnabled(False)
+                self.dial_out_save_with_key.setIcon(QIcon("./resources/image/mfg_nest_yale_lock_FILL0_wght200_GRAD0_opsz20RED.png"))
+                self.generate_key.setStyleSheet(button_stylesheet_white_text_low)
+                self.generate_fingerprint.setStyleSheet(button_stylesheet_white_text_low)
+                self.dial_out_add_addr.resize(self.btn_60, self.btn_20)
+                self.dial_out_add_addr.setText('SAVE')
             print(str(datetime.datetime.now()) + ' -- setting address_save_mode:', address_save_mode)
 
         def format_fingerprint():
@@ -980,6 +992,11 @@ class App(QMainWindow):
             self.dial_out_ip_port.setText('')
             self.address_key.setText('')
             self.tb_fingerprint.setText('')
+
+        def address_undo_form_function():
+            print(str(datetime.datetime.now()) + ' -- plugged in: App.address_undo_form_function')
+            client_previous_address_function()
+            client_next_address_function()
 
         def address_clear_form_sensitive_function():
             print(str(datetime.datetime.now()) + ' -- plugged in: App.address_clear_form_sensitive_function')
@@ -1066,6 +1083,7 @@ class App(QMainWindow):
         self.btn_60 = 60
         self.btn_80 = 80
         self.btn_100 = 100
+        self.btn_120 = 120
         self.btn_140 = 140
         self.btn_180 = 180
         self.btn_240 = 240
@@ -1149,17 +1167,26 @@ class App(QMainWindow):
         self.reveal_btn.clicked.connect(address_clear_form_sensitive_function)
 
         self.address_clear_form = QPushButton(self)
-        self.address_clear_form.resize(self.btn_60, self.btn_20)
-        self.address_clear_form.move((self.width / 2) - (self.btn_140 / 2), 164)
-        self.address_clear_form.setText('NEW')
+        self.address_clear_form.resize(38, self.btn_20)
+        self.address_clear_form.move((self.width / 2) - (self.btn_240 / 2) - self.btn_4 - self.btn_80, 164)
+        self.address_clear_form.setText('+')
         self.address_clear_form.setFont(self.font_s7b)
-        self.address_clear_form.setStyleSheet(button_stylesheet_default)
+        self.address_clear_form.setStyleSheet(button_stylesheet_white_text_high)
         self.address_clear_form.clicked.connect(address_clear_form_function)
+
+        self.address_undo_form = QPushButton(self)
+        self.address_undo_form.resize(38, self.btn_20)
+        self.address_undo_form.move((self.width / 2) - (self.btn_240 / 2) - self.btn_4 - self.btn_80 + self.btn_4 + 38, 164)
+        self.address_undo_form.setIcon(QIcon("./resources/image/undo_FILL0_wght200_GRAD0_opsz20.png"))
+        self.address_undo_form.setIconSize(QSize(self.btn_20 - 8, self.btn_20 - 8))
+        self.address_undo_form.setFont(self.font_s7b)
+        self.address_undo_form.setStyleSheet(button_stylesheet_white_text_high)
+        self.address_undo_form.clicked.connect(address_undo_form_function)
 
         # QPushButton - Dial Out Name Label
         self.address_book_name_label = QLabel(self)
         self.address_book_name_label.resize(self.btn_80, 20)
-        self.address_book_name_label.move((self.width / 2) - (self.btn_140 / 2) - self.btn_4 - self.btn_80, 188)
+        self.address_book_name_label.move((self.width / 2) - (self.btn_240 / 2) - self.btn_4 - self.btn_80, 188)
         self.address_book_name_label.setFont(self.font_s7b)
         self.address_book_name_label.setText('NAME')
         self.address_book_name_label.setAlignment(Qt.AlignCenter)
@@ -1167,8 +1194,8 @@ class App(QMainWindow):
 
         # QPushButton - Dial Out Name
         self.dial_out_name = QLineEdit(self)
-        self.dial_out_name.resize(140, 20)
-        self.dial_out_name.move((self.width / 2) - (self.btn_140 / 2), 188)
+        self.dial_out_name.resize(self.btn_240, 20)
+        self.dial_out_name.move((self.width / 2) - (self.btn_240 / 2), 188)
         self.dial_out_name.setFont(self.font_s7b)
         self.dial_out_name.setText('')
         self.dial_out_name.setStyleSheet(line_edit_stylesheet_white_text)
@@ -1178,7 +1205,7 @@ class App(QMainWindow):
         # QPushButton - Dial Out Address Label
         self.address_book_address_label = QLabel(self)
         self.address_book_address_label.resize(self.btn_80, 20)
-        self.address_book_address_label.move((self.width / 2) - (self.btn_140 / 2) - self.btn_4 - self.btn_80, 212)
+        self.address_book_address_label.move((self.width / 2) - (self.btn_240 / 2) - self.btn_4 - self.btn_80, 212)
         self.address_book_address_label.setFont(self.font_s7b)
         self.address_book_address_label.setText('ADDRESS')
         self.address_book_address_label.setAlignment(Qt.AlignCenter)
@@ -1186,8 +1213,8 @@ class App(QMainWindow):
 
         # QLineEdit - Dial Out Address
         self.dial_out_ip_port = QLineEdit(self)
-        self.dial_out_ip_port.resize(self.btn_140, 20)
-        self.dial_out_ip_port.move((self.width / 2) - (self.btn_140 / 2), 212)
+        self.dial_out_ip_port.resize(self.btn_240, 20)
+        self.dial_out_ip_port.move((self.width / 2) - (self.btn_240 / 2), 212)
         self.dial_out_ip_port.setFont(self.font_s7b)
         self.dial_out_ip_port.setText('')
         self.dial_out_ip_port.setStyleSheet(line_edit_stylesheet_white_text)
@@ -1200,8 +1227,9 @@ class App(QMainWindow):
         self.generate_fingerprint.move(self.width - self.btn_4 - self.btn_20 - self.btn_4 - self.btn_20, 188)
         self.generate_fingerprint.setText('+')
         self.generate_fingerprint.setFont(self.font_s7b)
-        self.generate_fingerprint.setStyleSheet(button_stylesheet_white_text_high)
+        self.generate_fingerprint.setStyleSheet(button_stylesheet_white_text_low)
         self.generate_fingerprint.clicked.connect(generate_fingerprint_function)
+        self.generate_fingerprint.setEnabled(False)
 
         # Generate Key
         self.generate_key = QPushButton(self)
@@ -1209,8 +1237,9 @@ class App(QMainWindow):
         self.generate_key.move(self.width - self.btn_4 - self.btn_20 - self.btn_4 - self.btn_20, 164)
         self.generate_key.setText('+')
         self.generate_key.setFont(self.font_s7b)
-        self.generate_key.setStyleSheet(button_stylesheet_white_text_high)
+        self.generate_key.setStyleSheet(button_stylesheet_white_text_low)
         self.generate_key.clicked.connect(generate_key_function)
+        self.generate_key.setEnabled(False)
 
         # QLineEdit - Fingerprint Label
         self.address_fingerprint_label = QLabel(self)
@@ -1251,10 +1280,10 @@ class App(QMainWindow):
 
         # QPushButton - Address Save With A Key And Fingerprint
         self.dial_out_save_with_key = QPushButton(self)
-        self.dial_out_save_with_key.resize(self.btn_60, 20)
-        self.dial_out_save_with_key.move((self.width / 2) + 10, 164)
-        self.dial_out_save_with_key.setFont(self.font_s7b)
-        self.dial_out_save_with_key.setText('GEN')
+        self.dial_out_save_with_key.resize(self.btn_20, 116)
+        self.dial_out_save_with_key.move(self.width - self.btn_360 - self.btn_4 - self.btn_20 - self.btn_4 - self.btn_20 - self.btn_4, 164)
+        self.dial_out_save_with_key.setIcon(QIcon("./resources/image/mfg_nest_yale_lock_FILL0_wght200_GRAD0_opsz20RED.png"))
+        self.dial_out_save_with_key.setIconSize(QSize(20, 20))
         self.dial_out_save_with_key.setStyleSheet(button_stylesheet_white_text_low)
         self.dial_out_save_with_key.clicked.connect(dial_out_save_with_key_function)
 
@@ -1279,7 +1308,7 @@ class App(QMainWindow):
         # QPushButton - Dial Out Add Address
         self.dial_out_add_addr = QPushButton(self)
         self.dial_out_add_addr.resize(60, 20)
-        self.dial_out_add_addr.move((self.width / 2) - (self.btn_140 / 2), 236)
+        self.dial_out_add_addr.move((self.width / 2) - (self.btn_240 / 2), 236)
         self.dial_out_add_addr.setFont(self.font_s7b)
         self.dial_out_add_addr.setText('SAVE')
         self.dial_out_add_addr.setStyleSheet(button_stylesheet_default)
@@ -1289,7 +1318,7 @@ class App(QMainWindow):
         # QPushButton - Dial Out Remove Address
         self.dial_out_rem_addr = QPushButton(self)
         self.dial_out_rem_addr.resize(60, 20)
-        self.dial_out_rem_addr.move((self.width / 2) + 10, 236)
+        self.dial_out_rem_addr.move((self.width / 2) + (self.btn_240 / 2) - 60, 236)
         self.dial_out_rem_addr.setFont(self.font_s7b)
         self.dial_out_rem_addr.setText('DELETE')
         self.dial_out_rem_addr.setStyleSheet(button_stylesheet_default)
