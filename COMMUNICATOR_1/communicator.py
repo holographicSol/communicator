@@ -21,6 +21,8 @@ import random
 import string
 import unicodedata
 global server_save_bool
+import struct
+from awake import utils
 
 
 def NFD(text):
@@ -408,9 +410,15 @@ class App(QMainWindow):
                         if address_save_mode == 'basic':
                             self.address_key.setText('')
                             self.tb_fingerprint.setText('')
-                            fo_list.append('DATA ' + self.dial_out_name.text() + ' ' + str(self.dial_out_ip_port.text() + ' x' + ' x'))
-                            client_address.append([str(self.dial_out_name.text()), str(self.dial_out_ip_port.text().split(' ')[0]), int(self.dial_out_ip_port.text().split(' ')[1]), bytes('x', 'utf-8'), 'x'])
-                            bool_write = True
+                            if len(self.dial_out_ip_port.text().split(' ')) == 2:
+                                fo_list.append('DATA ' + self.dial_out_name.text() + ' ' + str(self.dial_out_ip_port.text() + ' x' + ' x'))
+                                client_address.append([str(self.dial_out_name.text()), str(self.dial_out_ip_port.text().split(' ')[0]), int(self.dial_out_ip_port.text().split(' ')[1]), bytes('x', 'utf-8'), 'x'])
+                                bool_write = True
+                            elif len(self.dial_out_ip_port.text().split(' ')) == 3:
+                                broadcast_address = self.dial_out_ip_port.text().split()[2]
+                                fo_list.append('DATA ' + self.dial_out_name.text() + ' ' + str(self.dial_out_ip_port.text().split()[0]) + ' ' + str(self.dial_out_ip_port.text().split()[1]) + ' x' + ' x' + ' ' + broadcast_address)
+                                client_address.append([str(self.dial_out_name.text()), str(self.dial_out_ip_port.text().split(' ')[0]), int(self.dial_out_ip_port.text().split(' ')[1]), bytes('x', 'utf-8'), 'x', broadcast_address])
+                                bool_write = True
 
                         # Use Save Mode Advanced
                         elif address_save_mode == 'advanced':
@@ -447,8 +455,14 @@ class App(QMainWindow):
 
                             if len(self.address_key.text()) == 32:
                                 if len(self.fingerprint_str) == 1024:
-                                    fo_list.append('DATA ' + self.dial_out_name.text() + ' ' + str(self.dial_out_ip_port.text()) + ' ' + self.address_key.text() + ' ' + fingerprint_fname)
-                                    client_address.append([str(self.dial_out_name.text()), str(self.dial_out_ip_port.text().split(' ')[0]), int(self.dial_out_ip_port.text().split(' ')[1]), bytes(self.address_key.text(), 'utf-8'), self.fingerprint_str])
+                                    if len(self.dial_out_ip_port.text().split(' ')) == 2:
+                                        fo_list.append('DATA ' + self.dial_out_name.text() + ' ' + str(self.dial_out_ip_port.text()) + ' ' + self.address_key.text() + ' ' + fingerprint_fname)
+                                        client_address.append([str(self.dial_out_name.text()), str(self.dial_out_ip_port.text().split(' ')[0]), int(self.dial_out_ip_port.text().split(' ')[1]), bytes(self.address_key.text(), 'utf-8'), self.fingerprint_str])
+                                    elif len(self.dial_out_ip_port.text().split(' ')) == 3:
+                                        broadcast_address = self.dial_out_ip_port.text().split()[2]
+                                        # fo_list.append('DATA ' + self.dial_out_name.text() + ' ' + str(self.dial_out_ip_port.text()) + ' ' + self.address_key.text() + ' ' + fingerprint_fname)
+                                        fo_list.append('DATA ' + self.dial_out_name.text() + ' ' + str(self.dial_out_ip_port.text().split()[0]) + ' ' + str(self.dial_out_ip_port.text().split()[1]) + ' ' + self.address_key.text() + ' ' + fingerprint_fname + ' ' + broadcast_address)
+                                        client_address.append([str(self.dial_out_name.text()), str(self.dial_out_ip_port.text().split(' ')[0]), int(self.dial_out_ip_port.text().split(' ')[1]), bytes(self.address_key.text(), 'utf-8'), self.fingerprint_str, broadcast_address])
                                     split_strings = [self.fingerprint_str[index: index + 32] for index in range(0, len(self.fingerprint_str), 32)]
                                     if not os.path.exists(fingerprint_fname):
                                         open(fingerprint_fname, 'w').close()
@@ -479,9 +493,15 @@ class App(QMainWindow):
                             print('-- current index before sorting:', client_address_index)
                             client_address.sort(key=lambda x: x[0])
                             if address_save_mode == 'basic':
-                                client_address_index = client_address.index([str(self.dial_out_name.text()), str(self.dial_out_ip_port.text().split(' ')[0]), int(self.dial_out_ip_port.text().split(' ')[1]), bytes('x', 'utf-8'), 'x'])
+                                if len(self.dial_out_ip_port.text().split(' ')) == 2:
+                                    client_address_index = client_address.index([str(self.dial_out_name.text()), str(self.dial_out_ip_port.text().split(' ')[0]), int(self.dial_out_ip_port.text().split(' ')[1]), bytes('x', 'utf-8'), 'x'])
+                                elif len(self.dial_out_ip_port.text().split(' ')) == 3:
+                                    client_address_index = client_address.index([str(self.dial_out_name.text()), str(self.dial_out_ip_port.text().split(' ')[0]), int(self.dial_out_ip_port.text().split(' ')[1]), bytes('x', 'utf-8'), 'x', broadcast_address])
                             elif address_save_mode == 'advanced':
-                                client_address_index = client_address.index([str(self.dial_out_name.text()), str(self.dial_out_ip_port.text().split(' ')[0]), int(self.dial_out_ip_port.text().split(' ')[1]), bytes(self.address_key.text(), 'utf-8'), self.fingerprint_str])
+                                if len(self.dial_out_ip_port.text().split(' ')) == 2:
+                                    client_address_index = client_address.index([str(self.dial_out_name.text()), str(self.dial_out_ip_port.text().split(' ')[0]), int(self.dial_out_ip_port.text().split(' ')[1]), bytes(self.address_key.text(), 'utf-8'), self.fingerprint_str])
+                                elif len(self.dial_out_ip_port.text().split(' ')) == 3:
+                                    client_address_index = client_address.index([str(self.dial_out_name.text()), str(self.dial_out_ip_port.text().split(' ')[0]), int(self.dial_out_ip_port.text().split(' ')[1]), bytes(self.address_key.text(), 'utf-8'), self.fingerprint_str, broadcast_address])
                             print('-- current index after sorting:', client_address_index)
                 else:
                     print('-- ip and port should not be empty!')
@@ -550,8 +570,14 @@ class App(QMainWindow):
                     client_address_index = client_address_index - 1
                 print(str(datetime.datetime.now()) + ' -- client_address_index setting client_address_index:', client_address_index)
 
-                self.dial_out_ip_port.setText(client_address[client_address_index][1] + ' ' + str(client_address[client_address_index][2]))
                 self.dial_out_name.setText(str(client_address[client_address_index][0]))
+
+                if len(client_address[client_address_index]) == 5:
+                    print('using IP + Port:')
+                    self.dial_out_ip_port.setText(client_address[client_address_index][1] + ' ' + str(client_address[client_address_index][2]))
+                elif len(client_address[client_address_index]) == 6:
+                    print('using IP/MAC + Port + Broadcast Address:')
+                    self.dial_out_ip_port.setText(client_address[client_address_index][1] + ' ' + str(client_address[client_address_index][2]) + ' ' + str(client_address[client_address_index][5]))
                 check_key()
                 format_fingerprint()
                 print(self.dial_out_ip_port.text())
@@ -598,8 +624,14 @@ class App(QMainWindow):
                     client_address_index += 1
                 print(str(datetime.datetime.now()) + ' -- client_address_index setting client_address_index:', client_address_index)
 
-                self.dial_out_ip_port.setText(client_address[client_address_index][1] + ' ' + str(client_address[client_address_index][2]))
                 self.dial_out_name.setText(str(client_address[client_address_index][0]))
+
+                if len(client_address[client_address_index]) == 5:
+                    print('using IP + Port:')
+                    self.dial_out_ip_port.setText(client_address[client_address_index][1] + ' ' + str(client_address[client_address_index][2]))
+                elif len(client_address[client_address_index]) == 6:
+                    print('using IP/MAC + Port + Broadcast Address:')
+                    self.dial_out_ip_port.setText(client_address[client_address_index][1] + ' ' + str(client_address[client_address_index][2]) + ' ' + str(client_address[client_address_index][5]))
 
                 check_key()
                 format_fingerprint()
@@ -1518,7 +1550,7 @@ class App(QMainWindow):
             self.dial_out_name.setText(client_address[0][0])
             self.dial_out_ip_port.setText(client_address[0][1] + ' ' + str(client_address[0][2]))
 
-            if client_address[0][4] != '#' and len(client_address[0][4]) == 1024:
+            if client_address[0][4] != 'x' and len(client_address[0][4]) == 1024:
                 print(str(datetime.datetime.now()) + ' -- address entry appears to have a key:', client_address[0][3])
                 if client_address[client_address_index][4] != '#' and len(client_address[client_address_index][4]) == 1024:
                     print(str(datetime.datetime.now()) + ' -- address entry appears to have a fingerprint:', client_address[client_address_index][4])
@@ -1616,21 +1648,26 @@ class ConfigurationClass(QThread):
                 line = line.split(' ')
                 if str(line[0]) == 'DATA':
                     if len(line) == 6:
-                        client_address.append([str(line[1]), str(line[2]), int(line[3]), bytes(line[4], 'utf-8'), line[5]])
+                        client_address.append([str(line[1]), str(line[2]), int(line[3]), bytes(line[4], 'utf-8'), str(line[5])])
+                        print('entry:', client_address[-1])
+                    elif len(line) == 7:
+                        client_address.append([str(line[1]), str(line[2]), int(line[3]), bytes(line[4], 'utf-8'), str(line[5]), str(line[6])])
                         print('entry:', client_address[-1])
 
         client_address.sort(key=lambda x: x[0])
-        print('')
+        print('sort complete')
 
         for _ in client_address:
-            if os.path.exists(_[-1]):
+            print('handling:', _)
+            if os.path.exists(_[4]):
+                print('path found:', _[4])
                 address_fingerprint_string = ''
-                with open(_[-1], 'r') as fo:
+                with open(_[4], 'r') as fo:
                     for line in fo:
                         line = line.strip()
                         address_fingerprint_string = address_fingerprint_string + line
                 fo.close()
-                _[-1] = address_fingerprint_string
+                _[4] = address_fingerprint_string
             print('sorted:', _)
 
         configuration_thread_completed = True
@@ -1682,6 +1719,10 @@ class DialOutClass(QThread):
         self.FINGERPRINT = ''
         self.MESSAGE_CONTENT = ''
 
+        self.broadcast = ''
+        self.mac = ''
+        self.port = ''
+
     def run(self):
         print('-' * 200)
         print(str(datetime.datetime.now()) + ' [ thread started: DialOutClass(QThread).run(self) ]')
@@ -1716,6 +1757,42 @@ class DialOutClass(QThread):
             fo.write('\n' + self.data + '\n')
         fo.close()
 
+    def mac_send(self, broadcast='192.168.1.255', dest=None, port=55555):
+        """Send  a "magic packet" to the given destination mac to wakeup
+        the host, if `dest` is not specified then the packet is broadcasted.
+
+        If the `mac` address can't be parsed raise `ValueError`.
+
+        If `dest` is not a valid domain name or ip raise `socket.error`.
+        """
+
+        broadcast = self.broadcast
+        mac = self.mac
+        port = self.port
+
+        try:
+            if not utils.is_valid_broadcast_ip(broadcast):
+                raise ValueError('Invalid broadcast %s' % broadcast)
+        except TypeError:
+            raise ValueError('Invalid broadcast %r' % broadcast)
+        mac_digits = utils.retrive_MAC_digits(mac)
+        print('mac_digits:', mac_digits)
+
+        com_mac = bytes(self.MESSAGE_CONTENT, 'utf-16')
+        print('-- attempting to send data to mac:', self.MESSAGE_CONTENT)
+        print('-- converting data to utf-16:', com_mac)
+
+        sok = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        sok.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+        try:
+            if dest is None:
+                sok.connect((broadcast, port))
+            else:
+                sok.connect((dest, port))
+            sok.send(com_mac)
+        finally:
+            sok.close()
+
     def message_send(self):
         global SOCKET_DIAL_OUT
         global dial_out_dial_out_cipher_bool
@@ -1723,59 +1800,75 @@ class DialOutClass(QThread):
 
         print('-' * 200)
         print(str(datetime.datetime.now()) + f" -- DialOutClass.message_send outgoing to: {self.HOST_SEND} : {self.PORT_SEND}")
-
+        dial_out_ip = True
         try:
             data_response = ''
-            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as SOCKET_DIAL_OUT:
-                SOCKET_DIAL_OUT.connect((self.HOST_SEND, self.PORT_SEND))
+            if len(client_address[client_address_index]) == 5:
+                sok = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            elif len(client_address[client_address_index]) == 6:
+                self.broadcast = client_address[client_address_index][5]
+                self.mac = client_address[client_address_index][1]
+                self.port = client_address[client_address_index][2]
+                print('')
+                print('setting up for MAC communication:')
+                print('self.broadcast:', self.broadcast)
+                print('self.mac:', self.mac)
+                print('self.port:', self.port)
+                print('')
+                self.mac_send()
+                dial_out_ip = False
 
-                if dial_out_dial_out_cipher_bool is True and bool_dial_out_override is False:
-                    print(str(datetime.datetime.now()) + ' -- DialOutClass.message_send: handing message to AESCipher')
-                    print(str(datetime.datetime.now()) + ' -- DialOutClass.message_send using KEY:', self.KEY)
-                    print(str(datetime.datetime.now()) + ' -- DialOutClass.message_send using FINGERPRINT:', self.FINGERPRINT)
-                    cipher = AESCipher(self.KEY)
-                    ciphertext = cipher.encrypt(str(self.FINGERPRINT) + self.MESSAGE_CONTENT)
-                    print(str(datetime.datetime.now()) + ' -- DialOutClass.message_send ciphertext:', str(ciphertext))
-                    textbox_0_messages.append('[' + str(datetime.datetime.now()) + '] [SENDING ENCRYPTED] [' + str(self.HOST_SEND) + ':' + str(self.PORT_SEND) + ']')
+            if dial_out_ip is True:
+                with sok as SOCKET_DIAL_OUT:
+                    SOCKET_DIAL_OUT.connect((self.HOST_SEND, self.PORT_SEND))
+
+                    if dial_out_dial_out_cipher_bool is True and bool_dial_out_override is False:
+                        print(str(datetime.datetime.now()) + ' -- DialOutClass.message_send: handing message to AESCipher')
+                        print(str(datetime.datetime.now()) + ' -- DialOutClass.message_send using KEY:', self.KEY)
+                        print(str(datetime.datetime.now()) + ' -- DialOutClass.message_send using FINGERPRINT:', self.FINGERPRINT)
+                        cipher = AESCipher(self.KEY)
+                        ciphertext = cipher.encrypt(str(self.FINGERPRINT) + self.MESSAGE_CONTENT)
+                        print(str(datetime.datetime.now()) + ' -- DialOutClass.message_send ciphertext:', str(ciphertext))
+                        textbox_0_messages.append('[' + str(datetime.datetime.now()) + '] [SENDING ENCRYPTED] [' + str(self.HOST_SEND) + ':' + str(self.PORT_SEND) + ']')
+                    else:
+                        ciphertext = bytes(self.MESSAGE_CONTENT, 'utf-8')
+                        textbox_0_messages.append('[' + str(datetime.datetime.now()) + '] [SENDING UNENCRYPTED] [' + str(self.HOST_SEND) + ':' + str(self.PORT_SEND) + ']')
+
+                    print(str(datetime.datetime.now()) + ' -- DialOutClass.message_send: attempting to send ciphertext')
+
+                    SOCKET_DIAL_OUT.send(ciphertext)
+                    SOCKET_DIAL_OUT.settimeout(1)
+
+                    print(str(datetime.datetime.now()) + ' -- DialOutClass.message_send: waiting for response from recipient')
+
+                    try:
+                        data_response = SOCKET_DIAL_OUT.recv(2048)
+                    except Exception as e:
+                        print(str(datetime.datetime.now()) + ' -- DialOutClass.message_send failed:', e)
+                        self.data = '[' + str(datetime.datetime.now()) + '] [SENDING FAILED] [' + str(self.HOST_SEND) + ':' + str(self.PORT_SEND) + ']'
+                        textbox_0_messages.append(self.data)
+                        self.dial_out_logger()
+
+                if data_response == ciphertext:
+                    self.dial_out_message.setText('')
+                    self.data = '[' + str(datetime.datetime.now()) + '] [DELIVERY CONFIRMATION] [' + str(self.HOST_SEND) + ':' + str(self.PORT_SEND) + ']'
+                    textbox_0_messages.append(self.data)
+
+                    print(str(datetime.datetime.now()) + ' -- DialOutClass.message_send response from recipient equals ciphertext:', data_response)
+                    self.dial_out_message_send.setIcon(QIcon("./resources/image/send_FILL1_wght100_GRAD-25_opsz40_GREEN.png"))
+                    time.sleep(1)
+                    self.dial_out_message_send.setIcon(QIcon("./resources/image/send_FILL1_wght100_GRAD-25_opsz40_WHITE.png"))
+
                 else:
-                    ciphertext = bytes(self.MESSAGE_CONTENT, 'utf-8')
-                    textbox_0_messages.append('[' + str(datetime.datetime.now()) + '] [SENDING UNENCRYPTED] [' + str(self.HOST_SEND) + ':' + str(self.PORT_SEND) + ']')
-
-                print(str(datetime.datetime.now()) + ' -- DialOutClass.message_send: attempting to send ciphertext')
-
-                SOCKET_DIAL_OUT.send(ciphertext)
-                SOCKET_DIAL_OUT.settimeout(1)
-
-                print(str(datetime.datetime.now()) + ' -- DialOutClass.message_send: waiting for response from recipient')
-
-                try:
-                    data_response = SOCKET_DIAL_OUT.recv(2048)
-                except Exception as e:
-                    print(str(datetime.datetime.now()) + ' -- DialOutClass.message_send failed:', e)
-                    self.data = '[' + str(datetime.datetime.now()) + '] [SENDING FAILED] [' + str(self.HOST_SEND) + ':' + str(self.PORT_SEND) + ']'
+                    self.dial_out_message.setText('')
+                    self.data = '[' + str(datetime.datetime.now()) + '] [WARNING] [MESSAGE RECEIVED DOES NOT MATCH MESSAGE SENT] [' + str(self.HOST_SEND) + ':' + str(self.PORT_SEND) + '] ' + str(data_response)
+                    print(self.data)
                     textbox_0_messages.append(self.data)
                     self.dial_out_logger()
 
-            if data_response == ciphertext:
-                self.dial_out_message.setText('')
-                self.data = '[' + str(datetime.datetime.now()) + '] [DELIVERY CONFIRMATION] [' + str(self.HOST_SEND) + ':' + str(self.PORT_SEND) + ']'
-                textbox_0_messages.append(self.data)
-
-                print(str(datetime.datetime.now()) + ' -- DialOutClass.message_send response from recipient equals ciphertext:', data_response)
-                self.dial_out_message_send.setIcon(QIcon("./resources/image/send_FILL1_wght100_GRAD-25_opsz40_GREEN.png"))
-                time.sleep(1)
-                self.dial_out_message_send.setIcon(QIcon("./resources/image/send_FILL1_wght100_GRAD-25_opsz40_WHITE.png"))
-
-            else:
-                self.dial_out_message.setText('')
-                self.data = '[' + str(datetime.datetime.now()) + '] [WARNING] [MESSAGE RECEIVED DOES NOT MATCH MESSAGE SENT] [' + str(self.HOST_SEND) + ':' + str(self.PORT_SEND) + '] ' + str(data_response)
-                print(self.data)
-                textbox_0_messages.append(self.data)
-                self.dial_out_logger()
-
-                self.dial_out_message_send.setIcon(QIcon("./resources/image/send_FILL1_wght100_GRAD-25_opsz40_YELLOW.png"))
-                time.sleep(1)
-                self.dial_out_message_send.setIcon(QIcon("./resources/image/send_FILL1_wght100_GRAD-25_opsz40_WHITE.png"))
+                    self.dial_out_message_send.setIcon(QIcon("./resources/image/send_FILL1_wght100_GRAD-25_opsz40_YELLOW.png"))
+                    time.sleep(1)
+                    self.dial_out_message_send.setIcon(QIcon("./resources/image/send_FILL1_wght100_GRAD-25_opsz40_WHITE.png"))
 
         except Exception as e:
             print(str(datetime.datetime.now()) + ' -- DialOutClass.message_send failed:', e)
