@@ -1,20 +1,14 @@
 Communicator - Written by Benjamin Jack Cullen
 
-A Very Powerful Universal Communications Tool - Project in early development.
+A Very Powerful Communications Tool - Project in early development.
 
-Communicator is capable of communicating with any address/domain-name running and or not running a Communicator, this makes
-the Communicator very powerful and truly universal. Use wisely.
-
-Communicator has the potential to communicate with you even if your on Mars. Providing the Martians have internet,
-connected to us.
-
-The Communicator is a Decentralized communications tool. Communicate to potentially anything, anywhere, anytime, directly.  
+Communicator is capable of communicating with any IPv4 Address running and or not running a Communicator, this makes
+the Communicator very powerful. Use wisely.
 
 The Communicator is a very powerful Communications Tool. The Communicator is not a place to meet people, it not a
 chat lobby or meeting place and is certainly not a chat app.
 
-Communicator may require port forwarding to receive incoming communications depending on your router's settings, however
-outgoing payloads should be fine under normal default network configurations. 
+Communicate with Machines and Humanoids. MAC support upcoming.
 
 Communicator Standard Communication:
 1. Messages encrypted with AES-256 32 bytes shared key.
