@@ -872,6 +872,8 @@ class App(QMainWindow):
                 self.generate_fingerprint.show()
                 self.generate_key.show()
 
+                self.address_undo_form.show()
+
             elif bool_dial_out_override is False:
                 bool_dial_out_override = True
 
@@ -903,6 +905,8 @@ class App(QMainWindow):
                 self.generate_fingerprint.hide()
                 self.generate_key.hide()
 
+                self.address_undo_form.hide()
+
             print(str(datetime.datetime.now()) + ' -- App.dial_out_override_function setting bool_dial_out_override:', bool_dial_out_override)
 
         def dial_out_ip_port_return_funtion():
@@ -911,7 +915,7 @@ class App(QMainWindow):
             print(str(datetime.datetime.now()) + ' -- plugged in: App.dial_out_ip_port_return_funtion')
             if bool_dial_out_override is True:
                 address_override_string = self.dial_out_ip_port.text()
-                print(str(datetime.datetime.now()) + ' -- App.dial_out_override_function setting address_override_string:', address_override_string)
+                print(str(datetime.datetime.now()) + ' -- App.dial_out_ip_port_return_funtion setting address_override_string:', address_override_string)
             else:
                 dial_out_name_check_details()
 
