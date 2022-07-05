@@ -1757,14 +1757,7 @@ class DialOutClass(QThread):
             fo.write('\n' + self.data + '\n')
         fo.close()
 
-    def mac_send(self, broadcast='192.168.1.255', dest=None, port=55555):
-        """Send  a "magic packet" to the given destination mac to wakeup
-        the host, if `dest` is not specified then the packet is broadcasted.
-
-        If the `mac` address can't be parsed raise `ValueError`.
-
-        If `dest` is not a valid domain name or ip raise `socket.error`.
-        """
+    def mac_send(self, dest=None):
 
         broadcast = self.broadcast
         mac = self.mac
