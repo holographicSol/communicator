@@ -1308,7 +1308,7 @@ class App(QMainWindow):
         # QPushButton - Dial Out Add Address
         self.dial_out_add_addr = QPushButton(self)
         self.dial_out_add_addr.resize(60, 20)
-        self.dial_out_add_addr.move((self.width / 2) - (self.btn_240 / 2), 236)
+        self.dial_out_add_addr.move((self.width / 2) - (self.btn_240 / 2), 244)
         self.dial_out_add_addr.setFont(self.font_s7b)
         self.dial_out_add_addr.setText('SAVE')
         self.dial_out_add_addr.setStyleSheet(button_stylesheet_default)
@@ -1318,7 +1318,7 @@ class App(QMainWindow):
         # QPushButton - Dial Out Remove Address
         self.dial_out_rem_addr = QPushButton(self)
         self.dial_out_rem_addr.resize(60, 20)
-        self.dial_out_rem_addr.move((self.width / 2) + (self.btn_240 / 2) - 60, 236)
+        self.dial_out_rem_addr.move((self.width / 2) + (self.btn_240 / 2) - 60, 244)
         self.dial_out_rem_addr.setFont(self.font_s7b)
         self.dial_out_rem_addr.setText('DELETE')
         self.dial_out_rem_addr.setStyleSheet(button_stylesheet_default)
