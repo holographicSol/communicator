@@ -8,7 +8,9 @@ the Communicator very powerful. Use wisely.
 The Communicator is a very powerful Communications Tool. The Communicator is not a place to meet people, it not a
 chat lobby or meeting place and is certainly not a chat app.
 
-Communicate with Machines and Humanoids. MAC support upcoming.
+Communicate with Machines and Humanoids. MAC support. (MAC may speak Chinese) Test A smart device that supports wake 
+on LAN with: ￿￿￿呰蒴︠呰蒴︠呰蒴︠呰蒴︠呰蒴︠呰蒴︠呰蒴︠呰蒴︠呰蒴︠呰蒴︠呰蒴︠呰蒴︠呰蒴︠呰蒴︠呰蒴︠呰蒴︠
+This example is how you would wake up a device. BE EXTREMELY CAREFUL.
 
 Communicator Standard Communication:
 1. Messages encrypted with AES-256 32 bytes shared key.
