@@ -1,0 +1,9 @@
+DATA Alpha 192.168.1.11 55555 x x
+DATA Beta 192.168.1.11 55555 OPMfIPW)Vye^RNKvZhcMY.(SD(~]>~y+ ./fingerprints/Beta.txt
+DATA Zeta 192.168.1.11 55555 J.-dHhK#nA&rNn\swTfv@|jMmu\K,s!q ./fingerprints/Zeta.txt
+DATA 1 192.168.1.11 55555 Bzj~J[qV~Xv[.,ACbc`iKOKs}tBkyA+D ./fingerprints/1.txt
+DATA 2 192.168.1.11 55555 laYgIM,qW}EZPG/GN-vE$dN!<k[WZef} ./fingerprints/2.txt
+DATA 0 192.168.1.11 55555 Zi)yMD$KPt>Iv&PnFR{i/*/xu^{CLQAC ./fingerprints/0.txt
+DATA mac1 70:54:B4:84:20:FE 55555 x x 192.168.1.255
+DATA mac2 70:54:B4:84:20:FE 55555 &=,J:gms:a$o-]StjL:^j-[\fN[DSAx[ ./fingerprints/mac5.txt 192.168.1.255
+DATA Omega 192.168.1.11 55555 YTg:`dFgqOo_$vvA-O+C|Z!=.{Tczjwy ./fingerprints/Omega.txt
