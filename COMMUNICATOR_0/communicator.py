@@ -1197,7 +1197,7 @@ class App(QMainWindow):
 
         self.reveal_btn = QPushButton(self)
         self.reveal_btn.resize(self.btn_60, self.btn_20)
-        self.reveal_btn.move(28, 164)
+        self.reveal_btn.move((self.width / 2) + (self.btn_240 / 2) - self.btn_60, 164)
         self.reveal_btn.setIcon(QIcon("./resources/image/visibility_off_FILL0_wght200_GRAD0_opsz20_WHITE.png"))
         self.reveal_btn.setIconSize(QSize(self.btn_20 - 8, self.btn_20 - 8))
         self.reveal_btn.setFont(self.font_s7b)
