@@ -1760,6 +1760,8 @@ class DialOutClass(QThread):
 
     def mac_send(self, dest=None):
 
+        # Broadcast address is used. To communicate via MAC address one will have to craft ones own capsules. You will have to know what you are doing.
+
         broadcast = self.broadcast
         mac = self.mac
         port = int(self.port)
