@@ -1764,11 +1764,24 @@ class DialOutClass(QThread):
         mac = self.mac
         port = int(self.port)
 
+        print('Broadcast Address:', broadcast)
+        print('MAC Address:      ', mac)
+        print('Port:             ', port)
+        print('MESSAGE:', self.MESSAGE_CONTENT)
+        textbox_0_messages.append('[' + str(datetime.datetime.now()) + '] [BROADCAST] [' + str(broadcast) + ']')
+        textbox_0_messages.append('[' + str(datetime.datetime.now()) + '] [MAC] [' + str(mac) + ']')
+        textbox_0_messages.append('[' + str(datetime.datetime.now()) + '] [PORT] [' + str(port) + ']')
+        textbox_0_messages.append('[' + str(datetime.datetime.now()) + '] [PORT] [' + str(port) + ']')
+        textbox_0_messages.append('[' + str(datetime.datetime.now()) + '] [MESSAGE] [' + str(self.MESSAGE_CONTENT) + ']')
+
         try:
             if not utils.is_valid_broadcast_ip(broadcast):
+                textbox_0_messages.append('[' + str(datetime.datetime.now()) + '] [INVALID BROADCAST] [' + str(broadcast) + ']')
                 raise ValueError('Invalid broadcast %s' % broadcast)
         except TypeError:
+            textbox_0_messages.append('[' + str(datetime.datetime.now()) + '] [INVALID BROADCAST] [' + str(broadcast) + ']')
             raise ValueError('Invalid broadcast %r' % broadcast)
+
         mac_digits = utils.retrive_MAC_digits(mac)
         print('mac_digits:', mac_digits)
 
@@ -1776,18 +1789,25 @@ class DialOutClass(QThread):
         print('-- attempting to send data to mac:', self.MESSAGE_CONTENT)
         print('-- converting data to utf-16:', com_mac)
 
+        textbox_0_messages.append('[' + str(datetime.datetime.now()) + '] [MESSAGE UTF-16] [' + str(com_mac) + ']')
+
         sok = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         sok.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
         try:
             if dest is None:
                 print('dest none:', dest, port)
+                textbox_0_messages.append('[' + str(datetime.datetime.now()) + '] [USING BROADCAST]')
                 sok.connect((broadcast, port))
             else:
                 print('dest:', dest, port)
+                textbox_0_messages.append('[' + str(datetime.datetime.now()) + '] [USING MAC]')
                 sok.connect((dest, port))
             print('sending data:', com_mac)
+            textbox_0_messages.append('[' + str(datetime.datetime.now()) + '] [SENDING DATA] ' + str(com_mac))
             sok.send(com_mac)
         finally:
+            print('closing connection:', sok)
+            textbox_0_messages.append('[' + str(datetime.datetime.now()) + '] [CLOSING SOC] ' + str(sok))
             sok.close()
 
     def message_send(self):
