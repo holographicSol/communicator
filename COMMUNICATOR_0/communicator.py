@@ -23,6 +23,7 @@ import unicodedata
 global server_save_bool
 import struct
 from awake import utils
+import encodings
 
 
 def NFD(text):
@@ -75,7 +76,167 @@ mute_server_notify_cipher_bool = False
 bool_dial_out_override = False
 server_save_bool = False
 address_reveal_bool = False
+bool_socket_options = False
 address_override_string = ''
+
+COMMUNICATOR_SOCK = {
+    "AF_APPLETALK" : socket.AF_APPLETALK,
+    "AF_BLUETOOTH" : socket.AF_BLUETOOTH,
+    "AF_DECnet" : socket.AF_DECnet,
+    "AF_INET" : socket.AF_INET,
+    "AF_INET6" : socket.AF_INET6,
+    "AF_IPX" : socket.AF_IPX,
+    "AF_IRDA" : socket.AF_IRDA,
+    "AF_LINK" : socket.AF_LINK,
+    "AF_SNA" : socket.AF_SNA,
+    "AF_UNSPEC" : socket.AF_UNSPEC,
+    "AI_ADDRCONFIG" : socket.AI_ADDRCONFIG,
+    "AI_ALL" : socket.AI_ALL,
+    "AI_CANONNAME" : socket.AI_CANONNAME,
+    "AI_NUMERICHOST" : socket.AI_NUMERICHOST,
+    "AI_NUMERICSERV" : socket.AI_NUMERICSERV,
+    "AI_PASSIVE" : socket.AI_PASSIVE,
+    "AI_V4MAPPED" : socket.AI_V4MAPPED,
+    "BDADDR_ANY" : socket.BDADDR_ANY,
+    "BDADDR_LOCAL" : socket.BDADDR_LOCAL,
+    "BTPROTO_RFCOMM" : socket.BTPROTO_RFCOMM,
+    "EAI_AGAIN" : socket.EAI_AGAIN,
+    "EAI_BADFLAGS" : socket.EAI_BADFLAGS,
+    "EAI_FAIL" : socket.EAI_FAIL,
+    "EAI_FAMILY" : socket.EAI_FAMILY,
+    "EAI_MEMORY" : socket.EAI_MEMORY,
+    "EAI_NODATA" : socket.EAI_NODATA,
+    "EAI_NONAME" : socket.EAI_NONAME,
+    "EAI_SERVICE" : socket.EAI_SERVICE,
+    "EAI_SOCKTYPE" : socket.EAI_SOCKTYPE,
+    "has_ipv6" : socket.has_ipv6,
+    "INADDR_ALLHOSTS_GROUP" : socket.INADDR_ALLHOSTS_GROUP,
+    "INADDR_ANY" : socket.INADDR_ANY,
+    "INADDR_BROADCAST" : socket.INADDR_BROADCAST,
+    "INADDR_LOOPBACK" : socket.INADDR_LOOPBACK,
+    "INADDR_MAX_LOCAL_GROUP" : socket.INADDR_MAX_LOCAL_GROUP,
+    "INADDR_NONE" : socket.INADDR_NONE,
+    "INADDR_UNSPEC_GROUP" : socket.INADDR_UNSPEC_GROUP,
+    "IPPORT_RESERVED" : socket.IPPORT_RESERVED,
+    "IPPORT_USERRESERVED" : socket.IPPORT_USERRESERVED,
+    "IPPROTO_AH" : socket.IPPROTO_AH,
+    "IPPROTO_CBT" : socket.IPPROTO_CBT,
+    "IPPROTO_DSTOPTS" : socket.IPPROTO_DSTOPTS,
+    "IPPROTO_EGP" : socket.IPPROTO_EGP,
+    "IPPROTO_ESP" : socket.IPPROTO_ESP,
+    "IPPROTO_FRAGMENT" : socket.IPPROTO_FRAGMENT,
+    "IPPROTO_GGP" : socket.IPPROTO_GGP,
+    "IPPROTO_HOPOPTS" : socket.IPPROTO_HOPOPTS,
+    "IPPROTO_ICLFXBM" : socket.IPPROTO_ICLFXBM,
+    "IPPROTO_ICMP" : socket.IPPROTO_ICMP,
+    "IPPROTO_ICMPV6" : socket.IPPROTO_ICMPV6,
+    "IPPROTO_IDP" : socket.IPPROTO_IDP,
+    "IPPROTO_IGMP" : socket.IPPROTO_IGMP,
+    "IPPROTO_IGP" : socket.IPPROTO_IGP,
+    "IPPROTO_IP" : socket.IPPROTO_IP,
+    "IPPROTO_IPV4" : socket.IPPROTO_IPV4,
+    "IPPROTO_IPV6" : socket.IPPROTO_IPV6,
+    "IPPROTO_L2TP" : socket.IPPROTO_L2TP,
+    "IPPROTO_MAX" : socket.IPPROTO_MAX,
+    "IPPROTO_ND" : socket.IPPROTO_ND,
+    "IPPROTO_NONE" : socket.IPPROTO_NONE,
+    "IPPROTO_PGM" : socket.IPPROTO_PGM,
+    "IPPROTO_PIM" : socket.IPPROTO_PIM,
+    "IPPROTO_PUP" : socket.IPPROTO_PUP,
+    "IPPROTO_RAW" : socket.IPPROTO_RAW,
+    "IPPROTO_RDP" : socket.IPPROTO_RDP,
+    "IPPROTO_ROUTING" : socket.IPPROTO_ROUTING,
+    "IPPROTO_SCTP" : socket.IPPROTO_SCTP,
+    "IPPROTO_ST" : socket.IPPROTO_ST,
+    "IPPROTO_TCP" : socket.IPPROTO_TCP,
+    "IPPROTO_UDP" : socket.IPPROTO_UDP,
+    "IPV6_CHECKSUM" : socket.IPV6_CHECKSUM,
+    "IPV6_DONTFRAG" : socket.IPV6_DONTFRAG,
+    "IPV6_HOPLIMIT" : socket.IPV6_HOPLIMIT,
+    "IPV6_HOPOPTS" : socket.IPV6_HOPOPTS,
+    "IPV6_JOIN_GROUP" : socket.IPV6_JOIN_GROUP,
+    "IPV6_LEAVE_GROUP" : socket.IPV6_LEAVE_GROUP,
+    "IPV6_MULTICAST_HOPS" : socket.IPV6_MULTICAST_HOPS,
+    "IPV6_MULTICAST_IF" : socket.IPV6_MULTICAST_IF,
+    "IPV6_MULTICAST_LOOP" : socket.IPV6_MULTICAST_LOOP,
+    "IPV6_PKTINFO" : socket.IPV6_PKTINFO,
+    "IPV6_RECVRTHDR" : socket.IPV6_RECVRTHDR,
+    "IPV6_RECVTCLASS" : socket.IPV6_RECVTCLASS,
+    "IPV6_RTHDR" : socket.IPV6_RTHDR,
+    "IPV6_TCLASS" : socket.IPV6_TCLASS,
+    "IPV6_UNICAST_HOPS" : socket.IPV6_UNICAST_HOPS,
+    "IPV6_V6ONLY" : socket.IPV6_V6ONLY,
+    "IP_ADD_MEMBERSHIP" : socket.IP_ADD_MEMBERSHIP,
+    "IP_DROP_MEMBERSHIP" : socket.IP_DROP_MEMBERSHIP,
+    "IP_HDRINCL" : socket.IP_HDRINCL,
+    "IP_MULTICAST_IF" : socket.IP_MULTICAST_IF,
+    "IP_MULTICAST_LOOP" : socket.IP_MULTICAST_LOOP,
+    "IP_MULTICAST_TTL" : socket.IP_MULTICAST_TTL,
+    "IP_OPTIONS" : socket.IP_OPTIONS,
+    "IP_RECVDSTADDR" : socket.IP_RECVDSTADDR,
+    "IP_TOS" : socket.IP_TOS,
+    "IP_TTL" : socket.IP_TTL,
+    "MSG_BCAST" : socket.MSG_BCAST,
+    "MSG_CTRUNC" : socket.MSG_CTRUNC,
+    "MSG_DONTROUTE" : socket.MSG_DONTROUTE,
+    "MSG_ERRQUEUE" : socket.MSG_ERRQUEUE,
+    "MSG_MCAST" : socket.MSG_MCAST,
+    "MSG_OOB" : socket.MSG_OOB,
+    "MSG_PEEK" : socket.MSG_PEEK,
+    "MSG_TRUNC" : socket.MSG_TRUNC,
+    "MSG_WAITALL" : socket.MSG_WAITALL,
+    "NI_DGRAM" : socket.NI_DGRAM,
+    "NI_MAXHOST" : socket.NI_MAXHOST,
+    "NI_MAXSERV" : socket.NI_MAXSERV,
+    "NI_NAMEREQD" : socket.NI_NAMEREQD,
+    "NI_NOFQDN" : socket.NI_NOFQDN,
+    "NI_NUMERICHOST" : socket.NI_NUMERICHOST,
+    "NI_NUMERICSERV" : socket.NI_NUMERICSERV,
+    "RCVALL_MAX" : socket.RCVALL_MAX,
+    "RCVALL_OFF" : socket.RCVALL_OFF,
+    "RCVALL_ON" : socket.RCVALL_ON,
+    "RCVALL_SOCKETLEVELONLY" : socket.RCVALL_SOCKETLEVELONLY,
+    "SHUT_RD" : socket.SHUT_RD,
+    "SHUT_RDWR" : socket.SHUT_RDWR,
+    "SHUT_WR" : socket.SHUT_WR,
+    "SIO_KEEPALIVE_VALS" : socket.SIO_KEEPALIVE_VALS,
+    "SIO_LOOPBACK_FAST_PATH" : socket.SIO_LOOPBACK_FAST_PATH,
+    "SIO_RCVALL" : socket.SIO_RCVALL,
+    "SOCK_DGRAM" : socket.SOCK_DGRAM,
+    "SOCK_RAW" : socket.SOCK_RAW,
+    "SOCK_RDM" : socket.SOCK_RDM,
+    "SOCK_SEQPACKET" : socket.SOCK_SEQPACKET,
+    "SOCK_STREAM" : socket.SOCK_STREAM,
+    "SOL_IP" : socket.SOL_IP,
+    "SOL_SOCKET" : socket.SOL_SOCKET,
+    "SOL_TCP" : socket.SOL_TCP,
+    "SOL_UDP" : socket.SOL_UDP,
+    "SOMAXCONN" : socket.SOMAXCONN,
+    "SO_ACCEPTCONN" : socket.SO_ACCEPTCONN,
+    "SO_BROADCAST" : socket.SO_BROADCAST,
+    "SO_DEBUG" : socket.SO_DEBUG,
+    "SO_DONTROUTE" : socket.SO_DONTROUTE,
+    "SO_ERROR" : socket.SO_ERROR,
+    "SO_EXCLUSIVEADDRUSE" : socket.SO_EXCLUSIVEADDRUSE,
+    "SO_KEEPALIVE" : socket.SO_KEEPALIVE,
+    "SO_LINGER" : socket.SO_LINGER,
+    "SO_OOBINLINE" : socket.SO_OOBINLINE,
+    "SO_RCVBUF" : socket.SO_RCVBUF,
+    "SO_RCVLOWAT" : socket.SO_RCVLOWAT,
+    "SO_RCVTIMEO" : socket.SO_RCVTIMEO,
+    "SO_REUSEADDR" : socket.SO_REUSEADDR,
+    "SO_SNDBUF" : socket.SO_SNDBUF,
+    "SO_SNDLOWAT" : socket.SO_SNDLOWAT,
+    "SO_SNDTIMEO" : socket.SO_SNDTIMEO,
+    "SO_TYPE" : socket.SO_TYPE,
+    "SO_USELOOPBACK" : socket.SO_USELOOPBACK,
+    "TCP_FASTOPEN" : socket.TCP_FASTOPEN,
+    "TCP_KEEPCNT" : socket.TCP_KEEPCNT,
+    "TCP_KEEPIDLE" : socket.TCP_KEEPIDLE,
+    "TCP_KEEPINTVL" : socket.TCP_KEEPINTVL,
+    "TCP_MAXSEG" : socket.TCP_MAXSEG,
+    "TCP_NODELAY" : socket.TCP_NODELAY
+}
 
 # Threads
 configuration_thread = []
@@ -181,6 +342,13 @@ textbox_stylesheet_black_bg = """QTextBrowser {background-color: rgb(0, 0, 0);
                 border-right:2px solid rgb(5, 5, 5);
                 border-top:2px solid rgb(5, 5, 5);
                 border-left:2px solid rgb(5, 5, 5);}"""
+
+cmb_menu_style = """QComboBox {background-color: rgb(10, 10, 10);
+                   color: rgb(200, 200, 200);
+                   border-top:2px solid rgb(5, 5, 5);
+                   border-bottom:2px solid rgb(5, 5, 5);
+                   border-right:2px solid rgb(5, 5, 5);
+                   border-left:2px solid rgb(0, 0, 0);}"""
 
 global_self = []
 
@@ -1096,13 +1264,24 @@ class App(QMainWindow):
             
             print('fingerprint_str:', len(self.fingerprint_str))
 
+        def bool_socket_options_function():
+            print(str(datetime.datetime.now()) + ' -- plugged in: App.generate_fingerprint_function')
+            global bool_socket_options
+            if bool_socket_options is True:
+                bool_socket_options = False
+                self.bool_socket_options_btn.setStyleSheet(button_stylesheet_red_text)
+            elif bool_socket_options is False:
+                bool_socket_options = True
+                self.bool_socket_options_btn.setStyleSheet(button_stylesheet_green_text)
+            print(str(datetime.datetime.now()) + ' -- setting bool_socket_options:', bool_socket_options)
+
         # Window Title
         self.title = "Communicator"
         self.setWindowTitle('Communicator')
         self.setWindowIcon(QIcon('./resources/image/icon.ico'))
 
         # Window Geometry
-        self.width, self.height = 1132, 402
+        self.width, self.height = 1132, 426
         app_pos_w, app_pos_h = (GetSystemMetrics(0) / 2 - (self.width / 2)), (GetSystemMetrics(1) / 2 - (self.height / 2))
         self.left, self.top = int(app_pos_w), int(app_pos_h)
         self.setGeometry(self.left, self.top, self.width, self.height)
@@ -1155,16 +1334,82 @@ class App(QMainWindow):
         # QLabel - Dial Out OVERRIDE
         self.dial_override = QPushButton(self)
         self.dial_override.resize(self.btn_60, self.btn_20)
-        self.dial_override.move((self.width / 2) - (self.btn_240 / 2), 328)
+        self.dial_override.move((self.width / 2) - (self.btn_240 / 2), 334)
         self.dial_override.setStyleSheet(button_stylesheet_white_text_high)
         self.dial_override.setText('OVERRIDE')
         self.dial_override.setFont(self.font_s7b)
         self.dial_override.clicked.connect(dial_out_override_function)
 
+        self.dial_out_label = QLabel(self)
+        self.dial_out_label.resize(self.btn_60, 20)
+        self.dial_out_label.move((self.width / 2) + (self.btn_240 / 2) + self.btn_4 + self.btn_60 + self.btn_4 + 24, 308 + 24)
+        self.dial_out_label.setFont(self.font_s7b)
+        self.dial_out_label.setText('ENCODING')
+        self.dial_out_label.setAlignment(Qt.AlignCenter)
+        self.dial_out_label.setStyleSheet(title_stylesheet_default)
+
+        self.dial_out_family_type = QLabel(self)
+        self.dial_out_family_type.resize(self.btn_60, 20)
+        self.dial_out_family_type.move((self.width / 2) + (self.btn_240 / 2) + self.btn_4 + self.btn_60 + self.btn_4 + 24, 308 + 24 + 24)
+        self.dial_out_family_type.setFont(self.font_s7b)
+        self.dial_out_family_type.setText('SCK. 0')
+        self.dial_out_family_type.setAlignment(Qt.AlignCenter)
+        self.dial_out_family_type.setStyleSheet(title_stylesheet_default)
+
+        self.codec_select_box = QComboBox(self)
+        self.codec_select_box.resize(120, 20)
+        self.codec_select_box.move((self.width / 2) + (self.btn_240 / 2) + self.btn_4 + self.btn_60 + self.btn_4 + self.btn_60 + self.btn_4 + 24, 308 + 24)
+        self.codec_select_box.setStyleSheet(cmb_menu_style)
+        self.codec_select_box.setFont(self.font_s7b)
+        communicator_codecs = encodings._aliases
+        for k, v in communicator_codecs.items():
+            codec_str = str(str(k) + ' ' + str(v))
+            self.codec_select_box.addItem(codec_str)
+
+        self.communicator_socket_options_box_0 = QComboBox(self)
+        self.communicator_socket_options_box_0.resize(120, 20)
+        self.communicator_socket_options_box_0.move((self.width / 2) + (self.btn_240 / 2) + self.btn_4 + self.btn_60 + self.btn_4 + self.btn_60 + self.btn_4 + 24, 332 + 24)
+        self.communicator_socket_options_box_0.setStyleSheet(cmb_menu_style)
+        self.communicator_socket_options_box_0.setFont(self.font_s7b)
+        for v in COMMUNICATOR_SOCK:
+            self.communicator_socket_options_box_0.addItem(str(v))
+
+        self.communicator_socket_options_box_1 = QComboBox(self)
+        self.communicator_socket_options_box_1.resize(120, 20)
+        self.communicator_socket_options_box_1.move((self.width / 2) + (self.btn_240 / 2) + self.btn_4 + self.btn_60 + self.btn_4 + self.btn_60 + self.btn_4 + 120 + 4 + 24, 332 + 24)
+        self.communicator_socket_options_box_1.setStyleSheet(cmb_menu_style)
+        self.communicator_socket_options_box_1.setFont(self.font_s7b)
+        for v in COMMUNICATOR_SOCK:
+            self.communicator_socket_options_box_1.addItem(str(v))
+
+        self.communicator_socket_options_box_2 = QComboBox(self)
+        self.communicator_socket_options_box_2.resize(120, 20)
+        self.communicator_socket_options_box_2.move((self.width / 2) + (self.btn_240 / 2) + self.btn_4 + self.btn_60 + self.btn_4 + self.btn_60 + self.btn_4 + 24, 356 + 24)
+        self.communicator_socket_options_box_2.setStyleSheet(cmb_menu_style)
+        self.communicator_socket_options_box_2.setFont(self.font_s7b)
+        for v in COMMUNICATOR_SOCK:
+            self.communicator_socket_options_box_2.addItem(str(v))
+
+        self.communicator_socket_options_box_3 = QComboBox(self)
+        self.communicator_socket_options_box_3.resize(120, 20)
+        self.communicator_socket_options_box_3.move((self.width / 2) + (self.btn_240 / 2) + self.btn_4 + self.btn_60 + self.btn_4 + self.btn_60 + self.btn_4 + 120 + 4 + 24, 356 + 24)
+        self.communicator_socket_options_box_3.setStyleSheet(cmb_menu_style)
+        self.communicator_socket_options_box_3.setFont(self.font_s7b)
+        for v in COMMUNICATOR_SOCK:
+            self.communicator_socket_options_box_3.addItem(str(v))
+
+        self.bool_socket_options_btn = QPushButton(self)
+        self.bool_socket_options_btn.resize(self.btn_60, self.btn_20)
+        self.bool_socket_options_btn.move((self.width / 2) + (self.btn_240 / 2) + self.btn_4 + self.btn_60 + self.btn_4 + 24, 356 + 24)
+        self.bool_socket_options_btn.setStyleSheet(button_stylesheet_red_text)
+        self.bool_socket_options_btn.setText('SCK. OPT')
+        self.bool_socket_options_btn.setFont(self.font_s7b)
+        self.bool_socket_options_btn.clicked.connect(bool_socket_options_function)
+
         # QLabel - Dial Out Message
         self.dial_out_message = QLineEdit(self)
         self.dial_out_message.resize(self.btn_240, self.btn_20)
-        self.dial_out_message.move((self.width / 2) - (self.btn_240 / 2), 352)
+        self.dial_out_message.move((self.width / 2) - (self.btn_240 / 2), 356)
         self.dial_out_message.setFont(self.font_s7b)
         self.dial_out_message.setText('')
         self.dial_out_message.setStyleSheet(line_edit_stylesheet_white_text)
@@ -1172,7 +1417,7 @@ class App(QMainWindow):
         # QLabel - Dial Out Message Send
         self.dial_out_message_send = QPushButton(self)
         self.dial_out_message_send.resize(self.btn_60, self.btn_20)
-        self.dial_out_message_send.move((self.width / 2) + (self.btn_240 / 2) + self.btn_4, 352)
+        self.dial_out_message_send.move((self.width / 2) + (self.btn_240 / 2) + self.btn_4, 356)
         self.dial_out_message_send.setIcon(QIcon("./resources/image/send_FILL1_wght100_GRAD-25_opsz40_WHITE.png"))
         self.dial_out_message_send.setIconSize(QSize(self.btn_20, self.btn_20))
         self.dial_out_message_send.setStyleSheet(button_stylesheet_default)
@@ -1181,7 +1426,7 @@ class App(QMainWindow):
         # QPushButton - Dial Out Set Encryption Boolean
         self.dial_out_cipher_bool_btn = QPushButton(self)
         self.dial_out_cipher_bool_btn.resize(self.btn_60, self.btn_20)
-        self.dial_out_cipher_bool_btn.move((self.width / 2) + (self.btn_240 / 2) + self.btn_4 + self.btn_60 + self.btn_4, 352)
+        self.dial_out_cipher_bool_btn.move((self.width / 2) + (self.btn_240 / 2) + self.btn_4, 332)
         self.dial_out_cipher_bool_btn.setText('CIPHER')
         self.dial_out_cipher_bool_btn.setFont(self.font_s7b)
         self.dial_out_cipher_bool_btn.setStyleSheet(button_stylesheet_green_text)
@@ -1521,7 +1766,11 @@ class App(QMainWindow):
         server_data_handler_class.start()
 
         # Thread - Dial_Out
-        dial_out_thread = DialOutClass(self.dial_out_message_send, self.dial_out_message, self.dial_out_ip_port)
+        dial_out_thread = DialOutClass(self.dial_out_message_send, self.dial_out_message, self.dial_out_ip_port, self.codec_select_box,
+                                       self.communicator_socket_options_box_0,
+                                       self.communicator_socket_options_box_1,
+                                       self.communicator_socket_options_box_2,
+                                       self.communicator_socket_options_box_3)
 
         # Thread - Configuration
         global configuration_thread
@@ -1707,12 +1956,22 @@ class AESCipher:
 
 
 class DialOutClass(QThread):
-    def __init__(self, dial_out_message_send, dial_out_message, dial_out_ip_port):
+    def __init__(self, dial_out_message_send, dial_out_message, dial_out_ip_port, codec_select_box,
+                 communicator_socket_options_box_0,
+                 communicator_socket_options_box_1,
+                 communicator_socket_options_box_2,
+                 communicator_socket_options_box_3):
         QThread.__init__(self)
 
         self.dial_out_message_send = dial_out_message_send
         self.dial_out_message = dial_out_message
         self.dial_out_ip_port = dial_out_ip_port
+
+        self.codec_select_box = codec_select_box
+        self.communicator_socket_options_box_0 = communicator_socket_options_box_0
+        self.communicator_socket_options_box_1 = communicator_socket_options_box_1
+        self.communicator_socket_options_box_2 = communicator_socket_options_box_2
+        self.communicator_socket_options_box_3 = communicator_socket_options_box_3
 
         self.HOST_SEND = ''
         self.PORT_SEND = ''
@@ -1759,6 +2018,7 @@ class DialOutClass(QThread):
         fo.close()
 
     def mac_send(self, dest=None):
+        global bool_socket_options
 
         # Broadcast address is used. To communicate via MAC address one will have to craft ones own capsules. You will have to know what you are doing.
 
@@ -1786,14 +2046,24 @@ class DialOutClass(QThread):
         mac_digits = utils.retrive_MAC_digits(mac)
         print('mac_digits:', mac_digits)
 
-        com_mac = bytes(self.MESSAGE_CONTENT, 'utf-16')
+        # Show Encoding
+        print('-- converting data using encoding:', str(self.codec_select_box.currentText()).split(' ')[1])
+
+        # Encode
+        com_mac = bytes(self.MESSAGE_CONTENT, str(self.codec_select_box.currentText()).split(' ')[1])
         print('-- attempting to send data to mac:', self.MESSAGE_CONTENT)
-        print('-- converting data to utf-16:', com_mac)
 
-        textbox_0_messages.append('[' + str(datetime.datetime.now()) + '] [MESSAGE UTF-16] [' + str(com_mac) + ']')
+        # Display
+        textbox_0_messages.append('[' + str(datetime.datetime.now()) + '] [' + str(self.codec_select_box.currentText()).split(' ')[1] + '] [' + str(com_mac) + ']')
 
-        sok = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        sok.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+        # Setup Socket
+        sok = socket.socket(COMMUNICATOR_SOCK.get(self.communicator_socket_options_box_0.currentText()), COMMUNICATOR_SOCK.get(self.communicator_socket_options_box_1.currentText()))
+        print('-- variably setting socket as:', sok)
+
+        # Setup Socket Options
+        if bool_socket_options is True:
+            sok.setsockopt(COMMUNICATOR_SOCK.get(self.communicator_socket_options_box_2.currentText()), COMMUNICATOR_SOCK.get(self.communicator_socket_options_box_3.currentText()), 1)
+        print('-- variably setting socket options:', sok)
         try:
             if dest is None:
                 print('dest none:', dest, port)
@@ -1815,6 +2085,7 @@ class DialOutClass(QThread):
         global SOCKET_DIAL_OUT
         global dial_out_dial_out_cipher_bool
         global bool_dial_out_override
+        global bool_socket_options
 
         print('-' * 200)
         print(str(datetime.datetime.now()) + f" -- DialOutClass.message_send outgoing to: {self.HOST_SEND} : {self.PORT_SEND}")
@@ -1822,7 +2093,16 @@ class DialOutClass(QThread):
         try:
             data_response = ''
             if len(client_address[client_address_index]) == 5:
-                sok = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                # sok = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                # Setup Socket
+                sok = socket.socket(COMMUNICATOR_SOCK.get(self.communicator_socket_options_box_0.currentText()), COMMUNICATOR_SOCK.get(self.communicator_socket_options_box_1.currentText()))
+                print('-- variably setting socket as:', sok)
+
+                # Setup Socket Options
+                if bool_socket_options is True:
+                    sok.setsockopt(COMMUNICATOR_SOCK.get(self.communicator_socket_options_box_2.currentText()), COMMUNICATOR_SOCK.get(self.communicator_socket_options_box_3.currentText()), 1)
+                print('-- variably setting socket options:', sok)
+
             elif len(client_address[client_address_index]) == 6:
                 self.broadcast = client_address[client_address_index][5]
                 self.mac = client_address[client_address_index][1]
