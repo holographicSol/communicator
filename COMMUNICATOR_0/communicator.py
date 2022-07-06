@@ -1771,7 +1771,6 @@ class DialOutClass(QThread):
         textbox_0_messages.append('[' + str(datetime.datetime.now()) + '] [BROADCAST] [' + str(broadcast) + ']')
         textbox_0_messages.append('[' + str(datetime.datetime.now()) + '] [MAC] [' + str(mac) + ']')
         textbox_0_messages.append('[' + str(datetime.datetime.now()) + '] [PORT] [' + str(port) + ']')
-        textbox_0_messages.append('[' + str(datetime.datetime.now()) + '] [PORT] [' + str(port) + ']')
         textbox_0_messages.append('[' + str(datetime.datetime.now()) + '] [MESSAGE] [' + str(self.MESSAGE_CONTENT) + ']')
 
         try:
