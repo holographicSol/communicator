@@ -226,12 +226,12 @@ class App(QMainWindow):
                                     subcontrol-origin: margin;
                                     }
                                     QScrollBar::up-arrow:vertical {
-                                    image:url('./resources/image/small_img_menu_up.png');
+                                    image:url('./resources/image/scroll_white.png');
                                     height: 11px;
                                     width: 11px;
                                     }
                                     QScrollBar::down-arrow:vertical {
-                                    image:url('./resources/image/small_img_menu_down.png');
+                                    image:url('./resources/image/scroll_white.png');
                                     height: 11px;
                                     width: 11px;
                                     }
@@ -265,12 +265,12 @@ class App(QMainWindow):
                                     position: absolute;
                                     }
                                     QScrollBar::left-arrow:horizontal {
-                                    image:url('./resources/image/small_img_menu_left.png');
+                                    image:url('./resources/image/scroll_white.png');
                                     height: 11px;
                                     width: 11px;
                                     }
                                     QScrollBar::right-arrow:horizontal {
-                                    image:url('./resources/image/small_img_menu_right.png');
+                                    image:url('./resources/image/scroll_white.png');
                                     height: 11px;
                                     width: 11px;
                                     }
@@ -1207,7 +1207,6 @@ class App(QMainWindow):
         self.address_clear_form = QPushButton(self)
         self.address_clear_form.resize(self.btn_120 - 2, self.btn_20)
         self.address_clear_form.move((self.width / 2) - (self.btn_240 / 2), 168)
-        # self.address_clear_form.setText('+')
         self.address_clear_form.setIcon(QIcon("./resources/image/clear_all_FILL0_wght300_GRAD200_opsz20WHITE.png"))
         self.address_clear_form.setIconSize(QSize(self.btn_20 - 8, self.btn_20 - 8))
         self.address_clear_form.setFont(self.font_s7b)
@@ -1384,29 +1383,35 @@ class App(QMainWindow):
 
         # QPushButton - Server Start
         self.server_start = QPushButton(self)
-        self.server_start.resize(60, int(self.btn_40 / 2))
-        self.server_start.move(28, 52)
-        self.server_start.setFont(self.font_s7b)
-        self.server_start.setText('START')
-        self.server_start.setStyleSheet(button_stylesheet_white_text_high)
+        self.server_start.resize(self.btn_60, self.btn_20)
+        self.server_start.move((self.width / 2) - (self.btn_60 / 2), 4)
+        # self.server_start.setFont(self.font_s7b)
+        self.server_start.setIcon(QIcon("./resources/image/play_arrow_FILL1_wght300_GRAD200_opsz20GREEN.png"))
+        self.server_start.setIconSize(QSize(9, 9))
+        # self.server_start.setText('START')
+        self.server_start.setStyleSheet(button_stylesheet_red_text)
         self.server_start.clicked.connect(start_function)
 
         # QPushButton - Server Stop
         self.server_stop = QPushButton(self)
-        self.server_stop.resize(60, int(self.btn_40 / 2))
-        self.server_stop.move(28, 76)
-        self.server_stop.setFont(self.font_s7b)
-        self.server_stop.setText('STOP')
-        self.server_stop.setStyleSheet(button_stylesheet_white_text_high)
+        self.server_stop.resize(self.btn_60, self.btn_20)
+        self.server_stop.move((self.width / 2) - (self.btn_240 / 2), 4)
+        # self.server_stop.setFont(self.font_s7b)
+        self.server_stop.setIcon(QIcon("./resources/image/stop_FILL1_wght300_GRAD200_opsz20RED.png"))
+        self.server_stop.setIconSize(QSize(9, 9))
+        # self.server_stop.setText('STOP')
+        self.server_stop.setStyleSheet(button_stylesheet_red_text)
         self.server_stop.clicked.connect(stop_function)
 
         # QPushButton - Server Stop
         self.server_restart = QPushButton(self)
-        self.server_restart.resize(60, int(self.btn_40 / 2))
-        self.server_restart.move(28, 100)
-        self.server_restart.setFont(self.font_s7b)
-        self.server_restart.setText('RESTART')
-        self.server_restart.setStyleSheet(button_stylesheet_white_text_high)
+        self.server_restart.resize(self.btn_60, self.btn_20)
+        self.server_restart.move((self.width / 2) + (self.btn_240 / 2) - self.btn_60, 4)
+        # self.server_restart.setFont(self.font_s7b)
+        # self.server_restart.setText('RESTART')
+        self.server_restart.setIcon(QIcon("./resources/image/replay_FILL1_wght300_GRAD200_opsz20YELLOW.png"))
+        self.server_restart.setIconSize(QSize(9, 9))
+        self.server_restart.setStyleSheet(button_stylesheet_red_text)
         self.server_restart.clicked.connect(restart_function)
 
         # QLineEdit - Server IP
@@ -1509,7 +1514,7 @@ class App(QMainWindow):
         self.mute_server_notify_alien.clicked.connect(mute_server_notify_alien_function)
 
         # Thread - Public Server
-        server_thread = ServerClass(self.server_incoming, self.server_status_label, self.soft_block_ip_notification, self.server_status_label_ip_in_use)
+        server_thread = ServerClass(self.server_incoming, self.server_status_label, self.soft_block_ip_notification, self.server_status_label_ip_in_use, self.server_start)
 
         # Thread - ServerDataHandlerClass
         server_data_handler_class = ServerDataHandlerClass(self.server_incoming, self.server_notify_cipher, self.server_notify_alien)
@@ -1557,14 +1562,14 @@ class App(QMainWindow):
 
         # QTextBrowser - Message Output
         self.tb_0 = QTextBrowser(self)
-        self.tb_0.move(4, self.height - 60)
-        self.tb_0.resize(self.width - 8, 60)
+        self.tb_0.move(4, 52)
+        self.tb_0.resize(400, 84)
         self.tb_0.setObjectName("tb_0")
         self.tb_0.setFont(self.font_s7b)
         self.tb_0.setStyleSheet(textbox_stylesheet_default)
         self.tb_0.setLineWrapMode(QTextBrowser.NoWrap)
         self.tb_0.horizontalScrollBar().setValue(0)
-        self.tb_0.hide()
+        # self.tb_0.hide()
 
         # QTimer - Used For Appending To tb_0 Using QtSlots
         self.timer_0 = QTimer(self)
@@ -2023,12 +2028,13 @@ class ServerDataHandlerClass(QThread):
 
 
 class ServerClass(QThread):
-    def __init__(self, server_incoming, server_status_label, soft_block_ip_notification, server_status_label_ip_in_use):
+    def __init__(self, server_incoming, server_status_label, soft_block_ip_notification, server_status_label_ip_in_use, server_start):
         QThread.__init__(self)
         self.server_incoming = server_incoming
         self.server_status_label = server_status_label
         self.soft_block_ip_notification = soft_block_ip_notification
         self.server_status_label_ip_in_use = server_status_label_ip_in_use
+        self.server_start = server_start
         self.data = ''
         self.SERVER_HOST = ''
         self.SERVER_PORT = ''
@@ -2060,8 +2066,8 @@ class ServerClass(QThread):
                 print(str(datetime.datetime.now()) + ' -- ServerClass.run failed:', e)
                 self.server_status_label.setText('SERVER STATUS: TRYING TO START')
                 self.server_incoming.setIcon(QIcon('./resources/image/public_FILL0_wght100_GRAD-25_opsz48_YELLOW'))
+                self.server_start.setIcon(QIcon("./resources/image/play_arrow_FILL1_wght300_GRAD200_opsz20YELLOW.png"))
                 time.sleep(1)
-                break
 
     def server_logger(self):
         if not os.path.exists(server_log):
@@ -2136,6 +2142,7 @@ class ServerClass(QThread):
                         self.server_status_prev = self.server_status_current
                         self.server_status_label.setText('SERVER STATUS: ONLINE')
                         self.server_incoming.setIcon(QIcon('./resources/image/public_FILL0_wght100_GRAD-25_opsz48_WHITE.png'))
+                        self.server_start.setIcon(QIcon("./resources/image/play_arrow_FILL1_wght300_GRAD200_opsz20GREEN.png"))
 
                     SOCKET_SERVER.listen()
 
@@ -2241,6 +2248,7 @@ class ServerClass(QThread):
                                     textbox_0_messages.append('[' + str(datetime.datetime.now()) + '] ' + str(e))
                                     self.server_status_label.setText('SERVER STATUS: TRYING TO START')
                                     self.server_incoming.setIcon(QIcon('./resources/image/public_FILL0_wght100_GRAD-25_opsz48_YELLOW'))
+                                    self.server_start.setIcon(QIcon("./resources/image/play_arrow_FILL1_wght300_GRAD200_opsz20YELLOW.png"))
                                     time.sleep(1)
                                     break
 
@@ -2250,6 +2258,7 @@ class ServerClass(QThread):
                 textbox_0_messages.append('[' + str(datetime.datetime.now()) + '] ' + str(e))
                 self.server_status_label.setText('SERVER STATUS: TRYING TO START')
                 self.server_incoming.setIcon(QIcon('./resources/image/public_FILL0_wght100_GRAD-25_opsz48_YELLOW'))
+                self.server_start.setIcon(QIcon("./resources/image/play_arrow_FILL1_wght300_GRAD200_opsz20YELLOW.png"))
                 time.sleep(1)
                 break
 
@@ -2265,6 +2274,7 @@ class ServerClass(QThread):
             print(str(datetime.datetime.now()) + ' -- ServerClass.stop failed:', e)
         self.server_status_label.setText('SERVER STATUS: OFFLINE')
         self.server_incoming.setIcon(QIcon('./resources/image/public_OFF_FILL0_wght100_GRAD-25_opsz48_WHITE.png'))
+        self.server_start.setIcon(QIcon("./resources/image/play_arrow_FILL1_wght300_GRAD200_opsz20GREEN.png"))
         global_self.setFocus()
         self.terminate()
 
