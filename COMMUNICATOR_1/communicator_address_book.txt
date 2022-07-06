@@ -1,4 +1,0 @@
-DATA chewy 192.168.1.11 55555 Ol%N=.QOxH:XHg\PAOGW.:V]Xgu[*:fI ./fingerprints/chew_2.txt
-DATA basic 192.168.1.11 55555 x x
-DATA chewy2 192.168.1.11 55555 Ol%N=.QOxH:XHg\PAOGW.:V]Xgu[*:fI ./fingerprints/chew_2.txt
-DATA basic2 192.168.1.11 55555 x x
