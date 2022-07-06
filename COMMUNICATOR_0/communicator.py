@@ -974,20 +974,22 @@ class App(QMainWindow):
                 self.generate_key.setEnabled(True)
                 self.generate_fingerprint.setEnabled(True)
                 self.dial_out_save_with_key.setIcon(QIcon("./resources/image/mfg_nest_yale_lock_FILL0_wght200_GRAD0_opsz20GREEN.png"))
-                self.generate_key.setStyleSheet(button_stylesheet_white_text_high)
-                self.generate_fingerprint.setStyleSheet(button_stylesheet_white_text_high)
-                self.dial_out_add_addr.resize(self.btn_120, self.btn_20)
+                self.generate_key.setStyleSheet(button_stylesheet_green_text)
+                self.generate_fingerprint.setStyleSheet(button_stylesheet_green_text)
+                # self.dial_out_add_addr.resize(self.btn_120, self.btn_20)
                 self.dial_out_add_addr.setText('ADVANCED SAVE')
+                self.dial_out_add_addr.setStyleSheet(button_stylesheet_green_text)
             elif address_save_mode is 'advanced':
                 address_save_mode = 'basic'
                 address_reveal_bool = False
                 self.generate_key.setEnabled(False)
                 self.generate_fingerprint.setEnabled(False)
                 self.dial_out_save_with_key.setIcon(QIcon("./resources/image/mfg_nest_yale_lock_FILL0_wght200_GRAD0_opsz20RED.png"))
-                self.generate_key.setStyleSheet(button_stylesheet_white_text_low)
-                self.generate_fingerprint.setStyleSheet(button_stylesheet_white_text_low)
-                self.dial_out_add_addr.resize(self.btn_60, self.btn_20)
+                self.generate_key.setStyleSheet(button_stylesheet_red_text)
+                self.generate_fingerprint.setStyleSheet(button_stylesheet_red_text)
+                # self.dial_out_add_addr.resize(self.btn_60, self.btn_20)
                 self.dial_out_add_addr.setText('SAVE')
+                self.dial_out_add_addr.setStyleSheet(button_stylesheet_white_text_high)
             print(str(datetime.datetime.now()) + ' -- setting address_save_mode:', address_save_mode)
 
         def format_fingerprint():
@@ -1154,7 +1156,7 @@ class App(QMainWindow):
         self.dial_override = QPushButton(self)
         self.dial_override.resize(self.btn_60, self.btn_20)
         self.dial_override.move((self.width / 2) - (self.btn_240 / 2), 328)
-        self.dial_override.setStyleSheet(button_stylesheet_default)
+        self.dial_override.setStyleSheet(button_stylesheet_white_text_high)
         self.dial_override.setText('OVERRIDE')
         self.dial_override.setFont(self.font_s7b)
         self.dial_override.clicked.connect(dial_out_override_function)
@@ -1263,7 +1265,7 @@ class App(QMainWindow):
         self.generate_fingerprint.move(self.width - self.btn_4 - self.btn_20 - self.btn_4 - self.btn_20, 188)
         self.generate_fingerprint.setText('+')
         self.generate_fingerprint.setFont(self.font_s7b)
-        self.generate_fingerprint.setStyleSheet(button_stylesheet_white_text_low)
+        self.generate_fingerprint.setStyleSheet(button_stylesheet_red_text)
         self.generate_fingerprint.clicked.connect(generate_fingerprint_function)
         self.generate_fingerprint.setEnabled(False)
 
@@ -1273,7 +1275,7 @@ class App(QMainWindow):
         self.generate_key.move(self.width - self.btn_4 - self.btn_20 - self.btn_4 - self.btn_20, 164)
         self.generate_key.setText('+')
         self.generate_key.setFont(self.font_s7b)
-        self.generate_key.setStyleSheet(button_stylesheet_white_text_low)
+        self.generate_key.setStyleSheet(button_stylesheet_red_text)
         self.generate_key.clicked.connect(generate_key_function)
         self.generate_key.setEnabled(False)
 
@@ -1343,8 +1345,8 @@ class App(QMainWindow):
 
         # QPushButton - Dial Out Add Address
         self.dial_out_add_addr = QPushButton(self)
-        self.dial_out_add_addr.resize(60, 20)
-        self.dial_out_add_addr.move((self.width / 2) - (self.btn_240 / 2), 244)
+        self.dial_out_add_addr.resize(self.btn_120 - 2, 20)
+        self.dial_out_add_addr.move((self.width / 2) - (self.btn_240 / 2), 240)
         self.dial_out_add_addr.setFont(self.font_s7b)
         self.dial_out_add_addr.setText('SAVE')
         self.dial_out_add_addr.setStyleSheet(button_stylesheet_default)
@@ -1353,8 +1355,8 @@ class App(QMainWindow):
 
         # QPushButton - Dial Out Remove Address
         self.dial_out_rem_addr = QPushButton(self)
-        self.dial_out_rem_addr.resize(60, 20)
-        self.dial_out_rem_addr.move((self.width / 2) + (self.btn_240 / 2) - 60, 244)
+        self.dial_out_rem_addr.resize(self.btn_120 - 2, 20)
+        self.dial_out_rem_addr.move((self.width / 2) + (self.btn_240 / 2) - self.btn_120 + 2, 240)
         self.dial_out_rem_addr.setFont(self.font_s7b)
         self.dial_out_rem_addr.setText('DELETE')
         self.dial_out_rem_addr.setStyleSheet(button_stylesheet_default)
@@ -1369,18 +1371,10 @@ class App(QMainWindow):
         self.server_status_label.setAlignment(Qt.AlignCenter)
         self.server_status_label.setStyleSheet(title_stylesheet_default)
 
-        self.server_status_label_ = QLabel(self)
-        self.server_status_label.resize(self.width - 8, 20)
-        self.server_status_label.move(4, 28)
-        self.server_status_label.setFont(self.font_s7b)
-        self.server_status_label.setText('SERVER STATUS:  OFFLINE')
-        self.server_status_label.setAlignment(Qt.AlignCenter)
-        self.server_status_label.setStyleSheet(title_stylesheet_default)
-
         # QLabel - Server Status
         self.server_status_label_ip_in_use = QLabel(self)
-        self.server_status_label_ip_in_use.resize(self.btn_140, 20)
-        self.server_status_label_ip_in_use.move((self.width / 2) - (self.btn_140 / 2), 52)
+        self.server_status_label_ip_in_use.resize(self.btn_240, 20)
+        self.server_status_label_ip_in_use.move((self.width / 2) - (self.btn_240 / 2), 52)
         self.server_status_label_ip_in_use.setFont(self.font_s7b)
         self.server_status_label_ip_in_use.setText('')
         self.server_status_label_ip_in_use.setAlignment(Qt.AlignCenter)
@@ -1392,7 +1386,7 @@ class App(QMainWindow):
         self.server_start.move(28, 52)
         self.server_start.setFont(self.font_s7b)
         self.server_start.setText('START')
-        self.server_start.setStyleSheet(button_stylesheet_default)
+        self.server_start.setStyleSheet(button_stylesheet_white_text_high)
         self.server_start.clicked.connect(start_function)
 
         # QPushButton - Server Stop
@@ -1401,7 +1395,7 @@ class App(QMainWindow):
         self.server_stop.move(28, 76)
         self.server_stop.setFont(self.font_s7b)
         self.server_stop.setText('STOP')
-        self.server_stop.setStyleSheet(button_stylesheet_default)
+        self.server_stop.setStyleSheet(button_stylesheet_white_text_high)
         self.server_stop.clicked.connect(stop_function)
 
         # QPushButton - Server Stop
@@ -1410,13 +1404,13 @@ class App(QMainWindow):
         self.server_restart.move(28, 100)
         self.server_restart.setFont(self.font_s7b)
         self.server_restart.setText('RESTART')
-        self.server_restart.setStyleSheet(button_stylesheet_default)
+        self.server_restart.setStyleSheet(button_stylesheet_white_text_high)
         self.server_restart.clicked.connect(restart_function)
 
         # QLineEdit - Server IP
         self.server_ip_port = QLineEdit(self)
-        self.server_ip_port.resize(self.btn_140, 20)
-        self.server_ip_port.move((self.width / 2) - (self.btn_140 / 2), 76)
+        self.server_ip_port.resize(self.btn_240, 20)
+        self.server_ip_port.move((self.width / 2) - (self.btn_240 / 2), 76)
         self.server_ip_port.returnPressed.connect(server_line_edit_return_pressed)
         self.server_ip_port.setFont(self.font_s7b)
         self.server_ip_port.setText('')
@@ -1426,7 +1420,7 @@ class App(QMainWindow):
         # QPushButton - Server Previous Address
         self.server_prev_addr = QPushButton(self)
         self.server_prev_addr.resize(self.btn_20, 20)
-        self.server_prev_addr.move((self.width / 2) - (self.btn_140 / 2) - self.btn_20 - self.btn_4, 76)
+        self.server_prev_addr.move((self.width / 2) - (self.btn_240 / 2) - self.btn_20 - self.btn_4, 76)
         self.server_prev_addr.setIcon(QIcon("./resources/image/baseline_keyboard_arrow_left_white_18dp.png"))
         self.server_prev_addr.setIconSize(QSize(20, 20))
         self.server_prev_addr.setStyleSheet(button_stylesheet_default)
@@ -1435,7 +1429,7 @@ class App(QMainWindow):
         # QPushButton - Server Out Next Address
         self.server_next_addr = QPushButton(self)
         self.server_next_addr.resize(20, 20)
-        self.server_next_addr.move((self.width / 2) + (self.btn_140 / 2) + self.btn_4, 76)
+        self.server_next_addr.move((self.width / 2) + (self.btn_240 / 2) + self.btn_4, 76)
         self.server_next_addr.setIcon(QIcon("./resources/image/baseline_keyboard_arrow_right_white_18dp.png"))
         self.server_next_addr.setIconSize(QSize(20, 20))
         self.server_next_addr.setStyleSheet(button_stylesheet_default)
@@ -1444,7 +1438,7 @@ class App(QMainWindow):
         # QPushButton - Dial Out Add Address
         self.server_add_addr = QPushButton(self)
         self.server_add_addr.resize(60, int(self.btn_40 / 2))
-        self.server_add_addr.move((self.width / 2) - (self.btn_140 / 2), 100)
+        self.server_add_addr.move((self.width / 2) - (self.btn_240 / 2), 104)
         self.server_add_addr.setFont(self.font_s7b)
         self.server_add_addr.setText('SAVE')
         self.server_add_addr.setStyleSheet(button_stylesheet_white_text_low)
@@ -1452,8 +1446,8 @@ class App(QMainWindow):
 
         # QPushButton - Dial Out Remove Address
         self.server_rem_addr = QPushButton(self)
-        self.server_rem_addr.resize(60, int(self.btn_40 / 2))
-        self.server_rem_addr.move((self.width / 2) + 10, 100)
+        self.server_rem_addr.resize(self.btn_60, int(self.btn_40 / 2))
+        self.server_rem_addr.move((self.width / 2) + (self.btn_240 / 2) - self.btn_60, 104)
         self.server_rem_addr.setFont(self.font_s7b)
         self.server_rem_addr.setText('DELETE')
         self.server_rem_addr.setIconSize(QSize(14, 14))
@@ -1489,7 +1483,7 @@ class App(QMainWindow):
         self.server_notify_cipher = QPushButton(self)
         self.server_notify_cipher.resize(60, int(self.btn_40 / 2))
         self.server_notify_cipher.move(self.width - 136, 52)
-        self.server_notify_cipher.setStyleSheet(button_stylesheet_default)
+        self.server_notify_cipher.setStyleSheet(button_stylesheet_white_text_high)
         self.server_notify_cipher.setFont(self.font_s7b)
         self.server_notify_cipher.setText(str(cipher_message_count))
         self.server_notify_cipher.clicked.connect(server_notify_cipher_function)
@@ -1761,7 +1755,7 @@ class DialOutClass(QThread):
 
         broadcast = self.broadcast
         mac = self.mac
-        port = self.port
+        port = int(self.port)
 
         try:
             if not utils.is_valid_broadcast_ip(broadcast):
@@ -1779,9 +1773,12 @@ class DialOutClass(QThread):
         sok.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
         try:
             if dest is None:
+                print('dest none:', dest, port)
                 sok.connect((broadcast, port))
             else:
+                print('dest:', dest, port)
                 sok.connect((dest, port))
+            print('sending data:', com_mac)
             sok.send(com_mac)
         finally:
             sok.close()
