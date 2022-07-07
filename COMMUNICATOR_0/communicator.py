@@ -562,7 +562,7 @@ class App(QMainWindow):
 
                 bool_write = False
 
-                if self.dial_out_name.text() != '':
+                if self.dial_out_name.text() != '' and ' ' not in self.dial_out_name.text():
                     if self.dial_out_ip_port.text() != '':
 
                         non_success_write = []
