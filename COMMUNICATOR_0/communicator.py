@@ -554,8 +554,8 @@ class App(QMainWindow):
                                                                     str(line_split[11])]
 
                                             # Display to compare
-                                            print('-- MEM LINE COMPARE: ', compare_remove_address)
-                                            print('-- FILE LINE COMPARE:', compare_line_address)
+                                            print('-- MEM LIST COMPARE: ', compare_remove_address)
+                                            print('-- FILE LIST COMPARE:', compare_line_address)
 
                                             # Append unequal lines to a list
                                             if compare_remove_address != compare_line_address:
@@ -596,34 +596,31 @@ class App(QMainWindow):
             global button_stylesheet_green_text
             global internal_messages
 
+            # Attempt to only run this function if this function is not already in progress
             if write_client_configuration_engaged is False:
                 write_client_configuration_engaged = True
 
-                bool_write = False
-
+                # Name must not be empty and there must not be space in name
                 if self.dial_out_name.text() != '' and ' ' not in self.dial_out_name.text():
+
+                    # Address field must not be empty
                     if self.dial_out_ip_port.text() != '':
 
-                        non_success_write = []
+                        # Clearly display the save mode
+                        print(str(datetime.datetime.now()) + ' -- App.client_save_address using address_save_mode:', address_save_mode)
 
-                        fo_list = []
-                        with open('./communicator_address_book.txt', 'r') as fo:
-                            for line in fo:
-                                line = line.strip()
-                                if line != '':
-                                    fo_list.append(line)
-
-                        print(str(datetime.datetime.now()) + ' -- App.client_save_address using address_save_mode: address_save_mode')
-
+                        # Create a pre-flight check list
                         allow_save_bool = []
+
+                        # Codec must be selected
                         if str(self.codec_select_box.currentText()) != 'Unselected':
                             print('-- check_0: pass')
                             s_enc = str(self.codec_select_box.currentText()).split()[0] + '______' + str(self.codec_select_box.currentText()).split()[1]
-
                         else:
                             print('-- check_0: fail')
                             allow_save_bool.append(False)
 
+                        # Address Family must be selected
                         if str(self.communicator_socket_options_box_0.currentText()) != 'Unselected':
                             print('-- check_1: pass')
                             s_address_family = str(self.communicator_socket_options_box_0.currentText())
@@ -631,6 +628,7 @@ class App(QMainWindow):
                             print('-- check_1: fail')
                             allow_save_bool.append(False)
 
+                        # Socket Type must be selected
                         if str(self.communicator_socket_options_box_1.currentText()) != 'Unselected':
                             print('-- check_2: pass')
                             s_soc_type = str(self.communicator_socket_options_box_1.currentText())
@@ -638,37 +636,84 @@ class App(QMainWindow):
                             print('-- check_2: fail')
                             allow_save_bool.append(False)
 
-                        if not False in allow_save_bool:
+                        # Continue if not False in the pre-flight check list
+                        if False not in allow_save_bool:
 
+                            # Set a new boolean to False and use this variable to allow or disallow the final address book amendment later
+                            bool_allow_write = False
+
+                            # Get the socket options and create a string of all the socket arguments
                             s_options_0 = str(self.communicator_socket_options_box_2.currentText())
                             s_options_1 = str(self.communicator_socket_options_box_3.currentText())
                             s_args = s_enc + ' ' + s_address_family + ' ' + s_soc_type + ' ' + s_options_0 + ' ' + s_options_1
 
-                            # Use Save Mode Basic
+                            # Display current address index for comparison later
+                            print('-- current index before potentially sorting:', client_address_index)
+
+                            # Initiate an empty string which can be used as the string to append to the address book later
+                            to_address_book = ''
+
+                            # Basic Save Mode
                             if address_save_mode == 'basic':
+
+                                # Save mode is basic so ensure key and fingerprint have been cleared
                                 self.address_key.setText('')
                                 self.tb_fingerprint.setText('')
+
+                                # Expects address and port each seperated by a space (over sanitizing will make addressing less powerful and less future-proof, so this statement just checks for two items)
                                 if len(self.dial_out_ip_port.text().split(' ')) == 2:
-                                    fo_list.append('DATA ' + self.dial_out_name.text() + ' ' + str(self.dial_out_ip_port.text() + ' x' + ' x' + ' x ' + s_args))
+
+                                    # Set the string which should be appended to the address book
+                                    to_address_book = 'DATA ' + self.dial_out_name.text() + ' ' + str(self.dial_out_ip_port.text()) + ' x' + ' x' + ' x ' + s_args
+
+                                    # Append a new list to the address book list in memory
                                     client_address.append([str(self.dial_out_name.text()), str(self.dial_out_ip_port.text().split(' ')[0]), int(self.dial_out_ip_port.text().split(' ')[1]), bytes('x', 'utf-8'), 'x', 'x', s_enc, s_address_family, s_soc_type, s_options_0, s_options_1])
-                                    bool_write = True
+
+                                    # Alphabetically sort the address book in memory
+                                    client_address.sort(key=lambda x: x[0])
+
+                                    # Find the new index of the new address book entry in memory after sorting and set the new current address book index accordingly
+                                    client_address_index = client_address.index([str(self.dial_out_name.text()), str(self.dial_out_ip_port.text().split(' ')[0]), int(self.dial_out_ip_port.text().split(' ')[1]), bytes('x', 'utf-8'), 'x', 'x', s_enc, s_address_family, s_soc_type, s_options_0, s_options_1])
+
+                                    bool_allow_write = True
+
+                                # Expects address, port and broadcast address each seperated by a space (over sanitizing will make addressing less powerful and less future-proof, so this statement just checks for two items)
                                 elif len(self.dial_out_ip_port.text().split(' ')) == 3:
                                     broadcast_address = self.dial_out_ip_port.text().split()[2]
-                                    fo_list.append('DATA ' + self.dial_out_name.text() + ' ' + str(self.dial_out_ip_port.text().split()[0]) + ' ' + str(self.dial_out_ip_port.text().split()[1]) + ' x' + ' x' + ' ' + broadcast_address + ' ' + s_args)
-                                    client_address.append([str(self.dial_out_name.text()), str(self.dial_out_ip_port.text().split(' ')[0]), int(self.dial_out_ip_port.text().split(' ')[1]), bytes('x', 'utf-8'), 'x', broadcast_address, s_enc, s_address_family, s_soc_type, s_options_0, s_options_1])
-                                    bool_write = True
 
-                            # Use Save Mode Advanced
+                                    # Set the string which should be appended to the address book
+                                    to_address_book = 'DATA ' + self.dial_out_name.text() + ' ' + str(self.dial_out_ip_port.text().split()[0]) + ' ' + str(self.dial_out_ip_port.text().split()[1]) + ' x' + ' x' + ' ' + str(self.dial_out_ip_port.text().split()[2]) + ' ' + s_args
+
+                                    # Append a new list to the address book list in memory
+                                    client_address.append([str(self.dial_out_name.text()), str(self.dial_out_ip_port.text().split(' ')[0]), int(self.dial_out_ip_port.text().split(' ')[1]), bytes('x', 'utf-8'), 'x', broadcast_address, s_enc, s_address_family, s_soc_type, s_options_0, s_options_1])
+
+                                    # Alphabetically sort the address book in memory
+                                    client_address.sort(key=lambda x: x[0])
+
+                                    # Find the new index of the new address book entry in memory after sorting and set the new current address book index accordingly
+                                    client_address_index = client_address.index([str(self.dial_out_name.text()), str(self.dial_out_ip_port.text().split(' ')[0]), int(self.dial_out_ip_port.text().split(' ')[1]), bytes('x', 'utf-8'), 'x', broadcast_address, s_enc, s_address_family, s_soc_type, s_options_0, s_options_1])
+
+                                    bool_allow_write = True
+
+                            # Advanced Save Mode
                             elif address_save_mode == 'advanced':
+
+                                # Display key and fingerprint
                                 print('key:', str(self.address_key.text()))
                                 print('fingerprint:', self.tb_fingerprint.toPlainText().strip())
 
+                                # Create a new fingerprint filename using the name in the name input field
                                 fingerprint_fname = self.dial_out_name.text()
+
+                                # List and display each filename in the fingerprints directory
                                 fingerprint_fname_list = os.listdir('./fingerprints')
                                 print('fingerprint_fname_list:', fingerprint_fname_list)
 
+                                # Check if the newly created fingerprint filename already exists in the fingerprint directory
                                 if fingerprint_fname + '.txt' in fingerprint_fname_list:
                                     fingerprint_fname_ready_bool = False
+
+                                    #  While fingerprint filename exists, try appending numbers to the filename until a filename does not exist in the fingerprints directory
                                     i = 0
                                     while fingerprint_fname_ready_bool is False:
                                         var = fingerprint_fname + str(i) + '.txt'
@@ -677,31 +722,68 @@ class App(QMainWindow):
                                             fingerprint_fname_ready_bool = True
                                         else:
                                             i += 1
+
+                                # Append fingerprint filename suffix if not already exists
                                 if not fingerprint_fname.endswith('.txt'):
                                     fingerprint_fname = fingerprint_fname + '.txt'
+
+                                # Pre-append intended path to the newly created fingerprint filename
                                 fingerprint_fname = './fingerprints/' + fingerprint_fname
 
+                                # Display the new intended fingerprint path plus filename
                                 print('fingerprint_fname:', fingerprint_fname)
+
+                                # Concatenate each line in fingerprint textbox into a single clean string
                                 self.fingerprint_str = ''
                                 for line in self.tb_fingerprint.toPlainText():
                                     line = line.strip()
                                     self.fingerprint_str = self.fingerprint_str + line
-                                print(self.fingerprint_str)
 
-                                print('len(self.address_key.text()):', len(self.address_key.text()))
-                                print('len(self.fingerprint_str):', len(self.fingerprint_str))
+                                # Display the new fingerprint string
+                                print('self.fingerprint_str:', self.fingerprint_str)
 
+                                # Check Lengths of both key and fingerprint
+                                print('len(self.address_key.text()) has to be 32 to continue:', len(self.address_key.text()))
+                                print('len(self.fingerprint_str) has to be 1024 to continue:', len(self.fingerprint_str))
                                 if len(self.address_key.text()) == 32:
                                     if len(self.fingerprint_str) == 1024:
 
+                                        # Expects address and port each seperated by a space (over sanitizing will make addressing less powerful and less future-proof, so this statement just checks for two items)
                                         if len(self.dial_out_ip_port.text().split(' ')) == 2:
-                                            fo_list.append('DATA ' + self.dial_out_name.text() + ' ' + str(self.dial_out_ip_port.text()) + ' ' + self.address_key.text() + ' ' + fingerprint_fname + ' x ' + s_args)
+
+                                            # Set the string which should be appended to the address book
+                                            to_address_book = 'DATA ' + self.dial_out_name.text() + ' ' + str(self.dial_out_ip_port.text()) + ' ' + self.address_key.text() + ' ' + fingerprint_fname + ' x ' + s_args
+
+                                            # Append a new list to the address book list in memory
                                             client_address.append([str(self.dial_out_name.text()), str(self.dial_out_ip_port.text().split(' ')[0]), int(self.dial_out_ip_port.text().split(' ')[1]), bytes(self.address_key.text(), 'utf-8'), self.fingerprint_str, 'x', s_enc, s_address_family, s_soc_type, s_options_0, s_options_1])
 
+                                            # Alphabetically sort the address book in memory
+                                            client_address.sort(key=lambda x: x[0])
+
+                                            # Find the new index of the new address book entry in memory after sorting and set the new current address book index accordingly
+                                            client_address_index = client_address.index([str(self.dial_out_name.text()), str(self.dial_out_ip_port.text().split(' ')[0]), int(self.dial_out_ip_port.text().split(' ')[1]), bytes(self.address_key.text(), 'utf-8'), self.fingerprint_str, 'x', s_enc, s_address_family, s_soc_type, s_options_0, s_options_1])
+
+                                            bool_allow_write = True
+
+                                        # Expects address, port and broadcast address each seperated by a space (over sanitizing will make addressing less powerful and less future-proof, so this statement just checks for two items)
                                         elif len(self.dial_out_ip_port.text().split(' ')) == 3:
                                             broadcast_address = self.dial_out_ip_port.text().split()[2]
-                                            fo_list.append('DATA ' + self.dial_out_name.text() + ' ' + str(self.dial_out_ip_port.text().split()[0]) + ' ' + str(self.dial_out_ip_port.text().split()[1]) + ' ' + self.address_key.text() + ' ' + fingerprint_fname + ' ' + broadcast_address + ' ' + s_args)
+
+                                            # Set the string which should be appended to the address book
+                                            to_address_book = 'DATA ' + self.dial_out_name.text() + ' ' + str(self.dial_out_ip_port.text().split()[0]) + ' ' + str(self.dial_out_ip_port.text().split()[1]) + ' ' + self.address_key.text() + ' ' + fingerprint_fname + ' ' + broadcast_address + ' ' + s_args
+
+                                            # Append a new list to the address book list in memory
                                             client_address.append([str(self.dial_out_name.text()), str(self.dial_out_ip_port.text().split(' ')[0]), int(self.dial_out_ip_port.text().split(' ')[1]), bytes(self.address_key.text(), 'utf-8'), self.fingerprint_str, broadcast_address, s_enc, s_address_family, s_soc_type, s_options_0, s_options_1])
+
+                                            # Alphabetically sort the address book in memory
+                                            client_address.sort(key=lambda x: x[0])
+
+                                            # Find the new index of the new address book entry in memory after sorting and set the new current address book index accordingly
+                                            client_address_index = client_address.index([str(self.dial_out_name.text()), str(self.dial_out_ip_port.text().split(' ')[0]), int(self.dial_out_ip_port.text().split(' ')[1]), bytes(self.address_key.text(), 'utf-8'), self.fingerprint_str, broadcast_address, s_enc, s_address_family, s_soc_type, s_options_0, s_options_1])
+
+                                            bool_allow_write = True
+
+                                        # Write fingerprint file to the fingerprint directory with a 32-character limit on each line (to make the fingerprint file contents neat)
                                         split_strings = [self.fingerprint_str[index: index + 32] for index in range(0, len(self.fingerprint_str), 32)]
                                         if not os.path.exists(fingerprint_fname):
                                             open(fingerprint_fname, 'w').close()
@@ -709,43 +791,19 @@ class App(QMainWindow):
                                             for _ in split_strings:
                                                 fo.write(_ + '\n')
                                         fo.close()
-                                        bool_write = True
 
-                            print('bool_write:', bool_write)
+                            # Append the new address book entry to the address book file conditionally
+                            if to_address_book != '':
+                                if bool_allow_write is True:
+                                    if os.path.exists('./communicator_address_book.txt'):
+                                        with open('./communicator_address_book.txt', 'a') as fo:
+                                            fo.write(to_address_book + '\n')
+                                        fo.close()
+                                else:
+                                    print('-- entry will not be appended to the address book as something went wrong. try again.')
 
-                            if bool_write is True:
-                                with open('./communicator_address_book.txt', 'w') as fo:
-                                    for _ in fo_list:
-                                        fo.write(_ + '\n')
-                                fo.close()
-                                if os.path.exists('./communicator_address_book.txt'):
-                                    with open('./communicator_address_book.txt', 'r') as fo:
-                                        i = 0
-                                        for line in fo:
-                                            line = line.strip()
-                                            print('-- comparing line:')
-                                            print('fo_line:      ', line)
-                                            print('fo_list_line: ', str(fo_list[i]))
-                                            if not line == fo_list[i]:
-                                                non_success_write.append(False)
-                                            i += 1
-
-                                print('-- current index before sorting:', client_address_index)
-                                client_address.sort(key=lambda x: x[0])
-
-                                if address_save_mode == 'basic':
-                                    if len(self.dial_out_ip_port.text().split(' ')) == 2:
-                                        client_address_index = client_address.index([str(self.dial_out_name.text()), str(self.dial_out_ip_port.text().split(' ')[0]), int(self.dial_out_ip_port.text().split(' ')[1]), bytes('x', 'utf-8'), 'x', 'x', s_enc, s_address_family, s_soc_type, s_options_0, s_options_1])
-                                    elif len(self.dial_out_ip_port.text().split(' ')) == 3:
-                                        client_address_index = client_address.index([str(self.dial_out_name.text()), str(self.dial_out_ip_port.text().split(' ')[0]), int(self.dial_out_ip_port.text().split(' ')[1]), bytes('x', 'utf-8'), 'x', broadcast_address, s_enc, s_address_family, s_soc_type, s_options_0, s_options_1])
-
-                                elif address_save_mode == 'advanced':
-                                    if len(self.dial_out_ip_port.text().split(' ')) == 2:
-                                        client_address_index = client_address.index([str(self.dial_out_name.text()), str(self.dial_out_ip_port.text().split(' ')[0]), int(self.dial_out_ip_port.text().split(' ')[1]), bytes(self.address_key.text(), 'utf-8'), self.fingerprint_str, 'x', s_enc, s_address_family, s_soc_type, s_options_0, s_options_1])
-                                    elif len(self.dial_out_ip_port.text().split(' ')) == 3:
-                                        client_address_index = client_address.index([str(self.dial_out_name.text()), str(self.dial_out_ip_port.text().split(' ')[0]), int(self.dial_out_ip_port.text().split(' ')[1]), bytes(self.address_key.text(), 'utf-8'), self.fingerprint_str, broadcast_address, s_enc, s_address_family, s_soc_type, s_options_0, s_options_1])
-
-                                print('-- current index after sorting:', client_address_index)
+                            # Display the potentially new current index as the index may have changed
+                            print('-- current index after sorting:', client_address_index)
                 else:
                     print('-- ip and port should not be empty!')
             else:
