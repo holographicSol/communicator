@@ -72,3 +72,5 @@ Pycrypto Installation:
 3. Then Run: (adjust path according to your MVS version)
 set CL=-FI"%VCINSTALLDIR%Tools\MSVC\14.16.27023\include\stdint.h
 4. Then pip install pycrypto.
+
+Donations are very much welcome: Paypal benjaminjc173@gmailcom
