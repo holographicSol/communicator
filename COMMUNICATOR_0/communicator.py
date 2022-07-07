@@ -677,7 +677,7 @@ class App(QMainWindow):
 
                                     bool_allow_write = True
 
-                                # Expects address, port and broadcast address each separated by a space (over sanitizing will make addressing less powerful and less future-proof, so this statement just checks for two items)
+                                # Expects address, port and broadcast address each separated by a space (over sanitizing will make addressing less powerful and less future-proof, so this statement just checks for three items)
                                 elif len(self.dial_out_ip_port.text().split(' ')) == 3:
                                     broadcast_address = self.dial_out_ip_port.text().split()[2]
 
@@ -765,7 +765,7 @@ class App(QMainWindow):
 
                                             bool_allow_write = True
 
-                                        # Expects address, port and broadcast address each separated by a space (over sanitizing will make addressing less powerful and less future-proof, so this statement just checks for two items)
+                                        # Expects address, port and broadcast address each separated by a space (over sanitizing will make addressing less powerful and less future-proof, so this statement just checks for three items)
                                         elif len(self.dial_out_ip_port.text().split(' ')) == 3:
                                             broadcast_address = self.dial_out_ip_port.text().split()[2]
 
