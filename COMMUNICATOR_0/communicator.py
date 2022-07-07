@@ -516,6 +516,9 @@ class App(QMainWindow):
                             # Create a temporary list to store lines from the address book
                             fo_list = []
 
+                            # Set a boolean condition to prevent an unnecessary write if the event that a target line is not found
+                            write_bool = False
+
                             # Open the address book to read
                             with open('./communicator_address_book.txt', 'r') as fo:
                                 for line in fo:
@@ -562,23 +565,25 @@ class App(QMainWindow):
                                             # Clearly display the line that is equal and do not add the line to a list
                                             elif compare_remove_address == compare_line_address:
                                                 print('-- TARGET REMOVE:', line)
+                                                write_bool = True
 
-                            # Write lines from the list into a temporary file
-                            open('./communicator_address_book.tmp', 'w').close()
-                            with open('./communicator_address_book.tmp', 'w') as fo:
-                                for _ in fo_list:
-                                    fo.write(str(_) + '\n')
-                            fo.close()
+                            # If the target line in address book was found then write lines from the list into a temporary file
+                            if write_bool is True:
+                                open('./communicator_address_book.tmp', 'w').close()
+                                with open('./communicator_address_book.tmp', 'w') as fo:
+                                    for _ in fo_list:
+                                        fo.write(str(_) + '\n')
+                                fo.close()
 
-                            # Replace address book contents with the contents of the temporary file
-                            if os.path.exists('./communicator_address_book.tmp'):
-                                os.replace('./communicator_address_book.tmp', './communicator_address_book.txt')
+                                # Replace address book contents with the contents of the temporary file
+                                if os.path.exists('./communicator_address_book.tmp'):
+                                    os.replace('./communicator_address_book.tmp', './communicator_address_book.txt')
 
-                            # Remove the currently selected address from client address list in memory
-                            del client_address[client_address_index]
+                                # Remove the currently selected address from client address list in memory
+                                del client_address[client_address_index]
 
-                            # Turn the page (previous and next address functions handle empty address list)
-                            client_previous_address_function()
+                                # Turn the page (previous and next address functions handle empty address list)
+                                client_previous_address_function()
 
                     write_client_configuration_engaged = False
 
