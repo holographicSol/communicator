@@ -14,7 +14,7 @@ This example is how you would wake up a device. BE EXTREMELY CAREFUL.
 
 Input sanitization is incomplete. Exercise extreme caution when entering data into input fields.
 Name: no spaces
-Address: IP/MAC space_delimiter PORT space_delimiter [optional broadcast address if entering MAC not IP]
+Address: IP/MAC space_delimiter PORT space_delimiter optional broadcast address
 
 Communicator Standard Communication:
 1. Messages encrypted with AES-256 32 bytes shared key.
