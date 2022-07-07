@@ -660,7 +660,7 @@ class App(QMainWindow):
                                 self.address_key.setText('')
                                 self.tb_fingerprint.setText('')
 
-                                # Expects address and port each seperated by a space (over sanitizing will make addressing less powerful and less future-proof, so this statement just checks for two items)
+                                # Expects address and port each separated by a space (over sanitizing will make addressing less powerful and less future-proof, so this statement just checks for two items)
                                 if len(self.dial_out_ip_port.text().split(' ')) == 2:
 
                                     # Set the string which should be appended to the address book
@@ -677,7 +677,7 @@ class App(QMainWindow):
 
                                     bool_allow_write = True
 
-                                # Expects address, port and broadcast address each seperated by a space (over sanitizing will make addressing less powerful and less future-proof, so this statement just checks for two items)
+                                # Expects address, port and broadcast address each separated by a space (over sanitizing will make addressing less powerful and less future-proof, so this statement just checks for two items)
                                 elif len(self.dial_out_ip_port.text().split(' ')) == 3:
                                     broadcast_address = self.dial_out_ip_port.text().split()[2]
 
@@ -748,7 +748,7 @@ class App(QMainWindow):
                                 if len(self.address_key.text()) == 32:
                                     if len(self.fingerprint_str) == 1024:
 
-                                        # Expects address and port each seperated by a space (over sanitizing will make addressing less powerful and less future-proof, so this statement just checks for two items)
+                                        # Expects address and port each separated by a space (over sanitizing will make addressing less powerful and less future-proof, so this statement just checks for two items)
                                         if len(self.dial_out_ip_port.text().split(' ')) == 2:
 
                                             # Set the string which should be appended to the address book
@@ -765,7 +765,7 @@ class App(QMainWindow):
 
                                             bool_allow_write = True
 
-                                        # Expects address, port and broadcast address each seperated by a space (over sanitizing will make addressing less powerful and less future-proof, so this statement just checks for two items)
+                                        # Expects address, port and broadcast address each separated by a space (over sanitizing will make addressing less powerful and less future-proof, so this statement just checks for two items)
                                         elif len(self.dial_out_ip_port.text().split(' ')) == 3:
                                             broadcast_address = self.dial_out_ip_port.text().split()[2]
 
