@@ -5,7 +5,7 @@ A Very Powerful Communications Tool - Project in early development.
 Communicator is capable of potentially communicating with any IPv4, Domain Name, IPv6 and MAC addresses
 running and or not running a Communicator, this makes the Communicator very powerful. Use wisely.
 
-The Communicator is a very powerful Communications Tool. The Communicator is not a place to meet people, it not a
+The Communicator is a very powerful Communications Tool. The Communicator is not a place to meet people, its not a
 chat lobby or meeting place and is certainly not a chat app.
 
 Communicate with Machines and Humanoids. MAC support. (MAC may speak Chinese) Test A smart device that supports wake 
