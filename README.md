@@ -3,7 +3,8 @@ Communicator - Written by Benjamin Jack Cullen
 A Very Powerful Communications Tool - Project in early development.
 
 Communicator is capable of potentially communicating with any IPv4, Domain Name, IPv6 and MAC addresses
-running and or not running a Communicator, this makes the Communicator very powerful. Use wisely.
+and potentially anything in the Universe running and or not running a Communicator, this makes the 
+Communicator very powerful. Use wisely.
 
 The Communicator is a very powerful Communications Tool. The Communicator is not a place to meet people, its not a
 chat lobby or meeting place and is certainly not a chat app.
