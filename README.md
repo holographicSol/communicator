@@ -74,4 +74,4 @@ Pycrypto Installation:
 set CL=-FI"%VCINSTALLDIR%Tools\MSVC\14.16.27023\include\stdint.h
 4. Then pip install pycrypto.
 
-Donations are very much welcome: Paypal benjaminjc173@gmailcom
+Donations are very much welcome: Paypal benjaminjc173@gmail.com
