@@ -73,7 +73,7 @@ player_default.setMedia(player_content_default)
 player_default.setVolume(100)
 
 # Images
-server_public_white = './resources/image/globe_white.png'
+server_public_white = './resources/image/globe_default.png'
 server_public_yellow = './resources/image/globe_yellow.png'
 server_public_amber = './resources/image/globe_amber.png'
 server_public_green = './resources/image/globe_green.png'
@@ -111,6 +111,7 @@ bool_socket_options = False
 address_override_string = ''
 unpopulated = None
 
+# Communicator socket dictionary programmatically created by parsing _socket file at module level
 COMMUNICATOR_SOCK = {
     "Unselected" : unpopulated,
     "AF_APPLETALK" : socket.AF_APPLETALK,
