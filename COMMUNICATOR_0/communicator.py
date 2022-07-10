@@ -2174,23 +2174,25 @@ class DialOutClass(QThread):
 
         print(str(datetime.datetime.now()) + ' -- DialOutClass.run bool_dial_out_override:', bool_dial_out_override)
 
-        if bool_dial_out_override is True:
-            print(str(datetime.datetime.now()) + ' -- DialOutClass.run using address_override_string:', address_override_string)
-            self.HOST_SEND = address_override_string.split(' ')[0]
-            self.PORT_SEND = int(address_override_string.split(' ')[1])
-            self.KEY = bytes('#', 'utf-8')
-            self.FINGERPRINT = bytes('#', 'utf-8')
-            self.MESSAGE_CONTENT = str(self.dial_out_message.text())
+        if len(address_override_string.split(' ')) >= 2:
 
-        elif bool_dial_out_override is False:
-            print(str(datetime.datetime.now()) + ' -- DialOutClass.run using client_address_index:', client_address_index)
-            self.HOST_SEND = client_address[client_address_index][1]
-            self.PORT_SEND = client_address[client_address_index][2]
-            self.KEY = client_address[client_address_index][3]
-            self.FINGERPRINT = client_address[client_address_index][4]
-            self.MESSAGE_CONTENT = str(self.dial_out_message.text())
+            if bool_dial_out_override is True:
+                print(str(datetime.datetime.now()) + ' -- DialOutClass.run using address_override_string:', address_override_string)
+                self.HOST_SEND = address_override_string.split(' ')[0]
+                self.PORT_SEND = int(address_override_string.split(' ')[1])
+                self.KEY = bytes('#', 'utf-8')
+                self.FINGERPRINT = bytes('#', 'utf-8')
+                self.MESSAGE_CONTENT = str(self.dial_out_message.text())
 
-        self.message_send()
+            elif bool_dial_out_override is False:
+                print(str(datetime.datetime.now()) + ' -- DialOutClass.run using client_address_index:', client_address_index)
+                self.HOST_SEND = client_address[client_address_index][1]
+                self.PORT_SEND = client_address[client_address_index][2]
+                self.KEY = client_address[client_address_index][3]
+                self.FINGERPRINT = client_address[client_address_index][4]
+                self.MESSAGE_CONTENT = str(self.dial_out_message.text())
+
+            self.message_send()
 
     def dial_out_logger(self):
         if not os.path.exists(dial_out_log):
@@ -2256,10 +2258,10 @@ class DialOutClass(QThread):
                     try:
                         data_response = ''
                         SOCKET_DIAL_OUT.setblocking(0)
-                        ready = select.select([SOCKET_DIAL_OUT], [], [], 1)
+                        ready = select.select([SOCKET_DIAL_OUT], [], [], 3)
                         if ready[0]:
                             data_response = SOCKET_DIAL_OUT.recv(4096)
-                            
+
                     except Exception as e:
                         print(str(datetime.datetime.now()) + ' -- DialOutClass.message_send:', e)
                         self.data = '[' + str(datetime.datetime.now()) + '] [EXCEPTION HANDLED DURING WAITING FOR RESPONSE] [' + str(self.HOST_SEND) + ':' + str(self.PORT_SEND) + ']'
