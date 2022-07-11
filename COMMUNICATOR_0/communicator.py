@@ -277,7 +277,7 @@ COMMUNICATOR_SOCK = {
 }
 
 label_stylesheet_black_bg_text_white = """QLabel{background-color: rgb(0, 0, 0);
-                       color: rgb(200, 200, 200);
+                       color: rgb(255, 255, 255);
                        border-bottom:0px solid rgb(5, 5, 5);
                        border-right:0px solid rgb(5, 5, 5);
                        border-top:0px solid rgb(5, 5, 5);
@@ -291,28 +291,28 @@ title_stylesheet_default = """QLabel{background-color: rgb(10, 10, 10);
                        border-left:2px solid rgb(5, 5, 5);}"""
 
 label_stylesheet_red_text = """QLabel{background-color: rgb(10, 10, 10);
-                       color: rgb(190, 0, 0);
+                       color: rgb(255, 0, 0);
                        border-bottom:2px solid rgb(5, 5, 5);
                        border-right:2px solid rgb(5, 5, 5);
                        border-top:2px solid rgb(5, 5, 5);
                        border-left:2px solid rgb(5, 5, 5);}"""
 
 button_stylesheet_default = """QPushButton{background-color: rgb(10, 10, 10);
-                       color: rgb(200, 200, 200);
+                       color: rgb(255, 255, 255);
                        border-bottom:2px solid rgb(5, 5, 5);
                        border-right:2px solid rgb(5, 5, 5);
                        border-top:2px solid rgb(5, 5, 5);
                        border-left:2px solid rgb(5, 5, 5);}"""
 
 button_stylesheet_background_matching = """QPushButton{background-color: rgb(0, 0, 0);
-                       color: rgb(200, 200, 200);
+                       color: rgb(255, 255, 255);
                        border-bottom:0px solid rgb(5, 5, 5);
                        border-right:0px solid rgb(5, 5, 5);
                        border-top:0px solid rgb(5, 5, 5);
                        border-left:0px solid rgb(5, 5, 5);}"""
 
-button_stylesheet_amber_text = """QPushButton{background-color: rgb(10, 10, 10);
-                       color: rgb(200, 100, 0);
+button_stylesheet_yellow_text = """QPushButton{background-color: rgb(10, 10, 10);
+                       color: rgb(255, 255, 0);
                        border-bottom:2px solid rgb(5, 5, 5);
                        border-right:2px solid rgb(5, 5, 5);
                        border-top:2px solid rgb(5, 5, 5);
@@ -333,15 +333,8 @@ button_stylesheet_white_text_low = """QPushButton{background-color: rgb(10, 10, 
                        border-left:2px solid rgb(5, 5, 5);}"""
 
 button_stylesheet_red_text = """QPushButton{background-color: rgb(10, 10, 10);
-                       color: rgb(200, 0, 0);
+                       color: rgb(255, 0, 0);
                        border-bottom:2px solid rgb(5, 5, 5);
-                       border-right:2px solid rgb(5, 5, 5);
-                       border-top:2px solid rgb(5, 5, 5);
-                       border-left:2px solid rgb(5, 5, 5);}"""
-
-button_stylesheet_red_text_low = """QPushButton{background-color: rgb(10, 10, 10);
-                       color: rgb(200, 0, 0);
-                       border-bottom:0px solid rgb(177, 177, 177);
                        border-right:2px solid rgb(5, 5, 5);
                        border-top:2px solid rgb(5, 5, 5);
                        border-left:2px solid rgb(5, 5, 5);}"""
@@ -354,7 +347,7 @@ button_stylesheet_green_text = """QPushButton{background-color: rgb(10, 10, 10);
                        border-left:2px solid rgb(5, 5, 5);}"""
 
 line_edit_stylesheet_white_text = """QLineEdit{background-color: rgb(10, 10, 10);
-                       color: rgb(200, 200, 200);
+                       color: rgb(255, 255, 255);
                        border-bottom:2px solid rgb(5, 5, 5);
                        border-right:2px solid rgb(5, 5, 5);
                        border-top:2px solid rgb(5, 5, 5);
@@ -363,7 +356,7 @@ line_edit_stylesheet_white_text = """QLineEdit{background-color: rgb(10, 10, 10)
 textbox_stylesheet_default = """QTextBrowser {background-color: rgb(0, 0, 0);
                 selection-color: black;
                 selection-background-color: rgb(0, 180, 0);
-                color: rgb(200, 200, 200);
+                color: rgb(255, 255, 255);
                 border-bottom:2px solid rgb(5, 5, 5);
                 border-right:2px solid rgb(5, 5, 5);
                 border-top:2px solid rgb(5, 5, 5);
@@ -372,14 +365,14 @@ textbox_stylesheet_default = """QTextBrowser {background-color: rgb(0, 0, 0);
 textbox_stylesheet_black_bg = """QTextBrowser {background-color: rgb(0, 0, 0);
                 selection-color: black;
                 selection-background-color: rgb(0, 180, 0);
-                color: rgb(200, 200, 200);
+                color: rgb(255, 255, 255);
                 border-bottom:2px solid rgb(5, 5, 5);
                 border-right:2px solid rgb(5, 5, 5);
                 border-top:2px solid rgb(5, 5, 5);
                 border-left:2px solid rgb(5, 5, 5);}"""
 
 cmb_menu_style = """QComboBox {background-color: rgb(10, 10, 10);
-                   color: rgb(200, 200, 200);
+                   color: rgb(255, 255, 255);
                    border-top:2px solid rgb(5, 5, 5);
                    border-bottom:2px solid rgb(5, 5, 5);
                    border-right:2px solid rgb(5, 5, 5);
@@ -1634,7 +1627,7 @@ class App(QMainWindow):
         self.server_notify_alien = QPushButton(self)
         self.server_notify_alien.move(self.width - 136, self.server_staple + 24 + 24)
         self.server_notify_alien.resize(60, int(self.btn_40 / 2))
-        self.server_notify_alien.setStyleSheet(button_stylesheet_amber_text)
+        self.server_notify_alien.setStyleSheet(button_stylesheet_yellow_text)
         self.server_notify_alien.setFont(self.font_s7b)
         self.server_notify_alien.setText(str(alien_message_count))
         self.server_notify_alien.clicked.connect(server_notify_alien_function)
@@ -1658,7 +1651,7 @@ class App(QMainWindow):
         self.mute_server_notify_alien = QPushButton(self)
         self.mute_server_notify_alien.move(self.width - 200, self.server_staple + 24 + 24)
         self.mute_server_notify_alien.resize(60, int(self.btn_40 / 2))
-        self.mute_server_notify_alien.setStyleSheet(button_stylesheet_amber_text)
+        self.mute_server_notify_alien.setStyleSheet(button_stylesheet_yellow_text)
         self.mute_server_notify_alien.setIcon(QIcon(mute_0))
         self.mute_server_notify_alien.setIconSize(QSize(14, 14))
         self.mute_server_notify_alien.clicked.connect(mute_server_notify_alien_function)
