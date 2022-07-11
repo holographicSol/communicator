@@ -2174,24 +2174,23 @@ class DialOutClass(QThread):
 
         print(str(datetime.datetime.now()) + ' -- DialOutClass.run bool_dial_out_override:', bool_dial_out_override)
 
-        if len(address_override_string.split(' ')) >= 2:
-
-            if bool_dial_out_override is True:
+        if bool_dial_out_override is True:
+            if len(address_override_string.split(' ')) >= 2:
                 print(str(datetime.datetime.now()) + ' -- DialOutClass.run using address_override_string:', address_override_string)
                 self.HOST_SEND = address_override_string.split(' ')[0]
                 self.PORT_SEND = int(address_override_string.split(' ')[1])
                 self.KEY = bytes('#', 'utf-8')
                 self.FINGERPRINT = bytes('#', 'utf-8')
                 self.MESSAGE_CONTENT = str(self.dial_out_message.text())
+                self.message_send()
 
-            elif bool_dial_out_override is False:
-                print(str(datetime.datetime.now()) + ' -- DialOutClass.run using client_address_index:', client_address_index)
-                self.HOST_SEND = client_address[client_address_index][1]
-                self.PORT_SEND = client_address[client_address_index][2]
-                self.KEY = client_address[client_address_index][3]
-                self.FINGERPRINT = client_address[client_address_index][4]
-                self.MESSAGE_CONTENT = str(self.dial_out_message.text())
-
+        elif bool_dial_out_override is False:
+            print(str(datetime.datetime.now()) + ' -- DialOutClass.run using client_address_index:', client_address_index)
+            self.HOST_SEND = client_address[client_address_index][1]
+            self.PORT_SEND = client_address[client_address_index][2]
+            self.KEY = client_address[client_address_index][3]
+            self.FINGERPRINT = client_address[client_address_index][4]
+            self.MESSAGE_CONTENT = str(self.dial_out_message.text())
             self.message_send()
 
     def dial_out_logger(self):
