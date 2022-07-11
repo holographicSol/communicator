@@ -24,6 +24,7 @@ import encodings
 import binascii
 import pyaudio
 import select
+import fileinput
 
 # Threads
 configuration_thread = []
@@ -112,8 +113,8 @@ server_save_bool = False
 address_reveal_bool = False
 bool_socket_options = False
 address_override_string = ''
+accept_from_key = ''
 unpopulated = None
-use_encoding_bool = True
 
 COMMUNICATOR_SOCK = {
     "Unselected" : unpopulated,
@@ -1462,33 +1463,39 @@ class App(QMainWindow):
                 self.bool_socket_options_btn.setStyleSheet(button_stylesheet_green_text)
             print(str(datetime.datetime.now()) + ' -- setting bool_socket_options:', bool_socket_options)
 
-        def dial_out_encoding_function():
-            print(str(datetime.datetime.now()) + ' -- plugged in: App.dial_out_encoding_function')
-            global use_encoding_bool
-            if use_encoding_bool is True:
-                use_encoding_bool = False
-                # self.bool_socket_options_btn.setStyleSheet(button_stylesheet_red_text)
-            elif use_encoding_bool is False:
-                use_encoding_bool = True
-                # self.bool_socket_options_btn.setStyleSheet(button_stylesheet_green_text)
-            print(str(datetime.datetime.now()) + ' -- setting use_encoding_bool:', use_encoding_bool)
+        def accept_only_address_book_function():
+            print(str(datetime.datetime.now()) + ' -- plugged in: App.accept_only_address_book_function')
+            global accept_from_key
+            accept_from_key = 'address_book_only'
+            print(str(datetime.datetime.now()) + ' -- setting accept_from_key:', accept_from_key)
 
-        def voice_call_enable_function():
-            print(str(datetime.datetime.now()) + ' -- plugged in: App.voice_call_enable_function')
-            if call_recv_thread.isRunning():
-                call_recv_thread.stop()
-            else:
-                call_recv_thread.start()
+            # Set Button Green
+            self.accept_only_address_book.setStyleSheet(button_stylesheet_green_text)
 
-        def voice_call_accept_function():
-            print(str(datetime.datetime.now()) + ' -- plugged in: App.voice_call_accept_function')
-            global bool_accept_call
-            bool_accept_call = True
+            # Set Other Options Red
+            self.accept_all_traffic.setStyleSheet(button_stylesheet_white_text_low)
 
-        def voice_call_decline_function():
-            print(str(datetime.datetime.now()) + ' -- plugged in: App.voice_call_decline_function')
-            global bool_accept_call
-            bool_accept_call = False
+            # Save Changes
+            filein = './config.txt'
+            for line in fileinput.input(filein, inplace=True):
+                print(line.rstrip().replace('accept_all', 'address_book_only')),
+
+        def accept_all_function():
+            print(str(datetime.datetime.now()) + ' -- plugged in: App.accept_all_function')
+            global accept_from_key
+            accept_from_key = 'accept_all'
+            print(str(datetime.datetime.now()) + ' -- setting accept_from_key:', accept_from_key)
+
+            # Set Button Green
+            self.accept_all_traffic.setStyleSheet(button_stylesheet_green_text)
+
+            # Set Other Options Red
+            self.accept_only_address_book.setStyleSheet(button_stylesheet_white_text_low)
+
+            # Save Changes
+            filein = './config.txt'
+            for line in fileinput.input(filein, inplace=True):
+                print(line.rstrip().replace('address_book_only', 'accept_all')),
 
         # Window Title
         self.title = "Communicator"
@@ -1654,6 +1661,22 @@ class App(QMainWindow):
         self.mute_server_notify_alien.setIconSize(QSize(14, 14))
         self.mute_server_notify_alien.clicked.connect(mute_server_notify_alien_function)
 
+        self.accept_only_address_book = QPushButton(self)
+        self.accept_only_address_book.move(28, self.server_staple + 24)
+        self.accept_only_address_book.resize(self.btn_120, int(self.btn_40 / 2))
+        self.accept_only_address_book.setFont(self.font_s7b)
+        self.accept_only_address_book.setText('ACCEPT ONLY ADD.BK')
+        self.accept_only_address_book.setStyleSheet(button_stylesheet_white_text_high)
+        self.accept_only_address_book.clicked.connect(accept_only_address_book_function)
+
+        self.accept_all_traffic = QPushButton(self)
+        self.accept_all_traffic.move(28 + self.btn_120 + 4, self.server_staple + 24)
+        self.accept_all_traffic.resize(self.btn_120, int(self.btn_40 / 2))
+        self.accept_all_traffic.setFont(self.font_s7b)
+        self.accept_all_traffic.setText('ACCEPT ALL')
+        self.accept_all_traffic.setStyleSheet(button_stylesheet_white_text_high)
+        self.accept_all_traffic.clicked.connect(accept_all_function)
+
         # ##########################################################################################################
 
         self.address_staple_height = 260
@@ -1672,7 +1695,6 @@ class App(QMainWindow):
         self.dial_out_encoding.setFont(self.font_s7b)
         self.dial_out_encoding.setText('ENCODING')
         self.dial_out_encoding.setStyleSheet(button_stylesheet_white_text_high)
-        self.dial_out_encoding.clicked.connect(dial_out_encoding_function)
 
         self.codec_select_box = QComboBox(self)
         self.codec_select_box.move(32 + self.btn_120 + 4, self.address_staple_height + 28)
@@ -1970,6 +1992,12 @@ class App(QMainWindow):
             self.server_ip_port.setText(server_address[0][0] + ' ' + str(server_address[0][1]))
             self.server_status_label_ip_in_use.setText(str(server_address[0][0] + ' ' + str(server_address[0][1])))
 
+        global accept_from_key
+        if accept_from_key == 'address_book_only':
+            accept_only_address_book_function()
+        elif accept_from_key == 'accept_all':
+            accept_all_function()
+
         global client_address
         global dial_out_dial_out_cipher_bool
 
@@ -2058,6 +2086,7 @@ class ConfigurationClass(QThread):
         global configuration_thread_completed
         global server_address
         global client_address
+        global accept_from_key
 
         print('-' * 200)
         print(str(datetime.datetime.now()) + ' ConfigurationClass(QThread): updating all values from configuration file...')
@@ -2073,6 +2102,13 @@ class ConfigurationClass(QThread):
                     if len(line) == 3:
                         server_address.append([str(line[1]), int(line[2])])
                         print(str(datetime.datetime.now()) + ' ConfigurationClass(QThread) adding server_address: ' + str(server_address[-1]))
+
+                if str(line[0]) == 'CONN_ACCEPT_MODE':
+                    if len(line) == 2:
+                        if str(line[1]) == 'accept_all':
+                            accept_from_key = 'accept_all'
+                        elif str(line[1]) == 'address_book_only':
+                            accept_from_key = 'address_book_only'
         fo.close()
 
         print('-' * 200)
@@ -2205,7 +2241,6 @@ class DialOutClass(QThread):
         global dial_out_dial_out_cipher_bool
         global bool_dial_out_override
         global bool_socket_options
-        global use_encoding_bool
 
         print('-' * 200)
         print(str(datetime.datetime.now()) + f" -- DialOutClass.message_send outgoing to: {self.HOST_SEND} : {self.PORT_SEND}")
@@ -2240,12 +2275,8 @@ class DialOutClass(QThread):
                         print(str(datetime.datetime.now()) + ' -- DialOutClass.message_send ciphertext:', str(ciphertext))
                         textbox_0_messages.append('[' + str(datetime.datetime.now()) + '] [SENDING ENCRYPTED] [' + str(self.HOST_SEND) + ':' + str(self.PORT_SEND) + ']')
                     else:
-                        # Todo --> Set optional preset bytes flag and if set then assume string cntains already encoded bytes as string
-                        if use_encoding_bool is True:
-                            ciphertext = bytes(self.MESSAGE_CONTENT, str(client_address[client_address_index][6]).split('______')[1])
-                            textbox_0_messages.append('[' + str(datetime.datetime.now()) + '] [SENDING UNENCRYPTED] [' + str(self.HOST_SEND) + ':' + str(self.PORT_SEND) + ']')
-                        elif use_encoding_bool is False:
-                            ciphertext = self.MESSAGE_CONTENT
+                        ciphertext = bytes(self.MESSAGE_CONTENT, str(client_address[client_address_index][6]).split('______')[1])
+                        textbox_0_messages.append('[' + str(datetime.datetime.now()) + '] [SENDING UNENCRYPTED] [' + str(self.HOST_SEND) + ':' + str(self.PORT_SEND) + ']')
 
                     print(str(datetime.datetime.now()) + ' -- DialOutClass.message_send: attempting to send ciphertext')
 
@@ -2522,6 +2553,8 @@ class ServerClass(QThread):
         global violation_count
         global soft_block_ip_count
 
+        global accept_from_key
+
         print('-' * 200)
         print(str(datetime.datetime.now()) + ' -- ServerClass.listen SERVER_HOST:', self.SERVER_HOST)
         print(str(datetime.datetime.now()) + ' -- ServerClass.listen SERVER_PORT:', self.SERVER_PORT)
@@ -2568,8 +2601,6 @@ class ServerClass(QThread):
             try:
                 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as SOCKET_SERVER:
                     SOCKET_SERVER.bind((self.SERVER_HOST, self.SERVER_PORT))
-                    # if self.server_status_current != self.server_status_prev:
-                    #     self.server_status_prev = self.server_status_current
                     self.server_status_label.setText('SERVER STATUS: ONLINE')
                     self.server_incoming.setIcon(QIcon(server_public_white))
                     self.server_start.setIcon(QIcon(play_green))
@@ -2641,8 +2672,33 @@ class ServerClass(QThread):
                         x_time = y_time
                         print(str(datetime.datetime.now()) + ' -- ServerClass.listen updating x time: ' + str(addr[0]))
 
-                    # Handle Accepted Connection
-                    if addr_exists_already is False:
+                    # Set connection acceptance as False
+                    accept_conn = False
+
+                    # Look for IP in address book
+                    if accept_from_key == 'address_book_only':
+                        print(str(datetime.datetime.now()) + ' -- ServerClass.listen accept_from_key: ' + str(accept_from_key))
+                        print(str(datetime.datetime.now()) + ' -- ServerClass.listen checking if conn exists in address book: ' + str(addr[0]))
+                        for _ in client_address:
+                            if str(addr[0]) in _:
+                                print(str(datetime.datetime.now()) + ' -- ServerClass.listen accepting connection as IP exists in address book: ' + str(addr[0]))
+                                accept_conn = True
+
+                        # If IP was not found in address book then close the connection, log and break
+                        if accept_conn is False:
+                            SOCKET_SERVER.close()
+                            self.data = str(datetime.datetime.now()) + ' -- ServerClass.listen closing connection as IP does not exist in address book: ' + str(addr[0])
+                            textbox_0_messages.append('[' + str(datetime.datetime.now()) + '] [CLOSING INCOMING CONNECTION] [' + str(addr[0]) + ':' + str(addr[1]) + ']')
+                            print(self.data)
+                            self.server_logger()
+                            break
+
+                    # Set connection acceptance as True
+                    elif accept_from_key == 'accept_all':
+                        accept_conn = True
+
+                    # Handle Potential Receive
+                    if addr_exists_already is False and accept_conn is True:
 
                         with conn:
                             print('-' * 200)
