@@ -943,7 +943,7 @@ class App(QMainWindow):
                     check_key()
                     format_fingerprint()
 
-                    self.dial_out_cipher_bool_btn.setStyleSheet(button_stylesheet_red_text)
+                    self.dial_out_cipher_bool_btn.setStyleSheet(button_stylesheet_white_text_low)
                     dial_out_dial_out_cipher_bool = False
                     self.dial_out_cipher_bool_btn.setEnabled(False)
 
@@ -998,7 +998,7 @@ class App(QMainWindow):
                     check_key()
                     format_fingerprint()
 
-                    self.dial_out_cipher_bool_btn.setStyleSheet(button_stylesheet_red_text)
+                    self.dial_out_cipher_bool_btn.setStyleSheet(button_stylesheet_white_text_low)
                     dial_out_dial_out_cipher_bool = False
                     self.dial_out_cipher_bool_btn.setEnabled(False)
 
@@ -1221,7 +1221,7 @@ class App(QMainWindow):
                         self.dial_out_cipher_bool_btn.setStyleSheet(button_stylesheet_green_text)
                     elif dial_out_dial_out_cipher_bool is True:
                         dial_out_dial_out_cipher_bool = False
-                        self.dial_out_cipher_bool_btn.setStyleSheet(button_stylesheet_red_text)
+                        self.dial_out_cipher_bool_btn.setStyleSheet(button_stylesheet_white_text_low)
                     print(str(datetime.datetime.now()) + ' -- setting dial_out_dial_out_cipher_bool:', dial_out_dial_out_cipher_bool)
 
         def dial_out_override_function():
@@ -1457,7 +1457,7 @@ class App(QMainWindow):
             global bool_socket_options
             if bool_socket_options is True:
                 bool_socket_options = False
-                self.bool_socket_options_btn.setStyleSheet(button_stylesheet_red_text)
+                self.bool_socket_options_btn.setStyleSheet(button_stylesheet_white_text_low)
             elif bool_socket_options is False:
                 bool_socket_options = True
                 self.bool_socket_options_btn.setStyleSheet(button_stylesheet_green_text)
@@ -1739,7 +1739,7 @@ class App(QMainWindow):
         self.bool_socket_options_btn = QPushButton(self)
         self.bool_socket_options_btn.move(32, self.address_staple_height + 28 + 24 + 24 + 24)
         self.bool_socket_options_btn.resize(self.btn_120, self.btn_20)
-        self.bool_socket_options_btn.setStyleSheet(button_stylesheet_red_text)
+        self.bool_socket_options_btn.setStyleSheet(button_stylesheet_white_text_low)
         self.bool_socket_options_btn.setText('SOCKET OPTIONS')
         self.bool_socket_options_btn.setFont(self.font_s7b)
         self.bool_socket_options_btn.clicked.connect(bool_socket_options_function)
@@ -2001,7 +2001,7 @@ class App(QMainWindow):
         global client_address
         global dial_out_dial_out_cipher_bool
 
-        self.dial_out_cipher_bool_btn.setStyleSheet(button_stylesheet_red_text)
+        self.dial_out_cipher_bool_btn.setStyleSheet(button_stylesheet_white_text_low)
         dial_out_dial_out_cipher_bool = False
         self.dial_out_cipher_bool_btn.setEnabled(False)
 
