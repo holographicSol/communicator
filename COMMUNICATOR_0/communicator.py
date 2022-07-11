@@ -1476,9 +1476,10 @@ class App(QMainWindow):
             self.accept_all_traffic.setStyleSheet(button_stylesheet_white_text_low)
 
             # Save Changes
-            filein = './config.txt'
-            for line in fileinput.input(filein, inplace=True):
-                print(line.rstrip().replace('accept_all', 'address_book_only')),
+            if os.path.exists('./config.txt'):
+                filein = './config.txt'
+                for line in fileinput.input(filein, inplace=True):
+                    print(line.rstrip().replace('accept_all', 'address_book_only')),
 
         def accept_all_function():
             print(str(datetime.datetime.now()) + ' -- plugged in: App.accept_all_function')
@@ -1493,9 +1494,10 @@ class App(QMainWindow):
             self.accept_only_address_book.setStyleSheet(button_stylesheet_white_text_low)
 
             # Save Changes
-            filein = './config.txt'
-            for line in fileinput.input(filein, inplace=True):
-                print(line.rstrip().replace('address_book_only', 'accept_all')),
+            if os.path.exists('./config.txt'):
+                filein = './config.txt'
+                for line in fileinput.input(filein, inplace=True):
+                    print(line.rstrip().replace('address_book_only', 'accept_all')),
 
         # Window Title
         self.title = "Communicator"
