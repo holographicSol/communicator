@@ -1345,8 +1345,8 @@ class App(QMainWindow):
                 self.generate_key.setEnabled(False)
                 self.generate_fingerprint.setEnabled(False)
                 self.dial_out_save_with_key.setIcon(QIcon(advanced_save_0))
-                self.generate_key.setStyleSheet(button_stylesheet_red_text)
-                self.generate_fingerprint.setStyleSheet(button_stylesheet_red_text)
+                self.generate_key.setStyleSheet(button_stylesheet_white_text_low)
+                self.generate_fingerprint.setStyleSheet(button_stylesheet_white_text_low)
                 self.dial_out_add_addr.setText('SAVE')
                 self.dial_out_add_addr.setStyleSheet(button_stylesheet_white_text_high)
             print(str(datetime.datetime.now()) + ' -- setting address_save_mode:', address_save_mode)
@@ -1832,7 +1832,7 @@ class App(QMainWindow):
         self.generate_fingerprint.resize(self.btn_20, self.btn_20)
         self.generate_fingerprint.setText('+')
         self.generate_fingerprint.setFont(self.font_s7b)
-        self.generate_fingerprint.setStyleSheet(button_stylesheet_red_text)
+        self.generate_fingerprint.setStyleSheet(button_stylesheet_white_text_low)
         self.generate_fingerprint.clicked.connect(generate_fingerprint_function)
         self.generate_fingerprint.setEnabled(False)
 
@@ -1841,7 +1841,7 @@ class App(QMainWindow):
         self.generate_key.resize(self.btn_20, self.btn_20)
         self.generate_key.setText('+')
         self.generate_key.setFont(self.font_s7b)
-        self.generate_key.setStyleSheet(button_stylesheet_red_text)
+        self.generate_key.setStyleSheet(button_stylesheet_white_text_low)
         self.generate_key.clicked.connect(generate_key_function)
         self.generate_key.setEnabled(False)
 
