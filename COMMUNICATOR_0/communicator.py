@@ -95,10 +95,10 @@ send_yellow = './resources/image/send_yellow.png'
 clear_all = './resources/image/clear_all.png'
 visibility_0 = './resources/image/visibility_0.png'
 visibility_1 = './resources/image/visibility_1.png'
-play_green = './resources/image/play_green.png'
+play_green = './resources/image/play_white.png'
 play_yellow = './resources/image/play_yellow.png'
-replay_yellow = './resources/image/replay_yellow.png'
-stop_red = './resources/image/stop_red.png'
+replay_yellow = './resources/image/replay_white.png'
+stop_red = './resources/image/stop_white.png'
 undo_white = './resources/image/undo_white.png'
 
 # Boolean
