@@ -1,2 +1,2 @@
-DATA Toshiba 70:54:B4:84:20:FE 55555 x x 192.168.1.255 u16______utf_16 AF_INET SOCK_DGRAM SOL_SOCKET SO_BROADCAST
-DATA OmegaSpaceRay 192.168.1.11 55555 P-kG/z_V**~-st.-!#-ESPvak\#og/$& ./fingerprints/OmegaSpaceRay.txt x u8______utf_8 AF_INET SOCK_STREAM SOL_SOCKET SO_BROADCAST
+DATA OmegaSpaceRay 192.168.1.11 55555 P-kG/z_V**~-st.-!#-ESPvak\#og/$& ./fingerprints/OmegaSpaceRay.txt x u8______utf_8 AF_INET SOCK_STREAM SOL_SOCKET SO_BROADCAST True
+DATA SuperCat 192.168.1.11 55555 &AR!i_XyxuBF+bVfURg`S&BgPfKx.?^= ./fingerprints/SuperCat.txt x u8______utf_8 AF_INET SOCK_STREAM SOL_SOCKET SO_BROADCAST False
