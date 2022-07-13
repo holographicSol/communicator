@@ -25,6 +25,8 @@ import binascii
 import pyaudio
 import select
 import fileinput
+import upnpclient
+import codecs
 
 # Threads
 configuration_thread = []
@@ -55,6 +57,10 @@ z_time = []
 prev_addr = []
 soft_block_ip = []
 violation_count = []
+
+# Uplinking
+devices = []
+rety_uplink = []
 
 # textbox_0_Messages
 server_messages = []
@@ -115,6 +121,12 @@ bool_socket_options = False
 address_override_string = ''
 accept_from_key = ''
 unpopulated = None
+uplink_enum_bool = False
+uplink_enable_bool = False
+from_file_bool = False
+bool_address_uplink = False
+enum = []
+external_ip_address = ''
 
 COMMUNICATOR_SOCK = {
     "Unselected" : unpopulated,
@@ -537,7 +549,8 @@ class App(QMainWindow):
                                                                       str(remove_address[7]),
                                                                       str(remove_address[8]),
                                                                       str(remove_address[9]),
-                                                                      str(remove_address[10])]
+                                                                      str(remove_address[10]),
+                                                                      str(remove_address[11])]
 
                                             # Create a thorough but partial list from line in file (item excluded is fingerprint path)
                                             compare_line_address = [str(line_split[1]),
@@ -549,7 +562,8 @@ class App(QMainWindow):
                                                                     str(line_split[8]),
                                                                     str(line_split[9]),
                                                                     str(line_split[10]),
-                                                                    str(line_split[11])]
+                                                                    str(line_split[11]),
+                                                                    str(line_split[12])]
 
                                             # Display to compare
                                             print('-- MEM LIST COMPARE: ', compare_remove_address)
@@ -593,6 +607,7 @@ class App(QMainWindow):
             global address_save_mode
             global button_stylesheet_green_text
             global internal_messages
+            global bool_address_uplink
 
             # Attempt to only run this function if this function is not already in progress
             if write_client_configuration_engaged is False:
@@ -662,16 +677,16 @@ class App(QMainWindow):
                                 if len(self.dial_out_ip_port.text().split(' ')) == 2:
 
                                     # Set the string which should be appended to the address book
-                                    to_address_book = 'DATA ' + self.dial_out_name.text() + ' ' + str(self.dial_out_ip_port.text()) + ' x' + ' x' + ' x ' + s_args
+                                    to_address_book = 'DATA ' + self.dial_out_name.text() + ' ' + str(self.dial_out_ip_port.text()) + ' x' + ' x' + ' x ' + s_args + ' ' + str(bool_address_uplink)
 
                                     # Append a new list to the address book list in memory
-                                    client_address.append([str(self.dial_out_name.text()), str(self.dial_out_ip_port.text().split(' ')[0]), int(self.dial_out_ip_port.text().split(' ')[1]), bytes('x', 'utf-8'), 'x', 'x', s_enc, s_address_family, s_soc_type, s_options_0, s_options_1])
+                                    client_address.append([str(self.dial_out_name.text()), str(self.dial_out_ip_port.text().split(' ')[0]), int(self.dial_out_ip_port.text().split(' ')[1]), bytes('x', 'utf-8'), 'x', 'x', s_enc, s_address_family, s_soc_type, s_options_0, s_options_1, bool_address_uplink])
 
                                     # Alphabetically sort the address book in memory
                                     client_address.sort(key=lambda x: x[0])
 
                                     # Find the new index of the new address book entry in memory after sorting and set the new current address book index accordingly
-                                    client_address_index = client_address.index([str(self.dial_out_name.text()), str(self.dial_out_ip_port.text().split(' ')[0]), int(self.dial_out_ip_port.text().split(' ')[1]), bytes('x', 'utf-8'), 'x', 'x', s_enc, s_address_family, s_soc_type, s_options_0, s_options_1])
+                                    client_address_index = client_address.index([str(self.dial_out_name.text()), str(self.dial_out_ip_port.text().split(' ')[0]), int(self.dial_out_ip_port.text().split(' ')[1]), bytes('x', 'utf-8'), 'x', 'x', s_enc, s_address_family, s_soc_type, s_options_0, s_options_1, bool_address_uplink])
 
                                     bool_allow_write = True
 
@@ -680,16 +695,16 @@ class App(QMainWindow):
                                     broadcast_address = self.dial_out_ip_port.text().split()[2]
 
                                     # Set the string which should be appended to the address book
-                                    to_address_book = 'DATA ' + self.dial_out_name.text() + ' ' + str(self.dial_out_ip_port.text().split()[0]) + ' ' + str(self.dial_out_ip_port.text().split()[1]) + ' x' + ' x' + ' ' + str(self.dial_out_ip_port.text().split()[2]) + ' ' + s_args
+                                    to_address_book = 'DATA ' + self.dial_out_name.text() + ' ' + str(self.dial_out_ip_port.text().split()[0]) + ' ' + str(self.dial_out_ip_port.text().split()[1]) + ' x' + ' x' + ' ' + str(self.dial_out_ip_port.text().split()[2]) + ' ' + s_args + ' ' + str(bool_address_uplink)
 
                                     # Append a new list to the address book list in memory
-                                    client_address.append([str(self.dial_out_name.text()), str(self.dial_out_ip_port.text().split(' ')[0]), int(self.dial_out_ip_port.text().split(' ')[1]), bytes('x', 'utf-8'), 'x', broadcast_address, s_enc, s_address_family, s_soc_type, s_options_0, s_options_1])
+                                    client_address.append([str(self.dial_out_name.text()), str(self.dial_out_ip_port.text().split(' ')[0]), int(self.dial_out_ip_port.text().split(' ')[1]), bytes('x', 'utf-8'), 'x', broadcast_address, s_enc, s_address_family, s_soc_type, s_options_0, s_options_1, bool_address_uplink])
 
                                     # Alphabetically sort the address book in memory
                                     client_address.sort(key=lambda x: x[0])
 
                                     # Find the new index of the new address book entry in memory after sorting and set the new current address book index accordingly
-                                    client_address_index = client_address.index([str(self.dial_out_name.text()), str(self.dial_out_ip_port.text().split(' ')[0]), int(self.dial_out_ip_port.text().split(' ')[1]), bytes('x', 'utf-8'), 'x', broadcast_address, s_enc, s_address_family, s_soc_type, s_options_0, s_options_1])
+                                    client_address_index = client_address.index([str(self.dial_out_name.text()), str(self.dial_out_ip_port.text().split(' ')[0]), int(self.dial_out_ip_port.text().split(' ')[1]), bytes('x', 'utf-8'), 'x', broadcast_address, s_enc, s_address_family, s_soc_type, s_options_0, s_options_1, bool_address_uplink])
 
                                     bool_allow_write = True
 
@@ -750,16 +765,16 @@ class App(QMainWindow):
                                         if len(self.dial_out_ip_port.text().split(' ')) == 2:
 
                                             # Set the string which should be appended to the address book
-                                            to_address_book = 'DATA ' + self.dial_out_name.text() + ' ' + str(self.dial_out_ip_port.text()) + ' ' + self.address_key.text() + ' ' + fingerprint_fname + ' x ' + s_args
+                                            to_address_book = 'DATA ' + self.dial_out_name.text() + ' ' + str(self.dial_out_ip_port.text()) + ' ' + self.address_key.text() + ' ' + fingerprint_fname + ' x ' + s_args + ' ' + str(bool_address_uplink)
 
                                             # Append a new list to the address book list in memory
-                                            client_address.append([str(self.dial_out_name.text()), str(self.dial_out_ip_port.text().split(' ')[0]), int(self.dial_out_ip_port.text().split(' ')[1]), bytes(self.address_key.text(), 'utf-8'), self.fingerprint_str, 'x', s_enc, s_address_family, s_soc_type, s_options_0, s_options_1])
+                                            client_address.append([str(self.dial_out_name.text()), str(self.dial_out_ip_port.text().split(' ')[0]), int(self.dial_out_ip_port.text().split(' ')[1]), bytes(self.address_key.text(), 'utf-8'), self.fingerprint_str, 'x', s_enc, s_address_family, s_soc_type, s_options_0, s_options_1, bool_address_uplink])
 
                                             # Alphabetically sort the address book in memory
                                             client_address.sort(key=lambda x: x[0])
 
                                             # Find the new index of the new address book entry in memory after sorting and set the new current address book index accordingly
-                                            client_address_index = client_address.index([str(self.dial_out_name.text()), str(self.dial_out_ip_port.text().split(' ')[0]), int(self.dial_out_ip_port.text().split(' ')[1]), bytes(self.address_key.text(), 'utf-8'), self.fingerprint_str, 'x', s_enc, s_address_family, s_soc_type, s_options_0, s_options_1])
+                                            client_address_index = client_address.index([str(self.dial_out_name.text()), str(self.dial_out_ip_port.text().split(' ')[0]), int(self.dial_out_ip_port.text().split(' ')[1]), bytes(self.address_key.text(), 'utf-8'), self.fingerprint_str, 'x', s_enc, s_address_family, s_soc_type, s_options_0, s_options_1, bool_address_uplink])
 
                                             bool_allow_write = True
 
@@ -768,16 +783,16 @@ class App(QMainWindow):
                                             broadcast_address = self.dial_out_ip_port.text().split()[2]
 
                                             # Set the string which should be appended to the address book
-                                            to_address_book = 'DATA ' + self.dial_out_name.text() + ' ' + str(self.dial_out_ip_port.text().split()[0]) + ' ' + str(self.dial_out_ip_port.text().split()[1]) + ' ' + self.address_key.text() + ' ' + fingerprint_fname + ' ' + broadcast_address + ' ' + s_args
+                                            to_address_book = 'DATA ' + self.dial_out_name.text() + ' ' + str(self.dial_out_ip_port.text().split()[0]) + ' ' + str(self.dial_out_ip_port.text().split()[1]) + ' ' + self.address_key.text() + ' ' + fingerprint_fname + ' ' + broadcast_address + ' ' + s_args + ' ' + str(bool_address_uplink)
 
                                             # Append a new list to the address book list in memory
-                                            client_address.append([str(self.dial_out_name.text()), str(self.dial_out_ip_port.text().split(' ')[0]), int(self.dial_out_ip_port.text().split(' ')[1]), bytes(self.address_key.text(), 'utf-8'), self.fingerprint_str, broadcast_address, s_enc, s_address_family, s_soc_type, s_options_0, s_options_1])
+                                            client_address.append([str(self.dial_out_name.text()), str(self.dial_out_ip_port.text().split(' ')[0]), int(self.dial_out_ip_port.text().split(' ')[1]), bytes(self.address_key.text(), 'utf-8'), self.fingerprint_str, broadcast_address, s_enc, s_address_family, s_soc_type, s_options_0, s_options_1, bool_address_uplink])
 
                                             # Alphabetically sort the address book in memory
                                             client_address.sort(key=lambda x: x[0])
 
                                             # Find the new index of the new address book entry in memory after sorting and set the new current address book index accordingly
-                                            client_address_index = client_address.index([str(self.dial_out_name.text()), str(self.dial_out_ip_port.text().split(' ')[0]), int(self.dial_out_ip_port.text().split(' ')[1]), bytes(self.address_key.text(), 'utf-8'), self.fingerprint_str, broadcast_address, s_enc, s_address_family, s_soc_type, s_options_0, s_options_1])
+                                            client_address_index = client_address.index([str(self.dial_out_name.text()), str(self.dial_out_ip_port.text().split(' ')[0]), int(self.dial_out_ip_port.text().split(' ')[1]), bytes(self.address_key.text(), 'utf-8'), self.fingerprint_str, broadcast_address, s_enc, s_address_family, s_soc_type, s_options_0, s_options_1, bool_address_uplink])
 
                                             bool_allow_write = True
 
@@ -906,6 +921,7 @@ class App(QMainWindow):
             global client_address
             global client_address_index
             global dial_out_dial_out_cipher_bool
+            global bool_address_uplink
 
             self.dial_out_name.setText('')
             self.dial_out_ip_port.setText('')
@@ -948,6 +964,14 @@ class App(QMainWindow):
                             dial_out_dial_out_cipher_bool = True
                             self.dial_out_cipher_bool_btn.setEnabled(True)
 
+                    print(str(datetime.datetime.now()) + ' -- uplink bool in list:', client_address[client_address_index][11])
+                    if client_address[client_address_index][11] == 'False':
+                        self.uplink_btn.setStyleSheet(button_stylesheet_white_text_low)
+                        bool_address_uplink = False
+                    elif client_address[client_address_index][11] == 'True':
+                        self.uplink_btn.setStyleSheet(button_stylesheet_green_text)
+                        bool_address_uplink = True
+
                     sck_set_arguments_function()
 
                     print(str(datetime.datetime.now()) + ' -- dial_out_dial_out_cipher_bool:', dial_out_dial_out_cipher_bool)
@@ -962,6 +986,7 @@ class App(QMainWindow):
             global client_address
             global client_address_index
             global dial_out_dial_out_cipher_bool
+            global bool_address_uplink
 
             self.dial_out_name.setText('')
             self.dial_out_ip_port.setText('')
@@ -1002,6 +1027,14 @@ class App(QMainWindow):
                             self.dial_out_cipher_bool_btn.setStyleSheet(button_stylesheet_green_text)
                             dial_out_dial_out_cipher_bool = True
                             self.dial_out_cipher_bool_btn.setEnabled(True)
+
+                    print(str(datetime.datetime.now()) + ' -- uplink bool in list:', client_address[client_address_index][11])
+                    if client_address[client_address_index][11] == 'False':
+                        self.uplink_btn.setStyleSheet(button_stylesheet_white_text_low)
+                        bool_address_uplink = False
+                    elif client_address[client_address_index][11] == 'True':
+                        self.uplink_btn.setStyleSheet(button_stylesheet_green_text)
+                        bool_address_uplink = True
 
                     sck_set_arguments_function()
 
@@ -1492,6 +1525,34 @@ class App(QMainWindow):
                 for line in fileinput.input(filein, inplace=True):
                     print(line.rstrip().replace('address_book_only', 'accept_all')),
 
+        def uplink_enable_function():
+            print(str(datetime.datetime.now()) + ' -- plugged in: App.uplink_enable_function')
+            global uplink_enable_bool
+            if uplink_enable_bool is False:
+                if uplink_thread.isRunning():
+                    uplink_thread.stop()
+                uplink_enable_bool = True
+                uplink_thread.start()
+                self.uplink_enable.setStyleSheet(button_stylesheet_green_text)
+            elif uplink_enable_bool is True:
+                if uplink_thread.isRunning():
+                    uplink_thread.stop()
+                else:
+                    print('uplink_thread: already stopped')
+                uplink_enable_bool = False
+                self.uplink_enable.setStyleSheet(button_stylesheet_white_text_low)
+
+        def uplink_address_function():
+            print(str(datetime.datetime.now()) + ' -- plugged in: App.uplink_address_function')
+            global bool_address_uplink
+            if bool_address_uplink is False:
+                self.uplink_btn.setStyleSheet(button_stylesheet_green_text)
+                bool_address_uplink = True
+            elif bool_address_uplink is True:
+                self.uplink_btn.setStyleSheet(button_stylesheet_white_text_low)
+                bool_address_uplink = False
+            print(str(datetime.datetime.now()) + ' -- setting bool_address_uplink:', bool_address_uplink)
+
         # Window Title
         self.title = "Communicator"
         self.setWindowTitle('Communicator')
@@ -1672,6 +1733,22 @@ class App(QMainWindow):
         self.accept_all_traffic.setStyleSheet(button_stylesheet_white_text_high)
         self.accept_all_traffic.clicked.connect(accept_all_function)
 
+        self.uplink_enable = QPushButton(self)
+        self.uplink_enable.move(28, self.server_staple + 24 + 24)
+        self.uplink_enable.resize(self.btn_120, int(self.btn_40 / 2))
+        self.uplink_enable.setFont(self.font_s7b)
+        self.uplink_enable.setText('UPLINK')
+        self.uplink_enable.setStyleSheet(button_stylesheet_white_text_low)
+        self.uplink_enable.clicked.connect(uplink_enable_function)
+
+        self.external_ip = QLabel(self)
+        self.external_ip.move(28 + self.btn_120 + 4, self.server_staple + 24 + 24)
+        self.external_ip.resize(self.btn_120, 20)
+        self.external_ip.setFont(self.font_s7b)
+        self.external_ip.setText('')
+        self.external_ip.setAlignment(Qt.AlignCenter)
+        self.external_ip.setStyleSheet(label_stylesheet_black_bg_text_white)
+
         # ##########################################################################################################
 
         self.address_staple_height = 260
@@ -1810,6 +1887,14 @@ class App(QMainWindow):
         self.address_book_address_label.setText('ADDRESS')
         self.address_book_address_label.setAlignment(Qt.AlignCenter)
         self.address_book_address_label.setStyleSheet(title_stylesheet_default)
+
+        self.uplink_btn = QPushButton(self)
+        self.uplink_btn.move(int((self.width / 2) - (self.btn_240 / 2) - self.btn_4 - self.btn_80), self.address_staple_height + 80 + 24)
+        self.uplink_btn.resize(self.btn_80, 20)
+        self.uplink_btn.setText('UPLINK')
+        self.uplink_btn.setFont(self.font_s7b)
+        self.uplink_btn.setStyleSheet(button_stylesheet_white_text_low)
+        self.uplink_btn.clicked.connect(uplink_address_function)
 
         self.dial_out_ip_port = QLineEdit(self)
         self.dial_out_ip_port.move(int((self.width / 2) - (self.btn_240 / 2)), self.address_staple_height + 80)
@@ -1970,6 +2055,8 @@ class App(QMainWindow):
                                        self.communicator_socket_options_box_2,
                                        self.communicator_socket_options_box_3)
 
+        uplink_thread = UplinkClass(self.external_ip)
+
         # Thread - Configuration
         global configuration_thread
         configuration_thread_ = ConfigurationClass()
@@ -2015,6 +2102,15 @@ class App(QMainWindow):
                     dial_out_dial_out_cipher_bool = True
                     self.dial_out_cipher_bool_btn.setEnabled(True)
 
+            if len(client_address[client_address_index]) >= 11:
+                print(str(datetime.datetime.now()) + ' -- address bool_address_uplink:', client_address[client_address_index][11])
+                if client_address[client_address_index][11] == 'False':
+                    self.uplink_btn.setStyleSheet(button_stylesheet_white_text_low)
+                    bool_address_uplink = False
+                elif client_address[client_address_index][11] == 'True':
+                    self.uplink_btn.setStyleSheet(button_stylesheet_green_text)
+                    bool_address_uplink = True
+
             try:
                 sck_set_arguments_function()
             except Exception as e:
@@ -2037,12 +2133,6 @@ class App(QMainWindow):
         self.timer_0.timeout.connect(self.update_tb)
         self.jumpstart_1()
 
-        # QTimer - Used For Internal Message System
-        self.timer_1 = QTimer(self)
-        self.timer_1.setInterval(0)
-        self.timer_1.timeout.connect(self.internal_message_system)
-        self.jumpstart_2()
-
         self.initUI()
 
     def initUI(self):
@@ -2061,14 +2151,304 @@ class App(QMainWindow):
             self.tb_0.append(textbox_0_messages[-1])
             textbox_0_messages.remove(textbox_0_messages[-1])
 
-    @QtCore.pyqtSlot()
-    def jumpstart_2(self):
-        self.timer_1.start()
 
-    @QtCore.pyqtSlot()
-    def internal_message_system(self):
-        if internal_messages:
-            print('internal_message_system received message:', internal_messages[-1])
+class UplinkClass(QThread):
+    def __init__(self, external_ip):
+        QThread.__init__(self)
+        self.external_ip = external_ip
+
+        self.fname = './router_enumeration_data.txt'
+        self.first_pass = True
+
+        self.data = ''
+
+    def run(self):
+        print('-' * 200)
+        print(str(datetime.datetime.now()) + ' [ thread started: UplinkClass(QThread).run(self) ]')
+        global enum
+
+        while True:
+            try:
+                time.sleep(2)
+
+                # 0. Enumeration data is empty
+                if len(enum) < 1:
+
+                    # 1. Then Look For File
+                    if os.path.exists(self.fname) and self.first_pass is True:
+                        print(str(datetime.datetime.now()) + ' UplinkClass(QThread).run: attempting to read pre-enumerated data file')
+                        self.use_preenumerated_data()
+
+                    # 2. Enumerate if file does not exist
+                    else:
+                        print(str(datetime.datetime.now()) + ' UplinkClass(QThread).run: attempting enumeration')
+                        self.enumeration()
+
+                else:
+                    # print('enumeration data:', enum)
+                    self.get_data()
+
+            except Exception as e:
+                print(str(datetime.datetime.now()) + ' UplinkClass(QThread).run:', e)
+
+    def uplink_logger(self):
+        if not os.path.exists(dial_out_log):
+            open('./log/uplink_log.txt', 'w').close()
+        with open('./log/uplink_log.txt', 'a') as fo:
+            fo.write('\n' + self.data + '\n')
+        fo.close()
+
+    def uplink(self):
+        print(str(datetime.datetime.now()) + ' UplinkClass(QThread).uplink: plugged in')
+        global client_address
+        global external_ip_address
+        global rety_uplink
+        print(str(datetime.datetime.now()) + ' UplinkClass(QThread).uplink using external IP address:', external_ip_address)
+
+        for _ in client_address:
+            if len(_) >= 12:
+                if _[11] == 'True':
+                    if _[3] != 'x' and _[4] != 'x':
+                        print(str(datetime.datetime.now()) + ' UplinkClass(QThread).uplink to address that has uplink enabled and both key and fingerprint:', _[0], _[1], _[2])
+
+                        name = _[0]
+                        host = _[1]
+                        port = _[2]
+                        key = _[3]
+                        finger_print = _[4]
+
+                        uplink_test = False
+                        self.data = str(datetime.datetime.now()) + ' attempting uplink to: ' + str(name) + ' ' + str(host) + ' ' + str(port)
+                        self.uplink_logger()
+
+                        try:
+                            data_response = ''
+                            if len(client_address[client_address_index]) >= 10:
+
+                                # Setup Socket
+                                sok = socket.socket(COMMUNICATOR_SOCK.get(_[7]), COMMUNICATOR_SOCK.get(_[8]))
+                                print('-- variably setting socket as:', sok)
+
+                                with sok as SOCKET_UPLINK:
+                                    SOCKET_UPLINK.connect((host, port))
+
+                                    print(str(datetime.datetime.now()) + ' -- UplinkClass.uplink: handing message to AESCipher')
+                                    print(str(datetime.datetime.now()) + ' -- UplinkClass.uplink using KEY:', key)
+                                    print(str(datetime.datetime.now()) + ' -- UplinkClass.uplink using FINGERPRINT:', finger_print)
+
+                                    cipher = AESCipher(_[3])
+                                    ciphertext = cipher.encrypt(str(finger_print) + '[UPLINK] ' + str(external_ip_address))
+                                    print(str(datetime.datetime.now()) + ' -- UplinkClass.uplink ciphertext:', str(ciphertext))
+                                    textbox_0_messages.append('[' + str(datetime.datetime.now()) + '] [SENDING ENCRYPTED] [' + str(host) + ':' + str(port) + ']')
+
+                                    print(str(datetime.datetime.now()) + ' -- UplinkClass.uplink: attempting to send ciphertext')
+
+                                    try:
+                                        SOCKET_UPLINK.send(ciphertext)
+                                        SOCKET_UPLINK.settimeout(1)
+                                    except Exception as e:
+                                        print('add to list:', e)
+
+                                    print(str(datetime.datetime.now()) + ' -- UplinkClass.uplink: waiting for response from recipient')
+
+                                    try:
+                                        data_response = ''
+                                        SOCKET_UPLINK.setblocking(0)
+                                        ready = select.select([SOCKET_UPLINK], [], [], 3)
+                                        if ready[0]:
+                                            data_response = SOCKET_UPLINK.recv(4096)
+
+                                    except Exception as e:
+                                        uplink_test = False
+                                        print(str(datetime.datetime.now()) + ' -- UplinkClass.uplink:', e)
+                                        self.data = '[' + str(datetime.datetime.now()) + '] [EXCEPTION HANDLED DURING WAITING FOR RESPONSE] [' + str(host) + ':' + str(port) + ']'
+                                        textbox_0_messages.append(self.data)
+
+                                if data_response == ciphertext:
+                                    uplink_test = True
+                                    self.data = '[' + str(datetime.datetime.now()) + '] [UPLINK CONFIRMATION] ' + str(name) +  ' [' + str(host) + ':' + str(port) + ']'
+                                    self.uplink_logger()
+                                    textbox_0_messages.append(self.data)
+
+                                    print(str(datetime.datetime.now()) + ' -- UplinkClass.uplink response from recipient equals ciphertext:', data_response)
+                                    time.sleep(1)
+
+                                else:
+                                    uplink_test = False
+                                    self.data = '[' + str(datetime.datetime.now()) + '] [RESPONSE] [' + str(host) + ':' + str(port) + '] ' + str(data_response)
+                                    print(self.data)
+                                    textbox_0_messages.append(self.data)
+                                    time.sleep(1)
+
+                        except Exception as e:
+                            uplink_test = False
+                            self.data = '[' + str(datetime.datetime.now()) + '] [RESPONSE] [' + str(host) + ':' + str(port) + '] ' + str(e)
+                            print(self.data)
+                            textbox_0_messages.append(self.data)
+                            time.sleep(1)
+
+                        if uplink_test is False:
+                            print(str(datetime.datetime.now()) + ' -- UplinkClass.uplink will be retried for:', name, host, port)
+                            self.data = '[' + str(datetime.datetime.now()) + '] [UPLINK FAILED] ' + str(name) + ' [' + str(host) + ':' + str(port) + ']'
+                            self.uplink_logger()
+
+                            # ToDo --> This initial append to list should be used in the future to retry uplink per uplink failed due to some reason like a server non responsive, etc.
+                            if [name, host, port, key, finger_print] not in rety_uplink:
+                                print(str(datetime.datetime.now()) + ' -- UplinkClass.uplink appending to retry uplink list:', name, host, port, key, finger_print)
+                                rety_uplink.append([name, host, port, key, finger_print])
+
+                    else:
+                        print(str(datetime.datetime.now()) + ' UplinkClass(QThread).uplink uplink enabled but there is no key and fingerprint (skipping):', _[0], _[1], _[2])
+                else:
+                    print(str(datetime.datetime.now()) + ' UplinkClass(QThread).uplink uplink disabled (skipping):', _[0], _[1], _[2])
+
+    def use_preenumerated_data(self):
+        print(str(datetime.datetime.now()) + ' UplinkClass(QThread).use_preenumerated_data: plugged in')
+
+        global enum
+        global from_file_bool
+
+        with codecs.open(self.fname, 'r', encoding='utf-8') as fo:
+            for line in fo:
+                line = line.strip()
+                enum.append(line)
+        fo.close()
+
+        for _ in enum:
+            print(str(datetime.datetime.now()) + ' UplinkClass(QThread).run enumeration data:', _)
+        from_file_bool = True
+        self.first_pass = False
+
+    def get_data(self):
+        global enum
+        global from_file_bool
+        global external_ip_address
+
+        url = ''
+
+        for _ in enum:
+
+            if from_file_bool is False:
+                # Set string
+                str_ = str(_[1])
+
+                # Find url and slice twice
+                find_0 = str_.find('http')
+                str_ = str_[find_0:]
+                find_1 = str_.find('.xml')
+                url = str_[:find_1 + 4]
+
+                # Find Address
+                addr = str(_[0][0] + ':' + str(_[0][1]))
+                # print('Attempting to retrieve information from: ', addr, ' at address url ', url)
+
+            else:
+                str_ = _
+
+                # Find url and slice twice
+                find_0 = str_.find('http')
+                str_ = str_[find_0:]
+                find_1 = str_.find('.xml')
+                url = str_[:find_1 + 4]
+                # print('Attempting to retrieve information from url:', url)
+
+            if url:
+                # Set device using url
+                try:
+                    d = upnpclient.Device(url)
+
+                    for k in d.service_map:
+
+                        # Magic formula
+                        for _ in d[k].actions:
+                            action = str(_).split(' ')[1].replace("'>", "").replace("'", "")
+                            if action == 'GetExternalIPAddress':
+                                try:
+                                    # Initiate current ip address dictionary
+                                    current_external_ip_address = ''
+
+                                    # Return service action
+                                    current_external_ip_address_dict = d[k][action]()
+
+                                    for k, v in current_external_ip_address_dict.items():
+                                        current_external_ip_address = v
+
+                                    # Update external IP address if changed
+                                    if current_external_ip_address != external_ip_address:
+                                        print(str(datetime.datetime.now()) + ' UplinkClass(QThread).get_data current_external_ip_address changed:', current_external_ip_address)
+                                        external_ip_address = current_external_ip_address
+                                        self.uplink()
+
+                                    self.external_ip.setText(str(external_ip_address))
+                                except Exception as e:
+                                    print(str(datetime.datetime.now()) + ' UplinkClass(QThread).get_data:', e)
+                except Exception as e:
+                    print(str(datetime.datetime.now()) + ' UplinkClass(QThread).get_data:', e)
+                    self.enumeration()
+                    time.sleep(3)
+
+    def enumeration(self):
+        print(str(datetime.datetime.now()) + ' UplinkClass(QThread).enumeration: plugged in')
+
+        global enum
+        global from_file_bool
+
+        from_file_bool = False
+
+        enum = []
+
+        # M-Search message body
+        MS = \
+            'M-SEARCH * HTTP/1.1\r\n' \
+            'HOST:239.255.255.250:1900\r\n' \
+            'ST:upnp:rootdevice\r\n' \
+            'MX:2\r\n' \
+            'MAN:"ssdp:discover"\r\n' \
+            '\r\n'
+
+        # Set up a UDP socket for multicast
+        soc = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
+        soc.settimeout(2)
+
+        # Send M-Search message to multicast address for UPNP
+        soc.sendto(MS.encode('utf-8'), ('239.255.255.250', 1900))
+
+        # Listen and capture returned responses
+        try:
+            while True:
+                data, addr = soc.recvfrom(8192)
+                if data:
+                    enum.append([addr, data])
+        except socket.timeout:
+            soc.close()
+            print(str(datetime.datetime.now()) + ' UplinkClass(QThread).enumeration: timed out')
+            pass
+
+        if len(enum) > 0:
+            print(str(datetime.datetime.now()) + ' UplinkClass(QThread).enumeration populated enumeration data:', enum)
+            # Check if file already exists
+            if not os.path.exists(self.fname):
+                codecs.open(self.fname, 'w', encoding='utf-8').close()
+
+            # Write the enumerated data to file
+            if os.path.exists(self.fname):
+                with codecs.open(self.fname, 'w', encoding='utf-8') as fo:
+                    for _ in enum:
+                        fo.write(str(_) + '\n')
+                fo.close()
+
+            self.first_pass = True
+        else:
+            print(str(datetime.datetime.now()) + ' UplinkClass(QThread).enumeration: enumeration data unpopulated')
+
+    def stop(self):
+        print('-' * 200)
+        print(str(datetime.datetime.now()) + ' [ thread terminating: UplinkClass(QThread) ]')
+        global enum
+        self.first_pass = False
+        enum = []
+        global_self.setFocus()
+        self.terminate()
 
 
 class ConfigurationClass(QThread):
@@ -2117,8 +2497,8 @@ class ConfigurationClass(QThread):
                 line = line.split(' ')
                 if str(line[0]) == 'DATA':
                     print('len(line):', len(line))
-                    if len(line) == 12:
-                        client_address.append([str(line[1]), str(line[2]), int(line[3]), bytes(line[4], 'utf-8'), str(line[5]), str(line[6]), str(line[7]), str(line[8]), str(line[9]), str(line[10]), str(line[11])])
+                    if len(line) == 13:
+                        client_address.append([str(line[1]), str(line[2]), int(line[3]), bytes(line[4], 'utf-8'), str(line[5]), str(line[6]), str(line[7]), str(line[8]), str(line[9]), str(line[10]), str(line[11]), str(line[12])])
                         print('entry:', client_address[-1])
 
         client_address.sort(key=lambda x: x[0])
