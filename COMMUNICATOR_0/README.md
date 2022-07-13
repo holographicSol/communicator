@@ -77,7 +77,7 @@ Uplink feature experimental and in development. My challenge to myself is centra
 
 UPNP:
 The router. Communicator intends to use a router to obtain public IP address via UPNP. This requires UPNP be enabled
-on the router. This to avoid using a '3rd person' to obtain the public IP address of your equipment.
+on the router. This is to avoid using a '3rd person' to obtain the public IP address of your equipment.
 Root Description File. The root description cml file may change across rebooting the router. The Communicator is
 designed to handle this by enumerating/re-enumerating the router automatically under certain circumstances in order
 to continue using the correct root description file url for UPNP communication with the router.
