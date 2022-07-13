@@ -72,7 +72,6 @@ Communicator B's old IP.
 Communicator can uplink public ip changes per address book entry. Please note that to use uplink, the address book
 entry should contain a key and fingerprint so that the recipient can identify the sender and for security
 measures. There is also a global Uplink switch to enable/disable Uplink entirely.
-Uplink feature experimental and in development. My challenge to myself is central serverless com tool.
 
 
 Python version - 3.9
