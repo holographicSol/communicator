@@ -3,20 +3,18 @@ Communicator - Written by Benjamin Jack Cullen
 A Very Powerful Communications Tool - Project in early development.
 
 Communicator is capable of potentially communicating with any IPv4, Domain Name, IPv6 and MAC addresses
-and potentially anything in the Universe running and or not running a Communicator, this makes the 
-Communicator very powerful. Use wisely.
+running and or not running a Communicator, this makes the Communicator very powerful. Use wisely.
 
-The Communicator is a very powerful Communications Tool. The Communicator is not a place to meet people, its not a
+The Communicator is a very powerful Communications Tool. The Communicator is not a place to meet people, it not a
 chat lobby or meeting place and is certainly not a chat app.
 
-Communicate with Machines and Humanoids. MAC support. (MAC may speak Chinese) Test a device that supports wake 
+Communicate with Machines and Humanoids. MAC support. (MAC may speak Chinese) Test A smart device that supports wake 
 on LAN with: ￿￿￿呰蒴︠呰蒴︠呰蒴︠呰蒴︠呰蒴︠呰蒴︠呰蒴︠呰蒴︠呰蒴︠呰蒴︠呰蒴︠呰蒴︠呰蒴︠呰蒴︠呰蒴︠呰蒴︠
-This example is how you would wake up a device. Upcoming, send string of bytes.
-Please BE EXTREMELY CAREFUL.
+This example is how you would wake up a device. BE EXTREMELY CAREFUL.
 
 Input sanitization is incomplete. Exercise extreme caution when entering data into input fields.
 Name: no spaces
-Address: IP/MAC space_delimiter PORT space_delimiter optional broadcast address
+Address: IP/MAC space_delimiter PORT space_delimiter [optional broadcast address if entering MAC not IP]
 
 Communicator Standard Communication:
 1. Messages encrypted with AES-256 32 bytes shared key.
@@ -64,6 +62,19 @@ DOS & DDOS Protection Framework:
 2. Testing for DOS proves working. DDOS remains untested.
 
 
+Uplink (A Central serverless design):
+Scenario. A scenario involving 2 Communicators.
+Communicator A's public IP address changes and so Communicator A sends Communicator B the new IP. Providing
+both communicator A and Communicator B's IP's do not change at the same time then the uplink should be successful.
+If Communicator B's IP changed at the same time then Communicator A will not know. This means you should be aware that
+Communicator A would send an encrypted message containing the fingerprint and new IP to an unknown new occupier of
+Communicator B's old IP.
+Communicator can uplink public ip changes per address book entry. Please note that to use uplink, the address book
+entry should contain a key and fingerprint so that the recipient can identify the sender and for security
+measures. There is also a global Uplink switch to enable/disable Uplink entirely.
+Uplink feature experimental and in development. My challenge to myself is central serverless com tool.
+
+
 Python version - 3.9
 Platform - Developed on Windows 10.
 
@@ -74,5 +85,3 @@ Pycrypto Installation:
 3. Then Run: (adjust path according to your MVS version)
 set CL=-FI"%VCINSTALLDIR%Tools\MSVC\14.16.27023\include\stdint.h
 4. Then pip install pycrypto.
-
-Donations are very much welcome: Paypal benjaminjc173@gmail.com
