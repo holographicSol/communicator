@@ -62,6 +62,19 @@ DOS & DDOS Protection Framework:
 2. Testing for DOS proves working. DDOS remains untested.
 
 
+Uplink (A Central serverless design):
+Scenario. A scenario involving 2 Communicators.
+Communicator A's public IP address changes and so Communicator A sends Communicator B the new IP. Providing
+both communicator A and Communicator B's IP's do not change at the same time then the uplink should be successful.
+If Communicator B's IP changed at the same time then Communicator A will not know. This means you should be aware that
+Communicator A would send an encrypted message containing the fingerprint and new IP to an unknown new occupier of
+Communicator B's old IP.
+Communicator can uplink public ip changes per address book entry. Please note that to use uplink, the address book
+entry should contain a key and fingerprint so that the recipient can identify the sender and for security
+measures. There is also a global Uplink switch to enable/disable Uplink entirely.
+Uplink feature experimental and in development. My challenge to myself is central serverless com tool.
+
+
 Python version - 3.9
 Platform - Developed on Windows 10.
 
