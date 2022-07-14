@@ -295,6 +295,13 @@ label_stylesheet_black_bg_text_white = """QLabel{background-color: rgb(0, 0, 0);
                        border-top:0px solid rgb(5, 5, 5);
                        border-left:0px solid rgb(5, 5, 5);}"""
 
+label_stylesheet_black_bg_text_yellow = """QLabel{background-color: rgb(0, 0, 0);
+                       color: rgb(255, 255, 0);
+                       border-bottom:0px solid rgb(5, 5, 5);
+                       border-right:0px solid rgb(5, 5, 5);
+                       border-top:0px solid rgb(5, 5, 5);
+                       border-left:0px solid rgb(5, 5, 5);}"""
+
 title_stylesheet_default = """QLabel{background-color: rgb(10, 10, 10);
                        color: rgb(255, 255, 255);
                        border-bottom:2px solid rgb(5, 5, 5);
@@ -1741,13 +1748,13 @@ class App(QMainWindow):
         self.uplink_enable.setStyleSheet(button_stylesheet_white_text_low)
         self.uplink_enable.clicked.connect(uplink_enable_function)
 
-        self.external_ip = QLabel(self)
-        self.external_ip.move(28 + self.btn_120 + 4, self.server_staple + 24 + 24)
-        self.external_ip.resize(self.btn_120, 20)
-        self.external_ip.setFont(self.font_s7b)
-        self.external_ip.setText('')
-        self.external_ip.setAlignment(Qt.AlignCenter)
-        self.external_ip.setStyleSheet(label_stylesheet_black_bg_text_white)
+        self.external_ip_label = QLabel(self)
+        self.external_ip_label.move(28 + self.btn_120 + 4, self.server_staple + 24 + 24)
+        self.external_ip_label.resize(self.btn_120, 20)
+        self.external_ip_label.setFont(self.font_s7b)
+        self.external_ip_label.setText('')
+        self.external_ip_label.setAlignment(Qt.AlignCenter)
+        self.external_ip_label.setStyleSheet(label_stylesheet_black_bg_text_white)
 
         # ##########################################################################################################
 
@@ -2055,7 +2062,7 @@ class App(QMainWindow):
                                        self.communicator_socket_options_box_2,
                                        self.communicator_socket_options_box_3)
 
-        uplink_thread = UplinkClass(self.external_ip)
+        uplink_thread = UplinkClass(self.external_ip_label)
 
         # Thread - Configuration
         global configuration_thread
@@ -2153,242 +2160,88 @@ class App(QMainWindow):
 
 
 class UplinkClass(QThread):
-    def __init__(self, external_ip):
+    def __init__(self, external_ip_label):
         QThread.__init__(self)
-        self.external_ip = external_ip
+        self.external_ip_label = external_ip_label
 
         self.fname = './router_enumeration_data.txt'
-        self.first_pass = True
-
         self.data = ''
+        self.url = []
 
     def run(self):
         print('-' * 200)
         print(str(datetime.datetime.now()) + ' [ thread started: UplinkClass(QThread).run(self) ]')
         global enum
+        global external_ip_address
+
+        first_pass = True
 
         while True:
             try:
-                time.sleep(2)
-
-                # 0. Enumeration data is empty
-                if len(enum) < 1:
-
-                    # 1. Then Look For File
-                    if os.path.exists(self.fname) and self.first_pass is True:
-                        print(str(datetime.datetime.now()) + ' UplinkClass(QThread).run: attempting to read pre-enumerated data file')
-                        self.use_preenumerated_data()
-
-                    # 2. Enumerate if file does not exist
-                    else:
-                        print(str(datetime.datetime.now()) + ' UplinkClass(QThread).run: attempting enumeration')
-                        self.enumeration()
-
+                if first_pass is True:
+                    first_pass = False
+                    self.read_file()
+                    self.get_url()
                 else:
-                    # print('enumeration data:', enum)
                     self.get_data()
-
+                    self.external_ip_label.setStyleSheet(label_stylesheet_black_bg_text_white)
             except Exception as e:
-                print(str(datetime.datetime.now()) + ' UplinkClass(QThread).run:', e)
+                print(e)
+                self.external_ip_label.setStyleSheet(label_stylesheet_black_bg_text_yellow)
+                self.enumeration()
+                if len(enum) > 0:
+                    first_pass = True
+            time.sleep(1)
 
-    def uplink_logger(self):
-        if not os.path.exists(dial_out_log):
-            open('./log/uplink_log.txt', 'w').close()
-        with open('./log/uplink_log.txt', 'a') as fo:
-            fo.write('\n' + self.data + '\n')
-        fo.close()
-
-    def uplink(self):
-        print(str(datetime.datetime.now()) + ' UplinkClass(QThread).uplink: plugged in')
-        global client_address
-        global external_ip_address
-        global rety_uplink
-        print(str(datetime.datetime.now()) + ' UplinkClass(QThread).uplink using external IP address:', external_ip_address)
-
-        for _ in client_address:
-            if len(_) >= 12:
-                if _[11] == 'True':
-                    if _[3] != 'x' and _[4] != 'x':
-                        print(str(datetime.datetime.now()) + ' UplinkClass(QThread).uplink to address that has uplink enabled and both key and fingerprint:', _[0], _[1], _[2])
-
-                        name = _[0]
-                        host = _[1]
-                        port = _[2]
-                        key = _[3]
-                        finger_print = _[4]
-
-                        uplink_test = False
-                        self.data = str(datetime.datetime.now()) + ' attempting uplink to: ' + str(name) + ' ' + str(host) + ' ' + str(port)
-                        self.uplink_logger()
-
-                        try:
-                            data_response = ''
-                            if len(client_address[client_address_index]) >= 10:
-
-                                # Setup Socket
-                                sok = socket.socket(COMMUNICATOR_SOCK.get(_[7]), COMMUNICATOR_SOCK.get(_[8]))
-                                print('-- variably setting socket as:', sok)
-
-                                with sok as SOCKET_UPLINK:
-                                    SOCKET_UPLINK.connect((host, port))
-
-                                    print(str(datetime.datetime.now()) + ' -- UplinkClass.uplink: handing message to AESCipher')
-                                    print(str(datetime.datetime.now()) + ' -- UplinkClass.uplink using KEY:', key)
-                                    print(str(datetime.datetime.now()) + ' -- UplinkClass.uplink using FINGERPRINT:', finger_print)
-
-                                    cipher = AESCipher(_[3])
-                                    ciphertext = cipher.encrypt(str(finger_print) + '[UPLINK] ' + str(external_ip_address))
-                                    print(str(datetime.datetime.now()) + ' -- UplinkClass.uplink ciphertext:', str(ciphertext))
-                                    textbox_0_messages.append('[' + str(datetime.datetime.now()) + '] [SENDING ENCRYPTED] [' + str(host) + ':' + str(port) + ']')
-
-                                    print(str(datetime.datetime.now()) + ' -- UplinkClass.uplink: attempting to send ciphertext')
-
-                                    try:
-                                        SOCKET_UPLINK.send(ciphertext)
-                                        SOCKET_UPLINK.settimeout(1)
-                                    except Exception as e:
-                                        print('add to list:', e)
-
-                                    print(str(datetime.datetime.now()) + ' -- UplinkClass.uplink: waiting for response from recipient')
-
-                                    try:
-                                        data_response = ''
-                                        SOCKET_UPLINK.setblocking(0)
-                                        ready = select.select([SOCKET_UPLINK], [], [], 3)
-                                        if ready[0]:
-                                            data_response = SOCKET_UPLINK.recv(4096)
-
-                                    except Exception as e:
-                                        uplink_test = False
-                                        print(str(datetime.datetime.now()) + ' -- UplinkClass.uplink:', e)
-                                        self.data = '[' + str(datetime.datetime.now()) + '] [EXCEPTION HANDLED DURING WAITING FOR RESPONSE] [' + str(host) + ':' + str(port) + ']'
-                                        textbox_0_messages.append(self.data)
-
-                                if data_response == ciphertext:
-                                    uplink_test = True
-                                    self.data = '[' + str(datetime.datetime.now()) + '] [UPLINK CONFIRMATION] ' + str(name) +  ' [' + str(host) + ':' + str(port) + ']'
-                                    self.uplink_logger()
-                                    textbox_0_messages.append(self.data)
-
-                                    print(str(datetime.datetime.now()) + ' -- UplinkClass.uplink response from recipient equals ciphertext:', data_response)
-                                    time.sleep(1)
-
-                                else:
-                                    uplink_test = False
-                                    self.data = '[' + str(datetime.datetime.now()) + '] [RESPONSE] [' + str(host) + ':' + str(port) + '] ' + str(data_response)
-                                    print(self.data)
-                                    textbox_0_messages.append(self.data)
-                                    time.sleep(1)
-
-                        except Exception as e:
-                            uplink_test = False
-                            self.data = '[' + str(datetime.datetime.now()) + '] [RESPONSE] [' + str(host) + ':' + str(port) + '] ' + str(e)
-                            print(self.data)
-                            textbox_0_messages.append(self.data)
-                            time.sleep(1)
-
-                        if uplink_test is False:
-                            print(str(datetime.datetime.now()) + ' -- UplinkClass.uplink will be retried for:', name, host, port)
-                            self.data = '[' + str(datetime.datetime.now()) + '] [UPLINK FAILED] ' + str(name) + ' [' + str(host) + ':' + str(port) + ']'
-                            self.uplink_logger()
-
-                            # ToDo --> This initial append to list should be used in the future to retry uplink per uplink failed due to some reason like a server non responsive, etc.
-                            if [name, host, port, key, finger_print] not in rety_uplink:
-                                print(str(datetime.datetime.now()) + ' -- UplinkClass.uplink appending to retry uplink list:', name, host, port, key, finger_print)
-                                rety_uplink.append([name, host, port, key, finger_print])
-
-                    else:
-                        print(str(datetime.datetime.now()) + ' UplinkClass(QThread).uplink uplink enabled but there is no key and fingerprint (skipping):', _[0], _[1], _[2])
-                else:
-                    print(str(datetime.datetime.now()) + ' UplinkClass(QThread).uplink uplink disabled (skipping):', _[0], _[1], _[2])
-
-    def use_preenumerated_data(self):
-        print(str(datetime.datetime.now()) + ' UplinkClass(QThread).use_preenumerated_data: plugged in')
-
+    def get_url(self):
+        print(str(datetime.datetime.now()) + ' UplinkClass(QThread).get_url: plugged in')
         global enum
         global from_file_bool
 
-        with codecs.open(self.fname, 'r', encoding='utf-8') as fo:
-            for line in fo:
-                line = line.strip()
-                enum.append(line)
-        fo.close()
-
-        for _ in enum:
-            print(str(datetime.datetime.now()) + ' UplinkClass(QThread).run enumeration data:', _)
-        from_file_bool = True
-        self.first_pass = False
-
-    def get_data(self):
-        global enum
-        global from_file_bool
-        global external_ip_address
-
-        url = ''
+        self.url = []
 
         for _ in enum:
 
             if from_file_bool is False:
                 # Set string
                 str_ = str(_[1])
-
                 # Find url and slice twice
                 find_0 = str_.find('http')
                 str_ = str_[find_0:]
                 find_1 = str_.find('.xml')
                 url = str_[:find_1 + 4]
-
                 # Find Address
                 addr = str(_[0][0] + ':' + str(_[0][1]))
                 # print('Attempting to retrieve information from: ', addr, ' at address url ', url)
-
+                self.url.append(url)
             else:
                 str_ = _
-
                 # Find url and slice twice
                 find_0 = str_.find('http')
                 str_ = str_[find_0:]
                 find_1 = str_.find('.xml')
                 url = str_[:find_1 + 4]
                 # print('Attempting to retrieve information from url:', url)
+                self.url.append(url)
 
-            if url:
-                # Set device using url
-                try:
-                    d = upnpclient.Device(url)
+    def read_file(self):
+        print(str(datetime.datetime.now()) + ' UplinkClass(QThread).read_file: plugged in')
+        global enum
+        global from_file_bool
 
-                    for k in d.service_map:
+        from_file_bool = True
 
-                        # Magic formula
-                        for _ in d[k].actions:
-                            action = str(_).split(' ')[1].replace("'>", "").replace("'", "")
-                            if action == 'GetExternalIPAddress':
-                                try:
-                                    # Initiate current ip address dictionary
-                                    current_external_ip_address = ''
+        enum = []
 
-                                    # Return service action
-                                    current_external_ip_address_dict = d[k][action]()
-
-                                    for k, v in current_external_ip_address_dict.items():
-                                        current_external_ip_address = v
-
-                                    # Update external IP address if changed
-                                    if current_external_ip_address != external_ip_address:
-                                        print(str(datetime.datetime.now()) + ' UplinkClass(QThread).get_data current_external_ip_address changed:', current_external_ip_address)
-                                        external_ip_address = current_external_ip_address
-                                        self.uplink()
-
-                                    self.external_ip.setText(str(external_ip_address))
-                                except Exception as e:
-                                    print(str(datetime.datetime.now()) + ' UplinkClass(QThread).get_data:', e)
-                except Exception as e:
-                    print(str(datetime.datetime.now()) + ' UplinkClass(QThread).get_data:', e)
-                    self.enumeration()
-                    time.sleep(3)
+        if os.path.exists(self.fname):
+            with codecs.open(self.fname, 'r', encoding='utf-8') as fo:
+                for line in fo:
+                    line = line.strip()
+                    enum.append(line)
+            fo.close()
 
     def enumeration(self):
-        print(str(datetime.datetime.now()) + ' UplinkClass(QThread).enumeration: plugged in')
+        # print(str(datetime.datetime.now()) + ' UplinkClass(QThread).enumeration: plugged in')
 
         global enum
         global from_file_bool
@@ -2421,11 +2274,11 @@ class UplinkClass(QThread):
                     enum.append([addr, data])
         except socket.timeout:
             soc.close()
-            print(str(datetime.datetime.now()) + ' UplinkClass(QThread).enumeration: timed out')
+            # print(str(datetime.datetime.now()) + ' UplinkClass(QThread).enumeration: timed out')
             pass
 
         if len(enum) > 0:
-            print(str(datetime.datetime.now()) + ' UplinkClass(QThread).enumeration populated enumeration data:', enum)
+            # print(str(datetime.datetime.now()) + ' UplinkClass(QThread).enumeration populated enumeration data:', enum)
             # Check if file already exists
             if not os.path.exists(self.fname):
                 codecs.open(self.fname, 'w', encoding='utf-8').close()
@@ -2436,17 +2289,162 @@ class UplinkClass(QThread):
                     for _ in enum:
                         fo.write(str(_) + '\n')
                 fo.close()
+        # else:
+            # print(str(datetime.datetime.now()) + ' UplinkClass(QThread).enumeration: enumeration data unpopulated')
 
-            self.first_pass = True
-        else:
-            print(str(datetime.datetime.now()) + ' UplinkClass(QThread).enumeration: enumeration data unpopulated')
+    def get_data(self):
+        # print(str(datetime.datetime.now()) + ' UplinkClass(QThread).get_data: plugged in')
+        global enum
+        global from_file_bool
+        global external_ip_address
+
+        for _ in self.url:
+
+            # Set device using url
+            d = upnpclient.Device(_)
+            # print(d)
+
+            for k in d.service_map:
+
+                # Magic formula
+                for _ in d[k].actions:
+                    action = str(_).split(' ')[1].replace("'>", "").replace("'", "")
+                    if action == 'GetExternalIPAddress':
+                        # Initiate current ip address dictionary
+                        current_external_ip_address = ''
+
+                        # Return service action
+                        current_external_ip_address_dict = d[k][action]()
+
+                        for k, v in current_external_ip_address_dict.items():
+                            current_external_ip_address = v
+
+                        # Update external IP address if changed
+                        if current_external_ip_address != external_ip_address:
+                            print(str(datetime.datetime.now()) + ' UplinkClass(QThread).get_data current_external_ip_address changed:', current_external_ip_address)
+                            external_ip_address = current_external_ip_address
+
+                            # ToDo --> Do something (uplink per address uplink enabled)
+
+                        self.external_ip_label.setText(str(external_ip_address))
+
+    def uplink_logger(self):
+        if not os.path.exists(dial_out_log):
+            open('./log/uplink_log.txt', 'w').close()
+        with open('./log/uplink_log.txt', 'a') as fo:
+            fo.write('\n' + self.data + '\n')
+        fo.close()
+
+    # def uplink(self):
+    #     print(str(datetime.datetime.now()) + ' UplinkClass(QThread).uplink: plugged in')
+    #     global client_address
+    #     global external_ip_address
+    #     global rety_uplink
+    #     print(str(datetime.datetime.now()) + ' UplinkClass(QThread).uplink using external IP address:', external_ip_address)
+    #
+    #     for _ in client_address:
+    #         if len(_) >= 12:
+    #             if _[11] == 'True':
+    #                 if _[3] != 'x' and _[4] != 'x':
+    #                     print(str(datetime.datetime.now()) + ' UplinkClass(QThread).uplink to address that has uplink enabled and both key and fingerprint:', _[0], _[1], _[2])
+    #
+    #                     name = _[0]
+    #                     host = _[1]
+    #                     port = _[2]
+    #                     key = _[3]
+    #                     finger_print = _[4]
+    #
+    #                     uplink_test = False
+    #                     self.data = str(datetime.datetime.now()) + ' attempting uplink to: ' + str(name) + ' ' + str(host) + ' ' + str(port)
+    #                     self.uplink_logger()
+    #
+    #                     try:
+    #                         data_response = ''
+    #                         if len(client_address[client_address_index]) >= 10:
+    #
+    #                             # Setup Socket
+    #                             sok = socket.socket(COMMUNICATOR_SOCK.get(_[7]), COMMUNICATOR_SOCK.get(_[8]))
+    #                             print('-- variably setting socket as:', sok)
+    #
+    #                             with sok as SOCKET_UPLINK:
+    #                                 SOCKET_UPLINK.connect((host, port))
+    #
+    #                                 print(str(datetime.datetime.now()) + ' -- UplinkClass.uplink: handing message to AESCipher')
+    #                                 print(str(datetime.datetime.now()) + ' -- UplinkClass.uplink using KEY:', key)
+    #                                 print(str(datetime.datetime.now()) + ' -- UplinkClass.uplink using FINGERPRINT:', finger_print)
+    #
+    #                                 cipher = AESCipher(_[3])
+    #                                 ciphertext = cipher.encrypt(str(finger_print) + '[UPLINK] ' + str(external_ip_address))
+    #                                 print(str(datetime.datetime.now()) + ' -- UplinkClass.uplink ciphertext:', str(ciphertext))
+    #                                 textbox_0_messages.append('[' + str(datetime.datetime.now()) + '] [SENDING ENCRYPTED] [' + str(host) + ':' + str(port) + ']')
+    #
+    #                                 print(str(datetime.datetime.now()) + ' -- UplinkClass.uplink: attempting to send ciphertext')
+    #
+    #                                 try:
+    #                                     SOCKET_UPLINK.send(ciphertext)
+    #                                     SOCKET_UPLINK.settimeout(1)
+    #                                 except Exception as e:
+    #                                     print('add to list:', e)
+    #
+    #                                 print(str(datetime.datetime.now()) + ' -- UplinkClass.uplink: waiting for response from recipient')
+    #
+    #                                 try:
+    #                                     data_response = ''
+    #                                     SOCKET_UPLINK.setblocking(0)
+    #                                     ready = select.select([SOCKET_UPLINK], [], [], 3)
+    #                                     if ready[0]:
+    #                                         data_response = SOCKET_UPLINK.recv(4096)
+    #
+    #                                 except Exception as e:
+    #                                     uplink_test = False
+    #                                     print(str(datetime.datetime.now()) + ' -- UplinkClass.uplink:', e)
+    #                                     self.data = '[' + str(datetime.datetime.now()) + '] [EXCEPTION HANDLED DURING WAITING FOR RESPONSE] [' + str(host) + ':' + str(port) + ']'
+    #                                     textbox_0_messages.append(self.data)
+    #
+    #                             if data_response == ciphertext:
+    #                                 uplink_test = True
+    #                                 self.data = '[' + str(datetime.datetime.now()) + '] [UPLINK CONFIRMATION] ' + str(name) +  ' [' + str(host) + ':' + str(port) + ']'
+    #                                 self.uplink_logger()
+    #                                 textbox_0_messages.append(self.data)
+    #
+    #                                 print(str(datetime.datetime.now()) + ' -- UplinkClass.uplink response from recipient equals ciphertext:', data_response)
+    #                                 time.sleep(1)
+    #
+    #                             else:
+    #                                 uplink_test = False
+    #                                 self.data = '[' + str(datetime.datetime.now()) + '] [RESPONSE] [' + str(host) + ':' + str(port) + '] ' + str(data_response)
+    #                                 print(self.data)
+    #                                 textbox_0_messages.append(self.data)
+    #                                 time.sleep(1)
+    #
+    #                     except Exception as e:
+    #                         uplink_test = False
+    #                         self.data = '[' + str(datetime.datetime.now()) + '] [RESPONSE] [' + str(host) + ':' + str(port) + '] ' + str(e)
+    #                         print(self.data)
+    #                         textbox_0_messages.append(self.data)
+    #                         time.sleep(1)
+    #
+    #                     if uplink_test is False:
+    #                         print(str(datetime.datetime.now()) + ' -- UplinkClass.uplink will be retried for:', name, host, port)
+    #                         self.data = '[' + str(datetime.datetime.now()) + '] [UPLINK FAILED] ' + str(name) + ' [' + str(host) + ':' + str(port) + ']'
+    #                         self.uplink_logger()
+    #
+    #                         # ToDo --> This initial append to list should be used in the future to retry uplink per uplink failed due to some reason like a server non responsive, etc.
+    #                         if [name, host, port, key, finger_print] not in rety_uplink:
+    #                             print(str(datetime.datetime.now()) + ' -- UplinkClass.uplink appending to retry uplink list:', name, host, port, key, finger_print)
+    #                             rety_uplink.append([name, host, port, key, finger_print])
+    #
+    #                 else:
+    #                     print(str(datetime.datetime.now()) + ' UplinkClass(QThread).uplink uplink enabled but there is no key and fingerprint (skipping):', _[0], _[1], _[2])
+    #             else:
+    #                 print(str(datetime.datetime.now()) + ' UplinkClass(QThread).uplink uplink disabled (skipping):', _[0], _[1], _[2])
 
     def stop(self):
         print('-' * 200)
         print(str(datetime.datetime.now()) + ' [ thread terminating: UplinkClass(QThread) ]')
         global enum
-        self.first_pass = False
         enum = []
+        self.external_ip_label.setText('')
         global_self.setFocus()
         self.terminate()
 
