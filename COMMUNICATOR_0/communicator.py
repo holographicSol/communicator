@@ -27,6 +27,7 @@ import select
 import fileinput
 import upnpclient
 import codecs
+from requests import get
 
 # Threads
 configuration_thread = []
@@ -125,6 +126,9 @@ uplink_enum_bool = False
 uplink_enable_bool = False
 from_file_bool = False
 bool_address_uplink = False
+get_external_ip_finnished_reading = False
+uplink_use_external_service = False
+
 enum = []
 external_ip_address = ''
 
@@ -1546,6 +1550,12 @@ class App(QMainWindow):
                     uplink_thread.stop()
                 uplink_thread.start()
 
+                # Save Changes
+                if os.path.exists('./config.txt'):
+                    filein = './config.txt'
+                    for line in fileinput.input(filein, inplace=True):
+                        print(line.rstrip().replace('UNIVERSAL_UPLINK false', 'UNIVERSAL_UPLINK true')),
+
             elif uplink_enable_bool is True:
                 if get_external_ip_thread.isRunning():
                     get_external_ip_thread.stop()
@@ -1557,6 +1567,12 @@ class App(QMainWindow):
                 if uplink_thread.isRunning():
                     uplink_thread.stop()
 
+                    # Save Changes
+                    if os.path.exists('./config.txt'):
+                        filein = './config.txt'
+                        for line in fileinput.input(filein, inplace=True):
+                            print(line.rstrip().replace('UNIVERSAL_UPLINK true', 'UNIVERSAL_UPLINK false')),
+
         def uplink_address_function():
             print(str(datetime.datetime.now()) + ' -- plugged in: App.uplink_address_function')
             global bool_address_uplink
@@ -1567,6 +1583,46 @@ class App(QMainWindow):
                 self.uplink_btn.setStyleSheet(button_stylesheet_white_text_low)
                 bool_address_uplink = False
             print(str(datetime.datetime.now()) + ' -- setting bool_address_uplink:', bool_address_uplink)
+
+        def get_ext_ip_use_upnp_function():
+            print(str(datetime.datetime.now()) + ' -- plugged in: App.get_ext_ip_use_upnp_function')
+
+            global uplink_use_external_service
+            uplink_use_external_service = False
+
+            print(str(datetime.datetime.now()) + ' -- setting uplink_use_external_service:', uplink_use_external_service)
+
+            # Set Button Green
+            self.get_ext_ip_use_upnp.setStyleSheet(button_stylesheet_green_text)
+
+            # Set Other Options Red
+            self.get_ext_ip_use_ext_service.setStyleSheet(button_stylesheet_white_text_low)
+
+            # Save Changes
+            if os.path.exists('./config.txt'):
+                filein = './config.txt'
+                for line in fileinput.input(filein, inplace=True):
+                    print(line.rstrip().replace('use_external_service', 'use_upnp')),
+
+        def get_ext_ip_use_ext_service_function():
+            print(str(datetime.datetime.now()) + ' -- plugged in: App.get_ext_ip_use_ext_service_function')
+
+            global uplink_use_external_service
+            uplink_use_external_service = True
+
+            print(str(datetime.datetime.now()) + ' -- setting uplink_use_external_service:', uplink_use_external_service)
+
+            # Set Button Green
+            self.get_ext_ip_use_upnp.setStyleSheet(button_stylesheet_white_text_low)
+
+            # Set Other Options Red
+            self.get_ext_ip_use_ext_service.setStyleSheet(button_stylesheet_green_text)
+
+            # Save Changes
+            if os.path.exists('./config.txt'):
+                filein = './config.txt'
+                for line in fileinput.input(filein, inplace=True):
+                    print(line.rstrip().replace('use_upnp', 'use_external_service')),
 
         # Window Title
         self.title = "Communicator"
@@ -1763,6 +1819,22 @@ class App(QMainWindow):
         self.external_ip_label.setText('')
         self.external_ip_label.setAlignment(Qt.AlignCenter)
         self.external_ip_label.setStyleSheet(label_stylesheet_black_bg_text_white)
+
+        self.get_ext_ip_use_upnp = QPushButton(self)
+        self.get_ext_ip_use_upnp.move(28, self.server_staple + 24 + 24 + 24)
+        self.get_ext_ip_use_upnp.resize(self.btn_120, int(self.btn_40 / 2))
+        self.get_ext_ip_use_upnp.setFont(self.font_s7b)
+        self.get_ext_ip_use_upnp.setText('UPNP')
+        self.get_ext_ip_use_upnp.setStyleSheet(button_stylesheet_white_text_low)
+        self.get_ext_ip_use_upnp.clicked.connect(get_ext_ip_use_upnp_function)
+
+        self.get_ext_ip_use_ext_service = QPushButton(self)
+        self.get_ext_ip_use_ext_service.move(28 + self.btn_120 + 4, self.server_staple + 24 + 24 + 24)
+        self.get_ext_ip_use_ext_service.resize(self.btn_120, int(self.btn_40 / 2))
+        self.get_ext_ip_use_ext_service.setFont(self.font_s7b)
+        self.get_ext_ip_use_ext_service.setText('EXT. SERVICE')
+        self.get_ext_ip_use_ext_service.setStyleSheet(button_stylesheet_white_text_low)
+        self.get_ext_ip_use_ext_service.clicked.connect(get_ext_ip_use_ext_service_function)
 
         # ##########################################################################################################
 
@@ -2096,6 +2168,18 @@ class App(QMainWindow):
         elif accept_from_key == 'accept_all':
             accept_all_function()
 
+        global uplink_enable_bool
+        if uplink_enable_bool is True:
+            self.uplink_enable.setStyleSheet(button_stylesheet_green_text)
+            get_external_ip_thread.start()
+            uplink_thread.start()
+
+        global uplink_use_external_service
+        if uplink_use_external_service is False:
+            self.get_ext_ip_use_upnp.setStyleSheet(button_stylesheet_green_text)
+        elif uplink_use_external_service is True:
+            self.get_ext_ip_use_ext_service.setStyleSheet(button_stylesheet_green_text)
+
         global client_address
         global dial_out_dial_out_cipher_bool
 
@@ -2212,8 +2296,14 @@ class UplinkClass(QThread):
         print('-' * 200)
         print(str(datetime.datetime.now()) + ' [ thread started: UplinkClass(QThread).run(self) ]')
         global external_ip_address
+        global get_external_ip_finnished_reading
 
-        current_external_ip = ''
+        # Wait in case a file exists containing previous external address
+        while get_external_ip_finnished_reading is False:
+            print('UplinkClass: waiting for get_external_ip_finnished_reading')
+            time.sleep(1)
+
+        current_external_ip = external_ip_address
 
         while True:
 
@@ -2339,25 +2429,80 @@ class GetExternalIPClass(QThread):
         print(str(datetime.datetime.now()) + ' [ thread started: GetExternalIPClass(QThread).run(self) ]')
         global enum
         global external_ip_address
+        global get_external_ip_finnished_reading
+        global uplink_use_external_service
+
+        # Attempt to read any previously existing address
+        if os.path.exists('./external_ip_address.txt'):
+            with codecs.open('./external_ip_address.txt', 'r', encoding='utf-8') as fo:
+                for line in fo:
+                    line = line.strip()
+                    if line.startswith('EXTERNAL_IP_ADDRESS'):
+                        line = line.replace('EXTERNAL_IP_ADDRESS ', '')
+                        if len(line) > 0:
+                            external_ip_address = str(line)
+                            print('-- setting external ip address as:', external_ip_address)
+            fo.close()
+
+        self.external_ip_label.setText(str(external_ip_address))
+
+        get_external_ip_finnished_reading = True
 
         first_pass = True
 
         while True:
-            try:
-                if first_pass is True:
-                    first_pass = False
-                    self.read_file()
-                    self.get_url()
-                else:
-                    self.get_data()
-                    self.external_ip_label.setStyleSheet(label_stylesheet_black_bg_text_white)
-            except Exception as e:
-                print(e)
-                self.external_ip_label.setStyleSheet(label_stylesheet_black_bg_text_yellow)
-                self.enumeration()
-                if len(enum) > 0:
-                    first_pass = True
+            if uplink_use_external_service is False:
+                try:
+                    if first_pass is True:
+                        first_pass = False
+                        self.read_file()
+                        self.get_url()
+                    else:
+                        self.get_data()
+                        self.external_ip_label.setStyleSheet(label_stylesheet_black_bg_text_white)
+                except Exception as e:
+                    print(e)
+                    self.external_ip_label.setStyleSheet(label_stylesheet_black_bg_text_yellow)
+                    self.enumeration()
+                    if len(enum) > 0:
+                        first_pass = True
+            elif uplink_use_external_service is True:
+                self.use_external_service()
             time.sleep(1)
+
+    def use_external_service(self):
+        global external_ip_address
+        # print(str(datetime.datetime.now()) + ' GetExternalIPClass(QThread).use_external_service: plugged in')
+        try:
+            # todo --> more external service options for obtaining external ip address
+            current_ip_address = get('https://api.ipify.org').text
+            # print('current_ip_address:', current_ip_address)
+
+            # todo --> more sanitize
+            if not ' ' in current_ip_address:
+
+                self.external_ip_label.setStyleSheet(label_stylesheet_black_bg_text_white)
+
+                if current_ip_address != external_ip_address:
+                    external_ip_address = current_ip_address
+
+                    self.external_ip_label.setText(str(external_ip_address))
+
+                    # Save Changes
+                    open('./external_ip_address.txt', 'w').close()
+
+                    if os.path.exists('./external_ip_address.txt'):
+                        with codecs.open('./external_ip_address.txt', 'w', encoding='utf-8') as fo:
+                            fo.write('EXTERNAL_IP_ADDRESS ' + str(current_ip_address))
+                        fo.close()
+            else:
+                self.external_ip_label.setStyleSheet(label_stylesheet_black_bg_text_yellow)
+
+        except Exception as e:
+            print('-- GetExternalIPClass(QThread).use_external_service:', e)
+            self.external_ip_label.setStyleSheet(label_stylesheet_black_bg_text_yellow)
+
+        # time.sleep(3)
 
     def get_url(self):
         print(str(datetime.datetime.now()) + ' GetExternalIPClass(QThread).get_url: plugged in')
@@ -2483,12 +2628,20 @@ class GetExternalIPClass(QThread):
                         current_external_ip_address_dict = d[k][action]()
 
                         for k, v in current_external_ip_address_dict.items():
-                            current_external_ip_address = v
+                            current_external_ip_address = str(v).strip()
 
                         # Update external IP address if changed
-                        if current_external_ip_address != external_ip_address:
+                        if current_external_ip_address != external_ip_address and current_external_ip_address != '':
                             print(str(datetime.datetime.now()) + ' GetExternalIPClass(QThread).get_data current_external_ip_address changed:', current_external_ip_address)
                             external_ip_address = current_external_ip_address
+
+                            # Save Changes
+                            open('./external_ip_address.txt', 'w').close()
+
+                            if os.path.exists('./external_ip_address.txt'):
+                                with codecs.open('./external_ip_address.txt', 'w', encoding='utf-8') as fo:
+                                    fo.write('EXTERNAL_IP_ADDRESS ' + str(current_external_ip_address))
+                                fo.close()
 
                         self.external_ip_label.setText(str(external_ip_address))
 
@@ -2513,6 +2666,8 @@ class ConfigurationClass(QThread):
         global server_address
         global client_address
         global accept_from_key
+        global uplink_enable_bool
+        global uplink_use_external_service
 
         print('-' * 200)
         print(str(datetime.datetime.now()) + ' ConfigurationClass(QThread): updating all values from configuration file...')
@@ -2535,6 +2690,20 @@ class ConfigurationClass(QThread):
                             accept_from_key = 'accept_all'
                         elif str(line[1]) == 'address_book_only':
                             accept_from_key = 'address_book_only'
+
+                if str(line[0]) == 'UNIVERSAL_UPLINK':
+                    if len(line) == 2:
+                        if str(line[1]) == 'true':
+                            uplink_enable_bool = True
+                        elif str(line[1]) == 'false':
+                            uplink_enable_bool = False
+
+                if str(line[0]) == 'USE_UPNP':
+                    if len(line) == 2:
+                        if str(line[1]) == 'use_upnp':
+                            uplink_use_external_service = False
+                        elif str(line[1]) == 'use_external_service':
+                            uplink_use_external_service = True
         fo.close()
 
         print('-' * 200)
