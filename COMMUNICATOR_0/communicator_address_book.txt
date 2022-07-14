@@ -1,2 +1,3 @@
-DATA OmegaSpaceRay 192.168.1.11 55555 P-kG/z_V**~-st.-!#-ESPvak\#og/$& ./fingerprints/OmegaSpaceRay.txt x u8______utf_8 AF_INET SOCK_STREAM SOL_SOCKET SO_BROADCAST True
-DATA SuperCat 192.168.1.11 55555 &AR!i_XyxuBF+bVfURg`S&BgPfKx.?^= ./fingerprints/SuperCat.txt x u8______utf_8 AF_INET SOCK_STREAM SOL_SOCKET SO_BROADCAST False
+DATA Address_0 192.168.1.11 55555 VH+J;:aGa-c]Nx(~)c+$_{X<b<Zf_ZPV ./fingerprints/Address_0.txt x u8______utf_8 AF_INET SOCK_STREAM SOL_SOCKET SO_BROADCAST True
+DATA Address_1 192.168.1.11 55555 hkemGN|zTX)oLfZ#|<J{`|DUQzJ*EeX] ./fingerprints/Address_1.txt x u8______utf_8 AF_INET SOCK_STREAM SOL_SOCKET SO_BROADCAST True
+DATA Address_2 192.168.1.11 55555 hkemGN|zTX)oLfZ#|<J{`|DUQzJ*EeX] ./fingerprints/Address_2.txt x u8______utf_8 AF_INET SOCK_STREAM SOL_SOCKET SO_BROADCAST False
