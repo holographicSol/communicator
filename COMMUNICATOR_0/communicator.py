@@ -3175,7 +3175,7 @@ class ServerClass(QThread):
         debug_message.append('[' + str(datetime.datetime.now()) + '] [ServerClass.run] SERVER_PORT: ' + str(self.SERVER_PORT))
 
         debug_message.append('-' * 200)
-        self.data = str(datetime.datetime.now()) + ' [ServerClass.run] public server started'
+        self.data = '[' + str(datetime.datetime.now()) + '] [ServerClass.run] public server started'
         print(self.data)
         self.server_logger()
 
