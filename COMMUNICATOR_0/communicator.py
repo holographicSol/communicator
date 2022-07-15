@@ -643,7 +643,7 @@ class App(QMainWindow):
                         # Codec must be selected
                         if str(self.codec_select_box.currentText()) != 'Unselected':
                             debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_save_address] check_0: pass')
-                            s_enc = str(self.codec_select_box.currentText()).split()[0] + '______' + str(self.codec_select_box.currentText()).split()[1]
+                            s_enc = str(self.codec_select_box.currentText())
                         else:
                             debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_save_address] check_0: fail')
                             allow_save_bool.append(False)
@@ -889,7 +889,7 @@ class App(QMainWindow):
             global client_address_index
 
             # ENCODING
-            enc_var = client_address[client_address_index][6].replace('______', ' ')
+            enc_var = client_address[client_address_index][6]
             index = self.codec_select_box.findText(enc_var, QtCore.Qt.MatchFixedString)
             if index >= 0:
                 debug_message.append('[' + str(datetime.datetime.now()) + '] [App.sck_set_arguments_function] [ENCODING] found index: ' + str(index) + ' for ' + str(client_address[client_address_index][6]))
@@ -1894,8 +1894,13 @@ class App(QMainWindow):
         self.codec_select_box.setFont(self.font_s7b)
         self.codec_select_box.addItem('Unselected')
         communicator_codecs = encodings._aliases
+        enc_val_list = []
         for k, v in communicator_codecs.items():
-            self.codec_select_box.addItem(str(str(k).strip() + ' ' + str(v).strip()))
+            enc_val = str(v).strip()
+            if enc_val not in enc_val_list:
+                enc_val_list.append(enc_val)
+                self.codec_select_box.addItem(str(enc_val))
+        del enc_val_list
 
         self.dial_out_family_type = QLabel(self)
         self.dial_out_family_type.move(32, self.address_staple_height + 28 + 24)
@@ -2928,7 +2933,7 @@ class DialOutClass(QThread):
                         debug_message.append('[' + str(datetime.datetime.now()) + '] [DialOutClass.message_send] ciphertext: ' + str((ciphertext)))
                         textbox_0_messages.append('[' + str(datetime.datetime.now()) + '] [SENDING ENCRYPTED] [' + str(self.HOST_SEND) + ':' + str(self.PORT_SEND) + ']')
                     else:
-                        ciphertext = bytes(self.MESSAGE_CONTENT, str(client_address[client_address_index][6]).split('______')[1])
+                        ciphertext = bytes(self.MESSAGE_CONTENT, str(client_address[client_address_index][6]))
                         textbox_0_messages.append('[' + str(datetime.datetime.now()) + '] [SENDING UNENCRYPTED] [' + str(self.HOST_SEND) + ':' + str(self.PORT_SEND) + ']')
 
                     debug_message.append('[' + str(datetime.datetime.now()) + '] [DialOutClass.message_send] attempting to send ciphertext')
