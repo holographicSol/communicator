@@ -1448,6 +1448,11 @@ class App(QMainWindow):
             self.dial_out_ip_port.setText('')
             self.address_key.setText('')
             self.tb_fingerprint.setText('')
+            self.codec_select_box.setCurrentIndex(0)
+            self.communicator_socket_options_box_0.setCurrentIndex(0)
+            self.communicator_socket_options_box_1.setCurrentIndex(0)
+            self.communicator_socket_options_box_2.setCurrentIndex(0)
+            self.communicator_socket_options_box_3.setCurrentIndex(0)
 
         def address_undo_form_function():
             global debug_message
