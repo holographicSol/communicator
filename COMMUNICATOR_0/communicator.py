@@ -2686,7 +2686,7 @@ class GetExternalIPClass(QThread):
 
     def get_data(self):
         global debug_message
-        debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [GetExternalIPClass.get_data]')
+        # debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [GetExternalIPClass.get_data]')
         global enum
         global from_file_bool
         global external_ip_address
@@ -2695,7 +2695,7 @@ class GetExternalIPClass(QThread):
 
             # Set device using url
             d = upnpclient.Device(_)
-            debug_message.append('[' + str(datetime.datetime.now()) + '] [GetExternalIPClass.get_data] device(s)' + str(d))
+            # debug_message.append('[' + str(datetime.datetime.now()) + '] [GetExternalIPClass.get_data] device(s)' + str(d))
 
             for k in d.service_map:
 
