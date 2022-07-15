@@ -85,7 +85,7 @@ to continue using the correct root description file url for UPNP communication w
 If you poke around in the dark, you might poke a bear. Please use with caution and treat as experimental.
 
 
-Python version - 3.9
+Python version - 3.10.3
 Platform - Developed on Windows 10.
 
 Pycrypto Installation:
