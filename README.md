@@ -1,6 +1,10 @@
 Communicator - Written by Benjamin Jack Cullen
 
-A Very Powerful Communications Tool - Project in early development. Project potentially discontinued due to security concerns. Please use with caution and read the code if implementing the Communicator. The Communicator is experimental.
+A Very Powerful Communications Tool - Project in early development. Project potentially discontinued due to 
+security concerns if a user did not implement the Communicator effectively.
+Security is only as good as the implementation.
+
+Please use with caution and read the code if implementing the Communicator. The Communicator is experimental.
 
 Communicator is capable of potentially communicating with any IPv4, Domain Name, IPv6 and MAC addresses
 running and or not running a Communicator, this makes the Communicator very powerful. Use wisely.
