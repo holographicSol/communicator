@@ -2535,7 +2535,6 @@ class GetExternalIPClass(QThread):
                             if len(enum) > 0:
                                 first_pass = True
                 except Exception as e:
-                    print('e', e)
                     debug_message.append('[' + str(datetime.datetime.now()) + '] [GetExternalIPClass.run] ' + str(e))
                     self.external_ip_label.setStyleSheet(label_stylesheet_black_bg_text_yellow)
                     self.enumeration()
