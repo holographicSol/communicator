@@ -67,7 +67,7 @@ rety_uplink = []
 server_messages = []
 textbox_0_messages = []
 server_address_messages = []
-internal_messages = []
+debug_message = []
 cipher_message_count = 0
 alien_message_count = 0
 soft_block_ip_count = 0
@@ -407,6 +407,7 @@ global_self = []
 class App(QMainWindow):
     def __init__(self):
         super(App, self).__init__()
+        global debug_message
         global global_self
         global server_address
         global client_address
@@ -505,17 +506,19 @@ class App(QMainWindow):
         self.fingerprint_str = ''
 
         def send_message_function():
-            print(str(datetime.datetime.now()) + ' -- plugged in: App.send_message_function')
+            global debug_message
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.send_message_function]')
             global_self.setFocus()
             if self.dial_out_message.text() != '':
                 if dial_out_thread.isRunning() is True:
                     dial_out_thread.stop()
                 dial_out_thread.start()
             else:
-                print(str(datetime.datetime.now()) + ' -- send_message_function: blocking empty message send')
+                debug_message.append('[' + str(datetime.datetime.now()) + '] [App.send_message_function] blocking empty message send')
 
         def client_remove_address():
-            print(str(datetime.datetime.now()) + ' -- plugged in: App.client_remove_addresss')
+            global debug_message
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.client_remove_address]')
             global write_client_configuration_engaged
             global client_address
             global client_address_index
@@ -577,17 +580,17 @@ class App(QMainWindow):
                                                                     str(line_split[12])]
 
                                             # Display to compare
-                                            print('-- MEM LIST COMPARE: ', compare_remove_address)
-                                            print('-- FILE LIST COMPARE:', compare_line_address)
+                                            debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_remove_address] MEM LIST COMPARE: ' + str(compare_remove_address))
+                                            debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_remove_address] FILE LIST COMPARE: ' + str(compare_line_address))
 
                                             # Append unequal lines to a list
                                             if compare_remove_address != compare_line_address:
                                                 fo_list.append(line)
-                                                print('-- KEEPING LINE:', line)
+                                                debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_remove_address] KEEPING LINE: ' + str(line))
 
                                             # Clearly display the line that is equal and do not add the line to a list
                                             elif compare_remove_address == compare_line_address:
-                                                print('-- TARGET REMOVE:', line)
+                                                debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_remove_address] TARGET REMOVE: ' + str(line))
                                                 write_bool = True
 
                             # If the target line in address book was found then write lines from the list into a temporary file
@@ -611,13 +614,13 @@ class App(QMainWindow):
                     write_client_configuration_engaged = False
 
         def client_save_address():
-            print(str(datetime.datetime.now()) + ' -- plugged in: App.client_save_address')
+            global debug_message
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.client_save_address]')
             global write_client_configuration_engaged
             global client_address
             global client_address_index
             global address_save_mode
             global button_stylesheet_green_text
-            global internal_messages
             global bool_address_uplink
 
             # Attempt to only run this function if this function is not already in progress
@@ -631,33 +634,33 @@ class App(QMainWindow):
                     if self.dial_out_ip_port.text() != '':
 
                         # Clearly display the save mode
-                        print(str(datetime.datetime.now()) + ' -- App.client_save_address using address_save_mode:', address_save_mode)
+                        debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_save_address] using address_save_mode: ' + str(address_save_mode))
 
                         # Create a pre-flight check list
                         allow_save_bool = []
 
                         # Codec must be selected
                         if str(self.codec_select_box.currentText()) != 'Unselected':
-                            print('-- check_0: pass')
+                            debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_save_address] check_0: pass')
                             s_enc = str(self.codec_select_box.currentText()).split()[0] + '______' + str(self.codec_select_box.currentText()).split()[1]
                         else:
-                            print('-- check_0: fail')
+                            debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_save_address] check_0: fail')
                             allow_save_bool.append(False)
 
                         # Address Family must be selected
                         if str(self.communicator_socket_options_box_0.currentText()) != 'Unselected':
-                            print('-- check_1: pass')
+                            debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_save_address] check_1: pass')
                             s_address_family = str(self.communicator_socket_options_box_0.currentText())
                         else:
-                            print('-- check_1: fail')
+                            debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_save_address] check_1: fail')
                             allow_save_bool.append(False)
 
                         # Socket Type must be selected
                         if str(self.communicator_socket_options_box_1.currentText()) != 'Unselected':
-                            print('-- check_2: pass')
+                            debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_save_address] check_2: pass')
                             s_soc_type = str(self.communicator_socket_options_box_1.currentText())
                         else:
-                            print('-- check_2: fail')
+                            debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_save_address] check_2: fail')
                             allow_save_bool.append(False)
 
                         # Continue if not False in the pre-flight check list
@@ -672,7 +675,7 @@ class App(QMainWindow):
                             s_args = s_enc + ' ' + s_address_family + ' ' + s_soc_type + ' ' + s_options_0 + ' ' + s_options_1
 
                             # Display current address index for comparison later
-                            print('-- current index before potentially sorting:', client_address_index)
+                            debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_save_address] current index before potentially sorting: ' + str(client_address_index))
 
                             # Initiate an empty string which can be used as the string to append to the address book later
                             to_address_book = ''
@@ -723,15 +726,15 @@ class App(QMainWindow):
                             elif address_save_mode == 'advanced':
 
                                 # Display key and fingerprint
-                                print('key:', str(self.address_key.text()))
-                                print('fingerprint:', self.tb_fingerprint.toPlainText().strip())
+                                debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_save_address] key: ' + str((self.address_key.text())))
+                                debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_save_address] fingerprint: ' + str(self.tb_fingerprint.toPlainText().strip()))
 
                                 # Create a new fingerprint filename using the name in the name input field
                                 fingerprint_fname = self.dial_out_name.text()
 
                                 # List and display each filename in the fingerprints directory
                                 fingerprint_fname_list = os.listdir('./fingerprints')
-                                print('fingerprint_fname_list:', fingerprint_fname_list)
+                                debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_save_address] fingerprint_fname_list: ' + str(fingerprint_fname_list))
 
                                 # Check if the newly created fingerprint filename already exists in the fingerprint directory
                                 if fingerprint_fname + '.txt' in fingerprint_fname_list:
@@ -755,7 +758,7 @@ class App(QMainWindow):
                                 fingerprint_fname = './fingerprints/' + fingerprint_fname
 
                                 # Display the new intended fingerprint path plus filename
-                                print('fingerprint_fname:', fingerprint_fname)
+                                debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_save_address] fingerprint_fname: ' + str(fingerprint_fname))
 
                                 # Concatenate each line in fingerprint textbox into a single clean string
                                 self.fingerprint_str = ''
@@ -764,11 +767,11 @@ class App(QMainWindow):
                                     self.fingerprint_str = self.fingerprint_str + line
 
                                 # Display the new fingerprint string
-                                print('self.fingerprint_str:', self.fingerprint_str)
+                                debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_save_address] self.fingerprint_str: ' + str(self.fingerprint_str))
 
                                 # Check Lengths of both key and fingerprint
-                                print('len(self.address_key.text()) has to be 32 to continue:', len(self.address_key.text()))
-                                print('len(self.fingerprint_str) has to be 1024 to continue:', len(self.fingerprint_str))
+                                debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_save_address] len(self.address_key.text()) has to be 32 to continue: ' + str(len(self.address_key.text())))
+                                debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_save_address] len(self.fingerprint_str) has to be 1024 to continue: ' + str(len(self.fingerprint_str)))
                                 if len(self.address_key.text()) == 32:
                                     if len(self.fingerprint_str) == 1024:
 
@@ -824,19 +827,20 @@ class App(QMainWindow):
                                             fo.write(to_address_book + '\n')
                                         fo.close()
                                 else:
-                                    print('-- entry will not be appended to the address book as something went wrong. try again.')
+                                    debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_save_address] entry will not be appended to the address book as something went wrong. try again.')
 
                             # Display the potentially new current index as the index may have changed
-                            print('-- current index after sorting:', client_address_index)
+                            debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_save_address] current index after sorting: ' + str(client_address_index))
                 else:
-                    print('-- ip and port should not be empty!')
+                    debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_save_address] ip and port should not be empty!')
             else:
-                print('-- name should not be empty!')
+                debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_save_address] name should not be empty!')
 
             write_client_configuration_engaged = False
 
         def server_prev_addr_function():
-            print(str(datetime.datetime.now()) + ' -- plugged in: App.server_prev_addr_function')
+            global debug_message
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.server_prev_addr_function]')
             global_self.setFocus()
             global server_address_index
             global server_address
@@ -849,14 +853,15 @@ class App(QMainWindow):
                     server_address_index = len(server_address) - 1
                 else:
                     server_address_index = server_address_index - 1
-                print(str(datetime.datetime.now()) + ' -- setting server_address_index:', server_address_index)
+                debug_message.append('[' + str(datetime.datetime.now()) + '] [App.server_prev_addr_function] setting server_address_index: ' + str(server_address_index))
                 self.server_ip_port.setText(server_address[server_address_index][0] + ' ' + str(server_address[server_address_index][1]))
             else:
-                print(str(datetime.datetime.now()) + ' -- server_address unpopulated')
+                debug_message.append('[' + str(datetime.datetime.now()) + '] [App.server_prev_addr_function] server_address unpopulated')
                 self.server_ip_port.setText('')
 
         def server_next_addr_function():
-            print(str(datetime.datetime.now()) + ' -- plugged in: App.server_next_addr_function')
+            global debug_message
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.server_next_addr_function]')
             global_self.setFocus()
 
             global server_address_index
@@ -870,14 +875,15 @@ class App(QMainWindow):
                     server_address_index = 0
                 else:
                     server_address_index += 1
-                print(str(datetime.datetime.now()) + ' -- setting server_address_index:', server_address_index)
+                debug_message.append('[' + str(datetime.datetime.now()) + '] [App.server_next_addr_function] setting server_address_index: ' + str(server_address_index))
                 self.server_ip_port.setText(server_address[server_address_index][0] + ' ' + str(server_address[server_address_index][1]))
             else:
-                print(str(datetime.datetime.now()) + ' -- server_address unpopulated')
+                debug_message.append('[' + str(datetime.datetime.now()) + '] [App.server_next_addr_function] server_address unpopulated')
                 self.server_ip_port.setText('')
 
         def sck_set_arguments_function():
-            print(str(datetime.datetime.now()) + ' -- plugged in: App.sck_set_arguments_function')
+            global debug_message
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.sck_set_arguments_function]')
             global client_address
             global client_address_index
 
@@ -885,49 +891,49 @@ class App(QMainWindow):
             enc_var = client_address[client_address_index][6].replace('______', ' ')
             index = self.codec_select_box.findText(enc_var, QtCore.Qt.MatchFixedString)
             if index >= 0:
-                print('-- [ENCODING] found index:', index, 'for', client_address[client_address_index][6])
+                debug_message.append('[' + str(datetime.datetime.now()) + '] [App.sck_set_arguments_function] [ENCODING] found index: ' + str(index) + ' for ' + str(client_address[client_address_index][6]))
                 self.codec_select_box.setCurrentIndex(index)
             else:
-                print('-- [ENCODING] could not find index for:', client_address[client_address_index][6])
+                debug_message.append('[' + str(datetime.datetime.now()) + '] [App.sck_set_arguments_function] [ENCODING] could not find index for: ' + str(client_address[client_address_index][6]))
 
             # ADDRESS FAMILY
             index = self.communicator_socket_options_box_0.findText(client_address[client_address_index][7],
                                                                     QtCore.Qt.MatchFixedString)
             if index >= 0:
-                print('-- [ADDRESS FAMILY] found index:', index, 'for', client_address[client_address_index][7])
+                debug_message.append('[' + str(datetime.datetime.now()) + '] [App.sck_set_arguments_function] [ADDRESS FAMILY] found index: ' + str(index) + ' for ' + str(client_address[client_address_index][7]))
                 self.communicator_socket_options_box_0.setCurrentIndex(index)
             else:
-                print('-- [ADDRESS FAMILY] could not find index for:', client_address[client_address_index][7])
+                debug_message.append('[' + str(datetime.datetime.now()) + '] [App.sck_set_arguments_function] [ADDRESS FAMILY] could not find index for: ' + str(client_address[client_address_index][7]))
 
             # SOCKET TYPE
             index = self.communicator_socket_options_box_1.findText(client_address[client_address_index][8],
                                                                     QtCore.Qt.MatchFixedString)
             if index >= 0:
-                print('-- [SOCKET TYPE] found index:', index, 'for', client_address[client_address_index][8])
+                debug_message.append('[' + str(datetime.datetime.now()) + '] [App.sck_set_arguments_function] [SOCKET TYPE] found index: ' + str(index) + ' for ' + str(client_address[client_address_index][8]))
                 self.communicator_socket_options_box_1.setCurrentIndex(index)
             else:
-                print('-- [SOCKET TYPE] could not find index for:', client_address[client_address_index][8])
+                debug_message.append('[' + str(datetime.datetime.now()) + '] [App.sck_set_arguments_function] [SOCKET TYPE] could not find index for: ' + str(client_address[client_address_index][8]))
 
             # SOCKET OPTION 0
             index = self.communicator_socket_options_box_2.findText(client_address[client_address_index][9],
                                                                     QtCore.Qt.MatchFixedString)
             if index >= 0:
-                print('-- [SOCKET OPTION  0] found index:', index, 'for', client_address[client_address_index][9])
+                debug_message.append('[' + str(datetime.datetime.now()) + '] [App.sck_set_arguments_function] [SOCKET OPTION  0] found index: ' + str(index) + ' for ' + str(client_address[client_address_index][9]))
                 self.communicator_socket_options_box_2.setCurrentIndex(index)
             else:
-                print('-- [SOCKET OPTION  0] could not find index for:', client_address[client_address_index][9])
+                debug_message.append('[' + str(datetime.datetime.now()) + '] [App.sck_set_arguments_function] [SOCKET OPTION  0] could not find index for: ' + str(client_address[client_address_index][9]))
 
             # SOCKET OPTION 1
-            index = self.communicator_socket_options_box_3.findText(client_address[client_address_index][10],
-                                                                    QtCore.Qt.MatchFixedString)
+            index = self.communicator_socket_options_box_3.findText(client_address[client_address_index][10], QtCore.Qt.MatchFixedString)
             if index >= 0:
-                print('-- [SOCKET OPTION  1] found index:', index, 'for', client_address[client_address_index][10])
+                debug_message.append('[' + str(datetime.datetime.now()) + '] [App.sck_set_arguments_function] [SOCKET OPTION  1] found index: ' + str(index) + ' for ' + str(client_address[client_address_index][10]))
                 self.communicator_socket_options_box_3.setCurrentIndex(index)
             else:
-                print('-- [SOCKET OPTION  1] could not find index for:', client_address[client_address_index][10])
+                debug_message.append('[' + str(datetime.datetime.now()) + '] [App.sck_set_arguments_function] [SOCKET OPTION  1] could not find index for: ' + str(client_address[client_address_index][10]))
 
         def client_previous_address_function():
-            print(str(datetime.datetime.now()) + ' -- plugged in: App.client_previous_address_function')
+            global debug_message
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.client_previous_address_function]')
             global_self.setFocus()
             global client_address
             global client_address_index
@@ -939,25 +945,25 @@ class App(QMainWindow):
             self.address_key.setText('')
             self.tb_fingerprint.setText('')
 
-            print(str(datetime.datetime.now()) + ' -- len(client_address):', len(client_address))
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_previous_address_function] len(client_address): ' + str(len(client_address)))
             if len(client_address) > 0:
                 if client_address_index == 0:
                     client_address_index = len(client_address) - 1
                 else:
                     client_address_index = client_address_index - 1
-                print(str(datetime.datetime.now()) + ' -- client_address_index setting client_address_index:', client_address_index)
+                debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_previous_address_function] client_address_index setting client_address_index: ' + str(client_address_index))
 
                 self.dial_out_name.setText(str(client_address[client_address_index][0]))
 
                 if len(client_address[client_address_index]) >= 10:
 
-                    print('client_address[client_address_index]:', client_address[client_address_index])
-                    print('LEN client_address[client_address_index]:', len(client_address[client_address_index]))
+                    debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_previous_address_function] client_address[client_address_index]: ' + str(client_address[client_address_index]))
+                    debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_previous_address_function] LEN client_address[client_address_index]: ' + str(len(client_address[client_address_index])))
                     if 'x' == str(client_address[client_address_index][5]):
-                        print(' -- skipping as [5] is x.')
+                        debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_previous_address_function] skipping as [5] is x.')
                         self.dial_out_ip_port.setText(client_address[client_address_index][1] + ' ' + str(client_address[client_address_index][2]))
                     else:
-                        print('-- using broadcast address')
+                        debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_previous_address_function] using broadcast address')
                         self.dial_out_ip_port.setText(client_address[client_address_index][1] + ' ' + str(client_address[client_address_index][2]) + ' ' + str(client_address[client_address_index][5]) )
 
                     check_key()
@@ -968,14 +974,14 @@ class App(QMainWindow):
                     self.dial_out_cipher_bool_btn.setEnabled(False)
 
                     if client_address[client_address_index][3] != '#' and len(client_address[client_address_index][3]) == 32:
-                        print(str(datetime.datetime.now()) + ' -- address entry appears to have a key:', client_address[client_address_index][3])
+                        debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_previous_address_function] address entry appears to have a key: ' + str(client_address[client_address_index][3]))
                         if client_address[client_address_index][4] != '#' and len(client_address[client_address_index][4]) == 1024:
-                            print(str(datetime.datetime.now()) + ' -- address entry appears to have a fingerprint:', client_address[client_address_index][4])
+                            debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_previous_address_function] address entry appears to have a fingerprint: ' + str(client_address[client_address_index][4]))
                             self.dial_out_cipher_bool_btn.setStyleSheet(button_stylesheet_green_text)
                             dial_out_dial_out_cipher_bool = True
                             self.dial_out_cipher_bool_btn.setEnabled(True)
 
-                    print(str(datetime.datetime.now()) + ' -- uplink bool in list:', client_address[client_address_index][11])
+                    debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_previous_address_function] uplink bool in list: ' + str(client_address[client_address_index][11]))
                     if client_address[client_address_index][11] == 'False':
                         self.uplink_btn.setStyleSheet(button_stylesheet_white_text_low)
                         bool_address_uplink = False
@@ -985,14 +991,15 @@ class App(QMainWindow):
 
                     sck_set_arguments_function()
 
-                    print(str(datetime.datetime.now()) + ' -- dial_out_dial_out_cipher_bool:', dial_out_dial_out_cipher_bool)
+                    debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_previous_address_function] dial_out_dial_out_cipher_bool: ' + str(dial_out_dial_out_cipher_bool))
             else:
-                print(str(datetime.datetime.now()) + ' -- client_address unpopulated')
+                debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_previous_address_function] client_address unpopulated')
 
-            print(str(datetime.datetime.now()) + ' -- current client_address updated')
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_previous_address_function] current client_address updated')
 
         def client_next_address_function():
-            print(str(datetime.datetime.now()) + ' -- plugged in: App.client_next_address_function')
+            global debug_message
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.client_next_address_function]')
             global_self.setFocus()
             global client_address
             global client_address_index
@@ -1004,24 +1011,24 @@ class App(QMainWindow):
             self.address_key.setText('')
             self.tb_fingerprint.setText('')
 
-            print(str(datetime.datetime.now()) + ' -- len(client_address):', len(client_address))
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_next_address_function] len(client_address): ' + str(len(client_address)))
             if len(client_address) > 0:
                 if client_address_index == len(client_address) - 1:
                     client_address_index = 0
                 else:
                     client_address_index += 1
-                print(str(datetime.datetime.now()) + ' -- client_address_index setting client_address_index:', client_address_index)
+                debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_next_address_function] client_address_index setting client_address_index: ' + str(client_address_index))
 
                 self.dial_out_name.setText(str(client_address[client_address_index][0]))
 
                 if len(client_address[client_address_index]) >= 10:
 
-                    print('client_address[client_address_index]:', client_address[client_address_index])
+                    debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_next_address_function] client_address[client_address_index]: ' + str(client_address[client_address_index]))
                     if 'x' == str(client_address[client_address_index][5]):
-                        print(' -- skipping as [5] is x.')
+                        debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_next_address_function] skipping as [5] is x.')
                         self.dial_out_ip_port.setText(client_address[client_address_index][1] + ' ' + str(client_address[client_address_index][2]))
                     else:
-                        print('-- using broadcast address')
+                        debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_next_address_function] using broadcast address')
                         self.dial_out_ip_port.setText(client_address[client_address_index][1] + ' ' + str(client_address[client_address_index][2]) + ' ' + str(client_address[client_address_index][5]))
 
                     check_key()
@@ -1032,14 +1039,14 @@ class App(QMainWindow):
                     self.dial_out_cipher_bool_btn.setEnabled(False)
 
                     if client_address[client_address_index][3] != '#' and len(client_address[client_address_index][3]) == 32:
-                        print(str(datetime.datetime.now()) + ' -- address entry appears to have a key:', client_address[client_address_index][3])
+                        debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_next_address_function] address entry appears to have a key: ' + str(client_address[client_address_index][3]))
                         if client_address[client_address_index][4] != '#' and len(client_address[client_address_index][4]) == 1024:
-                            print(str(datetime.datetime.now()) + ' -- address entry appears to have a fingerprint:', client_address[client_address_index][4])
+                            debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_next_address_function] address entry appears to have a fingerprint: ' + str(client_address[client_address_index][4]))
                             self.dial_out_cipher_bool_btn.setStyleSheet(button_stylesheet_green_text)
                             dial_out_dial_out_cipher_bool = True
                             self.dial_out_cipher_bool_btn.setEnabled(True)
 
-                    print(str(datetime.datetime.now()) + ' -- uplink bool in list:', client_address[client_address_index][11])
+                    debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_next_address_function] uplink bool in list: ' + str(client_address[client_address_index][11]))
                     if client_address[client_address_index][11] == 'False':
                         self.uplink_btn.setStyleSheet(button_stylesheet_white_text_low)
                         bool_address_uplink = False
@@ -1050,12 +1057,13 @@ class App(QMainWindow):
                     sck_set_arguments_function()
 
             else:
-                print(str(datetime.datetime.now()) + ' -- client_address unpopulated')
+                debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_next_address_function] client_address unpopulated')
 
-            print(str(datetime.datetime.now()) + ' -- current client_address updated')
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_next_address_function] current client_address updated')
 
         def server_line_edit_return_pressed():
-            print(str(datetime.datetime.now()) + ' -- plugged in: App.server_line_edit_return_pressed')
+            global debug_message
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.server_line_edit_return_pressed]')
             global_self.setFocus()
             global server_address
             global server_address_index
@@ -1075,10 +1083,10 @@ class App(QMainWindow):
                     i += 1
 
                 if bool_address_match is False:
-                    print(str(datetime.datetime.now()) + ' -- new server address detected:', server_address_var)
+                    debug_message.append('[' + str(datetime.datetime.now()) + '] [App.server_line_edit_return_pressed] new server address detected: ' + str(server_address_var))
                     server_address.append([server_address_var.split(' ')[0], int(server_address_var.split(' ')[1])])
                     server_address_index = len(server_address)-1
-                    print(str(datetime.datetime.now()) + ' -- changing server_address_index to:', server_address_index)
+                    debug_message.append('[' + str(datetime.datetime.now()) + '] [App.server_line_edit_return_pressed] changing server_address_index to: ' + str(server_address_index))
                     self.server_status_label_ip_in_use.setText(str(server_address[server_address_index][0]) + ' ' + str(server_address[server_address_index][1]))
                     self.server_add_addr.setStyleSheet(button_stylesheet_white_text_high)
                     server_save_bool = True
@@ -1087,8 +1095,8 @@ class App(QMainWindow):
                     server_thread.start()
 
                 else:
-                    print(str(datetime.datetime.now()) + ' -- server address already exists:', server_address_var)
-                    print('server_address_match_index:', server_address_match_index)
+                    debug_message.append('[' + str(datetime.datetime.now()) + '] [App.server_line_edit_return_pressed] server address already exists: ' + str(server_address_var))
+                    debug_message.append('[' + str(datetime.datetime.now()) + '] [App.server_line_edit_return_pressed] server_address_match_index: ' + str(server_address_match_index))
                     self.server_status_label_ip_in_use.setText(str(server_address[server_address_match_index][0]) + ' ' + str(server_address[server_address_match_index][1]))
                     server_address_index = server_address_match_index
                     self.server_add_addr.setStyleSheet(button_stylesheet_white_text_low)
@@ -1098,19 +1106,22 @@ class App(QMainWindow):
                     server_thread.start()
 
         def server_notify_cipher_function():
-            print(str(datetime.datetime.now()) + ' -- plugged in: App.server_notify_cipher_function')
+            global debug_message
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.server_notify_cipher_function]')
             global cipher_message_count
             cipher_message_count = 0
             self.server_notify_cipher.setText(str(cipher_message_count))
 
         def server_notify_alien_function():
-            print(str(datetime.datetime.now()) + ' -- plugged in: App.server_notify_alien_function')
+            global debug_message
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.server_notify_alien_function]')
             global alien_message_count
             alien_message_count = 0
             self.server_notify_alien.setText(str(alien_message_count))
 
         def soft_block_ip_notofication_function():
-            print(str(datetime.datetime.now()) + ' -- plugged in: App.soft_block_ip_notofication_function')
+            global debug_message
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.soft_block_ip_notification_function]')
             global soft_block_ip_count
             global soft_block_ip
             soft_block_ip_count = 0
@@ -1118,31 +1129,34 @@ class App(QMainWindow):
             soft_block_ip = []
 
         def mute_server_notify_alien_function():
-            print(str(datetime.datetime.now()) + ' -- plugged in: App.mute_server_notify_alien_function')
+            global debug_message
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.mute_server_notify_alien_function]')
             global mute_server_notify_alien_bool
             if mute_server_notify_alien_bool is True:
                 mute_server_notify_alien_bool = False
                 self.mute_server_notify_alien.setIcon(QIcon(mute_0))
-                print(str(datetime.datetime.now()) + ' -- plugged in: App.mute_server_notify_alien_function setting mute:', mute_server_notify_alien_bool)
+                debug_message.append('[' + str(datetime.datetime.now()) + '] [App.mute_server_notify_alien_function] setting mute: ' + str(mute_server_notify_alien_bool))
             elif mute_server_notify_alien_bool is False:
                 mute_server_notify_alien_bool = True
                 self.mute_server_notify_alien.setIcon(QIcon(mute_1))
-                print(str(datetime.datetime.now()) + ' -- plugged in: App.mute_server_notify_alien_function setting mute:', mute_server_notify_alien_bool)
+                debug_message.append('[' + str(datetime.datetime.now()) + '] [App.mute_server_notify_alien_function] setting mute: ' + str(mute_server_notify_alien_bool))
 
         def mute_server_notify_cipher_function():
-            print(str(datetime.datetime.now()) + ' -- plugged in: App.mute_server_notify_cipher_function')
+            global debug_message
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.mute_server_notify_cipher_function]')
             global mute_server_notify_cipher_bool
             if mute_server_notify_cipher_bool is True:
                 mute_server_notify_cipher_bool = False
                 self.mute_server_notify_cipher.setIcon(QIcon(mute_0))
-                print(str(datetime.datetime.now()) + ' -- plugged in: App.mute_server_notify_alien_function setting mute:', mute_server_notify_cipher_bool)
+                debug_message.append('[' + str(datetime.datetime.now()) + '] [App.mute_server_notify_cipher_function] setting mute: ' + str(mute_server_notify_cipher_bool))
             elif mute_server_notify_cipher_bool is False:
                 mute_server_notify_cipher_bool = True
                 self.mute_server_notify_cipher.setIcon(QIcon(mute_1))
-                print(str(datetime.datetime.now()) + ' -- plugged in: App.mute_server_notify_alien_function setting mute:', mute_server_notify_cipher_bool)
+                debug_message.append('[' + str(datetime.datetime.now()) + '] [App.mute_server_notify_cipher_function] setting mute: ' + str(mute_server_notify_cipher_bool))
 
         def server_save_function():
-            print(str(datetime.datetime.now()) + ' -- plugged in: App.server_save_function')
+            global debug_message
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.server_save_function]')
             global write_server_configuration_engaged
             global server_address
             global server_address_index
@@ -1172,21 +1186,22 @@ class App(QMainWindow):
                             i = 0
                             for line in fo:
                                 line = line.strip()
-                                print('-- comparing line:')
-                                print('fo_line:      ', line)
-                                print('fo_list_line: ', str(fo_list[i]))
+                                debug_message.append('[' + str(datetime.datetime.now()) + '] [App.server_save_function] comparing line:')
+                                debug_message.append('[' + str(datetime.datetime.now()) + '] [App.server_save_function] fo_line:       ' + str(line))
+                                debug_message.append('[' + str(datetime.datetime.now()) + '] [App.server_save_function] fo_list_line:  ' + str((fo_list[i])))
                                 if not line == fo_list[i]:
                                     non_success_write.append(False)
                                 i += 1
                     if not False in non_success_write:
-                        print('-- server address saved successfully')
+                        debug_message.append('[' + str(datetime.datetime.now()) + '] [App.server_save_function] server address saved successfully')
                     else:
-                        print('-- server address save failed')
+                        debug_message.append('[' + str(datetime.datetime.now()) + '] [App.server_save_function] server address save failed')
                 write_server_configuration_engaged = False
                 self.server_add_addr.setStyleSheet(button_stylesheet_white_text_low)
 
         def server_delete_function():
-            print(str(datetime.datetime.now()) + ' -- plugged in: App.server_delete_function')
+            global debug_message
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.server_delete_function]')
             global write_server_configuration_engaged
             global server_address
             global server_address_index
@@ -1217,7 +1232,8 @@ class App(QMainWindow):
                     write_server_configuration_engaged = False
 
         def start_function():
-            print(str(datetime.datetime.now()) + ' -- plugged in: App.start_function')
+            global debug_message
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.start_function]')
             global_self.setFocus()
             if len(server_address) > 0:
                 if server_thread.isRunning() is True:
@@ -1225,33 +1241,36 @@ class App(QMainWindow):
                 server_thread.start()
 
         def stop_function():
-            print(str(datetime.datetime.now()) + ' -- plugged in: App.stop_function')
+            global debug_message
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.stop_function]')
             global_self.setFocus()
             if server_thread.isRunning() is True:
                 server_thread.stop()
             else:
-                print('server: already stopped')
+                debug_message.append('[' + str(datetime.datetime.now()) + '] [App.stop_function] server: already stopped')
 
         def restart_function():
-            print(str(datetime.datetime.now()) + ' -- plugged in: App.restart_function')
+            global debug_message
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.restart_function]')
             if server_thread.isRunning() is True:
                 server_thread.stop()
             server_thread.start()
 
         def dial_out_cipher_btn_function():
-            print(str(datetime.datetime.now()) + ' -- plugged in: App.dial_out_cipher_btn_function')
+            global debug_message
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.dial_out_cipher_btn_function]')
             global client_address
             global client_address_index
             global dial_out_dial_out_cipher_bool
 
-            print('len(client_address[client_address_index][3]:', len(client_address[client_address_index][3]))
-            print('len(client_address[client_address_index][4]:', len(client_address[client_address_index][4]))
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [App.dial_out_cipher_btn_function] len(client_address[client_address_index][3]: ' + str(len(client_address[client_address_index][3])))
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [App.dial_out_cipher_btn_function] len(client_address[client_address_index][4]: ' + str(len(client_address[client_address_index][4])))
 
             # First Check If The Address Entry HAS A Key And Fingerprint
             if client_address[client_address_index][3] != '#' and len(client_address[client_address_index][3]) == 32:
-                print(str(datetime.datetime.now()) + ' -- address entry appears to have a key:', client_address[client_address_index][3])
+                debug_message.append('[' + str(datetime.datetime.now()) + '] [App.dial_out_cipher_btn_function] address entry appears to have a key: ' + str(client_address[client_address_index][3]))
                 if client_address[client_address_index][4] != '#' and len(client_address[client_address_index][4]) == 1024:
-                    print(str(datetime.datetime.now()) + ' -- address entry appears to have a fingerprint:', client_address[client_address_index][4])
+                    debug_message.append('[' + str(datetime.datetime.now()) + '] [App.dial_out_cipher_btn_function] address entry appears to have a fingerprint: ' + str(client_address[client_address_index][4]))
 
                     if dial_out_dial_out_cipher_bool is False:
                         dial_out_dial_out_cipher_bool = True
@@ -1259,10 +1278,11 @@ class App(QMainWindow):
                     elif dial_out_dial_out_cipher_bool is True:
                         dial_out_dial_out_cipher_bool = False
                         self.dial_out_cipher_bool_btn.setStyleSheet(button_stylesheet_white_text_low)
-                    print(str(datetime.datetime.now()) + ' -- setting dial_out_dial_out_cipher_bool:', dial_out_dial_out_cipher_bool)
+                    debug_message.append('[' + str(datetime.datetime.now()) + '] [App.dial_out_cipher_btn_function] setting dial_out_dial_out_cipher_bool: ' + str(dial_out_dial_out_cipher_bool))
 
         def dial_out_override_function():
-            print(str(datetime.datetime.now()) + ' -- plugged in: App.dial_out_override_function')
+            global debug_message
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.dial_out_override_function]')
             global client_address
             global client_address_index
             global bool_dial_out_override
@@ -1337,32 +1357,36 @@ class App(QMainWindow):
 
                 self.address_undo_form.hide()
 
-            print(str(datetime.datetime.now()) + ' -- App.dial_out_override_function setting bool_dial_out_override:', bool_dial_out_override)
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [App.dial_out_override_function] setting bool_dial_out_override: ' + str(bool_dial_out_override))
 
-        def dial_out_ip_port_return_funtion():
+        def dial_out_ip_port_return_function():
+            global debug_message
             global bool_dial_out_override
             global address_override_string
-            print(str(datetime.datetime.now()) + ' -- plugged in: App.dial_out_ip_port_return_funtion')
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.dial_out_ip_port_return_function]')
             if bool_dial_out_override is True:
                 address_override_string = self.dial_out_ip_port.text()
-                print(str(datetime.datetime.now()) + ' -- App.dial_out_ip_port_return_funtion setting address_override_string:', address_override_string)
+                debug_message.append('[' + str(datetime.datetime.now()) + '] [App.dial_out_ip_port_return_function] setting address_override_string: ' + str(address_override_string))
             else:
                 dial_out_name_check_details()
 
-        def dial_out_name_return_funtion():
-            print(str(datetime.datetime.now()) + ' -- plugged in: App.dial_out_name_return_funtion')
+        def dial_out_name_return_function():
+            global debug_message
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.dial_out_name_return_function]')
             dial_out_name_check_details()
 
         def dial_out_name_check_details():
-            print(str(datetime.datetime.now()) + ' -- plugged in: App.dial_out_name_check_details')
+            global debug_message
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.dial_out_name_check_details]')
             print(self.dial_out_name.text())
             print(self.dial_out_ip_port.text())
             var_dial_out_name = [str(self.dial_out_name.text()), str(self.dial_out_ip_port.text().split(' ')[0]), int(self.dial_out_ip_port.text().split(' ')[1]), bytes('x', 'utf-8'), str('x')]
             if var_dial_out_name not in client_address:
-                print('-- basic name and ip not in client_address')
+                debug_message.append('[' + str(datetime.datetime.now()) + '] [App.dial_out_name_check_details] basic name and ip not in client_address')
 
         def dial_out_save_with_key_function():
-            print(str(datetime.datetime.now()) + ' -- plugged in: App.dial_out_save_with_key_function')
+            global debug_message
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.dial_out_save_with_key_function]')
             global address_save_mode
             global address_reveal_bool
 
@@ -1386,12 +1410,13 @@ class App(QMainWindow):
                 self.generate_fingerprint.setStyleSheet(button_stylesheet_white_text_low)
                 self.dial_out_add_addr.setText('SAVE')
                 self.dial_out_add_addr.setStyleSheet(button_stylesheet_white_text_high)
-            print(str(datetime.datetime.now()) + ' -- setting address_save_mode:', address_save_mode)
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [App.dial_out_save_with_key_function] setting address_save_mode: ' + str(address_save_mode))
 
         def format_fingerprint():
+            global debug_message
             global client_address
             global client_address_index
-            print(str(datetime.datetime.now()) + ' -- plugged in: App.format_fingerprint')
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.format_fingerprint]')
             if address_reveal_bool is True:
                 if len(client_address) > 0:
                     if len(client_address[client_address_index]) >= 10:
@@ -1401,16 +1426,16 @@ class App(QMainWindow):
                             finger_print_var = str(client_address[client_address_index][4])
                             self.fingerprint_str = finger_print_var
                             split_strings = [finger_print_var[index: index + 64] for index in range(0, len(finger_print_var), 64)]
-                            print(split_strings)
                             for _ in split_strings:
                                 self.tb_fingerprint.append(_)
                             self.tb_fingerprint.verticalScrollBar().setValue(0)
 
         def check_key():
+            global debug_message
             global address_reveal_bool
             global client_address
             global client_address_index
-            print(str(datetime.datetime.now()) + ' -- plugged in: App.check_key')
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.check_key]')
             if address_reveal_bool is True:
                 if len(client_address) > 0:
                     if len(client_address[client_address_index]) >= 10:
@@ -1418,24 +1443,25 @@ class App(QMainWindow):
                             self.address_key.setText(str(client_address[client_address_index][3], 'utf-8'))
 
         def address_clear_form_function():
-            print(str(datetime.datetime.now()) + ' -- plugged in: App.address_clear_form_function')
+            global debug_message
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.address_clear_form_function]')
             self.dial_out_name.setText('')
             self.dial_out_ip_port.setText('')
             self.address_key.setText('')
             self.tb_fingerprint.setText('')
 
         def address_undo_form_function():
-            print(str(datetime.datetime.now()) + ' -- plugged in: App.address_undo_form_function')
+            global debug_message
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.address_undo_form_function]')
             client_previous_address_function()
             client_next_address_function()
 
         def address_clear_form_sensitive_function():
-            print(str(datetime.datetime.now()) + ' -- plugged in: App.address_clear_form_sensitive_function')
+            global debug_message
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.address_clear_form_sensitive_function]')
             global address_reveal_bool
             global client_address
             global client_address_index
-
-            print(str(datetime.datetime.now()) + ' -- address_reveal_bool is currently set at:', address_reveal_bool)
 
             if address_reveal_bool is True:
                 address_reveal_bool = False
@@ -1453,7 +1479,7 @@ class App(QMainWindow):
                             format_fingerprint()
                 self.reveal_btn.setIcon(QIcon(visibility_1))
 
-            print(str(datetime.datetime.now()) + ' -- setting address_reveal_bool:', address_reveal_bool)
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [App.address_clear_form_sensitive_function] setting address_reveal_bool: ' + str(address_reveal_bool))
 
         def randStr(chars=string.ascii_uppercase + string.digits, N=32):
             return ''.join(random.choice(chars) for _ in range(N))
@@ -1464,33 +1490,32 @@ class App(QMainWindow):
 
         def generate_key_function():
             self.key_string = ''
-            print(str(datetime.datetime.now()) + ' -- plugged in: App.generate_key_function')
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.generate_key_function]')
             iter_rand()
-            print(self.key_string)
             self.address_key.setText(self.key_string)
-            print('self.address_key:', self.address_key.text())
-            print('len(self.address_key):', len(self.address_key.text()))
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [App.generate_key_function] self.address_key: ' + str(self.address_key.text()))
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [App.generate_key_function] len(self.address_key): ' + str(len(self.address_key.text())))
 
         def generate_fingerprint_function():
+            global debug_message
             self.key_string = ''
             self.fingerprint_str = ''
-            print(str(datetime.datetime.now()) + ' -- plugged in: App.generate_fingerprint_function')
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.generate_fingerprint_function]')
             i = 0
             while i < 32:
                 iter_rand()
                 i += 1
-            print(self.fingerprint_str)
             split_strings = [self.fingerprint_str[index: index + 64] for index in range(0, len(self.fingerprint_str), 64)]
-            print(split_strings)
             self.tb_fingerprint.setText('')
             for _ in split_strings:
                 self.tb_fingerprint.append(str(_).strip())
             self.tb_fingerprint.verticalScrollBar().setValue(0)
             
-            print('fingerprint_str:', len(self.fingerprint_str))
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [App.generate_fingerprint_function] fingerprint_str: ' + str(len(self.fingerprint_str)))
 
         def bool_socket_options_function():
-            print(str(datetime.datetime.now()) + ' -- plugged in: App.generate_fingerprint_function')
+            global debug_message
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.generate_fingerprint_function]')
             global bool_socket_options
             if bool_socket_options is True:
                 bool_socket_options = False
@@ -1498,13 +1523,14 @@ class App(QMainWindow):
             elif bool_socket_options is False:
                 bool_socket_options = True
                 self.bool_socket_options_btn.setStyleSheet(button_stylesheet_green_text)
-            print(str(datetime.datetime.now()) + ' -- setting bool_socket_options:', bool_socket_options)
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [App.generate_fingerprint_function] setting bool_socket_options: ' + str(bool_socket_options))
 
         def accept_only_address_book_function():
-            print(str(datetime.datetime.now()) + ' -- plugged in: App.accept_only_address_book_function')
+            global debug_message
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.accept_only_address_book_function]')
             global accept_from_key
             accept_from_key = 'address_book_only'
-            print(str(datetime.datetime.now()) + ' -- setting accept_from_key:', accept_from_key)
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [App.accept_only_address_book_function] setting accept_from_key: ' + str(accept_from_key))
 
             # Set Button Green
             self.accept_only_address_book.setStyleSheet(button_stylesheet_green_text)
@@ -1519,10 +1545,11 @@ class App(QMainWindow):
                     print(line.rstrip().replace('accept_all', 'address_book_only')),
 
         def accept_all_function():
-            print(str(datetime.datetime.now()) + ' -- plugged in: App.accept_all_function')
+            global debug_message
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.accept_all_function]')
             global accept_from_key
             accept_from_key = 'accept_all'
-            print(str(datetime.datetime.now()) + ' -- setting accept_from_key:', accept_from_key)
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [App.accept_all_function] setting accept_from_key: ' + str(accept_from_key))
 
             # Set Button Green
             self.accept_all_traffic.setStyleSheet(button_stylesheet_green_text)
@@ -1537,7 +1564,8 @@ class App(QMainWindow):
                     print(line.rstrip().replace('address_book_only', 'accept_all')),
 
         def uplink_enable_function():
-            print(str(datetime.datetime.now()) + ' -- plugged in: App.uplink_enable_function')
+            global debug_message
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.uplink_enable_function]')
             global uplink_enable_bool
             if uplink_enable_bool is False:
                 if get_external_ip_thread.isRunning():
@@ -1560,7 +1588,7 @@ class App(QMainWindow):
                 if get_external_ip_thread.isRunning():
                     get_external_ip_thread.stop()
                 else:
-                    print('get_external_ip_thread: already stopped')
+                    debug_message.append('[' + str(datetime.datetime.now()) + '] [App.uplink_enable_function] get_external_ip_thread: already stopped')
                 uplink_enable_bool = False
                 self.uplink_enable.setStyleSheet(button_stylesheet_white_text_low)
 
@@ -1574,7 +1602,8 @@ class App(QMainWindow):
                             print(line.rstrip().replace('UNIVERSAL_UPLINK true', 'UNIVERSAL_UPLINK false')),
 
         def uplink_address_function():
-            print(str(datetime.datetime.now()) + ' -- plugged in: App.uplink_address_function')
+            global debug_message
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.uplink_address_function]')
             global bool_address_uplink
             if bool_address_uplink is False:
                 self.uplink_btn.setStyleSheet(button_stylesheet_green_text)
@@ -1582,15 +1611,16 @@ class App(QMainWindow):
             elif bool_address_uplink is True:
                 self.uplink_btn.setStyleSheet(button_stylesheet_white_text_low)
                 bool_address_uplink = False
-            print(str(datetime.datetime.now()) + ' -- setting bool_address_uplink:', bool_address_uplink)
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [App.uplink_address_function] setting bool_address_uplink: ' + str(bool_address_uplink))
 
         def get_ext_ip_use_upnp_function():
-            print(str(datetime.datetime.now()) + ' -- plugged in: App.get_ext_ip_use_upnp_function')
+            global debug_message
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.get_ext_ip_use_upnp_function]')
 
             global uplink_use_external_service
             uplink_use_external_service = False
 
-            print(str(datetime.datetime.now()) + ' -- setting uplink_use_external_service:', uplink_use_external_service)
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [App.get_ext_ip_use_upnp_function] setting uplink_use_external_service: ' + str(uplink_use_external_service))
 
             # Set Button Green
             self.get_ext_ip_use_upnp.setStyleSheet(button_stylesheet_green_text)
@@ -1605,12 +1635,13 @@ class App(QMainWindow):
                     print(line.rstrip().replace('use_external_service', 'use_upnp')),
 
         def get_ext_ip_use_ext_service_function():
-            print(str(datetime.datetime.now()) + ' -- plugged in: App.get_ext_ip_use_ext_service_function')
+            global debug_message
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.get_ext_ip_use_ext_service_function]')
 
             global uplink_use_external_service
             uplink_use_external_service = True
 
-            print(str(datetime.datetime.now()) + ' -- setting uplink_use_external_service:', uplink_use_external_service)
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [App.get_ext_ip_use_ext_service_function] setting uplink_use_external_service: ' + str(uplink_use_external_service))
 
             # Set Button Green
             self.get_ext_ip_use_upnp.setStyleSheet(button_stylesheet_white_text_low)
@@ -1965,7 +1996,7 @@ class App(QMainWindow):
         self.dial_out_name.setText('')
         self.dial_out_name.setStyleSheet(line_edit_stylesheet_white_text)
         self.dial_out_name.setAlignment(Qt.AlignCenter)
-        self.dial_out_name.returnPressed.connect(dial_out_name_return_funtion)
+        self.dial_out_name.returnPressed.connect(dial_out_name_return_function)
 
         self.address_book_address_label = QLabel(self)
         self.address_book_address_label.move(int((self.width / 2) - (self.btn_240 / 2) - self.btn_4 - self.btn_80), self.address_staple_height + 80)
@@ -1990,7 +2021,7 @@ class App(QMainWindow):
         self.dial_out_ip_port.setText('')
         self.dial_out_ip_port.setStyleSheet(line_edit_stylesheet_white_text)
         self.dial_out_ip_port.setAlignment(Qt.AlignCenter)
-        self.dial_out_ip_port.returnPressed.connect(dial_out_ip_port_return_funtion)
+        self.dial_out_ip_port.returnPressed.connect(dial_out_ip_port_return_function)
 
         self.generate_fingerprint = QPushButton(self)
         self.generate_fingerprint.move(self.width - self.btn_4 - self.btn_20 - 4 - 24, self.address_staple_height + 48 + 4)
@@ -2153,10 +2184,10 @@ class App(QMainWindow):
 
         # Configuration Thread - Wait For Configuration Thread To Complete
         global configuration_thread_completed
-        print(str(datetime.datetime.now()) + ' configuration_thread_completed:', configuration_thread_completed)
+        debug_message.append('[' + str(datetime.datetime.now()) + '] [App] configuration_thread_completed: ' + str(configuration_thread_completed))
         while configuration_thread_completed is False:
             time.sleep(1)
-        print(str(datetime.datetime.now()) + ' configuration_thread_completed:', configuration_thread_completed)
+        debug_message.append('[' + str(datetime.datetime.now()) + '] [App] configuration_thread_completed: ' + str(configuration_thread_completed))
 
         if len(server_address) > 0:
             self.server_ip_port.setText(server_address[0][0] + ' ' + str(server_address[0][1]))
@@ -2191,19 +2222,19 @@ class App(QMainWindow):
             self.dial_out_name.setText(client_address[0][0])
             self.dial_out_ip_port.setText(client_address[0][1] + ' ' + str(client_address[0][2]))
             if client_address[0][5] != 'x':
-                print(str(datetime.datetime.now()) + ' -- address entry appears to have a broadcast address:', client_address[0][5])
+                debug_message.append('[' + str(datetime.datetime.now()) + '] [App] address entry appears to have a broadcast address: ' + str(client_address[0][5]))
                 self.dial_out_ip_port.setText(client_address[0][1] + ' ' + str(client_address[0][2]) + ' ' + str(client_address[0][5]))
 
             if client_address[0][3] != 'x' and len(client_address[0][3]) == 32:
-                print(str(datetime.datetime.now()) + ' -- address entry appears to have a key:', client_address[0][3])
+                debug_message.append('[' + str(datetime.datetime.now()) + '] [App] address entry appears to have a key: ' + str(client_address[0][3]))
                 if client_address[client_address_index][4] != '#' and len(client_address[client_address_index][4]) == 1024:
-                    print(str(datetime.datetime.now()) + ' -- address entry appears to have a fingerprint:', client_address[client_address_index][4])
+                    debug_message.append('[' + str(datetime.datetime.now()) + '] [App] address entry appears to have a fingerprint: ' + str(client_address[client_address_index][4]))
                     self.dial_out_cipher_bool_btn.setStyleSheet(button_stylesheet_green_text)
                     dial_out_dial_out_cipher_bool = True
                     self.dial_out_cipher_bool_btn.setEnabled(True)
 
             if len(client_address[client_address_index]) >= 11:
-                print(str(datetime.datetime.now()) + ' -- address bool_address_uplink:', client_address[client_address_index][11])
+                debug_message.append('[' + str(datetime.datetime.now()) + '] [App] address bool_address_uplink: ' + str(client_address[client_address_index][11]))
                 if client_address[client_address_index][11] == 'False':
                     self.uplink_btn.setStyleSheet(button_stylesheet_white_text_low)
                     bool_address_uplink = False
@@ -2214,9 +2245,9 @@ class App(QMainWindow):
             try:
                 sck_set_arguments_function()
             except Exception as e:
-                print(str(datetime.datetime.now()) + ' -- handled error setting advanced socket options on the frontend:', e)
+                debug_message.append('[' + str(datetime.datetime.now()) + '] [App] handled error setting advanced socket options on the frontend: ' + str(e))
 
-            print(str(datetime.datetime.now()) + ' -- dial_out_dial_out_cipher_bool:', dial_out_dial_out_cipher_bool)
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [App] dial_out_dial_out_cipher_bool: ' + str(dial_out_dial_out_cipher_bool))
 
         self.tb_0 = QTextBrowser(self)
         self.tb_0.move(4, self.server_staple + 28 + 24 + 24 + 24)
@@ -2232,6 +2263,11 @@ class App(QMainWindow):
         self.timer_0.setInterval(0)
         self.timer_0.timeout.connect(self.update_tb)
         self.jumpstart_1()
+
+        self.timer_1 = QTimer(self)
+        self.timer_1.setInterval(0)
+        self.timer_1.timeout.connect(self.debug_mssage_function)
+        self.jumpstart_2()
 
         self.initUI()
 
@@ -2251,6 +2287,18 @@ class App(QMainWindow):
             self.tb_0.append(textbox_0_messages[-1])
             textbox_0_messages.remove(textbox_0_messages[-1])
 
+    @QtCore.pyqtSlot()
+    def jumpstart_2(self):
+        self.timer_1.start()
+
+    @QtCore.pyqtSlot()
+    def debug_mssage_function(self):
+        global debug_message
+        if debug_message:
+            db_msg = debug_message[-1]
+            print(db_msg)
+            debug_message.remove(db_msg)
+
 
 class UplinkClass(QThread):
     def __init__(self):
@@ -2266,6 +2314,7 @@ class UplinkClass(QThread):
         fo.close()
 
     def compile_uplink_addresses(self):
+        global debug_message
         global client_address
 
         self.uplink_addresses = []
@@ -2275,32 +2324,33 @@ class UplinkClass(QThread):
             if len(_) >= 12:
                 if _[11] == 'True':
                     if _[3] != 'x' and _[4] != 'x':
-                        print(str(datetime.datetime.now()) + ' UplinkClass(QThread).uplink to address that has uplink enabled and both key and fingerprint:', _[0], _[1], _[2])
+                        debug_message.append('[' + str(datetime.datetime.now()) + '] [UplinkClass.compile_uplink_addresses] to address that has uplink enabled and both key and fingerprint: ' + str(_[0]) + ' ' + str(_[1]) + ' ' + str(_[2]))
 
                         # Append address data as list into uplink addresses list
                         self.uplink_addresses.append(_)
 
                     # Display an address that will be ignored
                     else:
-                        print(str(datetime.datetime.now()) + ' GetExternalIPClass(QThread).uplink uplink enabled but there is no key and fingerprint (skipping):', _[0], _[1], _[2])
+                        debug_message.append('[' + str(datetime.datetime.now()) + '] [UplinkClass.compile_uplink_addresses] uplink enabled but there is no key and fingerprint (skipping): ' + str(_[0]) + ' ' + str(_[1]) + ' ' + str(_[2]))
 
                 # Display an address that will be ignored
                 else:
-                    print(str(datetime.datetime.now()) + ' GetExternalIPClass(QThread).uplink uplink disabled (skipping):', _[0], _[1], _[2])
+                    debug_message.append('[' + str(datetime.datetime.now()) + '] [UplinkClass.compile_uplink_addresses] uplink disabled (skipping): ' + str(_[0]) + ' ' + str(_[1]) + ' ' + str(_[2]))
 
             # Display an address that will be ignored
             else:
-                print(str(datetime.datetime.now()) + ' GetExternalIPClass(QThread).uplink incorrectly configured data. (skipping):', _[0], _[1], _[2])
+                debug_message.append('[' + str(datetime.datetime.now()) + '] [UplinkClass.compile_uplink_addresses] incorrectly configured data. (skipping): ' + str(_[0]) + ' ' + str(_[1]) + ' ' + str(_[2]))
 
     def run(self):
-        print('-' * 200)
-        print(str(datetime.datetime.now()) + ' [ thread started: UplinkClass(QThread).run(self) ]')
+        global debug_message
+        debug_message.append('-' * 200)
+        debug_message.append('[' + str(datetime.datetime.now()) + '] [Starting Thread] [UplinkClass.run]')
         global external_ip_address
         global get_external_ip_finnished_reading
 
         # Wait in case a file exists containing previous external address
         while get_external_ip_finnished_reading is False:
-            print('UplinkClass: waiting for get_external_ip_finnished_reading')
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [UplinkClass.run] waiting for get_external_ip_finished_reading')
             time.sleep(1)
 
         current_external_ip = external_ip_address
@@ -2310,18 +2360,19 @@ class UplinkClass(QThread):
             # Wait for external ip changes
             if current_external_ip != external_ip_address:
                 current_external_ip = external_ip_address
-                print('-- current_external_ip changed:', current_external_ip)
+                debug_message.append('[' + str(datetime.datetime.now()) + '] [UplinkClass.run] current_external_ip changed: ' + str(current_external_ip))
                 self.compile_uplink_addresses()
 
             else:
                 # Retry Uplink to any addresses remaining in list (in case Uplink was unsuccessful for any reason)
                 if len(self.uplink_addresses) > 0:
-                    print('-- remaining addresses to receive uplink:', len(self.uplink_addresses))
+                    debug_message.append('[' + str(datetime.datetime.now()) + '] [UplinkClass.run] remaining addresses to receive uplink: ' + str(len(self.uplink_addresses)))
                     self.uplink()
                 time.sleep(3)
 
     def uplink(self):
-        print(str(datetime.datetime.now()) + ' UplinkClass(QThread).uplink: plugged in')
+        global debug_message
+        debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [UplinkClass.uplink]')
         global external_ip_address
 
         # Iterate over each sub-list in uplink addresses list
@@ -2336,28 +2387,28 @@ class UplinkClass(QThread):
             addr_family = _[7]
             soc_type = _[8]
 
-            print('-- attempting uplink for:', name, host, port, addr_family, soc_type)
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [UplinkClass.uplink] attempting uplink for: ' + str(name) + ' ' + str(host) + ' ' + str(port) + ' ' + str(addr_family) + ' ' + str(soc_type))
 
             # Setup socket using address book address family and socket type while ignoring socket options for now (extended feature update)
             sok = socket.socket(COMMUNICATOR_SOCK.get(addr_family), COMMUNICATOR_SOCK.get(soc_type))
-            print('-- setting socket as:', sok)
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [UplinkClass.uplink] setting socket as: ' + str(sok))
 
             try:
                 with sok as SOCKET_UPLINK:
 
                     # Display (for development purposes only, this should not be displayed) cipher configuration data
-                    print(str(datetime.datetime.now()) + ' -- UplinkClass.uplink: handing message to AESCipher')
-                    print(str(datetime.datetime.now()) + ' -- UplinkClass.uplink using KEY:', key)
-                    print(str(datetime.datetime.now()) + ' -- UplinkClass.uplink using FINGERPRINT:', finger_print)
+                    debug_message.append('[' + str(datetime.datetime.now()) + '] [UplinkClass.uplink] handing message to AESCipher')
+                    debug_message.append('[' + str(datetime.datetime.now()) + '] [UplinkClass.uplink] using KEY: ' + str(key))
+                    debug_message.append('[' + str(datetime.datetime.now()) + '] [UplinkClass.uplink] using FINGERPRINT: ' + str(finger_print))
 
                     # Encrypt the fingerprint and external ip address
                     cipher = AESCipher(key)
                     ciphertext = cipher.encrypt(str(finger_print) + '[UPLINK] ' + str(external_ip_address))
 
                     # Display
-                    print(str(datetime.datetime.now()) + ' -- UplinkClass.uplink ciphertext:', str(ciphertext))
+                    debug_message.append('[' + str(datetime.datetime.now()) + '] [UplinkClass.uplink] ciphertext: ' + str(ciphertext))
                     textbox_0_messages.append('[' + str(datetime.datetime.now()) + '] [SENDING ENCRYPTED] [' + str(host) + ':' + str(port) + ']')
-                    print(str(datetime.datetime.now()) + ' -- UplinkClass.uplink: attempting to send ciphertext')
+                    debug_message.append('[' + str(datetime.datetime.now()) + '] [UplinkClass.uplink] attempting to send ciphertext')
 
                     # Attempt to send ciphertext
                     try:
@@ -2368,7 +2419,7 @@ class UplinkClass(QThread):
                     except Exception as e:
                         print(e)
 
-                    print(str(datetime.datetime.now()) + ' -- UplinkClass.uplink: waiting for response from recipient')
+                    debug_message.append('[' + str(datetime.datetime.now()) + '] [UplinkClass.uplink] waiting for response from recipient')
 
                     # Attempt wait for potential delivery confirmation message
                     try:
@@ -2378,7 +2429,7 @@ class UplinkClass(QThread):
                         if ready[0]:
                             data_response = SOCKET_UPLINK.recv(4096)
                     except Exception as e:
-                        print(str(datetime.datetime.now()) + ' -- UplinkClass.uplink:', e)
+                        debug_message.append('[' + str(datetime.datetime.now()) + '] [UplinkClass.uplink] ' + str(e))
                         self.data = '[' + str(datetime.datetime.now()) + '] [EXCEPTION HANDLED DURING WAITING FOR RESPONSE] [' + str(host) + ':' + str(port) + ']'
                         self.uplink_logger()
                         textbox_0_messages.append(self.data)
@@ -2390,28 +2441,30 @@ class UplinkClass(QThread):
                     self.data = '[' + str(datetime.datetime.now()) + '] [UPLINK CONFIRMATION] ' + str(name) + ' [' + str(host) + ':' + str(port) + ']'
                     self.uplink_logger()
                     textbox_0_messages.append(self.data)
-                    print(str(datetime.datetime.now()) + ' -- UplinkClass.uplink response from recipient equals ciphertext:', data_response)
+                    debug_message.append('[' + str(datetime.datetime.now()) + '] [UplinkClass.uplink] response from recipient equals ciphertext: ' + str(data_response))
 
                     # Display length of uplink addresses before and after removing current uplink address from list (as a potential delivery confirmation was received)
-                    print('-- len of self.uplink_addresses before potential successful uplink occured:', len(self.uplink_addresses))
+                    debug_message.append('[' + str(datetime.datetime.now()) + '] [UplinkClass.uplink] len of self.uplink_addresses before potential successful uplink occured: ' + str(len(self.uplink_addresses)))
                     self.uplink_addresses.remove(_)
-                    print('-- len of self.uplink_addresses after potential successful uplink occured:', len(self.uplink_addresses))
+                    debug_message.append('[' + str(datetime.datetime.now()) + '] [UplinkClass.uplink] len of self.uplink_addresses after potential successful uplink occured: ' + str(len(self.uplink_addresses)))
 
                 else:
                     # Handle potential delivery unconfirmed
                     self.data = '[' + str(datetime.datetime.now()) + '] [UPLINK FAIL] [' + str(name) + '] [' + str(host) + ':' + str(port) + '] ' + str(data_response)
                     self.uplink_logger()
-                    print(self.data)
                     textbox_0_messages.append(self.data)
+                    debug_message.append('[' + str(datetime.datetime.now()) + '] [UplinkClass.uplink] [UPLINK FAIL] [' + str(name) + '] [' + str(host) + ':' + str(port) + '] ' + str(data_response))
 
             except Exception as e:
                 self.data = '[' + str(datetime.datetime.now()) + '] [UPLINK FAIL] [' + str(name) + '] [' + str(host) + ':' + str(port) + '] ' + str(data_response) + ' ' + str(e)
                 self.uplink_logger()
-                print(self.data)
+                textbox_0_messages.append(self.data)
+                debug_message.append('[' + str(datetime.datetime.now()) + '] [UplinkClass.uplink] [UPLINK FAIL] [' + str(name) + '] [' + str(host) + ':' + str(port) + '] ' + str(data_response))
 
     def stop(self):
-        print('-' * 200)
-        print(str(datetime.datetime.now()) + ' [ thread terminating: UplinkClass(QThread) ]')
+        global debug_message
+        debug_message.append('-' * 200)
+        debug_message.append('[' + str(datetime.datetime.now()) + '] [Terminating Thread] [UplinkClass.stop]')
         self.terminate()
 
 
@@ -2425,8 +2478,9 @@ class GetExternalIPClass(QThread):
         self.url = []
 
     def run(self):
-        print('-' * 200)
-        print(str(datetime.datetime.now()) + ' [ thread started: GetExternalIPClass(QThread).run(self) ]')
+        global debug_message
+        debug_message.append('-' * 200)
+        debug_message.append('[' + str(datetime.datetime.now()) + '] [Starting Thread] [GetExternalIPClass.run]')
         global enum
         global external_ip_address
         global get_external_ip_finnished_reading
@@ -2441,7 +2495,7 @@ class GetExternalIPClass(QThread):
                         line = line.replace('EXTERNAL_IP_ADDRESS ', '')
                         if len(line) > 0:
                             external_ip_address = str(line)
-                            print('-- setting external ip address as:', external_ip_address)
+                            debug_message.append('[' + str(datetime.datetime.now()) + '] [GetExternalIPClass.run] setting external ip address as: ' + str(external_ip_address))
             fo.close()
 
         self.external_ip_label.setText(str(external_ip_address))
@@ -2461,7 +2515,7 @@ class GetExternalIPClass(QThread):
                         self.get_data()
                         self.external_ip_label.setStyleSheet(label_stylesheet_black_bg_text_white)
                 except Exception as e:
-                    print(e)
+                    debug_message.append('[' + str(datetime.datetime.now()) + '] [GetExternalIPClass.run] ' + str(e))
                     self.external_ip_label.setStyleSheet(label_stylesheet_black_bg_text_yellow)
                     self.enumeration()
                     if len(enum) > 0:
@@ -2471,12 +2525,13 @@ class GetExternalIPClass(QThread):
             time.sleep(1)
 
     def use_external_service(self):
+        global debug_message
         global external_ip_address
-        # print(str(datetime.datetime.now()) + ' GetExternalIPClass(QThread).use_external_service: plugged in')
+        # debug_message.append('[' + str(datetime.datetime.now()) + '] GetExternalIPClass.use_external_service: plugged in')
         try:
             # todo --> more external service options for obtaining external ip address
             current_ip_address = get('https://api.ipify.org').text
-            # print('current_ip_address:', current_ip_address)
+            # debug_message.append('current_ip_address:', current_ip_address)
 
             # todo --> more sanitize
             if not ' ' in current_ip_address:
@@ -2499,13 +2554,14 @@ class GetExternalIPClass(QThread):
                 self.external_ip_label.setStyleSheet(label_stylesheet_black_bg_text_yellow)
 
         except Exception as e:
-            print('-- GetExternalIPClass(QThread).use_external_service:', e)
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [GetExternalIPClass.use_external_service] ' + str(e))
             self.external_ip_label.setStyleSheet(label_stylesheet_black_bg_text_yellow)
 
         # time.sleep(3)
 
     def get_url(self):
-        print(str(datetime.datetime.now()) + ' GetExternalIPClass(QThread).get_url: plugged in')
+        global debug_message
+        debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [GetExternalIPClass.get_url]')
         global enum
         global from_file_bool
 
@@ -2523,7 +2579,7 @@ class GetExternalIPClass(QThread):
                 url = str_[:find_1 + 4]
                 # Find Address
                 addr = str(_[0][0] + ':' + str(_[0][1]))
-                # print('Attempting to retrieve information from: ', addr, ' at address url ', url)
+                # debug_message.append('Attempting to retrieve information from: ', addr, ' at address url ', url)
                 self.url.append(url)
             else:
                 str_ = _
@@ -2532,11 +2588,12 @@ class GetExternalIPClass(QThread):
                 str_ = str_[find_0:]
                 find_1 = str_.find('.xml')
                 url = str_[:find_1 + 4]
-                # print('Attempting to retrieve information from url:', url)
+                # debug_message.append('Attempting to retrieve information from url:', url)
                 self.url.append(url)
 
     def read_file(self):
-        print(str(datetime.datetime.now()) + ' GetExternalIPClass(QThread).read_file: plugged in')
+        global debug_message
+        debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [GetExternalIPClass.read_file]')
         global enum
         global from_file_bool
 
@@ -2552,7 +2609,8 @@ class GetExternalIPClass(QThread):
             fo.close()
 
     def enumeration(self):
-        # print(str(datetime.datetime.now()) + ' GetExternalIPClass(QThread).enumeration: plugged in')
+        global debug_message
+        debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [GetExternalIPClass.enumeration]')
 
         global enum
         global from_file_bool
@@ -2585,11 +2643,11 @@ class GetExternalIPClass(QThread):
                     enum.append([addr, data])
         except socket.timeout:
             soc.close()
-            # print(str(datetime.datetime.now()) + ' GetExternalIPClass(QThread).enumeration: timed out')
+            # debug_message.append('[' + str(datetime.datetime.now()) + '] GetExternalIPClass.enumeration: timed out')
             pass
 
         if len(enum) > 0:
-            # print(str(datetime.datetime.now()) + ' GetExternalIPClass(QThread).enumeration populated enumeration data:', enum)
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [GetExternalIPClass.enumeration] populated enumeration data: ' + str(enum))
             # Check if file already exists
             if not os.path.exists(self.fname):
                 codecs.open(self.fname, 'w', encoding='utf-8').close()
@@ -2601,10 +2659,11 @@ class GetExternalIPClass(QThread):
                         fo.write(str(_) + '\n')
                 fo.close()
         # else:
-            # print(str(datetime.datetime.now()) + ' GetExternalIPClass(QThread).enumeration: enumeration data unpopulated')
+            # debug_message.append('[' + str(datetime.datetime.now()) + '] [GetExternalIPClass.enumeration] enumeration data unpopulated')
 
     def get_data(self):
-        # print(str(datetime.datetime.now()) + ' GetExternalIPClass(QThread).get_data: plugged in')
+        global debug_message
+        # debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [GetExternalIPClass.get_data]')
         global enum
         global from_file_bool
         global external_ip_address
@@ -2613,7 +2672,7 @@ class GetExternalIPClass(QThread):
 
             # Set device using url
             d = upnpclient.Device(_)
-            # print(d)
+            # debug_message.append('[' + str(datetime.datetime.now()) + '] [GetExternalIPClass.get_data] device(s)' + str(d))
 
             for k in d.service_map:
 
@@ -2632,7 +2691,7 @@ class GetExternalIPClass(QThread):
 
                         # Update external IP address if changed
                         if current_external_ip_address != external_ip_address and current_external_ip_address != '':
-                            print(str(datetime.datetime.now()) + ' GetExternalIPClass(QThread).get_data current_external_ip_address changed:', current_external_ip_address)
+                            debug_message.append('[' + str(datetime.datetime.now()) + '] [GetExternalIPClass.get_data] current_external_ip_address changed: ' + str(current_external_ip_address))
                             external_ip_address = current_external_ip_address
 
                             # Save Changes
@@ -2646,8 +2705,9 @@ class GetExternalIPClass(QThread):
                         self.external_ip_label.setText(str(external_ip_address))
 
     def stop(self):
-        print('-' * 200)
-        print(str(datetime.datetime.now()) + ' [ thread terminating: GetExternalIPClass(QThread) ]')
+        global debug_message
+        debug_message.append('-' * 200)
+        debug_message.append('[' + str(datetime.datetime.now()) + '] [Terminating Thread] [GetExternalIPClass.stop]')
         global enum
         enum = []
         self.external_ip_label.setText('')
@@ -2660,8 +2720,9 @@ class ConfigurationClass(QThread):
         QThread.__init__(self)
 
     def run(self):
-        print('-' * 200)
-        print(str(datetime.datetime.now()) + ' [ thread started: ConfigurationClass(QThread).run(self) ]')
+        global debug_message
+        debug_message.append('-' * 200)
+        debug_message.append('[' + str(datetime.datetime.now()) + '] [Starting Thread] [ConfigurationClass.run]')
         global configuration_thread_completed
         global server_address
         global client_address
@@ -2669,20 +2730,20 @@ class ConfigurationClass(QThread):
         global uplink_enable_bool
         global uplink_use_external_service
 
-        print('-' * 200)
-        print(str(datetime.datetime.now()) + ' ConfigurationClass(QThread): updating all values from configuration file...')
+        debug_message.append('-' * 200)
+        debug_message.append('[' + str(datetime.datetime.now()) + '] [ConfigurationClass.run] updating all values from configuration file...')
 
         # Read And Set Server Configuration
         server_address = []
         with open('./config.txt', 'r') as fo:
             for line in fo:
                 line = line.strip()
-                print('configuration server:', line)
+                debug_message.append('[' + str(datetime.datetime.now()) + '] [ConfigurationClass.run] configuration server: ' + str(line))
                 line = line.split(' ')
                 if str(line[0]) == 'SERVER_ADDRESS':
                     if len(line) == 3:
                         server_address.append([str(line[1]), int(line[2])])
-                        print(str(datetime.datetime.now()) + ' ConfigurationClass(QThread) adding server_address: ' + str(server_address[-1]))
+                        debug_message.append('[' + str(datetime.datetime.now()) + '] [ConfigurationClass.run] adding server_address: ' + str(server_address[-1]))
 
                 if str(line[0]) == 'CONN_ACCEPT_MODE':
                     if len(line) == 2:
@@ -2706,8 +2767,8 @@ class ConfigurationClass(QThread):
                             uplink_use_external_service = True
         fo.close()
 
-        print('-' * 200)
-        print(str(datetime.datetime.now()) + ' ConfigurationClass(QThread): updating all values from communicator address book...')
+        debug_message.append('-' * 200)
+        debug_message.append('[' + str(datetime.datetime.now()) + '] [ConfigurationClass.run] updating all values from communicator address book...')
 
         # Read And Set Client Configuration
         client_address = []
@@ -2716,18 +2777,18 @@ class ConfigurationClass(QThread):
                 line = line.strip()
                 line = line.split(' ')
                 if str(line[0]) == 'DATA':
-                    print('len(line):', len(line))
+                    debug_message.append('[' + str(datetime.datetime.now()) + '] [ConfigurationClass.run] len(line): ' + str(len(line)))
                     if len(line) == 13:
                         client_address.append([str(line[1]), str(line[2]), int(line[3]), bytes(line[4], 'utf-8'), str(line[5]), str(line[6]), str(line[7]), str(line[8]), str(line[9]), str(line[10]), str(line[11]), str(line[12])])
-                        print('entry:', client_address[-1])
+                        debug_message.append('[' + str(datetime.datetime.now()) + '] [ConfigurationClass.run] entry: ' + str(client_address[-1]))
 
         client_address.sort(key=lambda x: x[0])
-        print('sort complete')
+        debug_message.append('[' + str(datetime.datetime.now()) + '] [ConfigurationClass.run] sort complete')
 
         for _ in client_address:
-            print('handling:', _)
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [ConfigurationClass.run] handling: ' + str(_))
             if os.path.exists(_[4]):
-                print('path found:', _[4])
+                debug_message.append('[' + str(datetime.datetime.now()) + '] [ConfigurationClass.run] path found: ' + str(_[4]))
                 address_fingerprint_string = ''
                 with open(_[4], 'r') as fo:
                     for line in fo:
@@ -2735,7 +2796,7 @@ class ConfigurationClass(QThread):
                         address_fingerprint_string = address_fingerprint_string + line
                 fo.close()
                 _[4] = address_fingerprint_string
-            print('sorted:', _)
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [ConfigurationClass.run] sorted: ' + str(_))
 
         configuration_thread_completed = True
 
@@ -2750,7 +2811,8 @@ class AESCipher:
         self.unpad = lambda s: s[0:-ord(s[-1:])]
 
     def encrypt(self, raw):
-        print(str(datetime.datetime.now()) + ' -- AESCipher encrypting using key:', self.key)
+        global debug_message
+        debug_message.append('[' + str(datetime.datetime.now()) + '] [AESCipher.encrypt] encrypting using key: ' + str(self.key))
         try:
             raw = self.pad(raw)
             iv = Random.new().read(AES.block_size)
@@ -2758,10 +2820,11 @@ class AESCipher:
             return base64.b64encode(iv + cipher.encrypt(raw))
 
         except Exception as e:
-            print('AESCipher.encrypt:', e)
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [AESCipher.encrypt] ' + str(e))
 
     def decrypt(self, enc):
-        print(str(datetime.datetime.now()) + ' -- AESCipher decrypting using key:', self.key)
+        global debug_message
+        debug_message.append('[' + str(datetime.datetime.now()) + '] [AESCipher.decrypt] decrypting using key: ' + str(self.key))
         try:
             enc = base64.b64decode(enc)
             iv = enc[:16]
@@ -2769,7 +2832,7 @@ class AESCipher:
             return self.unpad(cipher.decrypt(enc[16:])).decode('utf-8')
 
         except Exception as e:
-            print('AESCipher.decrypt:', e)
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [AESCipher.decrypt] ' + str(e))
 
 
 class DialOutClass(QThread):
@@ -2797,17 +2860,18 @@ class DialOutClass(QThread):
         self.MESSAGE_CONTENT = ''
 
     def run(self):
-        print('-' * 200)
-        print(str(datetime.datetime.now()) + ' [ thread started: DialOutClass(QThread).run(self) ]')
+        global debug_message
+        debug_message.append('-' * 200)
+        debug_message.append('[' + str(datetime.datetime.now()) + '] [Starting Thread] [DialOutClass.run]')
         global client_address
         global client_address_index
         global address_override_string
 
-        print(str(datetime.datetime.now()) + ' -- DialOutClass.run bool_dial_out_override:', bool_dial_out_override)
+        debug_message.append('[' + str(datetime.datetime.now()) + '] [DialOutClass.run] bool_dial_out_override: ' + str(bool_dial_out_override))
 
         if bool_dial_out_override is True:
             if len(address_override_string.split(' ')) >= 2:
-                print(str(datetime.datetime.now()) + ' -- DialOutClass.run using address_override_string:', address_override_string)
+                debug_message.append('[' + str(datetime.datetime.now()) + '] [DialOutClass.run]using address_override_string: ' + str(address_override_string))
                 self.HOST_SEND = address_override_string.split(' ')[0]
                 self.PORT_SEND = int(address_override_string.split(' ')[1])
                 self.KEY = bytes('#', 'utf-8')
@@ -2816,7 +2880,7 @@ class DialOutClass(QThread):
                 self.message_send()
 
         elif bool_dial_out_override is False:
-            print(str(datetime.datetime.now()) + ' -- DialOutClass.run using client_address_index:', client_address_index)
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [DialOutClass.run] using client_address_index: ' + str(client_address_index))
             self.HOST_SEND = client_address[client_address_index][1]
             self.PORT_SEND = client_address[client_address_index][2]
             self.KEY = client_address[client_address_index][3]
@@ -2832,13 +2896,14 @@ class DialOutClass(QThread):
         fo.close()
 
     def message_send(self):
+        global debug_message
         global SOCKET_DIAL_OUT
         global dial_out_dial_out_cipher_bool
         global bool_dial_out_override
         global bool_socket_options
 
-        print('-' * 200)
-        print(str(datetime.datetime.now()) + f" -- DialOutClass.message_send outgoing to: {self.HOST_SEND} : {self.PORT_SEND}")
+        debug_message.append('-' * 200)
+        debug_message.append('[' + str(datetime.datetime.now()) + '] [DialOutClass.message_send] outgoing to: ' + str(self.HOST_SEND) + ':' + str(self.PORT_SEND))
 
         try:
             data_response = ''
@@ -2846,39 +2911,39 @@ class DialOutClass(QThread):
 
                 # Setup Socket
                 sok = socket.socket(COMMUNICATOR_SOCK.get(self.communicator_socket_options_box_0.currentText()), COMMUNICATOR_SOCK.get(self.communicator_socket_options_box_1.currentText()))
-                print('-- variably setting socket as:', sok)
+                debug_message.append('[' + str(datetime.datetime.now()) + '] [DialOutClass.message_send] variably setting socket as: ' + str(sok))
 
                 # Setup Socket Options
                 if bool_socket_options is True:
                     sok.setsockopt(COMMUNICATOR_SOCK.get(self.communicator_socket_options_box_2.currentText()), COMMUNICATOR_SOCK.get(self.communicator_socket_options_box_3.currentText()), 1)
-                    print('-- variably setting socket options:', sok)
+                    debug_message.append('[' + str(datetime.datetime.now()) + '] [DialOutClass.message_send] variably setting socket options: ' + str(sok))
 
                 with sok as SOCKET_DIAL_OUT:
                     if client_address[client_address_index][5] == 'x':
-                        print('-- using address ip/mac:', self.HOST_SEND)
+                        debug_message.append('[' + str(datetime.datetime.now()) + '] [DialOutClass.message_send] using address ip/mac: ' + str(self.HOST_SEND))
                         SOCKET_DIAL_OUT.connect((self.HOST_SEND, self.PORT_SEND))
                     else:
-                        print('-- using broadcast address:', client_address[client_address_index][5])
+                        debug_message.append('[' + str(datetime.datetime.now()) + '] [DialOutClass.message_send] using broadcast address: ' + str(client_address[client_address_index][5]))
                         SOCKET_DIAL_OUT.connect((str(client_address[client_address_index][5]), self.PORT_SEND))
 
                     if dial_out_dial_out_cipher_bool is True and bool_dial_out_override is False:
-                        print(str(datetime.datetime.now()) + ' -- DialOutClass.message_send: handing message to AESCipher')
-                        print(str(datetime.datetime.now()) + ' -- DialOutClass.message_send using KEY:', self.KEY)
-                        print(str(datetime.datetime.now()) + ' -- DialOutClass.message_send using FINGERPRINT:', self.FINGERPRINT)
+                        debug_message.append('[' + str(datetime.datetime.now()) + '] [DialOutClass.message_send] handing message to AESCipher')
+                        debug_message.append('[' + str(datetime.datetime.now()) + '] [DialOutClass.message_send] using key: ' + str(self.KEY))
+                        debug_message.append('[' + str(datetime.datetime.now()) + '] [DialOutClass.message_send] using fingerprint: ' + str(self.FINGERPRINT))
                         cipher = AESCipher(self.KEY)
                         ciphertext = cipher.encrypt(str(self.FINGERPRINT) + self.MESSAGE_CONTENT)
-                        print(str(datetime.datetime.now()) + ' -- DialOutClass.message_send ciphertext:', str(ciphertext))
+                        debug_message.append('[' + str(datetime.datetime.now()) + '] [DialOutClass.message_send] ciphertext: ' + str((ciphertext)))
                         textbox_0_messages.append('[' + str(datetime.datetime.now()) + '] [SENDING ENCRYPTED] [' + str(self.HOST_SEND) + ':' + str(self.PORT_SEND) + ']')
                     else:
                         ciphertext = bytes(self.MESSAGE_CONTENT, str(client_address[client_address_index][6]).split('______')[1])
                         textbox_0_messages.append('[' + str(datetime.datetime.now()) + '] [SENDING UNENCRYPTED] [' + str(self.HOST_SEND) + ':' + str(self.PORT_SEND) + ']')
 
-                    print(str(datetime.datetime.now()) + ' -- DialOutClass.message_send: attempting to send ciphertext')
+                    debug_message.append('[' + str(datetime.datetime.now()) + '] [DialOutClass.message_send] attempting to send ciphertext')
 
                     SOCKET_DIAL_OUT.send(ciphertext)
                     SOCKET_DIAL_OUT.settimeout(1)
 
-                    print(str(datetime.datetime.now()) + ' -- DialOutClass.message_send: waiting for response from recipient')
+                    debug_message.append('[' + str(datetime.datetime.now()) + '] [DialOutClass.message_send] waiting for response from recipient')
 
                     try:
                         data_response = ''
@@ -2888,7 +2953,7 @@ class DialOutClass(QThread):
                             data_response = SOCKET_DIAL_OUT.recv(4096)
 
                     except Exception as e:
-                        print(str(datetime.datetime.now()) + ' -- DialOutClass.message_send:', e)
+                        debug_message.append('[' + str(datetime.datetime.now()) + '] [DialOutClass.message_send] ' + str(e))
                         self.data = '[' + str(datetime.datetime.now()) + '] [EXCEPTION HANDLED DURING WAITING FOR RESPONSE] [' + str(self.HOST_SEND) + ':' + str(self.PORT_SEND) + ']'
                         textbox_0_messages.append(self.data)
                         self.dial_out_logger()
@@ -2898,7 +2963,7 @@ class DialOutClass(QThread):
                     self.data = '[' + str(datetime.datetime.now()) + '] [DELIVERY CONFIRMATION] [' + str(self.HOST_SEND) + ':' + str(self.PORT_SEND) + ']'
                     textbox_0_messages.append(self.data)
 
-                    print(str(datetime.datetime.now()) + ' -- DialOutClass.message_send response from recipient equals ciphertext:', data_response)
+                    debug_message.append('[' + str(datetime.datetime.now()) + '] [DialOutClass.message_send] response from recipient equals ciphertext: ' + str(data_response))
                     self.dial_out_message_send.setIcon(QIcon(send_green))
                     time.sleep(1)
                     self.dial_out_message_send.setIcon(QIcon(send_white))
@@ -2906,8 +2971,8 @@ class DialOutClass(QThread):
                 else:
                     self.dial_out_message.setText('')
                     self.data = '[' + str(datetime.datetime.now()) + '] [RESPONSE] [' + str(self.HOST_SEND) + ':' + str(self.PORT_SEND) + '] ' + str(data_response)
-                    print(self.data)
                     textbox_0_messages.append(self.data)
+                    debug_message.append('[' + str(datetime.datetime.now()) + '] [DialOutClass.message_send] [RESPONSE] [' + str(self.HOST_SEND) + ':' + str(self.PORT_SEND) + '] ' + str(data_response))
                     self.dial_out_logger()
 
                     self.dial_out_message_send.setIcon(QIcon(send_yellow))
@@ -2915,11 +2980,10 @@ class DialOutClass(QThread):
                     self.dial_out_message_send.setIcon(QIcon(send_white))
 
         except Exception as e:
-            self.data = '[' + str(datetime.datetime.now()) + '] [RESPONSE] [' + str(self.HOST_SEND) + ':' + str(self.PORT_SEND) + '] ' + str(e)
-
-            print(self.data)
+            self.data = '[' + str(datetime.datetime.now()) + '] [EXCEPTION] [' + str(self.HOST_SEND) + ':' + str(self.PORT_SEND) + '] ' + str(e)
             textbox_0_messages.append(self.data)
             self.dial_out_logger()
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [DialOutClass.message_send] [EXCEPTION] [' + str(self.HOST_SEND) + ':' + str(self.PORT_SEND) + '] ' + str(e))
 
             self.dial_out_message_send.setIcon(QIcon(send_red))
             time.sleep(1)
@@ -2927,13 +2991,14 @@ class DialOutClass(QThread):
             global_self.setFocus()
 
     def stop(self):
+        global debug_message
         global SOCKET_DIAL_OUT
-        print('-' * 200)
-        print(str(datetime.datetime.now()) + ' [ thread terminating: DialOutClass(QThread).run(self) ]')
+        debug_message.append('-' * 200)
+        debug_message.append('[' + str(datetime.datetime.now()) + '] [Terminating Thread] DialOutClass.run(self) ]')
         try:
             SOCKET_DIAL_OUT.close()
         except Exception as e:
-            print(str(datetime.datetime.now()) + ' -- DialOutClass.stop failed:', e)
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [DialOutClass.stop] ' + str(e))
         global_self.setFocus()
         self.terminate()
 
@@ -2960,11 +3025,12 @@ class ServerDataHandlerClass(QThread):
         time.sleep(1)
 
     def notification(self):
-        print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.notification: attempting communicator notification')
+        global debug_message
+        debug_message.append('[' + str(datetime.datetime.now()) + '] [ServerDataHandlerClass.notification] attempting communicator notification')
         global mute_server_notify_cipher_bool
         global mute_server_notify_alien_bool
 
-        print('mute_server_notify_cipher_bool:', mute_server_notify_cipher_bool)
+        debug_message.append('[' + str(datetime.datetime.now()) + '] [ServerDataHandlerClass.notification] ' + str(mute_server_notify_cipher_bool))
 
         if self.notification_key == 'green':
             self.server_incoming.setIcon(QIcon(server_public_green))
@@ -2981,8 +3047,9 @@ class ServerDataHandlerClass(QThread):
         self.server_incoming.setIcon(QIcon(server_public_white))
 
     def run(self):
-        print('-' * 200)
-        self.data = str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run: plugged in'
+        global debug_message
+        debug_message.append('-' * 200)
+        debug_message.append('[' + str(datetime.datetime.now()) + '] [Starting Thread] [ServerDataHandlerClass.run]')
         print(self.data)
         global server_messages
         global textbox_0_messages
@@ -3005,7 +3072,7 @@ class ServerDataHandlerClass(QThread):
 
                         decrypted = ''
                         decrypted_message = ''
-                        print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run: attempting to decrypt message')
+                        debug_message.append('[' + str(datetime.datetime.now()) + '] [ServerDataHandlerClass.run] attempting to decrypt message')
 
                         # Communicator Standard Communication fingerprint is 1024 bytes so attempt decryption of any message larger than 1024 bytes
                         if len(ciphertext) > 1024:
@@ -3014,24 +3081,24 @@ class ServerDataHandlerClass(QThread):
                             i_1 = 0
                             for _ in client_address:
                                 if _[3] != bytes('x', 'utf-8'):
-                                    print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run trying key:', str(_[3]))
+                                    debug_message.append('[' + str(datetime.datetime.now()) + '] [ServerDataHandlerClass.run] trying key: ' + str((_[3])))
                                     try:
-                                        print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run: handing message to AESCipher')
+                                        debug_message.append('[' + str(datetime.datetime.now()) + '] [ServerDataHandlerClass.run] handing message to AESCipher')
                                         cipher = AESCipher(_[3])
                                         decrypted = cipher.decrypt(ciphertext)
                                     except Exception as e:
-                                        print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run (address_key loop): ' + str(e))
+                                        debug_message.append('[' + str(datetime.datetime.now()) + '] [ServerDataHandlerClass.run] (address_key loop): ' + str(e))
                                         break
 
                                     # If decrypted then display the name associated with the key else try next key
                                     if decrypted:
-                                        print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run: successfully decrypted message')
-                                        print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run searching incoming message for fingerprint associated with:', str(_[0]))
+                                        debug_message.append('[' + str(datetime.datetime.now()) + '] [ServerDataHandlerClass.run] successfully decrypted message')
+                                        debug_message.append('[' + str(datetime.datetime.now()) + '] [ServerDataHandlerClass.run] searching incoming message for fingerprint associated with: ' + str((_[0])))
                                         if decrypted.startswith(str(_[4])):
-                                            print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run fingerprint: validated as', str(_[0]))
+                                            debug_message.append('[' + str(datetime.datetime.now()) + '] [ServerDataHandlerClass.run] fingerprint: validated as ' + str((_[0])))
                                             decrypted_message = decrypted.replace(str(_[4]), '')
                                             textbox_0_messages.append('[' + str(datetime.datetime.now()) + '] [[DECIPHERED] [' + str(addr_data) + '] [' + str(_[0]) + '] ' + decrypted_message)
-                                            print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run decrypted_message:', decrypted_message)
+                                            debug_message.append('[' + str(datetime.datetime.now()) + '] [ServerDataHandlerClass.run] decrypted_message: ' + str(decrypted_message))
 
                                             if not cipher_message_count == '999+':
                                                 if cipher_message_count < 999:
@@ -3042,20 +3109,20 @@ class ServerDataHandlerClass(QThread):
 
                                             break
                                         else:
-                                            print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run fingerprint: missing or invalid')
+                                            debug_message.append('[' + str(datetime.datetime.now()) + '] [ServerDataHandlerClass.run] fingerprint: missing or invalid')
                                     else:
-                                        print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run decrypt: empty (try another key)')
+                                        debug_message.append('[' + str(datetime.datetime.now()) + '] [ServerDataHandlerClass.run] decrypt: empty (try another key)')
                                     i_1 += 1
 
                         # Display Server incoming message's
                         if len(decrypted_message) > 0:
-                            self.data = str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run decrypted message: ' + str(decrypted_message)
+                            self.data = str(datetime.datetime.now()) + ' [ServerDataHandlerClass.run] decrypted message: ' + str(decrypted_message)
                             self.server_logger()
                             self.notification_key = 'green'
                             self.notification()
                             global_self.setFocus()
                         else:
-                            self.data = str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run message is not encrypted using keys in address book: ' + str(ciphertext)
+                            self.data = str(datetime.datetime.now()) + ' [ServerDataHandlerClass.run] message is not encrypted using keys in address book: ' + str(ciphertext)
                             print(self.data)
                             self.server_logger()
                             textbox_0_messages.append('[' + str(datetime.datetime.now()) + '] [' + str(addr_data) + '] [NON-STANDARD COMMUNICATION] ' + str(ciphertext))
@@ -3073,10 +3140,10 @@ class ServerDataHandlerClass(QThread):
                         i_0 += 1
 
                     except Exception as e:
-                        print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run (body_0): ' + str(e))
+                        debug_message.append('[' + str(datetime.datetime.now()) + '] [ServerDataHandlerClass.run] (body_0): ' + str(e))
                         i_0 += 1
             except Exception as e:
-                print(str(datetime.datetime.now()) + ' -- ServerDataHandlerClass.run (main_exception): ' + str(e))
+                debug_message.append('[' + str(datetime.datetime.now()) + '] [ServerDataHandlerClass.run] (main_exception): ' + str(e))
 
 
 class ServerClass(QThread):
@@ -3095,19 +3162,20 @@ class ServerClass(QThread):
         self.server_status_prev = None
 
     def run(self):
-        print(str(datetime.datetime.now()) + ' -- ServerClass.run: plugged in:')
+        global debug_message
+        debug_message.append('[' + str(datetime.datetime.now()) + '] [Starting Thread] [ServerClass.run]')
         global server_address
         global server_address_index
 
         self.server_status_label_ip_in_use.setText(str(server_address[server_address_index][0] + ' ' + str(server_address[server_address_index][1])))
 
         self.SERVER_HOST = server_address[server_address_index][0]
-        print(str(datetime.datetime.now()) + ' -- ServerClass.run: SERVER_HOST:', self.SERVER_HOST)
+        debug_message.append('[' + str(datetime.datetime.now()) + '] [ServerClass.run] SERVER_HOST: ' + str(self.SERVER_HOST))
         self.SERVER_PORT = server_address[server_address_index][1]
-        print(str(datetime.datetime.now()) + ' -- ServerClass.run: SERVER_PORT:', self.SERVER_PORT)
+        debug_message.append('[' + str(datetime.datetime.now()) + '] [ServerClass.run] SERVER_PORT: ' + str(self.SERVER_PORT))
 
-        print('-' * 200)
-        self.data = str(datetime.datetime.now()) + ' -- ServerClass.run: public server started'
+        debug_message.append('-' * 200)
+        self.data = str(datetime.datetime.now()) + ' [ServerClass.run] public server started'
         print(self.data)
         self.server_logger()
 
@@ -3118,8 +3186,10 @@ class ServerClass(QThread):
                 self.server_start.setIcon(QIcon(play_green))
                 self.listen()
             except Exception as e:
-                print(str(datetime.datetime.now()) + ' -- ServerClass.run [0] failed:', e)
-                textbox_0_messages.append('[' + str(datetime.datetime.now()) + '] [0]' + str(e))
+                self.data = str('[' + str(datetime.datetime.now()) + '] [ServerClass.run] [0] failed: ' + str(e))
+                textbox_0_messages.append(self.data)
+                self.server_logger()
+
                 self.server_status_label.setText('SERVER STATUS: TRYING TO START')
                 self.server_incoming.setIcon(QIcon(server_public_yellow))
                 self.server_start.setIcon(QIcon(play_yellow))
@@ -3133,6 +3203,7 @@ class ServerClass(QThread):
         fo.close()
 
     def listen(self):
+        global debug_message
         global SOCKET_SERVER
 
         global client_address
@@ -3150,10 +3221,10 @@ class ServerClass(QThread):
 
         global accept_from_key
 
-        print('-' * 200)
-        print(str(datetime.datetime.now()) + ' -- ServerClass.listen SERVER_HOST:', self.SERVER_HOST)
-        print(str(datetime.datetime.now()) + ' -- ServerClass.listen SERVER_PORT:', self.SERVER_PORT)
-        print(str(datetime.datetime.now()) + ' -- ServerClass.listen SERVER: attempting to listen')
+        debug_message.append('-' * 200)
+        debug_message.append('[' + str(datetime.datetime.now()) + '] [ServerClass.listen] SERVER_HOST: ' + str(self.SERVER_HOST))
+        debug_message.append('[' + str(datetime.datetime.now()) + '] [ServerClass.listen] SERVER_PORT: ' + str(self.SERVER_PORT))
+        debug_message.append('[' + str(datetime.datetime.now()) + '] [ServerClass.listen] Server: attempting to listen')
 
         x_time = round(time.time() * 1000)
 
@@ -3161,7 +3232,7 @@ class ServerClass(QThread):
         self.server_status_prev = None
 
         while True:
-            print('checking soft_block_ip:', soft_block_ip)
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [ServerClass.listen] checking soft_block_ip: ' + str(soft_block_ip))
             if len(soft_block_ip) > 0:
 
                 # DOS & DDOS Protection - Notify Per IP Address In Soft_Block_IP
@@ -3176,9 +3247,9 @@ class ServerClass(QThread):
                 for _ in soft_block_ip:
 
                     if soft_block_ip[i][2] < 20:
-                        print(str(datetime.datetime.now()) + ' -- ServerClass.listen [violation < 20] ' + str(soft_block_ip[i][0]))
+                        debug_message.append('[' + str(datetime.datetime.now()) + '] [ServerClass.listen] [violation < 20] ' + str(soft_block_ip[i][0]))
                         if round(time.time() * 1000) > (soft_block_ip[i][1] + 2000):  # Unblock in n [ Z_Time + TUNABLE n ] N=Milliseconds Soft Block Time
-                            print(str(datetime.datetime.now()) + ' -- ServerClass.listen unblocking: ' + str(soft_block_ip[i][0]))
+                            debug_message.append('[' + str(datetime.datetime.now()) + '] [ServerClass.listen] unblocking: ' + str(soft_block_ip[i][0]))
                             del soft_block_ip[i]
 
                             # DOS & DDOS Protection - Notify Per IP Address In Soft_Block_IP
@@ -3189,7 +3260,7 @@ class ServerClass(QThread):
                             self.soft_block_ip_notification.setText(str(soft_block_ip_count))
 
                         else:
-                            print(str(datetime.datetime.now()) + ' -- ServerClass.listen soft block will remain: ' + str(soft_block_ip[i][0]))
+                            debug_message.append('[' + str(datetime.datetime.now()) + '] [ServerClass.listen] soft block will remain: ' + str(soft_block_ip[i][0]))
 
                     i += 1
 
@@ -3204,21 +3275,21 @@ class ServerClass(QThread):
 
                     self.server_status_current = True
                     conn, addr = SOCKET_SERVER.accept()
-                    print(str(datetime.datetime.now()) + ' -- ServerClass.listen conn, addr: ' + str(conn) + str(addr))
+                    debug_message.append('[' + str(datetime.datetime.now()) + '] [ServerClass.listen] connection:' + str(conn) + ' address:' + str(addr))
 
                     addr_exists_already = False
                     if len(soft_block_ip) > 0:
                         i = 0
                         for _ in soft_block_ip:
-                            print('comparing:', soft_block_ip[i][0], ' ---> ', addr[0])
+                            debug_message.append('[' + str(datetime.datetime.now()) + '] [ServerClass.listen] comparing: ' + str(soft_block_ip[i][0]) + ' ---> ' + str(addr[0]))
                             if soft_block_ip[i][0] == addr[0]:
-                                print(str(datetime.datetime.now()) + ' -- ServerClass.listen SOCKET_SERVER ATTEMPTING BLOCK: ' + str(SOCKET_SERVER))
+                                debug_message.append('[' + str(datetime.datetime.now()) + '] [ServerClass.listen] SOCKET_SERVER ATTEMPTING BLOCK: ' + str(SOCKET_SERVER))
                                 try:
                                     SOCKET_SERVER.close()
                                 except Exception as e:
-                                    print(str(datetime.datetime.now()) + ' -- ServerClass.run [1] failed:', e)
+                                    debug_message.append('[' + str(datetime.datetime.now()) + '] [ServerClass.listen] [1] failed: ' + str(e))
                                     textbox_0_messages.append('[' + str(datetime.datetime.now()) + '] [1]' + str(e))
-                                print(str(datetime.datetime.now()) + ' -- ServerClass.listen SOCKET_SERVER AFTER CLOSE ATTEMPT: ' + str(SOCKET_SERVER))
+                                debug_message.append('[' + str(datetime.datetime.now()) + '] [ServerClass.listen] SOCKET_SERVER AFTER CLOSE ATTEMPT: ' + str(SOCKET_SERVER))
                                 soft_block_ip_index = i
                                 addr_exists_already = True
                             i += 1
@@ -3233,19 +3304,19 @@ class ServerClass(QThread):
 
                         # DOS & DDOS Protection - Compare Y_Time (Now) To X_Time (Last Time)
                         if y_time < (x_time + 1000):  # Throttle Rate = n [ TUNABLE X_Time + n ] N=Milliseconds
-                            print(str(datetime.datetime.now()) + ' -- ServerClass.listen checking soft block configuration for:' + str(addr[0]))
+                            debug_message.append('[' + str(datetime.datetime.now()) + '] [ServerClass.listen] checking soft block configuration for:' + str(addr[0]))
 
                             # DOS & DDOS Protection - Add New Entry To Soft Block List
                             if addr_exists_already is False:
-                                print(str(datetime.datetime.now()) + ' -- ServerClass.listen adding IP Address to soft block list: ' + str(addr[0]))
+                                debug_message.append('[' + str(datetime.datetime.now()) + '] [ServerClass.listen] adding IP Address to soft block list: ' + str(addr[0]))
 
                                 # DOS & DDOS Protection - Set Z Time
                                 _z_time = round(time.time() * 1000)
-                                print(str(datetime.datetime.now()) + ' -- ServerClass.listen setting IP Address Z_TIME to current time: ' + str(addr[0]) + ' --> ' + str(_z_time))
+                                debug_message.append('[' + str(datetime.datetime.now()) + '] [ServerClass.listen] setting IP Address Z_TIME to current time: ' + str(addr[0]) + ' --> ' + str(_z_time))
 
                                 # DOS & DDOS Protection - Set Violation Count
                                 _violation_count = 1
-                                print(str(datetime.datetime.now()) + ' -- ServerClass.listen setting IP Address violation count: ' + str(addr[0]) + ' --> ' + str(_violation_count))
+                                debug_message.append('[' + str(datetime.datetime.now()) + '] [ServerClass.listen] setting IP Address violation count: ' + str(addr[0]) + ' --> ' + str(_violation_count))
 
                                 new_list_entry = [addr[0], _z_time, _violation_count]
                                 soft_block_ip.append(new_list_entry)
@@ -3253,7 +3324,7 @@ class ServerClass(QThread):
                             elif addr_exists_already is True:
 
                                 # DOS & DDOS Protection - Amend Entry For Soft Block IP List
-                                print(str(datetime.datetime.now()) + ' -- ServerClass.listen IP Address already in soft block list: ' + str(addr[0]))
+                                debug_message.append('[' + str(datetime.datetime.now()) + '] [ServerClass.listen] IP Address already in soft block list: ' + str(addr[0]))
 
                                 # DOS & DDOS Protection - Amend Entry For Z_Time
                                 soft_block_ip[soft_block_ip_index][1] = round(time.time() * 1000)
@@ -3261,28 +3332,28 @@ class ServerClass(QThread):
                                 # DOS & DDOS Protection - Amend Entry For Violation Count
                                 soft_block_ip[soft_block_ip_index][2] += 1
 
-                                print('-- ammending soft_block_ip[soft_block_ip_index]:', soft_block_ip[soft_block_ip_index])
+                                debug_message.append('[' + str(datetime.datetime.now()) + '] [ServerClass.listen] ammending soft_block_ip[soft_block_ip_index]: ' + str(soft_block_ip[soft_block_ip_index]))
 
                         # DOS & DDOS Protection - Set X_Time As Time Y_Time
                         x_time = y_time
-                        print(str(datetime.datetime.now()) + ' -- ServerClass.listen updating x time: ' + str(addr[0]))
+                        debug_message.append('[' + str(datetime.datetime.now()) + '] [ServerClass.listen] updating x time: ' + str(addr[0]))
 
                     # Set connection acceptance as False
                     accept_conn = False
 
                     # Look for IP in address book
                     if accept_from_key == 'address_book_only':
-                        print(str(datetime.datetime.now()) + ' -- ServerClass.listen accept_from_key: ' + str(accept_from_key))
-                        print(str(datetime.datetime.now()) + ' -- ServerClass.listen checking if conn exists in address book: ' + str(addr[0]))
+                        debug_message.append('[' + str(datetime.datetime.now()) + '] [ServerClass.listen] accept_from_key: ' + str(accept_from_key))
+                        debug_message.append('[' + str(datetime.datetime.now()) + '] [ServerClass.listen] checking if conn exists in address book: ' + str(addr[0]))
                         for _ in client_address:
                             if str(addr[0]) in _:
-                                print(str(datetime.datetime.now()) + ' -- ServerClass.listen accepting connection as IP exists in address book: ' + str(addr[0]))
+                                debug_message.append('[' + str(datetime.datetime.now()) + '] [ServerClass.listen] accepting connection as IP exists in address book: ' + str(addr[0]))
                                 accept_conn = True
 
                         # If IP was not found in address book then close the connection, log and break
                         if accept_conn is False:
                             SOCKET_SERVER.close()
-                            self.data = str(datetime.datetime.now()) + ' -- ServerClass.listen closing connection as IP does not exist in address book: ' + str(addr[0])
+                            self.data = str('[' + str(datetime.datetime.now()) + '] [ServerClass.listen] closing connection as IP does not exist in address book: ' + str(addr[0]))
                             textbox_0_messages.append('[' + str(datetime.datetime.now()) + '] [CLOSING INCOMING CONNECTION] [' + str(addr[0]) + ':' + str(addr[1]) + ']')
                             print(self.data)
                             self.server_logger()
@@ -3296,8 +3367,8 @@ class ServerClass(QThread):
                     if addr_exists_already is False and accept_conn is True:
 
                         with conn:
-                            print('-' * 200)
-                            self.data = str(datetime.datetime.now()) + ' -- ServerClass.listen incoming connection: ' + str(addr)
+                            debug_message.append('-' * 200)
+                            self.data = str('[' + str(datetime.datetime.now()) + '] [ServerClass.listen] incoming connection: ' + str(addr))
                             textbox_0_messages.append('[' + str(datetime.datetime.now()) + '] [INCOMING CONNECTION] [' + str(addr[0]) + ':' + str(addr[1]) + ']')
                             print(self.data)
                             self.server_logger()
@@ -3316,19 +3387,19 @@ class ServerClass(QThread):
                                     server_address_messages.append(str(addr[0]) + ' ' + str(addr[1]))
 
                                     # show connection received data
-                                    self.data = str(datetime.datetime.now()) + ' -- ServerClass.listen connection received server_messages: ' + str(addr) + ' server_messages: ' + str(server_data_0)
+                                    self.data = str('[' + str(datetime.datetime.now()) + '] [ServerClass.listen] connection received server_messages: ' + str(addr) + ' server_messages: ' + str(server_data_0))
                                     print(self.data)
                                     self.server_logger()
 
                                     # send delivery confirmation message
-                                    print(str(datetime.datetime.now()) + ' -- ServerClass.listen: sending delivery confirmation message to:' + str(conn))
+                                    debug_message.append('[' + str(datetime.datetime.now()) + '] [ServerClass.listen] sending delivery confirmation message to: ' + str(conn))
                                     conn.sendall(server_data_0)
 
                                 except Exception as e:
                                     # SOCKET_SERVER.close()
                                     self.server_status_current = False
-                                    print(str(datetime.datetime.now()) + ' -- ServerClass.listen [2] failed:', e)
-                                    textbox_0_messages.append('[' + str(datetime.datetime.now()) + '] [2]' + str(e))
+                                    debug_message.append('[' + str(datetime.datetime.now()) + '] [ServerClass.listen] [2] failed: ' + str(e))
+                                    textbox_0_messages.append('[' + str(datetime.datetime.now()) + '] [2] ' + str(e))
                                     self.server_status_label.setText('SERVER STATUS: TRYING TO START')
                                     self.server_incoming.setIcon(QIcon(server_public_yellow))
                                     self.server_start.setIcon(QIcon(play_yellow))
@@ -3336,10 +3407,9 @@ class ServerClass(QThread):
                                     break
 
             except Exception as e:
-                # SOCKET_SERVER.close()
                 self.server_status_current = False
-                print(str(datetime.datetime.now()) + ' -- ServerClass.listen [3] failed:', e)
-                textbox_0_messages.append('[' + str(datetime.datetime.now()) + '] [3]' + str(e))
+                debug_message.append('[' + str(datetime.datetime.now()) + '] [ServerClass.listen] [3] failed: ' + str(e))
+                textbox_0_messages.append('[' + str(datetime.datetime.now()) + '] [3] ' + str(e))
                 self.server_status_label.setText('SERVER STATUS: TRYING TO START')
                 self.server_incoming.setIcon(QIcon(server_public_yellow))
                 self.server_start.setIcon(QIcon(play_yellow))
@@ -3347,15 +3417,16 @@ class ServerClass(QThread):
                 break
 
     def stop(self):
+        global debug_message
         global SOCKET_SERVER
-        print('-' * 200)
-        self.data = str(datetime.datetime.now()) + ' -- ServerClass.stop public server terminating'
+        debug_message.append('-' * 200)
+        self.data = str('[' + str(datetime.datetime.now()) + '] [ServerClass.stop] ServerClass.stop public server terminating')
         print(self.data)
         self.server_logger()
         try:
             SOCKET_SERVER.close()
         except Exception as e:
-            print(str(datetime.datetime.now()) + ' -- ServerClass.stop failed:', e)
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [ServerClass.stop] failed: ' + str(e))
         self.server_status_label.setText('SERVER STATUS: OFFLINE')
         self.server_incoming.setIcon(QIcon(server_public_off))
         self.server_start.setIcon(QIcon(play_green))
