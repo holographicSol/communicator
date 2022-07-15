@@ -109,6 +109,7 @@ stop_red = './resources/image/stop_white.png'
 undo_white = './resources/image/undo_white.png'
 
 # Boolean
+debug_bool = True
 dial_out_dial_out_cipher_bool = True
 configuration_thread_completed = False
 write_server_configuration_engaged = False
@@ -2296,7 +2297,8 @@ class App(QMainWindow):
         global debug_message
         if debug_message:
             db_msg = debug_message[-1]
-            print(db_msg)
+            if debug_bool is True:
+                print(db_msg)
             debug_message.remove(db_msg)
 
 
@@ -2343,7 +2345,6 @@ class UplinkClass(QThread):
 
     def run(self):
         global debug_message
-        debug_message.append('-' * 200)
         debug_message.append('[' + str(datetime.datetime.now()) + '] [Starting Thread] [UplinkClass.run]')
         global external_ip_address
         global get_external_ip_finnished_reading
@@ -2463,7 +2464,6 @@ class UplinkClass(QThread):
 
     def stop(self):
         global debug_message
-        debug_message.append('-' * 200)
         debug_message.append('[' + str(datetime.datetime.now()) + '] [Terminating Thread] [UplinkClass.stop]')
         self.terminate()
 
@@ -2479,7 +2479,6 @@ class GetExternalIPClass(QThread):
 
     def run(self):
         global debug_message
-        debug_message.append('-' * 200)
         debug_message.append('[' + str(datetime.datetime.now()) + '] [Starting Thread] [GetExternalIPClass.run]')
         global enum
         global external_ip_address
@@ -2706,7 +2705,6 @@ class GetExternalIPClass(QThread):
 
     def stop(self):
         global debug_message
-        debug_message.append('-' * 200)
         debug_message.append('[' + str(datetime.datetime.now()) + '] [Terminating Thread] [GetExternalIPClass.stop]')
         global enum
         enum = []
@@ -2721,7 +2719,6 @@ class ConfigurationClass(QThread):
 
     def run(self):
         global debug_message
-        debug_message.append('-' * 200)
         debug_message.append('[' + str(datetime.datetime.now()) + '] [Starting Thread] [ConfigurationClass.run]')
         global configuration_thread_completed
         global server_address
@@ -2730,7 +2727,6 @@ class ConfigurationClass(QThread):
         global uplink_enable_bool
         global uplink_use_external_service
 
-        debug_message.append('-' * 200)
         debug_message.append('[' + str(datetime.datetime.now()) + '] [ConfigurationClass.run] updating all values from configuration file...')
 
         # Read And Set Server Configuration
@@ -2767,7 +2763,6 @@ class ConfigurationClass(QThread):
                             uplink_use_external_service = True
         fo.close()
 
-        debug_message.append('-' * 200)
         debug_message.append('[' + str(datetime.datetime.now()) + '] [ConfigurationClass.run] updating all values from communicator address book...')
 
         # Read And Set Client Configuration
@@ -2861,7 +2856,6 @@ class DialOutClass(QThread):
 
     def run(self):
         global debug_message
-        debug_message.append('-' * 200)
         debug_message.append('[' + str(datetime.datetime.now()) + '] [Starting Thread] [DialOutClass.run]')
         global client_address
         global client_address_index
@@ -2902,7 +2896,6 @@ class DialOutClass(QThread):
         global bool_dial_out_override
         global bool_socket_options
 
-        debug_message.append('-' * 200)
         debug_message.append('[' + str(datetime.datetime.now()) + '] [DialOutClass.message_send] outgoing to: ' + str(self.HOST_SEND) + ':' + str(self.PORT_SEND))
 
         try:
@@ -2993,7 +2986,7 @@ class DialOutClass(QThread):
     def stop(self):
         global debug_message
         global SOCKET_DIAL_OUT
-        debug_message.append('-' * 200)
+
         debug_message.append('[' + str(datetime.datetime.now()) + '] [Terminating Thread] DialOutClass.run(self) ]')
         try:
             SOCKET_DIAL_OUT.close()
@@ -3048,7 +3041,7 @@ class ServerDataHandlerClass(QThread):
 
     def run(self):
         global debug_message
-        debug_message.append('-' * 200)
+
         debug_message.append('[' + str(datetime.datetime.now()) + '] [Starting Thread] [ServerDataHandlerClass.run]')
         print(self.data)
         global server_messages
@@ -3174,7 +3167,7 @@ class ServerClass(QThread):
         self.SERVER_PORT = server_address[server_address_index][1]
         debug_message.append('[' + str(datetime.datetime.now()) + '] [ServerClass.run] SERVER_PORT: ' + str(self.SERVER_PORT))
 
-        debug_message.append('-' * 200)
+
         self.data = '[' + str(datetime.datetime.now()) + '] [ServerClass.run] public server started'
         print(self.data)
         self.server_logger()
@@ -3221,7 +3214,6 @@ class ServerClass(QThread):
 
         global accept_from_key
 
-        debug_message.append('-' * 200)
         debug_message.append('[' + str(datetime.datetime.now()) + '] [ServerClass.listen] SERVER_HOST: ' + str(self.SERVER_HOST))
         debug_message.append('[' + str(datetime.datetime.now()) + '] [ServerClass.listen] SERVER_PORT: ' + str(self.SERVER_PORT))
         debug_message.append('[' + str(datetime.datetime.now()) + '] [ServerClass.listen] Server: attempting to listen')
@@ -3367,7 +3359,6 @@ class ServerClass(QThread):
                     if addr_exists_already is False and accept_conn is True:
 
                         with conn:
-                            debug_message.append('-' * 200)
                             self.data = str('[' + str(datetime.datetime.now()) + '] [ServerClass.listen] incoming connection: ' + str(addr))
                             textbox_0_messages.append('[' + str(datetime.datetime.now()) + '] [INCOMING CONNECTION] [' + str(addr[0]) + ':' + str(addr[1]) + ']')
                             print(self.data)
@@ -3419,7 +3410,6 @@ class ServerClass(QThread):
     def stop(self):
         global debug_message
         global SOCKET_SERVER
-        debug_message.append('-' * 200)
         self.data = str('[' + str(datetime.datetime.now()) + '] [ServerClass.stop] ServerClass.stop public server terminating')
         print(self.data)
         self.server_logger()
