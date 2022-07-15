@@ -1782,7 +1782,7 @@ class App(QMainWindow):
         self.soft_block_ip_notification = QPushButton(self)
         self.soft_block_ip_notification.move(self.width - 136, self.server_staple + 24 + 24 + 24)
         self.soft_block_ip_notification.resize(60, 20)
-        # self.soft_block_ip_notification.setText(str(soft_block_ip_count))
+        self.soft_block_ip_notification.setText(str(soft_block_ip_count))
         self.soft_block_ip_notification.setStyleSheet(button_stylesheet_red_text)
         self.soft_block_ip_notification.clicked.connect(soft_block_ip_notofication_function)
 
@@ -1791,7 +1791,7 @@ class App(QMainWindow):
         self.server_notify_alien.resize(60, int(self.btn_40 / 2))
         self.server_notify_alien.setStyleSheet(button_stylesheet_yellow_text)
         self.server_notify_alien.setFont(self.font_s7b)
-        # self.server_notify_alien.setText(str(alien_message_count))
+        self.server_notify_alien.setText(str(alien_message_count))
         self.server_notify_alien.clicked.connect(server_notify_alien_function)
 
         self.server_notify_cipher = QPushButton(self)
@@ -1799,7 +1799,7 @@ class App(QMainWindow):
         self.server_notify_cipher.resize(60, int(self.btn_40 / 2))
         self.server_notify_cipher.setStyleSheet(button_stylesheet_white_text_high)
         self.server_notify_cipher.setFont(self.font_s7b)
-        # self.server_notify_cipher.setText(str(cipher_message_count))
+        self.server_notify_cipher.setText(str(cipher_message_count))
         self.server_notify_cipher.clicked.connect(server_notify_cipher_function)
 
         self.mute_server_notify_cipher = QPushButton(self)
