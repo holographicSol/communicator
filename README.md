@@ -13,7 +13,7 @@ The Communicator is a very powerful Communications Tool. The Communicator is not
 chat lobby or meeting place and is certainly not a chat app.
 
 Communicate with Machines and Humanoids. MAC support. Test A smart device that
-supports wake on lan. Chinese encoded with utf-16, af.inet, sock.dgram, and correct socket options
+supports wake on lan. Chinese encoded with utf-16, using af.inet, sock.dgram, and correct socket options
 ￿￿￿呰蒴︠呰蒴︠呰蒴︠呰蒴︠呰蒴︠呰蒴︠呰蒴︠呰蒴︠呰蒴︠呰蒴︠呰蒴︠呰蒴︠呰蒴︠呰蒴︠呰蒴︠呰蒴︠
 This example is how you would wake up a device. BE EXTREMELY CAREFUL.
 
