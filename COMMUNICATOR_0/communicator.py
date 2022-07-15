@@ -2711,7 +2711,7 @@ class GetExternalIPClass(QThread):
                             self.current_external_ip_address = str(v).strip()
 
                         # Update external IP address if changed
-                        if self.current_external_ip_address != external_ip_address:  # and self.current_external_ip_address != '':
+                        if self.current_external_ip_address != external_ip_address and self.current_external_ip_address != 'None':
                             debug_message.append('[' + str(datetime.datetime.now()) + '] [GetExternalIPClass.get_data] self.current_external_ip_address changed: ' + str(self.current_external_ip_address))
                             external_ip_address = self.current_external_ip_address
 
