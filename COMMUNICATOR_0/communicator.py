@@ -21,8 +21,6 @@ import random
 import string
 import unicodedata
 import encodings
-import binascii
-import pyaudio
 import select
 import fileinput
 import upnpclient
@@ -1391,7 +1389,7 @@ class App(QMainWindow):
             global address_save_mode
             global address_reveal_bool
 
-            if address_save_mode is 'basic':
+            if address_save_mode == 'basic':
                 address_save_mode = 'advanced'
                 address_reveal_bool = True
                 self.generate_key.setEnabled(True)
@@ -1401,7 +1399,7 @@ class App(QMainWindow):
                 self.generate_fingerprint.setStyleSheet(button_stylesheet_green_text)
                 self.dial_out_add_addr.setText('ADVANCED SAVE')
                 self.dial_out_add_addr.setStyleSheet(button_stylesheet_green_text)
-            elif address_save_mode is 'advanced':
+            elif address_save_mode == 'advanced':
                 address_save_mode = 'basic'
                 address_reveal_bool = False
                 self.generate_key.setEnabled(False)
@@ -1784,7 +1782,7 @@ class App(QMainWindow):
         self.soft_block_ip_notification = QPushButton(self)
         self.soft_block_ip_notification.move(self.width - 136, self.server_staple + 24 + 24 + 24)
         self.soft_block_ip_notification.resize(60, 20)
-        self.soft_block_ip_notification.setText(str(soft_block_ip_count))
+        # self.soft_block_ip_notification.setText(str(soft_block_ip_count))
         self.soft_block_ip_notification.setStyleSheet(button_stylesheet_red_text)
         self.soft_block_ip_notification.clicked.connect(soft_block_ip_notofication_function)
 
@@ -1793,7 +1791,7 @@ class App(QMainWindow):
         self.server_notify_alien.resize(60, int(self.btn_40 / 2))
         self.server_notify_alien.setStyleSheet(button_stylesheet_yellow_text)
         self.server_notify_alien.setFont(self.font_s7b)
-        self.server_notify_alien.setText(str(alien_message_count))
+        # self.server_notify_alien.setText(str(alien_message_count))
         self.server_notify_alien.clicked.connect(server_notify_alien_function)
 
         self.server_notify_cipher = QPushButton(self)
@@ -1801,7 +1799,7 @@ class App(QMainWindow):
         self.server_notify_cipher.resize(60, int(self.btn_40 / 2))
         self.server_notify_cipher.setStyleSheet(button_stylesheet_white_text_high)
         self.server_notify_cipher.setFont(self.font_s7b)
-        self.server_notify_cipher.setText(str(cipher_message_count))
+        # self.server_notify_cipher.setText(str(cipher_message_count))
         self.server_notify_cipher.clicked.connect(server_notify_cipher_function)
 
         self.mute_server_notify_cipher = QPushButton(self)
@@ -2160,7 +2158,7 @@ class App(QMainWindow):
         self.dial_out_cipher_bool_btn.resize(self.btn_60, self.btn_20)
         self.dial_out_cipher_bool_btn.setText('CIPHER')
         self.dial_out_cipher_bool_btn.setFont(self.font_s7b)
-        self.dial_out_cipher_bool_btn.setStyleSheet(button_stylesheet_green_text)
+        # self.dial_out_cipher_bool_btn.setStyleSheet(button_stylesheet_green_text)
         self.dial_out_cipher_bool_btn.clicked.connect(dial_out_cipher_btn_function)
 
         # ##########################################################################################################
@@ -2206,12 +2204,14 @@ class App(QMainWindow):
             accept_all_function()
 
         global uplink_enable_bool
+        debug_message.append('[' + str(datetime.datetime.now()) + '] [App] uplink_enable_bool: ' + str(uplink_enable_bool))
         if uplink_enable_bool is True:
             self.uplink_enable.setStyleSheet(button_stylesheet_green_text)
             get_external_ip_thread.start()
             uplink_thread.start()
 
         global uplink_use_external_service
+        debug_message.append('[' + str(datetime.datetime.now()) + '] [App] uplink_use_external_service: ' + str(uplink_use_external_service))
         if uplink_use_external_service is False:
             self.get_ext_ip_use_upnp.setStyleSheet(button_stylesheet_green_text)
         elif uplink_use_external_service is True:
@@ -2354,10 +2354,14 @@ class UplinkClass(QThread):
         global external_ip_address
         global get_external_ip_finnished_reading
 
+        debug_message.append('[' + str(datetime.datetime.now()) + '] [UplinkClass.run] reading get_external_ip_finnished_reading: ' + str(get_external_ip_finnished_reading))
+
         # Wait in case a file exists containing previous external address
         while get_external_ip_finnished_reading is False:
             debug_message.append('[' + str(datetime.datetime.now()) + '] [UplinkClass.run] waiting for get_external_ip_finished_reading')
             time.sleep(1)
+
+        debug_message.append('[' + str(datetime.datetime.now()) + '] [UplinkClass.run] reading get_external_ip_finnished_reading: ' + str(get_external_ip_finnished_reading))
 
         current_external_ip = external_ip_address
 
@@ -2481,6 +2485,7 @@ class GetExternalIPClass(QThread):
         self.fname = './router_enumeration_data.txt'
         self.data = ''
         self.url = []
+        self.current_external_ip_address = ''
 
     def run(self):
         global debug_message
@@ -2505,10 +2510,14 @@ class GetExternalIPClass(QThread):
         self.external_ip_label.setText(str(external_ip_address))
 
         get_external_ip_finnished_reading = True
+        debug_message.append('[' + str(datetime.datetime.now()) + '] [GetExternalIPClass.run] setting get_external_ip_finnished_reading: ' + str(get_external_ip_finnished_reading))
 
         first_pass = True
 
         while True:
+            # Initiate current ip address dictionary
+            self.current_external_ip_address = ''
+
             if uplink_use_external_service is False:
                 try:
                     if first_pass is True:
@@ -2517,8 +2526,16 @@ class GetExternalIPClass(QThread):
                         self.get_url()
                     else:
                         self.get_data()
-                        self.external_ip_label.setStyleSheet(label_stylesheet_black_bg_text_white)
+                        if self.current_external_ip_address != '':
+                            self.external_ip_label.setStyleSheet(label_stylesheet_black_bg_text_white)
+                        else:
+                            debug_message.append('[' + str(datetime.datetime.now()) + '] [GetExternalIPClass.run] current_external_ip_address is empty: retry enumeration')
+                            self.external_ip_label.setStyleSheet(label_stylesheet_black_bg_text_yellow)
+                            self.enumeration()
+                            if len(enum) > 0:
+                                first_pass = True
                 except Exception as e:
+                    print('e', e)
                     debug_message.append('[' + str(datetime.datetime.now()) + '] [GetExternalIPClass.run] ' + str(e))
                     self.external_ip_label.setStyleSheet(label_stylesheet_black_bg_text_yellow)
                     self.enumeration()
@@ -2531,7 +2548,7 @@ class GetExternalIPClass(QThread):
     def use_external_service(self):
         global debug_message
         global external_ip_address
-        # debug_message.append('[' + str(datetime.datetime.now()) + '] GetExternalIPClass.use_external_service: plugged in')
+        debug_message.append('[' + str(datetime.datetime.now()) + '] GetExternalIPClass.use_external_service: plugged in')
         try:
             # todo --> more external service options for obtaining external ip address
             current_ip_address = get('https://api.ipify.org').text
@@ -2594,6 +2611,7 @@ class GetExternalIPClass(QThread):
                 url = str_[:find_1 + 4]
                 # debug_message.append('Attempting to retrieve information from url:', url)
                 self.url.append(url)
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [self.url] ' + str(self.url))
 
     def read_file(self):
         global debug_message
@@ -2610,6 +2628,7 @@ class GetExternalIPClass(QThread):
                 for line in fo:
                     line = line.strip()
                     enum.append(line)
+                    debug_message.append('[' + str(datetime.datetime.now()) + '] [GetExternalIPClass.read_file] [line] ' + str(line))
             fo.close()
 
     def enumeration(self):
@@ -2662,12 +2681,12 @@ class GetExternalIPClass(QThread):
                     for _ in enum:
                         fo.write(str(_) + '\n')
                 fo.close()
-        # else:
-            # debug_message.append('[' + str(datetime.datetime.now()) + '] [GetExternalIPClass.enumeration] enumeration data unpopulated')
+        else:
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [GetExternalIPClass.enumeration] enumeration data unpopulated')
 
     def get_data(self):
         global debug_message
-        # debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [GetExternalIPClass.get_data]')
+        debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [GetExternalIPClass.get_data]')
         global enum
         global from_file_bool
         global external_ip_address
@@ -2676,7 +2695,7 @@ class GetExternalIPClass(QThread):
 
             # Set device using url
             d = upnpclient.Device(_)
-            # debug_message.append('[' + str(datetime.datetime.now()) + '] [GetExternalIPClass.get_data] device(s)' + str(d))
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [GetExternalIPClass.get_data] device(s)' + str(d))
 
             for k in d.service_map:
 
@@ -2684,26 +2703,24 @@ class GetExternalIPClass(QThread):
                 for _ in d[k].actions:
                     action = str(_).split(' ')[1].replace("'>", "").replace("'", "")
                     if action == 'GetExternalIPAddress':
-                        # Initiate current ip address dictionary
-                        current_external_ip_address = ''
 
                         # Return service action
                         current_external_ip_address_dict = d[k][action]()
 
                         for k, v in current_external_ip_address_dict.items():
-                            current_external_ip_address = str(v).strip()
+                            self.current_external_ip_address = str(v).strip()
 
                         # Update external IP address if changed
-                        if current_external_ip_address != external_ip_address and current_external_ip_address != '':
-                            debug_message.append('[' + str(datetime.datetime.now()) + '] [GetExternalIPClass.get_data] current_external_ip_address changed: ' + str(current_external_ip_address))
-                            external_ip_address = current_external_ip_address
+                        if self.current_external_ip_address != external_ip_address:  # and self.current_external_ip_address != '':
+                            debug_message.append('[' + str(datetime.datetime.now()) + '] [GetExternalIPClass.get_data] self.current_external_ip_address changed: ' + str(self.current_external_ip_address))
+                            external_ip_address = self.current_external_ip_address
 
                             # Save Changes
                             open('./external_ip_address.txt', 'w').close()
 
                             if os.path.exists('./external_ip_address.txt'):
                                 with codecs.open('./external_ip_address.txt', 'w', encoding='utf-8') as fo:
-                                    fo.write('EXTERNAL_IP_ADDRESS ' + str(current_external_ip_address))
+                                    fo.write('EXTERNAL_IP_ADDRESS ' + str(self.current_external_ip_address))
                                 fo.close()
 
                         self.external_ip_label.setText(str(external_ip_address))
@@ -2714,6 +2731,7 @@ class GetExternalIPClass(QThread):
         global enum
         enum = []
         self.external_ip_label.setText('')
+        self.current_external_ip_address = ''
         global_self.setFocus()
         self.terminate()
 
@@ -3048,7 +3066,6 @@ class ServerDataHandlerClass(QThread):
         global debug_message
 
         debug_message.append('[' + str(datetime.datetime.now()) + '] [Starting Thread] [ServerDataHandlerClass.run]')
-        print(self.data)
         global server_messages
         global textbox_0_messages
         global server_address_messages
@@ -3121,7 +3138,7 @@ class ServerDataHandlerClass(QThread):
                             global_self.setFocus()
                         else:
                             self.data = str(datetime.datetime.now()) + ' [ServerDataHandlerClass.run] message is not encrypted using keys in address book: ' + str(ciphertext)
-                            print(self.data)
+                            debug_message.append(self.data)
                             self.server_logger()
                             textbox_0_messages.append('[' + str(datetime.datetime.now()) + '] [' + str(addr_data) + '] [NON-STANDARD COMMUNICATION] ' + str(ciphertext))
 
@@ -3174,8 +3191,8 @@ class ServerClass(QThread):
 
 
         self.data = '[' + str(datetime.datetime.now()) + '] [ServerClass.run] public server started'
-        print(self.data)
         self.server_logger()
+        debug_message.append(self.data)
 
         while True:
             try:
@@ -3352,7 +3369,7 @@ class ServerClass(QThread):
                             SOCKET_SERVER.close()
                             self.data = str('[' + str(datetime.datetime.now()) + '] [ServerClass.listen] closing connection as IP does not exist in address book: ' + str(addr[0]))
                             textbox_0_messages.append('[' + str(datetime.datetime.now()) + '] [CLOSING INCOMING CONNECTION] [' + str(addr[0]) + ':' + str(addr[1]) + ']')
-                            print(self.data)
+                            debug_message.append(self.data)
                             self.server_logger()
                             break
 
@@ -3366,7 +3383,7 @@ class ServerClass(QThread):
                         with conn:
                             self.data = str('[' + str(datetime.datetime.now()) + '] [ServerClass.listen] incoming connection: ' + str(addr))
                             textbox_0_messages.append('[' + str(datetime.datetime.now()) + '] [INCOMING CONNECTION] [' + str(addr[0]) + ':' + str(addr[1]) + ']')
-                            print(self.data)
+                            debug_message.append(self.data)
                             self.server_logger()
                             while True:
                                 try:
@@ -3384,7 +3401,7 @@ class ServerClass(QThread):
 
                                     # show connection received data
                                     self.data = str('[' + str(datetime.datetime.now()) + '] [ServerClass.listen] connection received server_messages: ' + str(addr) + ' server_messages: ' + str(server_data_0))
-                                    print(self.data)
+                                    debug_message.append(self.data)
                                     self.server_logger()
 
                                     # send delivery confirmation message
@@ -3416,7 +3433,7 @@ class ServerClass(QThread):
         global debug_message
         global SOCKET_SERVER
         self.data = str('[' + str(datetime.datetime.now()) + '] [ServerClass.stop] ServerClass.stop public server terminating')
-        print(self.data)
+        debug_message.append(self.data)
         self.server_logger()
         try:
             SOCKET_SERVER.close()
