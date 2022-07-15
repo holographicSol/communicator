@@ -2547,7 +2547,7 @@ class GetExternalIPClass(QThread):
     def use_external_service(self):
         global debug_message
         global external_ip_address
-        debug_message.append('[' + str(datetime.datetime.now()) + '] GetExternalIPClass.use_external_service: plugged in')
+        # debug_message.append('[' + str(datetime.datetime.now()) + '] GetExternalIPClass.use_external_service: plugged in')
         try:
             # todo --> more external service options for obtaining external ip address
             current_ip_address = get('https://api.ipify.org').text
