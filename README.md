@@ -1,6 +1,6 @@
 Communicator - Written by Benjamin Jack Cullen
 
-A Very Powerful Communications Tool - Project in early development. Project potentially discontinued due to security concerns. Please use with caution and read the code if implementing the Communicator. 
+A Very Powerful Communications Tool - Project in early development. Project potentially discontinued due to security concerns. Please use with caution and read the code if implementing the Communicator. The Communicator is experimental.
 
 Communicator is capable of potentially communicating with any IPv4, Domain Name, IPv6 and MAC addresses
 running and or not running a Communicator, this makes the Communicator very powerful. Use wisely.
@@ -81,6 +81,8 @@ on the router. This is to avoid using a '3rd person' to obtain the public IP add
 Root Description File. The root description xml file may change across rebooting the router. The Communicator is
 designed to handle this by enumerating/re-enumerating the router automatically under certain circumstances in order
 to continue using the correct root description file url for UPNP communication with the router.
+
+If you poke around in the dark, you might poke a bear. Please use with caution and treat as experimental.
 
 
 Python version - 3.9
