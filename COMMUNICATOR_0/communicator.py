@@ -1323,6 +1323,8 @@ class App(QMainWindow):
 
                 self.address_undo_form.show()
 
+                self.uplink_btn.show()
+
             elif bool_dial_out_override is False:
                 bool_dial_out_override = True
 
@@ -1355,6 +1357,8 @@ class App(QMainWindow):
                 self.generate_key.hide()
 
                 self.address_undo_form.hide()
+
+                self.uplink_btn.hide()
 
             debug_message.append('[' + str(datetime.datetime.now()) + '] [App.dial_out_override_function] setting bool_dial_out_override: ' + str(bool_dial_out_override))
 
