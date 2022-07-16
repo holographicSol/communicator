@@ -305,6 +305,13 @@ label_stylesheet_black_bg_text_yellow = """QLabel{background-color: rgb(0, 0, 0)
                        border-top:0px solid rgb(5, 5, 5);
                        border-left:0px solid rgb(5, 5, 5);}"""
 
+label_stylesheet_grey_bg_white_text_high = """QLabel{background-color: rgb(10, 10, 10);
+                       color: rgb(255, 255, 255);
+                       border-bottom:2px solid rgb(5, 5, 5);
+                       border-right:2px solid rgb(5, 5, 5);
+                       border-top:2px solid rgb(5, 5, 5);
+                       border-left:2px solid rgb(5, 5, 5);}"""
+
 title_stylesheet_default = """QLabel{background-color: rgb(10, 10, 10);
                        color: rgb(255, 255, 255);
                        border-bottom:2px solid rgb(5, 5, 5);
@@ -410,6 +417,11 @@ class App(QMainWindow):
         global global_self
         global server_address
         global client_address
+        global configuration_thread
+        global configuration_thread_completed
+        global accept_from_key
+        global uplink_enable_bool
+        global uplink_use_external_service
         global_self = self
 
         self.font_s7b = QFont("Segoe UI", 7, QFont.Bold)
@@ -1915,7 +1927,7 @@ class App(QMainWindow):
         self.dial_out_family_type.setFont(self.font_s7b)
         self.dial_out_family_type.setText('ADDRESS FAMILY')
         self.dial_out_family_type.setAlignment(Qt.AlignCenter)
-        self.dial_out_family_type.setStyleSheet(title_stylesheet_default)
+        self.dial_out_family_type.setStyleSheet(label_stylesheet_grey_bg_white_text_high)
 
         self.communicator_socket_options_box_0 = QComboBox(self)
         self.communicator_socket_options_box_0.move(32 + self.btn_120 + 4, self.address_staple_height + 28 + 24)
@@ -1930,7 +1942,7 @@ class App(QMainWindow):
         self.dial_out_socket_type.setFont(self.font_s7b)
         self.dial_out_socket_type.setText('SOCKET TYPE')
         self.dial_out_socket_type.setAlignment(Qt.AlignCenter)
-        self.dial_out_socket_type.setStyleSheet(title_stylesheet_default)
+        self.dial_out_socket_type.setStyleSheet(label_stylesheet_grey_bg_white_text_high)
 
         self.communicator_socket_options_box_1 = QComboBox(self)
         self.communicator_socket_options_box_1.move(32 + self.btn_120 + 4, self.address_staple_height + 28 + 24 + 24)
@@ -2000,7 +2012,7 @@ class App(QMainWindow):
         self.address_book_name_label.setFont(self.font_s7b)
         self.address_book_name_label.setText('NAME')
         self.address_book_name_label.setAlignment(Qt.AlignCenter)
-        self.address_book_name_label.setStyleSheet(title_stylesheet_default)
+        self.address_book_name_label.setStyleSheet(label_stylesheet_grey_bg_white_text_high)
 
         self.dial_out_name = QLineEdit(self)
         self.dial_out_name.move(int((self.width / 2) - (self.btn_240 / 2)), self.address_staple_height + 56)
@@ -2017,7 +2029,7 @@ class App(QMainWindow):
         self.address_book_address_label.setFont(self.font_s7b)
         self.address_book_address_label.setText('ADDRESS')
         self.address_book_address_label.setAlignment(Qt.AlignCenter)
-        self.address_book_address_label.setStyleSheet(title_stylesheet_default)
+        self.address_book_address_label.setStyleSheet(label_stylesheet_grey_bg_white_text_high)
 
         self.uplink_btn = QPushButton(self)
         self.uplink_btn.move(int((self.width / 2) - (self.btn_240 / 2) - self.btn_4 - self.btn_80), self.address_staple_height + 80 + 24)
@@ -2060,7 +2072,7 @@ class App(QMainWindow):
         self.address_fingerprint_label.setFont(self.font_s7b)
         self.address_fingerprint_label.setText('FINGERPRINT')
         self.address_fingerprint_label.setAlignment(Qt.AlignCenter)
-        self.address_fingerprint_label.setStyleSheet(title_stylesheet_default)
+        self.address_fingerprint_label.setStyleSheet(label_stylesheet_grey_bg_white_text_high)
 
         self.tb_fingerprint = QTextBrowser(self)
         self.tb_fingerprint.move(self.width - self.btn_360 - self.btn_4 - self.btn_20 - 8, self.address_staple_height + 68 + 4)
@@ -2078,7 +2090,7 @@ class App(QMainWindow):
         self.address_key_label.setFont(self.font_s7b)
         self.address_key_label.setText('KEY')
         self.address_key_label.setAlignment(Qt.AlignCenter)
-        self.address_key_label.setStyleSheet(title_stylesheet_default)
+        self.address_key_label.setStyleSheet(label_stylesheet_grey_bg_white_text_high)
 
         self.address_key = QLineEdit(self)
         self.address_key.move(self.width - self.btn_280 - self.btn_4 - self.btn_20 - 8, self.address_staple_height + 28)
@@ -2111,7 +2123,7 @@ class App(QMainWindow):
         self.dial_out_next_addr.clicked.connect(client_next_address_function)
 
         self.dial_out_add_addr = QPushButton(self)
-        self.dial_out_add_addr.move(int((self.width / 2) - (self.btn_240 / 2)), self.address_staple_height + 108)
+        self.dial_out_add_addr.move(int((self.width / 2) - (self.btn_240 / 2)), self.address_staple_height + 104 + 24)
         self.dial_out_add_addr.resize(self.btn_120 - 2, 20)
         self.dial_out_add_addr.setFont(self.font_s7b)
         self.dial_out_add_addr.setText('SAVE')
@@ -2120,7 +2132,7 @@ class App(QMainWindow):
         self.dial_out_add_addr.setEnabled(True)
 
         self.dial_out_rem_addr = QPushButton(self)
-        self.dial_out_rem_addr.move(int((self.width / 2) + (self.btn_240 / 2) - self.btn_120 + 2), self.address_staple_height + 108)
+        self.dial_out_rem_addr.move(int((self.width / 2) + (self.btn_240 / 2) - self.btn_120 + 2), self.address_staple_height + 104 + 24)
         self.dial_out_rem_addr.resize(self.btn_120 - 2, 20)
         self.dial_out_rem_addr.setFont(self.font_s7b)
         self.dial_out_rem_addr.setText('DELETE')
@@ -2186,128 +2198,92 @@ class App(QMainWindow):
                                        self.communicator_socket_options_box_2,
                                        self.communicator_socket_options_box_3)
 
+        # Thread - Get External IP Address
         get_external_ip_thread = GetExternalIPClass(self.external_ip_label)
         uplink_thread = UplinkClass()
 
         # Thread - Configuration
-        global configuration_thread
         configuration_thread_ = ConfigurationClass()
         configuration_thread.append(configuration_thread_)
         configuration_thread[0].start()
 
-        # Configuration Thread - Wait For Configuration Thread To Complete
-        global configuration_thread_completed
+        # Configuration Thread - Wait For Configuration Thread To Complete And Then Set Some Objects According To Configuration
         debug_message.append('[' + str(datetime.datetime.now()) + '] [App] configuration_thread_completed: ' + str(configuration_thread_completed))
         while configuration_thread_completed is False:
             time.sleep(1)
         debug_message.append('[' + str(datetime.datetime.now()) + '] [App] configuration_thread_completed: ' + str(configuration_thread_completed))
 
-        if len(server_address) > 0:
-            self.server_ip_port.setText(server_address[0][0] + ' ' + str(server_address[0][1]))
-            self.server_status_label_ip_in_use.setText(str(server_address[0][0] + ' ' + str(server_address[0][1])))
+        # Show Server Settings
+        server_prev_addr_function()
+        server_next_addr_function()
 
-        global accept_from_key
+        # Show Dial Out Address settings
+        client_previous_address_function()
+        client_next_address_function()
+
+        # Show and set server accept connection settings
         if accept_from_key == 'address_book_only':
             accept_only_address_book_function()
         elif accept_from_key == 'accept_all':
             accept_all_function()
 
-        global uplink_enable_bool
+        # Show and set universal uplink settings
         debug_message.append('[' + str(datetime.datetime.now()) + '] [App] uplink_enable_bool: ' + str(uplink_enable_bool))
         if uplink_enable_bool is True:
             self.uplink_enable.setStyleSheet(button_stylesheet_green_text)
             get_external_ip_thread.start()
             uplink_thread.start()
 
-        global uplink_use_external_service
+        # Show and set get external ip address settings
         debug_message.append('[' + str(datetime.datetime.now()) + '] [App] uplink_use_external_service: ' + str(uplink_use_external_service))
         if uplink_use_external_service is False:
             self.get_ext_ip_use_upnp.setStyleSheet(button_stylesheet_green_text)
         elif uplink_use_external_service is True:
             self.get_ext_ip_use_ext_service.setStyleSheet(button_stylesheet_green_text)
 
-        global client_address
-        global dial_out_dial_out_cipher_bool
+        # Initiate window into Communicator program
+        self.textbox_0 = QTextBrowser(self)
+        self.textbox_0.move(4, self.server_staple + 28 + 24 + 24 + 24)
+        self.textbox_0.resize(self.width - 8, 120)
+        self.textbox_0.setObjectName("textbox_0")
+        self.textbox_0.setFont(self.font_s7b)
+        self.textbox_0.setStyleSheet(textbox_stylesheet_default)
+        self.textbox_0.setLineWrapMode(QTextBrowser.NoWrap)
+        self.textbox_0.horizontalScrollBar().setValue(0)
 
-        self.dial_out_cipher_bool_btn.setStyleSheet(button_stylesheet_white_text_low)
-        dial_out_dial_out_cipher_bool = False
-        self.dial_out_cipher_bool_btn.setEnabled(False)
+        # QTimer - TextBox Timer
+        self.textbox_timer_0 = QTimer(self)
+        self.textbox_timer_0.setInterval(0)
+        self.textbox_timer_0.timeout.connect(self.textbox_timer_0_function)
+        self.textbox_timer_0_jumpstart()
 
-        if len(client_address) > 0:
-            self.dial_out_name.setText(client_address[0][0])
-            self.dial_out_ip_port.setText(client_address[0][1] + ' ' + str(client_address[0][2]))
-            if client_address[0][5] != 'x':
-                debug_message.append('[' + str(datetime.datetime.now()) + '] [App] address entry appears to have a broadcast address: ' + str(client_address[0][5]))
-                self.dial_out_ip_port.setText(client_address[0][1] + ' ' + str(client_address[0][2]) + ' ' + str(client_address[0][5]))
-
-            if client_address[0][3] != 'x' and len(client_address[0][3]) == 32:
-                debug_message.append('[' + str(datetime.datetime.now()) + '] [App] address entry appears to have a key: ' + str(client_address[0][3]))
-                if client_address[client_address_index][4] != '#' and len(client_address[client_address_index][4]) == 1024:
-                    debug_message.append('[' + str(datetime.datetime.now()) + '] [App] address entry appears to have a fingerprint: ' + str(client_address[client_address_index][4]))
-                    self.dial_out_cipher_bool_btn.setStyleSheet(button_stylesheet_green_text)
-                    dial_out_dial_out_cipher_bool = True
-                    self.dial_out_cipher_bool_btn.setEnabled(True)
-
-            if len(client_address[client_address_index]) >= 11:
-                debug_message.append('[' + str(datetime.datetime.now()) + '] [App] address bool_address_uplink: ' + str(client_address[client_address_index][11]))
-                if client_address[client_address_index][11] == 'False':
-                    self.uplink_btn.setStyleSheet(button_stylesheet_white_text_low)
-                    bool_address_uplink = False
-                elif client_address[client_address_index][11] == 'True':
-                    self.uplink_btn.setStyleSheet(button_stylesheet_green_text)
-                    bool_address_uplink = True
-
-            try:
-                sck_set_arguments_function()
-            except Exception as e:
-                debug_message.append('[' + str(datetime.datetime.now()) + '] [App] handled error setting advanced socket options on the frontend: ' + str(e))
-
-            debug_message.append('[' + str(datetime.datetime.now()) + '] [App] dial_out_dial_out_cipher_bool: ' + str(dial_out_dial_out_cipher_bool))
-
-        self.tb_0 = QTextBrowser(self)
-        self.tb_0.move(4, self.server_staple + 28 + 24 + 24 + 24)
-        self.tb_0.resize(self.width - 8, 120)
-        self.tb_0.setObjectName("tb_0")
-        self.tb_0.setFont(self.font_s7b)
-        self.tb_0.setStyleSheet(textbox_stylesheet_default)
-        self.tb_0.setLineWrapMode(QTextBrowser.NoWrap)
-        self.tb_0.horizontalScrollBar().setValue(0)
-
-        # QTimer - Used For Appending Output To tb_0 Using QtSlots
-        self.timer_0 = QTimer(self)
-        self.timer_0.setInterval(0)
-        self.timer_0.timeout.connect(self.update_tb)
-        self.jumpstart_1()
-
-        self.timer_1 = QTimer(self)
-        self.timer_1.setInterval(0)
-        self.timer_1.timeout.connect(self.debug_mssage_function)
-        self.jumpstart_2()
+        # QTimer - Debug Timer
+        self.debug_timer = QTimer(self)
+        self.debug_timer.setInterval(0)
+        self.debug_timer.timeout.connect(self.debug_function)
+        self.debug_jumpstart()
 
         self.initUI()
 
     def initUI(self):
         self.show()
 
-    def stop_timer_1(self):
-        self.timer_0.stop()
+    @QtCore.pyqtSlot()
+    def textbox_timer_0_jumpstart(self):
+        self.textbox_timer_0.start()
 
     @QtCore.pyqtSlot()
-    def jumpstart_1(self):
-        self.timer_0.start()
-
-    @QtCore.pyqtSlot()
-    def update_tb(self):
+    def textbox_timer_0_function(self):
         if textbox_0_messages:
-            self.tb_0.append(textbox_0_messages[-1])
+            self.textbox_0.append(textbox_0_messages[-1])
             textbox_0_messages.remove(textbox_0_messages[-1])
 
     @QtCore.pyqtSlot()
-    def jumpstart_2(self):
-        self.timer_1.start()
+    def debug_jumpstart(self):
+        self.debug_timer.start()
 
     @QtCore.pyqtSlot()
-    def debug_mssage_function(self):
+    def debug_function(self):
         global debug_message
         if debug_message:
             db_msg = debug_message[-1]
@@ -3148,7 +3124,7 @@ class ServerDataHandlerClass(QThread):
                             self.data = str(datetime.datetime.now()) + ' [ServerDataHandlerClass.run] message is not encrypted using keys in address book: ' + str(ciphertext)
                             debug_message.append(self.data)
                             self.server_logger()
-                            textbox_0_messages.append('[' + str(datetime.datetime.now()) + '] [' + str(addr_data) + '] [NON-STANDARD COMMUNICATION] ' + str(ciphertext))
+                            textbox_0_messages.append('[' + str(datetime.datetime.now()) + '] [' + str(addr_data) + '] [NON-STANDARD COMMUNICATION] ' + str(ciphertext, 'utf-8'))
 
                             if not alien_message_count == '999+':
                                 if alien_message_count < 999:
