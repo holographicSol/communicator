@@ -82,11 +82,11 @@ player_default.setMedia(player_content_default)
 player_default.setVolume(100)
 
 # Images
-server_public_white = './resources/image/globe_default.png'
-server_public_yellow = './resources/image/globe_yellow.png'
-server_public_amber = './resources/image/globe_amber.png'
-server_public_green = './resources/image/globe_green.png'
-server_public_off = './resources/image/globe_off.png'
+# server_public_white = './resources/image/globe_default.png'
+# server_public_yellow = './resources/image/globe_yellow.png'
+# server_public_amber = './resources/image/globe_amber.png'
+# server_public_green = './resources/image/globe_green.png'
+# server_public_off = './resources/image/globe_off.png'
 mute_0 = './resources/image/mute_0.png'
 mute_1 = './resources/image/mute_1.png'
 advanced_save_0 = './resources/image/advanced_save_0.png'
@@ -2127,22 +2127,22 @@ class App(QMainWindow):
         self.server_rem_addr.setStyleSheet(button_stylesheet_default)
         self.server_rem_addr.clicked.connect(server_delete_function)
 
-        self.server_incoming = QPushButton(self)
-        self.server_incoming.move(self.width - 72, self.server_staple + 24)
-        self.server_incoming.resize(68, 68)
-        self.server_incoming.setIcon(QIcon(server_public_off))
-        self.server_incoming.setIconSize(QSize(48, 48))
-        self.server_incoming.setStyleSheet(button_stylesheet_background_matching)
+        # self.server_incoming = QPushButton(self)
+        # self.server_incoming.move(self.width - 72, self.server_staple + 24)
+        # self.server_incoming.resize(68, 68)
+        # self.server_incoming.setIcon(QIcon(server_public_off))
+        # self.server_incoming.setIconSize(QSize(48, 48))
+        # self.server_incoming.setStyleSheet(button_stylesheet_background_matching)
 
         self.soft_block_ip_notification = QPushButton(self)
-        self.soft_block_ip_notification.move(self.width - 136, self.server_staple + 24 + 24 + 24)
+        self.soft_block_ip_notification.move(self.width - 24 - 60, self.server_staple + 24 + 24 + 24)
         self.soft_block_ip_notification.resize(60, 20)
         self.soft_block_ip_notification.setText(str(soft_block_ip_count))
         self.soft_block_ip_notification.setStyleSheet(button_stylesheet_red_text)
         self.soft_block_ip_notification.clicked.connect(soft_block_ip_notofication_function)
 
         self.server_notify_alien = QPushButton(self)
-        self.server_notify_alien.move(self.width - 136, self.server_staple + 24 + 24)
+        self.server_notify_alien.move(self.width - 24 - 60, self.server_staple + 24 + 24)
         self.server_notify_alien.resize(60, int(self.btn_40 / 2))
         self.server_notify_alien.setStyleSheet(button_stylesheet_yellow_text)
         self.server_notify_alien.setFont(self.font_s7b)
@@ -2150,7 +2150,7 @@ class App(QMainWindow):
         self.server_notify_alien.clicked.connect(server_notify_alien_function)
 
         self.server_notify_cipher = QPushButton(self)
-        self.server_notify_cipher.move(self.width - 136, self.server_staple + 24)
+        self.server_notify_cipher.move(self.width - 24 - 60, self.server_staple + 24)
         self.server_notify_cipher.resize(60, int(self.btn_40 / 2))
         self.server_notify_cipher.setStyleSheet(button_stylesheet_white_text_high)
         self.server_notify_cipher.setFont(self.font_s7b)
@@ -2158,7 +2158,7 @@ class App(QMainWindow):
         self.server_notify_cipher.clicked.connect(server_notify_cipher_function)
 
         self.mute_server_notify_cipher = QPushButton(self)
-        self.mute_server_notify_cipher.move(self.width - 200, self.server_staple + 24)
+        self.mute_server_notify_cipher.move(self.width - 24 - 60 - 64, self.server_staple + 24)
         self.mute_server_notify_cipher.resize(60, int(self.btn_40 / 2))
         self.mute_server_notify_cipher.setStyleSheet(button_stylesheet_default)
         self.mute_server_notify_cipher.setIcon(QIcon(mute_0))
@@ -2166,7 +2166,7 @@ class App(QMainWindow):
         self.mute_server_notify_cipher.clicked.connect(mute_server_notify_cipher_function)
 
         self.mute_server_notify_alien = QPushButton(self)
-        self.mute_server_notify_alien.move(self.width - 200, self.server_staple + 24 + 24)
+        self.mute_server_notify_alien.move(self.width - 24 - 60 - 64, self.server_staple + 24 + 24)
         self.mute_server_notify_alien.resize(60, int(self.btn_40 / 2))
         self.mute_server_notify_alien.setStyleSheet(button_stylesheet_yellow_text)
         self.mute_server_notify_alien.setIcon(QIcon(mute_0))
@@ -2586,10 +2586,10 @@ class App(QMainWindow):
         # ##########################################################################################################
 
         # Thread - Public Server
-        server_thread = ServerClass(self.server_incoming, self.server_status_label, self.soft_block_ip_notification, self.server_status_label_ip_in_use, self.server_start)
+        server_thread = ServerClass(self.server_status_label, self.soft_block_ip_notification, self.server_status_label_ip_in_use, self.server_start)
 
         # Thread - ServerDataHandlerClass
-        server_data_handler_class = ServerDataHandlerClass(self.server_incoming, self.server_notify_cipher, self.server_notify_alien)
+        server_data_handler_class = ServerDataHandlerClass(self.server_notify_cipher, self.server_notify_alien)
         server_data_handler_class.start()
 
         # Thread - Dial_Out
@@ -3485,9 +3485,8 @@ class DialOutClass(QThread):
 
 
 class ServerDataHandlerClass(QThread):
-    def __init__(self, server_incoming, server_notify_cipher, server_notify_alien):
+    def __init__(self, server_notify_cipher, server_notify_alien):
         QThread.__init__(self)
-        self.server_incoming = server_incoming
         self.server_notify_cipher = server_notify_cipher
         self.server_notify_alien = server_notify_alien
         self.server_data_0 = []
@@ -3514,18 +3513,18 @@ class ServerDataHandlerClass(QThread):
         debug_message.append('[' + str(datetime.datetime.now()) + '] [ServerDataHandlerClass.notification] ' + str(mute_server_notify_cipher_bool))
 
         if self.notification_key == 'green':
-            self.server_incoming.setIcon(QIcon(server_public_green))
+            # self.server_incoming.setIcon(QIcon(server_public_green))
             if mute_server_notify_cipher_bool is False:
                 self.play_notification_sound()
 
         elif self.notification_key == 'amber':
-            self.server_incoming.setIcon(QIcon(server_public_amber))
+            # self.server_incoming.setIcon(QIcon(server_public_amber))
             if mute_server_notify_alien_bool is False:
                 self.play_notification_sound()
 
         time.sleep(1)
 
-        self.server_incoming.setIcon(QIcon(server_public_white))
+        # self.server_incoming.setIcon(QIcon(server_public_white))
 
     def run(self):
         global debug_message
@@ -3627,9 +3626,8 @@ class ServerDataHandlerClass(QThread):
 
 
 class ServerClass(QThread):
-    def __init__(self, server_incoming, server_status_label, soft_block_ip_notification, server_status_label_ip_in_use, server_start):
+    def __init__(self, server_status_label, soft_block_ip_notification, server_status_label_ip_in_use, server_start):
         QThread.__init__(self)
-        self.server_incoming = server_incoming
         self.server_status_label = server_status_label
         self.soft_block_ip_notification = soft_block_ip_notification
         self.server_status_label_ip_in_use = server_status_label_ip_in_use
@@ -3654,7 +3652,6 @@ class ServerClass(QThread):
         self.SERVER_PORT = server_address[server_address_index][1]
         debug_message.append('[' + str(datetime.datetime.now()) + '] [ServerClass.run] SERVER_PORT: ' + str(self.SERVER_PORT))
 
-
         self.data = '[' + str(datetime.datetime.now()) + '] [ServerClass.run] public server started'
         self.server_logger()
         debug_message.append(self.data)
@@ -3662,7 +3659,7 @@ class ServerClass(QThread):
         while True:
             try:
                 self.server_status_label.setText('SERVER STATUS: ONLINE')
-                self.server_incoming.setIcon(QIcon(server_public_white))
+                # self.server_incoming.setIcon(QIcon(server_public_white))
                 self.server_start.setIcon(QIcon(play_green))
                 self.listen()
             except Exception as e:
@@ -3671,7 +3668,7 @@ class ServerClass(QThread):
                 self.server_logger()
 
                 self.server_status_label.setText('SERVER STATUS: TRYING TO START')
-                self.server_incoming.setIcon(QIcon(server_public_yellow))
+                # self.server_incoming.setIcon(QIcon(server_public_yellow))
                 self.server_start.setIcon(QIcon(play_yellow))
                 time.sleep(1)
 
@@ -3747,7 +3744,7 @@ class ServerClass(QThread):
                 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as SOCKET_SERVER:
                     SOCKET_SERVER.bind((self.SERVER_HOST, self.SERVER_PORT))
                     self.server_status_label.setText('SERVER STATUS: ONLINE')
-                    self.server_incoming.setIcon(QIcon(server_public_white))
+                    # self.server_incoming.setIcon(QIcon(server_public_white))
                     self.server_start.setIcon(QIcon(play_green))
 
                     SOCKET_SERVER.listen()
@@ -3879,7 +3876,7 @@ class ServerClass(QThread):
                                     debug_message.append('[' + str(datetime.datetime.now()) + '] [ServerClass.listen] [2] failed: ' + str(e))
                                     textbox_0_messages.append('[' + str(datetime.datetime.now()) + '] [2] ' + str(e))
                                     self.server_status_label.setText('SERVER STATUS: TRYING TO START')
-                                    self.server_incoming.setIcon(QIcon(server_public_yellow))
+                                    # self.server_incoming.setIcon(QIcon(server_public_yellow))
                                     self.server_start.setIcon(QIcon(play_yellow))
                                     time.sleep(1)
                                     break
@@ -3889,7 +3886,7 @@ class ServerClass(QThread):
                 debug_message.append('[' + str(datetime.datetime.now()) + '] [ServerClass.listen] [3] failed: ' + str(e))
                 textbox_0_messages.append('[' + str(datetime.datetime.now()) + '] [3] ' + str(e))
                 self.server_status_label.setText('SERVER STATUS: TRYING TO START')
-                self.server_incoming.setIcon(QIcon(server_public_yellow))
+                # self.server_incoming.setIcon(QIcon(server_public_yellow))
                 self.server_start.setIcon(QIcon(play_yellow))
                 time.sleep(1)
                 break
@@ -3905,7 +3902,7 @@ class ServerClass(QThread):
         except Exception as e:
             debug_message.append('[' + str(datetime.datetime.now()) + '] [ServerClass.stop] failed: ' + str(e))
         self.server_status_label.setText('SERVER STATUS: OFFLINE')
-        self.server_incoming.setIcon(QIcon(server_public_off))
+        # self.server_incoming.setIcon(QIcon(server_public_off))
         self.server_start.setIcon(QIcon(play_green))
         global_self.setFocus()
         self.terminate()
