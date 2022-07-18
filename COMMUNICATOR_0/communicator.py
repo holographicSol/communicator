@@ -1595,7 +1595,7 @@ class App(QMainWindow):
 
             elif address_reveal_bool is False:
                 address_reveal_bool = True
-                if len(client_address) >= max_client_len:
+                if len(client_address) >= 0:
                     if client_address[client_address_index][5] != bytes('x', 'utf-8'):
                         self.address_key.setText(str(client_address[client_address_index][5], 'utf-8'))
                     if client_address[client_address_index][6] != 'x':
