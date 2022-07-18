@@ -128,6 +128,7 @@ get_external_ip_finnished_reading = False
 uplink_use_external_service = False
 use_address = 'default'
 
+uplink_addresses = []
 enum = []
 external_ip_address = ''
 
@@ -1618,14 +1619,21 @@ class App(QMainWindow):
 
         def uplink_address_function():
             global debug_message
+            global client_address
+            global client_address_index
+            global uplink_addresses
             debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.uplink_address_function]')
             global bool_address_uplink
             if bool_address_uplink is False:
                 self.uplink_btn.setStyleSheet(button_stylesheet_green_text)
                 bool_address_uplink = True
+                if client_address[client_address_index] not in uplink_addresses:
+                    print('client_address[client_address_index] not in uplink_addresses: append')
             elif bool_address_uplink is True:
                 self.uplink_btn.setStyleSheet(button_stylesheet_white_text_low)
                 bool_address_uplink = False
+                if client_address[client_address_index] in uplink_addresses:
+                    print('client_address[client_address_index] not in uplink_addresses: remove')
             debug_message.append('[' + str(datetime.datetime.now()) + '] [App.uplink_address_function] setting bool_address_uplink: ' + str(bool_address_uplink))
 
         def get_ext_ip_use_upnp_function():
@@ -2393,8 +2401,6 @@ class UplinkClass(QThread):
     def __init__(self):
         QThread.__init__(self)
 
-        self.uplink_addresses = []
-
     def uplink_logger(self):
         if not os.path.exists(dial_out_log):
             open('./log/uplink_log.txt', 'w').close()
@@ -2405,8 +2411,7 @@ class UplinkClass(QThread):
     def compile_uplink_addresses(self):
         global debug_message
         global client_address
-
-        self.uplink_addresses = []
+        global uplink_addresses
 
         # Look through address book for addresses that have uplink enabled
         for _ in client_address:
@@ -2416,7 +2421,7 @@ class UplinkClass(QThread):
                         debug_message.append('[' + str(datetime.datetime.now()) + '] [UplinkClass.compile_uplink_addresses] to address that has uplink enabled and both key and fingerprint: ' + str(_[0]) + ' ' + str(_[1]) + ' ' + str(_[2]))
 
                         # Append address data as list into uplink addresses list
-                        self.uplink_addresses.append(_)
+                        uplink_addresses.append(_)
 
                     # Display an address that will be ignored
                     else:
@@ -2432,6 +2437,7 @@ class UplinkClass(QThread):
 
     def run(self):
         global debug_message
+        global uplink_addresses
         debug_message.append('[' + str(datetime.datetime.now()) + '] [Starting Thread] [UplinkClass.run]')
         global external_ip_address
         global get_external_ip_finnished_reading
@@ -2457,18 +2463,19 @@ class UplinkClass(QThread):
 
             else:
                 # Retry Uplink to any addresses remaining in list (in case Uplink was unsuccessful for any reason)
-                if len(self.uplink_addresses) > 0:
-                    debug_message.append('[' + str(datetime.datetime.now()) + '] [UplinkClass.run] remaining addresses to receive uplink: ' + str(len(self.uplink_addresses)))
+                if len(uplink_addresses) > 0:
+                    debug_message.append('[' + str(datetime.datetime.now()) + '] [UplinkClass.run] remaining addresses to receive uplink: ' + str(len(uplink_addresses)))
                     self.uplink()
                 # time.sleep(1)
 
     def uplink(self):
         global debug_message
+        global uplink_addresses
         debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [UplinkClass.uplink]')
         global external_ip_address
 
         # Iterate over each sub-list in uplink addresses list
-        for _ in self.uplink_addresses:
+        for _ in uplink_addresses:
 
             # Set variables and display current address data
             name = _[0]
@@ -2536,9 +2543,9 @@ class UplinkClass(QThread):
                     debug_message.append('[' + str(datetime.datetime.now()) + '] [UplinkClass.uplink] response from recipient equals ciphertext: ' + str(data_response))
 
                     # Display length of uplink addresses before and after removing current uplink address from list (as a potential delivery confirmation was received)
-                    debug_message.append('[' + str(datetime.datetime.now()) + '] [UplinkClass.uplink] len of self.uplink_addresses before potential successful uplink occured: ' + str(len(self.uplink_addresses)))
-                    self.uplink_addresses.remove(_)
-                    debug_message.append('[' + str(datetime.datetime.now()) + '] [UplinkClass.uplink] len of self.uplink_addresses after potential successful uplink occured: ' + str(len(self.uplink_addresses)))
+                    debug_message.append('[' + str(datetime.datetime.now()) + '] [UplinkClass.uplink] len of self.uplink_addresses before potential successful uplink occured: ' + str(len(uplink_addresses)))
+                    uplink_addresses.remove(_)
+                    debug_message.append('[' + str(datetime.datetime.now()) + '] [UplinkClass.uplink] len of self.uplink_addresses after potential successful uplink occured: ' + str(len(uplink_addresses)))
 
                 else:
                     # Handle potential delivery unconfirmed
