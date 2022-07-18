@@ -576,6 +576,8 @@ class App(QMainWindow):
             global client_address_index
             global address_mode
 
+            found_line = False
+
             # Attempt to only run this function if this function is not already in progress
             if write_client_configuration_engaged is False:
                 write_client_configuration_engaged = True
@@ -604,7 +606,7 @@ class App(QMainWindow):
                                     # Create a list from the expected space delimited line and then check the line
                                     line_split = line.split(' ')
                                     if len(line_split) > 0:
-                                        if line != '' and line_split[0] == 'DATA':
+                                        if line != '' and line_split[0] == 'DATA' and write_bool is False:
 
                                             # Create a thorough but partial list from current client address in memory (item excluded is the actual fingerprint)
                                             compare_remove_address = [str(remove_address[0]),
@@ -647,6 +649,7 @@ class App(QMainWindow):
                                             elif compare_remove_address == compare_line_address:
                                                 debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_remove_address] TARGET REMOVE: ' + str(line))
                                                 write_bool = True
+                                                break
 
                             # If the target line in address book was found then write lines from the list into a temporary file
                             if write_bool is True:
@@ -707,192 +710,200 @@ class App(QMainWindow):
                 # Name must not be empty and there must not be space in name
                 if self.dial_out_name.text() != '' and ' ' not in self.dial_out_name.text():
 
-                    # Address field must not be empty
-                    if self.dial_out_ip_port.text() != '':
+                    allow_name_bool = []
+                    for _ in client_address:
+                        if self.dial_out_name.text() in _:
+                            allow_name_bool.append(False)
 
-                        # Clearly display the save mode
-                        debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_save_address] using address_save_mode: ' + str(address_save_mode))
+                    if not False in allow_name_bool:
+                        # Address field must not be empty
+                        if self.dial_out_ip_port.text() != '':
 
-                        # Create a pre-flight check list
-                        allow_save_bool = []
+                            # Clearly display the save mode
+                            debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_save_address] using address_save_mode: ' + str(address_save_mode))
 
-                        # Codec must be selected
-                        if str(self.codec_select_box.currentText()) != 'Unselected':
-                            debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_save_address] check_0: pass')
-                            s_enc = str(self.codec_select_box.currentText())
-                        else:
-                            debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_save_address] check_0: fail')
-                            allow_save_bool.append(False)
+                            # Create a pre-flight check list
+                            allow_save_bool = []
 
-                        # Address Family must be selected
-                        if str(self.communicator_socket_options_box_0.currentText()) != 'Unselected':
-                            debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_save_address] check_1: pass')
-                            s_address_family = str(self.communicator_socket_options_box_0.currentText())
-                        else:
-                            debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_save_address] check_1: fail')
-                            allow_save_bool.append(False)
+                            # Codec must be selected
+                            if str(self.codec_select_box.currentText()) != 'Unselected':
+                                debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_save_address] check_0: pass')
+                                s_enc = str(self.codec_select_box.currentText())
+                            else:
+                                debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_save_address] check_0: fail')
+                                allow_save_bool.append(False)
 
-                        # Socket Type must be selected
-                        if str(self.communicator_socket_options_box_1.currentText()) != 'Unselected':
-                            debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_save_address] check_2: pass')
-                            s_soc_type = str(self.communicator_socket_options_box_1.currentText())
-                        else:
-                            debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_save_address] check_2: fail')
-                            allow_save_bool.append(False)
+                            # Address Family must be selected
+                            if str(self.communicator_socket_options_box_0.currentText()) != 'Unselected':
+                                debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_save_address] check_1: pass')
+                                s_address_family = str(self.communicator_socket_options_box_0.currentText())
+                            else:
+                                debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_save_address] check_1: fail')
+                                allow_save_bool.append(False)
 
-                        # Continue if not False in the pre-flight check list
-                        if False not in allow_save_bool:
+                            # Socket Type must be selected
+                            if str(self.communicator_socket_options_box_1.currentText()) != 'Unselected':
+                                debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_save_address] check_2: pass')
+                                s_soc_type = str(self.communicator_socket_options_box_1.currentText())
+                            else:
+                                debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_save_address] check_2: fail')
+                                allow_save_bool.append(False)
 
-                            # Set a new boolean to False and use this variable to allow or disallow the final address book amendment later
-                            bool_allow_write = False
+                            # Continue if not False in the pre-flight check list
+                            if False not in allow_save_bool:
 
-                            # Set Information
-                            name_ = self.dial_out_name.text()
-                            address_ = self.dial_out_ip_port.text()
-                            port_ = self.address_book_port.text()
-                            broadcast_address_ = self.address_book_broadcast.text()
-                            mac_ = self.address_book_mac.text()
-                            key_ = self.address_key.text()
-                            fingerprint_path_ = 'x'
+                                # Set a new boolean to False and use this variable to allow or disallow the final address book amendment later
+                                bool_allow_write = False
 
-                            if name_ == '':
-                                name_ = 'x'
-                            if address_ == '':
-                                address_ = 'x'
-                            if port_ == '':
-                                port_ = 'x'
-                            if broadcast_address_ == '':
-                                broadcast_address_ = 'x'
-                            if mac_ == '':
-                                mac_ = 'x'
-                            if key_ == '':
-                                key_ = 'x'
+                                # Set Information
+                                name_ = self.dial_out_name.text()
+                                address_ = self.dial_out_ip_port.text()
+                                port_ = self.address_book_port.text()
+                                broadcast_address_ = self.address_book_broadcast.text()
+                                mac_ = self.address_book_mac.text()
+                                key_ = self.address_key.text()
+                                fingerprint_path_ = 'x'
 
-                            # Get the socket options and create a string of all the socket arguments
-                            s_options_0 = str(self.communicator_socket_options_box_2.currentText())
-                            s_options_1 = str(self.communicator_socket_options_box_3.currentText())
-                            s_args = s_enc + ' ' + s_address_family + ' ' + s_soc_type + ' ' + s_options_0 + ' ' + s_options_1
+                                if name_ == '':
+                                    name_ = 'x'
+                                if address_ == '':
+                                    address_ = 'x'
+                                if port_ == '':
+                                    port_ = 'x'
+                                if broadcast_address_ == '':
+                                    broadcast_address_ = 'x'
+                                if mac_ == '':
+                                    mac_ = 'x'
+                                if key_ == '':
+                                    key_ = 'x'
 
-                            # Display current address index for comparison later
-                            debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_save_address] current index before potentially sorting: ' + str(client_address_index))
+                                # Get the socket options and create a string of all the socket arguments
+                                s_options_0 = str(self.communicator_socket_options_box_2.currentText())
+                                s_options_1 = str(self.communicator_socket_options_box_3.currentText())
+                                s_args = s_enc + ' ' + s_address_family + ' ' + s_soc_type + ' ' + s_options_0 + ' ' + s_options_1
 
-                            # Initiate an empty string which can be used as the string to append to the address book later
-                            to_address_book = ''
+                                # Display current address index for comparison later
+                                debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_save_address] current index before potentially sorting: ' + str(client_address_index))
 
-                            # Basic Save Mode
-                            if address_save_mode == 'basic':
+                                # Initiate an empty string which can be used as the string to append to the address book later
+                                to_address_book = ''
 
-                                # Save mode is basic so ensure key and fingerprint have been cleared
-                                self.address_key.setText('')
-                                self.tb_fingerprint.setText('')
+                                # Basic Save Mode
+                                if address_save_mode == 'basic':
 
-                                # Expects address and port each separated by a space (over sanitizing will make addressing less powerful and less future-proof, so this statement just checks for two items)
-                                # if len(self.dial_out_ip_port.text().split(' ')) == 2:
-                                # if self.dial_out_ip_port.text() != '':
+                                    # Save mode is basic so ensure key and fingerprint have been cleared
+                                    self.address_key.setText('')
+                                    self.tb_fingerprint.setText('')
 
-                                # Set the string which should be appended to the address book
-                                to_address_book = 'DATA ' + name_ + ' ' + address_ + ' ' + port_ + ' ' + broadcast_address_ + ' ' + mac_ + ' ' + key_ + ' ' + fingerprint_path_ + ' ' + s_args + ' ' + str(bool_address_uplink)
+                                    # Expects address and port each separated by a space (over sanitizing will make addressing less powerful and less future-proof, so this statement just checks for two items)
+                                    # if len(self.dial_out_ip_port.text().split(' ')) == 2:
+                                    # if self.dial_out_ip_port.text() != '':
 
-                                # Append a new list to the address book list in memory
-                                # client_address.append([str(self.dial_out_name.text()), str(self.dial_out_ip_port.text()), int(self.address_book_port.text()), bytes('x', 'utf-8'), 'x', 'x', s_enc, s_address_family, s_soc_type, s_options_0, s_options_1, bool_address_uplink])
-                                client_address.append([str(name_), str(address_), int(port_), str(broadcast_address_), str(mac_), str(key_), str(fingerprint_path_), s_enc, s_address_family, s_soc_type, s_options_0, s_options_1, bool_address_uplink])
+                                    # Set the string which should be appended to the address book
+                                    to_address_book = 'DATA ' + name_ + ' ' + address_ + ' ' + port_ + ' ' + broadcast_address_ + ' ' + mac_ + ' ' + key_ + ' ' + fingerprint_path_ + ' ' + s_args + ' ' + str(bool_address_uplink)
 
-                                # Alphabetically sort the address book in memory
-                                client_address.sort(key=lambda x: x[0])
+                                    # Append a new list to the address book list in memory
+                                    # client_address.append([str(self.dial_out_name.text()), str(self.dial_out_ip_port.text()), int(self.address_book_port.text()), bytes('x', 'utf-8'), 'x', 'x', s_enc, s_address_family, s_soc_type, s_options_0, s_options_1, bool_address_uplink])
+                                    client_address.append([str(name_), str(address_), int(port_), str(broadcast_address_), str(mac_), str(key_), str(fingerprint_path_), s_enc, s_address_family, s_soc_type, s_options_0, s_options_1, bool_address_uplink])
 
-                                # Find the new index of the new address book entry in memory after sorting and set the new current address book index accordingly
-                                client_address_index = client_address.index([str(name_), str(address_), int(port_), str(broadcast_address_), str(mac_), str(key_), str(fingerprint_path_), s_enc, s_address_family, s_soc_type, s_options_0, s_options_1, bool_address_uplink])
+                                    # Alphabetically sort the address book in memory
+                                    client_address.sort(key=lambda x: x[0])
 
-                                bool_allow_write = True
+                                    # Find the new index of the new address book entry in memory after sorting and set the new current address book index accordingly
+                                    client_address_index = client_address.index([str(name_), str(address_), int(port_), str(broadcast_address_), str(mac_), str(key_), str(fingerprint_path_), s_enc, s_address_family, s_soc_type, s_options_0, s_options_1, bool_address_uplink])
 
-                            # Advanced Save Mode
-                            elif address_save_mode == 'advanced':
+                                    bool_allow_write = True
 
-                                # Display key and fingerprint
-                                debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_save_address] key: ' + str((self.address_key.text())))
-                                debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_save_address] fingerprint: ' + str(self.tb_fingerprint.toPlainText().strip()))
+                                # Advanced Save Mode
+                                elif address_save_mode == 'advanced':
 
-                                # Create a new fingerprint filename using the name in the name input field
-                                fingerprint_fname = self.dial_out_name.text()
+                                    # Display key and fingerprint
+                                    debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_save_address] key: ' + str((self.address_key.text())))
+                                    debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_save_address] fingerprint: ' + str(self.tb_fingerprint.toPlainText().strip()))
 
-                                # List and display each filename in the fingerprints directory
-                                fingerprint_fname_list = os.listdir('./fingerprints')
-                                debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_save_address] fingerprint_fname_list: ' + str(fingerprint_fname_list))
+                                    # Create a new fingerprint filename using the name in the name input field
+                                    fingerprint_fname = self.dial_out_name.text()
 
-                                # Check if the newly created fingerprint filename already exists in the fingerprint directory
-                                if fingerprint_fname + '.txt' in fingerprint_fname_list:
-                                    fingerprint_fname_ready_bool = False
+                                    # List and display each filename in the fingerprints directory
+                                    fingerprint_fname_list = os.listdir('./fingerprints')
+                                    debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_save_address] fingerprint_fname_list: ' + str(fingerprint_fname_list))
 
-                                    #  While fingerprint filename exists, try appending numbers to the filename until a filename does not exist in the fingerprints directory
-                                    i = 0
-                                    while fingerprint_fname_ready_bool is False:
-                                        var = fingerprint_fname + str(i) + '.txt'
-                                        if var not in fingerprint_fname_list:
-                                            fingerprint_fname = var
-                                            fingerprint_fname_ready_bool = True
-                                        else:
-                                            i += 1
+                                    # Check if the newly created fingerprint filename already exists in the fingerprint directory
+                                    if fingerprint_fname + '.txt' in fingerprint_fname_list:
+                                        fingerprint_fname_ready_bool = False
 
-                                # Append fingerprint filename suffix if not already exists
-                                if not fingerprint_fname.endswith('.txt'):
-                                    fingerprint_fname = fingerprint_fname + '.txt'
+                                        #  While fingerprint filename exists, try appending numbers to the filename until a filename does not exist in the fingerprints directory
+                                        i = 0
+                                        while fingerprint_fname_ready_bool is False:
+                                            var = fingerprint_fname + str(i) + '.txt'
+                                            if var not in fingerprint_fname_list:
+                                                fingerprint_fname = var
+                                                fingerprint_fname_ready_bool = True
+                                            else:
+                                                i += 1
 
-                                # Pre-append intended path to the newly created fingerprint filename
-                                fingerprint_fname = './fingerprints/' + fingerprint_fname
+                                    # Append fingerprint filename suffix if not already exists
+                                    if not fingerprint_fname.endswith('.txt'):
+                                        fingerprint_fname = fingerprint_fname + '.txt'
 
-                                # Display the new intended fingerprint path plus filename
-                                debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_save_address] fingerprint_fname: ' + str(fingerprint_fname))
+                                    # Pre-append intended path to the newly created fingerprint filename
+                                    fingerprint_fname = './fingerprints/' + fingerprint_fname
 
-                                # Concatenate each line in fingerprint textbox into a single clean string
-                                self.fingerprint_str = ''
-                                for line in self.tb_fingerprint.toPlainText():
-                                    line = line.strip()
-                                    self.fingerprint_str = self.fingerprint_str + line
+                                    # Display the new intended fingerprint path plus filename
+                                    debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_save_address] fingerprint_fname: ' + str(fingerprint_fname))
 
-                                # Display the new fingerprint string
-                                debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_save_address] self.fingerprint_str: ' + str(self.fingerprint_str))
+                                    # Concatenate each line in fingerprint textbox into a single clean string
+                                    self.fingerprint_str = ''
+                                    for line in self.tb_fingerprint.toPlainText():
+                                        line = line.strip()
+                                        self.fingerprint_str = self.fingerprint_str + line
 
-                                # Check Lengths of both key and fingerprint
-                                debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_save_address] len(self.address_key.text()) has to be 32 to continue: ' + str(len(self.address_key.text())))
-                                debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_save_address] len(self.fingerprint_str) has to be 1024 to continue: ' + str(len(self.fingerprint_str)))
-                                if len(self.address_key.text()) == 32:
-                                    if len(self.fingerprint_str) == 1024:
+                                    # Display the new fingerprint string
+                                    debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_save_address] self.fingerprint_str: ' + str(self.fingerprint_str))
 
-                                        # Set the string which should be appended to the address book
-                                        to_address_book = 'DATA ' + name_ + ' ' + address_ + ' ' + port_ + ' ' + broadcast_address_ + ' ' + mac_ + ' ' + self.address_key.text() + ' ' + fingerprint_fname + ' ' + s_args + ' ' + str(bool_address_uplink)
+                                    # Check Lengths of both key and fingerprint
+                                    debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_save_address] len(self.address_key.text()) has to be 32 to continue: ' + str(len(self.address_key.text())))
+                                    debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_save_address] len(self.fingerprint_str) has to be 1024 to continue: ' + str(len(self.fingerprint_str)))
+                                    if len(self.address_key.text()) == 32:
+                                        if len(self.fingerprint_str) == 1024:
 
-                                        # Append a new list to the address book list in memory
-                                        client_address.append([str(name_), str(address_), int(port_), str(broadcast_address_), str(mac_), bytes(self.address_key.text(), 'utf-8'), str(self.fingerprint_str), s_enc, s_address_family, s_soc_type, s_options_0, s_options_1, bool_address_uplink])
+                                            # Set the string which should be appended to the address book
+                                            to_address_book = 'DATA ' + name_ + ' ' + address_ + ' ' + port_ + ' ' + broadcast_address_ + ' ' + mac_ + ' ' + self.address_key.text() + ' ' + fingerprint_fname + ' ' + s_args + ' ' + str(bool_address_uplink)
 
-                                        # Alphabetically sort the address book in memory
-                                        client_address.sort(key=lambda x: x[0])
+                                            # Append a new list to the address book list in memory
+                                            client_address.append([str(name_), str(address_), int(port_), str(broadcast_address_), str(mac_), bytes(self.address_key.text(), 'utf-8'), str(self.fingerprint_str), s_enc, s_address_family, s_soc_type, s_options_0, s_options_1, bool_address_uplink])
 
-                                        # Find the new index of the new address book entry in memory after sorting and set the new current address book index accordingly
-                                        client_address_index = client_address.index([str(name_), str(address_), int(port_), str(broadcast_address_), str(mac_), bytes(self.address_key.text(), 'utf-8'), str(self.fingerprint_str), s_enc, s_address_family, s_soc_type, s_options_0, s_options_1, bool_address_uplink])
+                                            # Alphabetically sort the address book in memory
+                                            client_address.sort(key=lambda x: x[0])
 
-                                        bool_allow_write = True
+                                            # Find the new index of the new address book entry in memory after sorting and set the new current address book index accordingly
+                                            client_address_index = client_address.index([str(name_), str(address_), int(port_), str(broadcast_address_), str(mac_), bytes(self.address_key.text(), 'utf-8'), str(self.fingerprint_str), s_enc, s_address_family, s_soc_type, s_options_0, s_options_1, bool_address_uplink])
 
-                                        # Write fingerprint file to the fingerprint directory with a 32-character limit on each line (to make the fingerprint file contents neat)
-                                        split_strings = [self.fingerprint_str[index: index + 32] for index in range(0, len(self.fingerprint_str), 32)]
-                                        if not os.path.exists(fingerprint_fname):
-                                            open(fingerprint_fname, 'w').close()
-                                        with open(fingerprint_fname, 'w') as fo:
-                                            for _ in split_strings:
-                                                fo.write(_ + '\n')
-                                        fo.close()
+                                            bool_allow_write = True
 
-                            # Append the new address book entry to the address book file conditionally
-                            if to_address_book != '':
-                                if bool_allow_write is True:
-                                    if os.path.exists('./communicator_address_book.txt'):
-                                        with open('./communicator_address_book.txt', 'a') as fo:
-                                            fo.write(to_address_book + '\n')
-                                        fo.close()
-                                else:
-                                    debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_save_address] entry will not be appended to the address book as something went wrong. try again.')
+                                            # Write fingerprint file to the fingerprint directory with a 32-character limit on each line (to make the fingerprint file contents neat)
+                                            split_strings = [self.fingerprint_str[index: index + 32] for index in range(0, len(self.fingerprint_str), 32)]
+                                            if not os.path.exists(fingerprint_fname):
+                                                open(fingerprint_fname, 'w').close()
+                                            with open(fingerprint_fname, 'w') as fo:
+                                                for _ in split_strings:
+                                                    fo.write(_ + '\n')
+                                            fo.close()
 
-                            # Display the potentially new current index as the index may have changed
-                            debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_save_address] current index after sorting: ' + str(client_address_index))
+                                # Append the new address book entry to the address book file conditionally
+                                if to_address_book != '':
+                                    if bool_allow_write is True:
+                                        if os.path.exists('./communicator_address_book.txt'):
+                                            with open('./communicator_address_book.txt', 'a') as fo:
+                                                fo.write(to_address_book + '\n')
+                                            fo.close()
+                                    else:
+                                        debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_save_address] entry will not be appended to the address book as something went wrong. try again.')
+
+                                # Display the potentially new current index as the index may have changed
+                                debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_save_address] current index after sorting: ' + str(client_address_index))
+                    else:
+                        debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_save_address] name already exists!')
                 else:
                     debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_save_address] ip and port should not be empty!')
             else:
