@@ -679,7 +679,6 @@ class App(QMainWindow):
                                             elif compare_remove_address == compare_line_address:
                                                 debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_remove_address] TARGET REMOVE: ' + str(line))
                                                 write_bool = True
-                                                break
 
                             # If the target line in address book was found then write lines from the list into a temporary file
                             if write_bool is True:
@@ -1471,9 +1470,9 @@ class App(QMainWindow):
                 debug_message.append('[' + str(datetime.datetime.now()) + '] [App.dial_out_cipher_btn_function] len(client_address[client_address_index][4]: ' + str(len(client_address[client_address_index][6])))
 
                 # First Check If The Address Entry HAS A Key And Fingerprint
-                if client_address[client_address_index][5] != '#' and len(client_address[client_address_index][5]) == 32:
+                if client_address[client_address_index][5] != 'x' and len(client_address[client_address_index][5]) == 32:
                     debug_message.append('[' + str(datetime.datetime.now()) + '] [App.dial_out_cipher_btn_function] address entry appears to have a key: ' + str(client_address[client_address_index][5]))
-                    if client_address[client_address_index][6] != '#' and len(client_address[client_address_index][6]) == 1024:
+                    if client_address[client_address_index][6] != 'x' and len(client_address[client_address_index][6]) == 1024:
                         debug_message.append('[' + str(datetime.datetime.now()) + '] [App.dial_out_cipher_btn_function] address entry appears to have a fingerprint: ' + str(client_address[client_address_index][6]))
 
                         if dial_out_dial_out_cipher_bool is False:
@@ -1482,8 +1481,13 @@ class App(QMainWindow):
                         elif dial_out_dial_out_cipher_bool is True:
                             dial_out_dial_out_cipher_bool = False
                             self.dial_out_cipher_bool_btn.setStyleSheet(button_stylesheet_white_text_low)
-                        debug_message.append('[' + str(datetime.datetime.now()) + '] [App.dial_out_cipher_btn_function] setting dial_out_dial_out_cipher_bool: ' + str(dial_out_dial_out_cipher_bool))
-
+                    else:
+                        dial_out_dial_out_cipher_bool = False
+                        self.dial_out_cipher_bool_btn.setStyleSheet(button_stylesheet_white_text_low)
+                else:
+                    dial_out_dial_out_cipher_bool = False
+                    self.dial_out_cipher_bool_btn.setStyleSheet(button_stylesheet_white_text_low)
+                debug_message.append('[' + str(datetime.datetime.now()) + '] [App.dial_out_cipher_btn_function] setting dial_out_dial_out_cipher_bool: ' + str(dial_out_dial_out_cipher_bool))
             else:
                 debug_message.append('[' + str(datetime.datetime.now()) + '] [missaligned data')
 
