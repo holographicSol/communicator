@@ -126,6 +126,7 @@ from_file_bool = False
 bool_address_uplink = False
 get_external_ip_finnished_reading = False
 uplink_use_external_service = False
+transmit_method = 'socket'
 use_address = 'default'
 address_mode = 'uplink_current_index'
 max_client_len = 13
@@ -2232,14 +2233,14 @@ class App(QMainWindow):
         self.address_book_label.setStyleSheet(title_stylesheet_default)
 
         self.dial_out_encoding = QPushButton(self)
-        self.dial_out_encoding.move(32, self.address_staple_height + 28)
+        self.dial_out_encoding.move(32, self.address_staple_height + 32 + 24)
         self.dial_out_encoding.resize(self.btn_120, 20)
         self.dial_out_encoding.setFont(self.font_s7b)
         self.dial_out_encoding.setText('ENCODING')
         self.dial_out_encoding.setStyleSheet(button_stylesheet_white_text_high)
 
         self.codec_select_box = QComboBox(self)
-        self.codec_select_box.move(32 + self.btn_120 + 4, self.address_staple_height + 28)
+        self.codec_select_box.move(32 + self.btn_120 + 4, self.address_staple_height + 32 + 24)
         self.codec_select_box.resize(186, 20)
         self.codec_select_box.setStyleSheet(cmb_menu_style)
         self.codec_select_box.setFont(self.font_s7b)
@@ -2254,7 +2255,7 @@ class App(QMainWindow):
         del enc_val_list
 
         self.dial_out_family_type = QLabel(self)
-        self.dial_out_family_type.move(32, self.address_staple_height + 28 + 24)
+        self.dial_out_family_type.move(32, self.address_staple_height + 32 + 24 + 24)
         self.dial_out_family_type.resize(self.btn_120, 20)
         self.dial_out_family_type.setFont(self.font_s7b)
         self.dial_out_family_type.setText('ADDRESS FAMILY')
@@ -2262,14 +2263,14 @@ class App(QMainWindow):
         self.dial_out_family_type.setStyleSheet(label_stylesheet_grey_bg_white_text_high)
 
         self.communicator_socket_options_box_0 = QComboBox(self)
-        self.communicator_socket_options_box_0.move(32 + self.btn_120 + 4, self.address_staple_height + 28 + 24)
+        self.communicator_socket_options_box_0.move(32 + self.btn_120 + 4, self.address_staple_height + 32 + 24 + 24)
         self.communicator_socket_options_box_0.resize(186, 20)
         self.communicator_socket_options_box_0.setStyleSheet(cmb_menu_style)
         self.communicator_socket_options_box_0.setFont(self.font_s7b)
         self.communicator_socket_options_box_0.addItem('Unselected')
 
         self.dial_out_socket_type = QLabel(self)
-        self.dial_out_socket_type.move(32, self.address_staple_height + 28 + 24 + 24)
+        self.dial_out_socket_type.move(32, self.address_staple_height + 32 + 24 + 24 + 24)
         self.dial_out_socket_type.resize(self.btn_120, 20)
         self.dial_out_socket_type.setFont(self.font_s7b)
         self.dial_out_socket_type.setText('SOCKET TYPE')
@@ -2277,14 +2278,14 @@ class App(QMainWindow):
         self.dial_out_socket_type.setStyleSheet(label_stylesheet_grey_bg_white_text_high)
 
         self.communicator_socket_options_box_1 = QComboBox(self)
-        self.communicator_socket_options_box_1.move(32 + self.btn_120 + 4, self.address_staple_height + 28 + 24 + 24)
+        self.communicator_socket_options_box_1.move(32 + self.btn_120 + 4, self.address_staple_height + 32 + 24 + 24 + 24)
         self.communicator_socket_options_box_1.resize(186, 20)
         self.communicator_socket_options_box_1.setStyleSheet(cmb_menu_style)
         self.communicator_socket_options_box_1.setFont(self.font_s7b)
         self.communicator_socket_options_box_1.addItem('Unselected')
 
         self.bool_socket_options_btn = QPushButton(self)
-        self.bool_socket_options_btn.move(32, self.address_staple_height + 28 + 24 + 24 + 24)
+        self.bool_socket_options_btn.move(32, self.address_staple_height + 32 + 24 + 24 + 24 + 24)
         self.bool_socket_options_btn.resize(self.btn_120, self.btn_20)
         self.bool_socket_options_btn.setStyleSheet(button_stylesheet_white_text_low)
         self.bool_socket_options_btn.setText('SOCKET OPTIONS')
@@ -2292,14 +2293,14 @@ class App(QMainWindow):
         self.bool_socket_options_btn.clicked.connect(bool_socket_options_function)
 
         self.communicator_socket_options_box_2 = QComboBox(self)
-        self.communicator_socket_options_box_2.move(32 + self.btn_120 + 4, self.address_staple_height + 28 + 24 + 24 + 24)
+        self.communicator_socket_options_box_2.move(32 + self.btn_120 + 4, self.address_staple_height + 32 + 24 + 24 + 24 + 24)
         self.communicator_socket_options_box_2.resize(186, 20)
         self.communicator_socket_options_box_2.setStyleSheet(cmb_menu_style)
         self.communicator_socket_options_box_2.setFont(self.font_s7b)
         self.communicator_socket_options_box_2.addItem('Unselected')
 
         self.communicator_socket_options_box_3 = QComboBox(self)
-        self.communicator_socket_options_box_3.move(32 + self.btn_120 + 4, self.address_staple_height + 28 + 24 + 24 + 24 + 24)
+        self.communicator_socket_options_box_3.move(32 + self.btn_120 + 4, self.address_staple_height + 32 + 24 + 24 + 24 + 24 + 24)
         self.communicator_socket_options_box_3.resize(186, 20)
         self.communicator_socket_options_box_3.setStyleSheet(cmb_menu_style)
         self.communicator_socket_options_box_3.setFont(self.font_s7b)
