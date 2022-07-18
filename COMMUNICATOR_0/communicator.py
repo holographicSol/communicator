@@ -128,6 +128,7 @@ get_external_ip_finnished_reading = False
 uplink_use_external_service = False
 use_address = 'default'
 address_uplink_mode = 'uplink_current_index'
+max_client_len = 13
 
 uplink_addresses = []
 enum = []
@@ -1339,23 +1340,28 @@ class App(QMainWindow):
             global client_address
             global client_address_index
             global dial_out_dial_out_cipher_bool
+            global max_client_len
 
-            debug_message.append('[' + str(datetime.datetime.now()) + '] [App.dial_out_cipher_btn_function] len(client_address[client_address_index][3]: ' + str(len(client_address[client_address_index][5])))
-            debug_message.append('[' + str(datetime.datetime.now()) + '] [App.dial_out_cipher_btn_function] len(client_address[client_address_index][4]: ' + str(len(client_address[client_address_index][6])))
+            if len(client_address[client_address_index]) >= max_client_len:
+                debug_message.append('[' + str(datetime.datetime.now()) + '] [App.dial_out_cipher_btn_function] len(client_address[client_address_index][3]: ' + str(len(client_address[client_address_index][5])))
+                debug_message.append('[' + str(datetime.datetime.now()) + '] [App.dial_out_cipher_btn_function] len(client_address[client_address_index][4]: ' + str(len(client_address[client_address_index][6])))
 
-            # First Check If The Address Entry HAS A Key And Fingerprint
-            if client_address[client_address_index][5] != '#' and len(client_address[client_address_index][5]) == 32:
-                debug_message.append('[' + str(datetime.datetime.now()) + '] [App.dial_out_cipher_btn_function] address entry appears to have a key: ' + str(client_address[client_address_index][5]))
-                if client_address[client_address_index][6] != '#' and len(client_address[client_address_index][6]) == 1024:
-                    debug_message.append('[' + str(datetime.datetime.now()) + '] [App.dial_out_cipher_btn_function] address entry appears to have a fingerprint: ' + str(client_address[client_address_index][6]))
+                # First Check If The Address Entry HAS A Key And Fingerprint
+                if client_address[client_address_index][5] != '#' and len(client_address[client_address_index][5]) == 32:
+                    debug_message.append('[' + str(datetime.datetime.now()) + '] [App.dial_out_cipher_btn_function] address entry appears to have a key: ' + str(client_address[client_address_index][5]))
+                    if client_address[client_address_index][6] != '#' and len(client_address[client_address_index][6]) == 1024:
+                        debug_message.append('[' + str(datetime.datetime.now()) + '] [App.dial_out_cipher_btn_function] address entry appears to have a fingerprint: ' + str(client_address[client_address_index][6]))
 
-                    if dial_out_dial_out_cipher_bool is False:
-                        dial_out_dial_out_cipher_bool = True
-                        self.dial_out_cipher_bool_btn.setStyleSheet(button_stylesheet_green_text)
-                    elif dial_out_dial_out_cipher_bool is True:
-                        dial_out_dial_out_cipher_bool = False
-                        self.dial_out_cipher_bool_btn.setStyleSheet(button_stylesheet_white_text_low)
-                    debug_message.append('[' + str(datetime.datetime.now()) + '] [App.dial_out_cipher_btn_function] setting dial_out_dial_out_cipher_bool: ' + str(dial_out_dial_out_cipher_bool))
+                        if dial_out_dial_out_cipher_bool is False:
+                            dial_out_dial_out_cipher_bool = True
+                            self.dial_out_cipher_bool_btn.setStyleSheet(button_stylesheet_green_text)
+                        elif dial_out_dial_out_cipher_bool is True:
+                            dial_out_dial_out_cipher_bool = False
+                            self.dial_out_cipher_bool_btn.setStyleSheet(button_stylesheet_white_text_low)
+                        debug_message.append('[' + str(datetime.datetime.now()) + '] [App.dial_out_cipher_btn_function] setting dial_out_dial_out_cipher_bool: ' + str(dial_out_dial_out_cipher_bool))
+
+            else:
+                debug_message.append('[' + str(datetime.datetime.now()) + '] [missaligned data')
 
         def dial_out_override_function():
             global debug_message
@@ -1363,6 +1369,7 @@ class App(QMainWindow):
             global client_address
             global client_address_index
             global bool_dial_out_override
+            global max_client_len
 
             if bool_dial_out_override is True:
                 bool_dial_out_override = False
@@ -1381,7 +1388,7 @@ class App(QMainWindow):
 
                 self.address_clear_form.show()
 
-                if len(client_address) > 0:
+                if len(client_address) >= max_client_len:
                     self.dial_out_name.setText(client_address[client_address_index][0])
                     if client_address[client_address_index][1] != 'x':
                         self.dial_out_ip_port.setText(client_address[client_address_index][1])
@@ -1485,9 +1492,10 @@ class App(QMainWindow):
             global debug_message
             global client_address
             global client_address_index
+            global max_client_len
             debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.format_fingerprint]')
             if address_reveal_bool is True:
-                if len(client_address) > 0:
+                if len(client_address) >= max_client_len:
                     if len(client_address[client_address_index]) >= 10:
                         if len(client_address[client_address_index][6]) == 1024:
                             self.tb_fingerprint.setText('')
@@ -1504,12 +1512,12 @@ class App(QMainWindow):
             global address_reveal_bool
             global client_address
             global client_address_index
+            global max_client_len
             debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.check_key]')
             if address_reveal_bool is True:
-                if len(client_address) > 0:
-                    if len(client_address[client_address_index]) >= 10:
-                        if client_address[client_address_index][5] != bytes('x', 'utf-8'):
-                            self.address_key.setText(str(client_address[client_address_index][5], 'utf-8'))
+                if len(client_address[client_address_index]) >= max_client_len:
+                    if client_address[client_address_index][5] != bytes('x', 'utf-8'):
+                        self.address_key.setText(str(client_address[client_address_index][5], 'utf-8'))
 
         def address_clear_form_function():
             global debug_message
@@ -1569,6 +1577,7 @@ class App(QMainWindow):
             global address_reveal_bool
             global client_address
             global client_address_index
+            global max_client_len
 
             if address_reveal_bool is True:
                 address_reveal_bool = False
@@ -1578,12 +1587,11 @@ class App(QMainWindow):
 
             elif address_reveal_bool is False:
                 address_reveal_bool = True
-                if len(client_address) > 0:
-                    if len(client_address[client_address_index]) >= 5:
-                        if client_address[client_address_index][5] != bytes('x', 'utf-8'):
-                            self.address_key.setText(str(client_address[client_address_index][5], 'utf-8'))
-                        if client_address[client_address_index][6] != 'x':
-                            format_fingerprint()
+                if len(client_address) >= max_client_len:
+                    if client_address[client_address_index][5] != bytes('x', 'utf-8'):
+                        self.address_key.setText(str(client_address[client_address_index][5], 'utf-8'))
+                    if client_address[client_address_index][6] != 'x':
+                        format_fingerprint()
                 self.reveal_btn.setIcon(QIcon(visibility_1))
 
             debug_message.append('[' + str(datetime.datetime.now()) + '] [App.address_clear_form_sensitive_function] setting address_reveal_bool: ' + str(address_reveal_bool))
@@ -3135,12 +3143,13 @@ class DialOutClass(QThread):
         global dial_out_dial_out_cipher_bool
         global bool_dial_out_override
         global bool_socket_options
+        global max_client_len
 
         debug_message.append('[' + str(datetime.datetime.now()) + '] [DialOutClass.message_send] outgoing to: ' + str(self.HOST_SEND) + ':' + str(self.PORT_SEND))
 
         try:
             data_response = ''
-            if len(client_address[client_address_index]) >= 10:
+            if len(client_address[client_address_index]) >= max_client_len:
 
                 # Setup Socket
                 sok = socket.socket(COMMUNICATOR_SOCK.get(self.communicator_socket_options_box_0.currentText()), COMMUNICATOR_SOCK.get(self.communicator_socket_options_box_1.currentText()))
