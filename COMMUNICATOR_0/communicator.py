@@ -307,6 +307,13 @@ label_stylesheet_black_bg_text_yellow = """QLabel{background-color: rgb(0, 0, 0)
                        border-top:0px solid rgb(5, 5, 5);
                        border-left:0px solid rgb(5, 5, 5);}"""
 
+label_stylesheet_yellow_bg_text_white = """QLabel{background-color: rgb(255, 255, 0);
+                       color: rgb(0, 0, 0);
+                       border-bottom:0px solid rgb(5, 5, 5);
+                       border-right:0px solid rgb(5, 5, 5);
+                       border-top:0px solid rgb(5, 5, 5);
+                       border-left:0px solid rgb(5, 5, 5);}"""
+
 label_stylesheet_grey_bg_white_text_high = """QLabel{background-color: rgb(10, 10, 10);
                        color: rgb(255, 255, 255);
                        border-bottom:2px solid rgb(5, 5, 5);
@@ -627,8 +634,9 @@ class App(QMainWindow):
                                 # Turn the page (previous and next address functions handle empty address list)
                                 client_previous_address_function()
 
-            write_client_configuration_engaged = False
             address_uplink_mode = 'uplink_current_index'
+            self.address_book_label.setStyleSheet(title_stylesheet_default)
+            write_client_configuration_engaged = False
 
         def client_save_address():
             global debug_message
@@ -841,6 +849,7 @@ class App(QMainWindow):
                 debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_save_address] name should not be empty!')
 
             address_uplink_mode = 'uplink_current_index'
+            self.address_book_label.setStyleSheet(title_stylesheet_default)
             write_client_configuration_engaged = False
 
         def server_prev_addr_function():
@@ -955,6 +964,7 @@ class App(QMainWindow):
             self.tb_fingerprint.setText('')
 
             address_uplink_mode = 'uplink_current_index'
+            self.address_book_label.setStyleSheet(title_stylesheet_default)
 
             # Set Index
             debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_previous_address_function] len(client_address): ' + str(len(client_address)))
@@ -1033,6 +1043,7 @@ class App(QMainWindow):
             self.tb_fingerprint.setText('')
 
             address_uplink_mode = 'uplink_current_index'
+            self.address_book_label.setStyleSheet(title_stylesheet_default)
 
             debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_next_address_function] len(client_address): ' + str(len(client_address)))
             if len(client_address) > 0:
@@ -1469,6 +1480,7 @@ class App(QMainWindow):
             global address_uplink_mode
             global bool_address_uplink
             debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.address_clear_form_function]')
+            self.address_book_label.setStyleSheet(label_stylesheet_yellow_bg_text_white)
             self.dial_out_name.setText('')
             self.dial_out_ip_port.setText('')
             self.address_book_port.setText('')
@@ -1489,6 +1501,7 @@ class App(QMainWindow):
             global debug_message
             global address_uplink_mode
             debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.address_undo_form_function]')
+            self.address_book_label.setStyleSheet(title_stylesheet_default)
             client_previous_address_function()
             client_next_address_function()
             address_uplink_mode = 'uplink_current_index'
