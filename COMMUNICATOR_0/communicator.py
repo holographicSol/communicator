@@ -990,10 +990,11 @@ class App(QMainWindow):
                         self.dial_out_cipher_bool_btn.setEnabled(True)
 
                 debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_previous_address_function] uplink bool in list: ' + str(client_address[client_address_index][11]))
-                if client_address[client_address_index][11] == 'False':
+                print('client_address[client_address_index][12]:', client_address[client_address_index][12])
+                if client_address[client_address_index][12] == 'False':
                     self.uplink_btn.setStyleSheet(button_stylesheet_white_text_low)
                     bool_address_uplink = False
-                elif client_address[client_address_index][11] == 'True':
+                elif client_address[client_address_index][12] == 'True':
                     self.uplink_btn.setStyleSheet(button_stylesheet_green_text)
                     bool_address_uplink = True
 
@@ -1063,10 +1064,11 @@ class App(QMainWindow):
                         self.dial_out_cipher_bool_btn.setEnabled(True)
 
                 debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_next_address_function] uplink bool in list: ' + str(client_address[client_address_index][11]))
-                if client_address[client_address_index][11] == 'False':
+                print('client_address[client_address_index][12]:', client_address[client_address_index][12])
+                if client_address[client_address_index][12] == 'False':
                     self.uplink_btn.setStyleSheet(button_stylesheet_white_text_low)
                     bool_address_uplink = False
-                elif client_address[client_address_index][11] == 'True':
+                elif client_address[client_address_index][12] == 'True':
                     self.uplink_btn.setStyleSheet(button_stylesheet_green_text)
                     bool_address_uplink = True
 
@@ -2472,10 +2474,10 @@ class UplinkClass(QThread):
             name = _[0]
             host = _[1]
             port = _[2]
-            key = _[3]
-            finger_print = _[4]
-            addr_family = _[7]
-            soc_type = _[8]
+            key = _[5]
+            finger_print = _[6]
+            addr_family = _[8]
+            soc_type = _[9]
 
             debug_message.append('[' + str(datetime.datetime.now()) + '] [UplinkClass.uplink] attempting uplink for: ' + str(name) + ' ' + str(host) + ' ' + str(port) + ' ' + str(addr_family) + ' ' + str(soc_type))
 
@@ -2876,7 +2878,7 @@ class ConfigurationClass(QThread):
                 if str(line[0]) == 'DATA':
                     debug_message.append('[' + str(datetime.datetime.now()) + '] [ConfigurationClass.run] len(line): ' + str(len(line)))
                     if len(line) >= 13:
-                        client_address.append([str(line[1]), str(line[2]), int(line[3]), str(line[4]), str(line[5]), bytes(line[6], 'utf-8'), str(line[7]), str(line[8]), str(line[9]), str(line[10]), str(line[11]), str(line[12])])
+                        client_address.append([str(line[1]), str(line[2]), int(line[3]), str(line[4]), str(line[5]), bytes(line[6], 'utf-8'), str(line[7]), str(line[8]), str(line[9]), str(line[10]), str(line[11]), str(line[12]), str(line[13])])
                         debug_message.append('[' + str(datetime.datetime.now()) + '] [ConfigurationClass.run] entry: ' + str(client_address[-1]))
 
         client_address.sort(key=lambda x: x[0])
