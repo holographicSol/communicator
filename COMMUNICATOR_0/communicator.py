@@ -127,6 +127,7 @@ bool_address_uplink = False
 get_external_ip_finnished_reading = False
 uplink_use_external_service = False
 use_address = 'default'
+address_uplink_mode = 'uplink_current_index'
 
 uplink_addresses = []
 enum = []
@@ -534,6 +535,7 @@ class App(QMainWindow):
             global write_client_configuration_engaged
             global client_address
             global client_address_index
+            global address_uplink_mode
 
             # Attempt to only run this function if this function is not already in progress
             if write_client_configuration_engaged is False:
@@ -577,7 +579,7 @@ class App(QMainWindow):
                                                                       str(remove_address[9]),
                                                                       str(remove_address[10]),
                                                                       str(remove_address[11]),
-                                                                      str(bool_address_uplink)]
+                                                                      str(remove_address[12])]
 
                                             # Create a thorough but partial list from line in file (item excluded is fingerprint path)
                                             compare_line_address = [str(line_split[1]),
@@ -591,7 +593,7 @@ class App(QMainWindow):
                                                                     str(line_split[10]),
                                                                     str(line_split[11]),
                                                                     str(line_split[12]),
-                                                                    str(bool_address_uplink)]
+                                                                    str(line_split[13])]
 
                                             # Display to compare
                                             debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_remove_address] MEM LIST COMPARE: ' + str(compare_remove_address))
@@ -625,7 +627,8 @@ class App(QMainWindow):
                                 # Turn the page (previous and next address functions handle empty address list)
                                 client_previous_address_function()
 
-                    write_client_configuration_engaged = False
+            write_client_configuration_engaged = False
+            address_uplink_mode = 'uplink_current_index'
 
         def client_save_address():
             global debug_message
@@ -637,6 +640,7 @@ class App(QMainWindow):
             global button_stylesheet_green_text
             global bool_address_uplink
             global dial_out_dial_out_cipher_bool
+            global address_uplink_mode
 
             # Attempt to only run this function if this function is not already in progress
             if write_client_configuration_engaged is False:
@@ -836,6 +840,7 @@ class App(QMainWindow):
             else:
                 debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_save_address] name should not be empty!')
 
+            address_uplink_mode = 'uplink_current_index'
             write_client_configuration_engaged = False
 
         def server_prev_addr_function():
@@ -939,6 +944,7 @@ class App(QMainWindow):
             global dial_out_dial_out_cipher_bool
             global bool_address_uplink
             global use_address
+            global address_uplink_mode
 
             self.dial_out_name.setText('')
             self.dial_out_ip_port.setText('')
@@ -947,6 +953,8 @@ class App(QMainWindow):
             self.address_book_mac.setText('')
             self.address_key.setText('')
             self.tb_fingerprint.setText('')
+
+            address_uplink_mode = 'uplink_current_index'
 
             # Set Index
             debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_previous_address_function] len(client_address): ' + str(len(client_address)))
@@ -1014,6 +1022,7 @@ class App(QMainWindow):
             global client_address_index
             global dial_out_dial_out_cipher_bool
             global bool_address_uplink
+            global address_uplink_mode
 
             self.dial_out_name.setText('')
             self.dial_out_ip_port.setText('')
@@ -1022,6 +1031,8 @@ class App(QMainWindow):
             self.address_book_mac.setText('')
             self.address_key.setText('')
             self.tb_fingerprint.setText('')
+
+            address_uplink_mode = 'uplink_current_index'
 
             debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_next_address_function] len(client_address): ' + str(len(client_address)))
             if len(client_address) > 0:
@@ -1455,9 +1466,14 @@ class App(QMainWindow):
 
         def address_clear_form_function():
             global debug_message
+            global address_uplink_mode
+            global bool_address_uplink
             debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.address_clear_form_function]')
             self.dial_out_name.setText('')
             self.dial_out_ip_port.setText('')
+            self.address_book_port.setText('')
+            self.address_book_broadcast.setText('')
+            self.address_book_mac.setText('')
             self.address_key.setText('')
             self.tb_fingerprint.setText('')
             self.codec_select_box.setCurrentIndex(0)
@@ -1465,12 +1481,17 @@ class App(QMainWindow):
             self.communicator_socket_options_box_1.setCurrentIndex(0)
             self.communicator_socket_options_box_2.setCurrentIndex(0)
             self.communicator_socket_options_box_3.setCurrentIndex(0)
+            self.uplink_btn.setStyleSheet(button_stylesheet_white_text_low)
+            bool_address_uplink = False
+            address_uplink_mode = 'save_mode'
 
         def address_undo_form_function():
             global debug_message
+            global address_uplink_mode
             debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.address_undo_form_function]')
             client_previous_address_function()
             client_next_address_function()
+            address_uplink_mode = 'uplink_current_index'
 
         def address_clear_form_sensitive_function():
             global debug_message
@@ -1621,28 +1642,39 @@ class App(QMainWindow):
             global debug_message
             global client_address
             global client_address_index
-            global uplink_addresses
-            debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.uplink_address_function]')
             global bool_address_uplink
-            if bool_address_uplink is False:
-                self.uplink_btn.setStyleSheet(button_stylesheet_green_text)
-                bool_address_uplink = True
-                print('uplink_addresses:', uplink_addresses)
-                if client_address[client_address_index] not in uplink_addresses:
-                    print('client_address[client_address_index] not in uplink_addresses: append')
-                    uplink_addresses.append(client_address[client_address_index])
-                    print('client_address[client_address_index][12]:', client_address[client_address_index][12])
-                    client_address[client_address_index][12] = 'True'
-            elif bool_address_uplink is True:
-                self.uplink_btn.setStyleSheet(button_stylesheet_white_text_low)
-                bool_address_uplink = False
-                print('uplink_addresses:', uplink_addresses)
-                if client_address[client_address_index] in uplink_addresses:
-                    print('client_address[client_address_index] not in uplink_addresses: remove')
-                    uplink_addresses.remove(client_address[client_address_index])
-                    print('client_address[client_address_index][12]:', client_address[client_address_index][12])
-                    client_address[client_address_index][12] = 'False'
-            debug_message.append('[' + str(datetime.datetime.now()) + '] [App.uplink_address_function] setting bool_address_uplink: ' + str(bool_address_uplink))
+            global uplink_addresses
+            global address_uplink_mode
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.uplink_address_function]')
+
+            if address_uplink_mode != 'save_mode':
+
+                if bool_address_uplink is False:
+                    self.uplink_btn.setStyleSheet(button_stylesheet_green_text)
+                    bool_address_uplink = True
+                    print('uplink_addresses:', uplink_addresses)
+                    if client_address[client_address_index] not in uplink_addresses:
+                        print('client_address[client_address_index] not in uplink_addresses: append')
+                        uplink_addresses.append(client_address[client_address_index])
+                        print('client_address[client_address_index][12]:', client_address[client_address_index][12])
+                        client_address[client_address_index][12] = 'True'
+                elif bool_address_uplink is True:
+                    self.uplink_btn.setStyleSheet(button_stylesheet_white_text_low)
+                    bool_address_uplink = False
+                    print('uplink_addresses:', uplink_addresses)
+                    if client_address[client_address_index] in uplink_addresses:
+                        print('client_address[client_address_index] not in uplink_addresses: remove')
+                        uplink_addresses.remove(client_address[client_address_index])
+                        print('client_address[client_address_index][12]:', client_address[client_address_index][12])
+                        client_address[client_address_index][12] = 'False'
+                debug_message.append('[' + str(datetime.datetime.now()) + '] [App.uplink_address_function] setting bool_address_uplink: ' + str(bool_address_uplink))
+            else:
+                if bool_address_uplink is False:
+                    self.uplink_btn.setStyleSheet(button_stylesheet_green_text)
+                    bool_address_uplink = True
+                elif bool_address_uplink is True:
+                    self.uplink_btn.setStyleSheet(button_stylesheet_white_text_low)
+                    bool_address_uplink = False
 
         def get_ext_ip_use_upnp_function():
             global debug_message
@@ -2032,9 +2064,10 @@ class App(QMainWindow):
         self.address_clear_form = QPushButton(self)
         self.address_clear_form.move(int((self.width / 2) - (self.btn_240 / 2)), self.address_staple_height + 28)
         self.address_clear_form.resize(self.btn_120 - 2, self.btn_20)
-        self.address_clear_form.setIcon(QIcon(clear_all))
-        self.address_clear_form.setIconSize(QSize(self.btn_20 - 8, self.btn_20 - 8))
+        # self.address_clear_form.setIcon(QIcon())
+        # self.address_clear_form.setIconSize(QSize(self.btn_20 - 8, self.btn_20 - 8))
         self.address_clear_form.setFont(self.font_s7b)
+        self.address_clear_form.setText('+')
         self.address_clear_form.setStyleSheet(button_stylesheet_white_text_high)
         self.address_clear_form.clicked.connect(address_clear_form_function)
 
