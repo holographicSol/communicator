@@ -448,10 +448,11 @@ textbox_stylesheet_default = """QTextBrowser {background-color: rgb(0, 0, 0);
                 selection-color: black;
                 selection-background-color: rgb(0, 180, 0);
                 color: rgb(255, 255, 255);
-                border-bottom:0px solid rgb(5, 5, 5);
-                border-right:0px solid rgb(5, 5, 5);
-                border-top:0px solid rgb(5, 5, 5);
-                border-left:0px solid rgb(5, 5, 5);}"""
+                border-bottom:3px solid rgb(255 255, 255);
+                border-right:0px solid rgb(255, 255, 255);
+                border-top:0px solid rgb(255, 255, 255);
+                border-left:0px solid rgb(255, 255, 255);}"""
+
 
 textbox_stylesheet_black_bg = """QTextBrowser {background-color: rgb(0, 0, 0);
                 selection-color: black;
@@ -2521,7 +2522,7 @@ class App(QMainWindow):
 
         # ##########################################################################################################
 
-        self.transmission_staple = self.address_staple_height + 248
+        self.transmission_staple = self.address_staple_height + 240
 
         self.dial_out_label = QLabel(self)
         self.dial_out_label.move(12, self.transmission_staple)
@@ -2649,8 +2650,8 @@ class App(QMainWindow):
 
         # Initiate window into Communicator program
         self.textbox_0 = QTextBrowser(self)
-        self.textbox_0.move(4, self.server_staple + 28 + 24 + 24 + 24)
-        self.textbox_0.resize(self.width - 8, 100)
+        self.textbox_0.move(12, self.server_staple + 28 + 24 + 24 + 24)
+        self.textbox_0.resize(self.width - 24, 128)
         self.textbox_0.setObjectName("textbox_0")
         self.textbox_0.setFont(self.font_s7b)
         self.textbox_0.setStyleSheet(textbox_stylesheet_default)
