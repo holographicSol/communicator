@@ -2411,8 +2411,8 @@ class UplinkClass(QThread):
         # Look through address book for addresses that have uplink enabled
         for _ in client_address:
             if len(_) >= 12:
-                if _[11] == 'True':
-                    if _[3] != 'x' and _[4] != 'x':
+                if _[12] == 'True':
+                    if _[5] != 'x' and _[6] != 'x':
                         debug_message.append('[' + str(datetime.datetime.now()) + '] [UplinkClass.compile_uplink_addresses] to address that has uplink enabled and both key and fingerprint: ' + str(_[0]) + ' ' + str(_[1]) + ' ' + str(_[2]))
 
                         # Append address data as list into uplink addresses list
@@ -2460,7 +2460,7 @@ class UplinkClass(QThread):
                 if len(self.uplink_addresses) > 0:
                     debug_message.append('[' + str(datetime.datetime.now()) + '] [UplinkClass.run] remaining addresses to receive uplink: ' + str(len(self.uplink_addresses)))
                     self.uplink()
-                time.sleep(3)
+                # time.sleep(1)
 
     def uplink(self):
         global debug_message
