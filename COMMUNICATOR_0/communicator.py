@@ -2522,7 +2522,7 @@ class App(QMainWindow):
 
         # ##########################################################################################################
 
-        self.transmission_staple = self.address_staple_height + 240
+        self.transmission_staple = self.address_staple_height + 224 + 24
 
         self.dial_out_label = QLabel(self)
         self.dial_out_label.move(12, self.transmission_staple)
