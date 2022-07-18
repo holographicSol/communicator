@@ -636,6 +636,15 @@ class App(QMainWindow):
 
             address_uplink_mode = 'uplink_current_index'
             self.address_book_label.setStyleSheet(title_stylesheet_default)
+            self.dial_out_name.setEnabled(False)
+            self.dial_out_ip_port.setEnabled(False)
+            self.address_book_port.setEnabled(False)
+            self.address_book_broadcast.setEnabled(False)
+            self.address_book_mac.setEnabled(False)
+            self.address_key.setEnabled(False)
+            self.tb_fingerprint.setEnabled(False)
+            self.generate_key.setEnabled(False)
+            self.generate_fingerprint.setEnabled(False)
             write_client_configuration_engaged = False
 
         def client_save_address():
@@ -850,6 +859,15 @@ class App(QMainWindow):
 
             address_uplink_mode = 'uplink_current_index'
             self.address_book_label.setStyleSheet(title_stylesheet_default)
+            self.dial_out_name.setEnabled(False)
+            self.dial_out_ip_port.setEnabled(False)
+            self.address_book_port.setEnabled(False)
+            self.address_book_broadcast.setEnabled(False)
+            self.address_book_mac.setEnabled(False)
+            self.address_key.setEnabled(False)
+            self.tb_fingerprint.setEnabled(False)
+            self.generate_key.setEnabled(False)
+            self.generate_fingerprint.setEnabled(False)
             write_client_configuration_engaged = False
 
         def server_prev_addr_function():
@@ -965,6 +983,15 @@ class App(QMainWindow):
 
             address_uplink_mode = 'uplink_current_index'
             self.address_book_label.setStyleSheet(title_stylesheet_default)
+            self.dial_out_name.setEnabled(False)
+            self.dial_out_ip_port.setEnabled(False)
+            self.address_book_port.setEnabled(False)
+            self.address_book_broadcast.setEnabled(False)
+            self.address_book_mac.setEnabled(False)
+            self.address_key.setEnabled(False)
+            self.tb_fingerprint.setEnabled(False)
+            self.generate_key.setEnabled(False)
+            self.generate_fingerprint.setEnabled(False)
 
             # Set Index
             debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_previous_address_function] len(client_address): ' + str(len(client_address)))
@@ -1044,6 +1071,15 @@ class App(QMainWindow):
 
             address_uplink_mode = 'uplink_current_index'
             self.address_book_label.setStyleSheet(title_stylesheet_default)
+            self.dial_out_name.setEnabled(False)
+            self.dial_out_ip_port.setEnabled(False)
+            self.address_book_port.setEnabled(False)
+            self.address_book_broadcast.setEnabled(False)
+            self.address_book_mac.setEnabled(False)
+            self.address_key.setEnabled(False)
+            self.tb_fingerprint.setEnabled(False)
+            self.generate_key.setEnabled(False)
+            self.generate_fingerprint.setEnabled(False)
 
             debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_next_address_function] len(client_address): ' + str(len(client_address)))
             if len(client_address) > 0:
@@ -1494,8 +1530,18 @@ class App(QMainWindow):
             self.communicator_socket_options_box_2.setCurrentIndex(0)
             self.communicator_socket_options_box_3.setCurrentIndex(0)
             self.uplink_btn.setStyleSheet(button_stylesheet_white_text_low)
-            bool_address_uplink = False
             address_uplink_mode = 'save_mode'
+            bool_address_uplink = False
+
+            self.dial_out_name.setEnabled(True)
+            self.dial_out_ip_port.setEnabled(True)
+            self.address_book_port.setEnabled(True)
+            self.address_book_broadcast.setEnabled(True)
+            self.address_book_mac.setEnabled(True)
+            self.address_key.setEnabled(True)
+            self.tb_fingerprint.setEnabled(True)
+            self.generate_key.setEnabled(True)
+            self.generate_fingerprint.setEnabled(True)
 
         def address_undo_form_function():
             global debug_message
@@ -1505,6 +1551,16 @@ class App(QMainWindow):
             client_previous_address_function()
             client_next_address_function()
             address_uplink_mode = 'uplink_current_index'
+
+            self.dial_out_name.setEnabled(False)
+            self.dial_out_ip_port.setEnabled(False)
+            self.address_book_port.setEnabled(False)
+            self.address_book_broadcast.setEnabled(False)
+            self.address_book_mac.setEnabled(False)
+            self.address_key.setEnabled(False)
+            self.tb_fingerprint.setEnabled(False)
+            self.generate_key.setEnabled(False)
+            self.generate_fingerprint.setEnabled(False)
 
         def address_clear_form_sensitive_function():
             global debug_message
