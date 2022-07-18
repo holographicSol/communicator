@@ -1396,7 +1396,7 @@ class App(QMainWindow):
 
                 self.address_clear_form.show()
 
-                if len(client_address) >= max_client_len:
+                if len(client_address) >= 0:
                     self.dial_out_name.setText(client_address[client_address_index][0])
                     if client_address[client_address_index][1] != 'x':
                         self.dial_out_ip_port.setText(client_address[client_address_index][1])
@@ -1425,6 +1425,11 @@ class App(QMainWindow):
                 self.uplink_btn.show()
 
                 self.transmit_display_address.show()
+
+                self.dial_out_ip_port.setEnabled(False)
+                self.address_book_port.setEnabled(False)
+                self.address_book_broadcast.setEnabled(False)
+                self.address_book_mac.setEnabled(False)
 
             elif bool_dial_out_override is False:
                 bool_dial_out_override = True
@@ -1465,6 +1470,11 @@ class App(QMainWindow):
                 self.uplink_btn.hide()
 
                 self.transmit_display_address.hide()
+
+                self.dial_out_ip_port.setEnabled(True)
+                self.address_book_port.setEnabled(True)
+                self.address_book_broadcast.setEnabled(True)
+                self.address_book_mac.setEnabled(True)
 
             debug_message.append('[' + str(datetime.datetime.now()) + '] [App.dial_out_override_function] setting bool_dial_out_override: ' + str(bool_dial_out_override))
 
