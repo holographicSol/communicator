@@ -1,4 +1,0 @@
-DATA Toshiba 192.168.1.15 55555 192.168.1.255 70:54:B4:84:20:FE x x utf_16 AF_INET SOCK_STREAM SOCK_DGRAM SO_BROADCAST False
-DATA SuperOmegaSpaceRay 192.168.1.11 55555 x x YSWNfHt|{Yew&T`TY!>fmOBn`[qz}U=[ ./fingerprints/SuperOmegaSpaceRay0.txt utf_8 AF_INET SOCK_STREAM Unselected Unselected False
-DATA SuperMegaCatRobot 192.168.1.11 55555 x x x x utf_8 AF_INET SOCK_STREAM Unselected Unselected False
-DATA RoboCat 192.168.1.11 55555 x x x x utf_8 AF_INET SOCK_STREAM Unselected Unselected False
