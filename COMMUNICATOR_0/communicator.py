@@ -1627,13 +1627,17 @@ class App(QMainWindow):
             if bool_address_uplink is False:
                 self.uplink_btn.setStyleSheet(button_stylesheet_green_text)
                 bool_address_uplink = True
+                print('uplink_addresses:', uplink_addresses)
                 if client_address[client_address_index] not in uplink_addresses:
                     print('client_address[client_address_index] not in uplink_addresses: append')
+                    uplink_addresses.append(client_address[client_address_index])
             elif bool_address_uplink is True:
                 self.uplink_btn.setStyleSheet(button_stylesheet_white_text_low)
                 bool_address_uplink = False
+                print('uplink_addresses:', uplink_addresses)
                 if client_address[client_address_index] in uplink_addresses:
                     print('client_address[client_address_index] not in uplink_addresses: remove')
+                    uplink_addresses.remove(client_address[client_address_index])
             debug_message.append('[' + str(datetime.datetime.now()) + '] [App.uplink_address_function] setting bool_address_uplink: ' + str(bool_address_uplink))
 
         def get_ext_ip_use_upnp_function():
