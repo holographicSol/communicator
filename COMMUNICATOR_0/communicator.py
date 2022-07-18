@@ -130,6 +130,7 @@ use_address = 'default'
 address_mode = 'uplink_current_index'
 max_client_len = 13
 
+gui_message = []
 uplink_addresses = []
 enum = []
 external_ip_address = ''
@@ -322,6 +323,20 @@ label_stylesheet_grey_bg_white_text_high = """QLabel{background-color: rgb(0, 0,
                        border-top:0px solid rgb(5, 5, 5);
                        border-left:0px solid rgb(5, 5, 5);}"""
 
+label_stylesheet_red_bg_black_text = """QLabel{background-color: rgb(255, 0, 0);
+                       color: rgb(0, 0, 0);
+                       border-bottom:0px solid rgb(5, 5, 5);
+                       border-right:0px solid rgb(5, 5, 5);
+                       border-top:0px solid rgb(5, 5, 5);
+                       border-left:0px solid rgb(5, 5, 5);}"""
+
+label_stylesheet_green_bg_black_text = """QLabel{background-color: rgb(0, 255, 0);
+                       color: rgb(0, 0, 0);
+                       border-bottom:0px solid rgb(5, 5, 5);
+                       border-right:0px solid rgb(5, 5, 5);
+                       border-top:0px solid rgb(5, 5, 5);
+                       border-left:0px solid rgb(5, 5, 5);}"""
+
 title_stylesheet_default = """QLabel{background-color: rgb(0, 0, 0);
                        color: rgb(255, 255, 255);
                        border-bottom:0px solid rgb(5, 5, 5);
@@ -407,6 +422,20 @@ line_edit_stylesheet_white_text = """QLineEdit{background-color: rgb(0, 0, 0);
                        border-top:0px solid rgb(5, 5, 5);
                        border-left:0px solid rgb(5, 5, 5);}"""
 
+line_edit_stylesheet_red_bg_black_text = """QLineEdit{background-color: rgb(255, 0, 0);
+                       color: rgb(0, 0, 0);
+                       border-bottom:0px solid rgb(5, 5, 5);
+                       border-right:0px solid rgb(5, 5, 5);
+                       border-top:0px solid rgb(5, 5, 5);
+                       border-left:0px solid rgb(5, 5, 5);}"""
+
+line_edit_stylesheet_green_bg_black_text = """QLineEdit{background-color: rgb(0, 255, 0);
+                       color: rgb(0, 0, 0);
+                       border-bottom:0px solid rgb(5, 5, 5);
+                       border-right:0px solid rgb(5, 5, 5);
+                       border-top:0px solid rgb(5, 5, 5);
+                       border-left:0px solid rgb(5, 5, 5);}"""
+
 line_edit_stylesheet_is_enabled = """QLineEdit{background-color: rgb(255, 255, 0);
                        color: rgb(0, 0, 0);
                        border-bottom:0px solid rgb(5, 5, 5);
@@ -463,6 +492,7 @@ class App(QMainWindow):
         global accept_from_key
         global uplink_enable_bool
         global uplink_use_external_service
+        global gui_message
         global_self = self
 
         self.font_s7b = QFont("Segoe UI", 7, QFont.Bold)
@@ -702,6 +732,7 @@ class App(QMainWindow):
             global bool_address_uplink
             global dial_out_dial_out_cipher_bool
             global address_mode
+            global gui_message
 
             # Attempt to only run this function if this function is not already in progress
             if write_client_configuration_engaged is False:
@@ -893,6 +924,7 @@ class App(QMainWindow):
                                 # Append the new address book entry to the address book file conditionally
                                 if to_address_book != '':
                                     if bool_allow_write is True:
+                                        gui_message.append('saved_address')
                                         if os.path.exists('./communicator_address_book.txt'):
                                             with open('./communicator_address_book.txt', 'a') as fo:
                                                 fo.write(to_address_book + '\n')
@@ -904,10 +936,19 @@ class App(QMainWindow):
                                 debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_save_address] current index after sorting: ' + str(client_address_index))
                     else:
                         debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_save_address] name already exists!')
+                        gui_message.append('invalid_address')
+                        client_previous_address_function()
+                        client_next_address_function()
                 else:
                     debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_save_address] ip and port should not be empty!')
+                    gui_message.append('invalid_address')
+                    client_previous_address_function()
+                    client_next_address_function()
             else:
                 debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_save_address] name should not be empty!')
+                gui_message.append('invalid_address')
+                client_previous_address_function()
+                client_next_address_function()
 
             address_mode = 'uplink_current_index'
             self.address_book_label.setStyleSheet(title_stylesheet_default)
@@ -2614,6 +2655,14 @@ class App(QMainWindow):
         self.debug_timer.timeout.connect(self.debug_function)
         self.debug_jumpstart()
 
+        # QTimer - Debug Timer
+        self.gui_timer = QTimer(self)
+        self.gui_timer.setInterval(620)
+        self.gui_timer.timeout.connect(self.gui_function)
+        self.gui_jumpstart()
+
+        self.gui_message = ''
+
         self.initUI()
 
     def initUI(self):
@@ -2641,6 +2690,57 @@ class App(QMainWindow):
             if debug_bool is True:
                 print(db_msg)
             debug_message.remove(db_msg)
+
+    @QtCore.pyqtSlot()
+    def gui_jumpstart(self):
+        self.gui_timer.start()
+
+    @QtCore.pyqtSlot()
+    def gui_function(self):
+        global gui_message
+
+        if self.gui_message == 'invalid_address':
+            self.gui_message = ''
+            self.address_book_label.setStyleSheet(title_stylesheet_default)
+            self.dial_out_name.setStyleSheet(line_edit_stylesheet_white_text)
+            self.dial_out_ip_port.setStyleSheet(line_edit_stylesheet_white_text)
+            self.address_book_port.setStyleSheet(line_edit_stylesheet_white_text)
+            self.address_book_broadcast.setStyleSheet(line_edit_stylesheet_white_text)
+            self.address_book_mac.setStyleSheet(line_edit_stylesheet_white_text)
+
+        if self.gui_message == 'saved_address':
+            self.gui_message = ''
+            self.address_book_label.setStyleSheet(title_stylesheet_default)
+            self.dial_out_name.setStyleSheet(line_edit_stylesheet_white_text)
+            self.dial_out_ip_port.setStyleSheet(line_edit_stylesheet_white_text)
+            self.address_book_port.setStyleSheet(line_edit_stylesheet_white_text)
+            self.address_book_broadcast.setStyleSheet(line_edit_stylesheet_white_text)
+            self.address_book_mac.setStyleSheet(line_edit_stylesheet_white_text)
+
+        if gui_message:
+            gui_message_ = gui_message[-1]
+            print(gui_message_)
+
+            if gui_message_ == 'invalid_address':
+                self.gui_message = 'invalid_address'
+                print('-- dropped in gui_message:', gui_message_)
+                self.address_book_label.setStyleSheet(label_stylesheet_red_bg_black_text)
+                self.dial_out_name.setStyleSheet(line_edit_stylesheet_red_bg_black_text)
+                self.dial_out_ip_port.setStyleSheet(line_edit_stylesheet_red_bg_black_text)
+                self.address_book_port.setStyleSheet(line_edit_stylesheet_red_bg_black_text)
+                self.address_book_broadcast.setStyleSheet(line_edit_stylesheet_red_bg_black_text)
+                self.address_book_mac.setStyleSheet(line_edit_stylesheet_red_bg_black_text)
+
+            elif gui_message_ == 'saved_address':
+                self.gui_message = 'saved_address'
+                print('-- dropped in gui_message:', gui_message_)
+                self.address_book_label.setStyleSheet(label_stylesheet_green_bg_black_text)
+                self.dial_out_name.setStyleSheet(line_edit_stylesheet_green_bg_black_text)
+                self.dial_out_ip_port.setStyleSheet(line_edit_stylesheet_green_bg_black_text)
+                self.address_book_port.setStyleSheet(line_edit_stylesheet_green_bg_black_text)
+                self.address_book_broadcast.setStyleSheet(line_edit_stylesheet_green_bg_black_text)
+                self.address_book_mac.setStyleSheet(line_edit_stylesheet_green_bg_black_text)
+            gui_message.remove(gui_message_)
 
 
 class UplinkClass(QThread):
