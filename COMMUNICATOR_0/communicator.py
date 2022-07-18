@@ -1045,6 +1045,7 @@ class App(QMainWindow):
             self.generate_fingerprint.setEnabled(False)
 
             # todo
+            self.dial_out_name.setStyleSheet(line_edit_stylesheet_white_text)
             self.dial_out_ip_port.setStyleSheet(line_edit_stylesheet_white_text)
             self.address_book_port.setStyleSheet(line_edit_stylesheet_white_text)
             self.address_book_broadcast.setStyleSheet(line_edit_stylesheet_white_text)
@@ -1143,7 +1144,7 @@ class App(QMainWindow):
             self.generate_fingerprint.setEnabled(False)
 
             # todo
-            # self.dial_out_name.setStyleSheet(label_stylesheet_black_bg_text_white)
+            self.dial_out_name.setStyleSheet(line_edit_stylesheet_white_text)
             self.dial_out_ip_port.setStyleSheet(line_edit_stylesheet_white_text)
             self.address_book_port.setStyleSheet(line_edit_stylesheet_white_text)
             self.address_book_broadcast.setStyleSheet(line_edit_stylesheet_white_text)
