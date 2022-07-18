@@ -528,7 +528,6 @@ class App(QMainWindow):
 
         def send_message_function():
             global debug_message
-            self.setFocus()
             debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.send_message_function]')
             global_self.setFocus()
             if self.dial_out_message.text() != '':
@@ -540,7 +539,6 @@ class App(QMainWindow):
 
         def client_remove_address():
             global debug_message
-            self.setFocus()
             debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.client_remove_address]')
             global write_client_configuration_engaged
             global client_address
@@ -652,7 +650,6 @@ class App(QMainWindow):
 
         def client_save_address():
             global debug_message
-            self.setFocus()
             debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.client_save_address]')
             global write_client_configuration_engaged
             global client_address
@@ -876,7 +873,6 @@ class App(QMainWindow):
 
         def server_prev_addr_function():
             global debug_message
-            self.setFocus()
             debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.server_prev_addr_function]')
             global_self.setFocus()
             global server_address_index
@@ -898,7 +894,6 @@ class App(QMainWindow):
 
         def server_next_addr_function():
             global debug_message
-            self.setFocus()
             debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.server_next_addr_function]')
             global_self.setFocus()
 
@@ -921,7 +916,6 @@ class App(QMainWindow):
 
         def sck_set_arguments_function():
             global debug_message
-            self.setFocus()
             debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.sck_set_arguments_function]')
             global client_address
             global client_address_index
@@ -972,7 +966,6 @@ class App(QMainWindow):
 
         def client_previous_address_function():
             global debug_message
-            self.setFocus()
             debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.client_previous_address_function]')
             global client_address
             global client_address_index
@@ -1042,6 +1035,10 @@ class App(QMainWindow):
                         self.dial_out_cipher_bool_btn.setStyleSheet(button_stylesheet_green_text)
                         dial_out_dial_out_cipher_bool = True
                         self.dial_out_cipher_bool_btn.setEnabled(True)
+                    else:
+                        debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_previous_address_function] incorrect fingerprint length: ' + str(client_address[client_address_index]))
+                else:
+                    debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_previous_address_function] incorrect key length: ' + str(client_address[client_address_index]))
 
                 debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_previous_address_function] uplink bool in list: ' + str(client_address[client_address_index][11]))
                 print('client_address[client_address_index][12]:', client_address[client_address_index][12])
@@ -1062,7 +1059,6 @@ class App(QMainWindow):
 
         def client_next_address_function():
             global debug_message
-            self.setFocus()
             debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.client_next_address_function]')
             global client_address
             global client_address_index
@@ -1130,6 +1126,10 @@ class App(QMainWindow):
                         self.dial_out_cipher_bool_btn.setStyleSheet(button_stylesheet_green_text)
                         dial_out_dial_out_cipher_bool = True
                         self.dial_out_cipher_bool_btn.setEnabled(True)
+                    else:
+                        debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_next_address_function] incorrect fingerprint length: ' + str(client_address[client_address_index]))
+                else:
+                    debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_next_address_function] incorrect key length: ' + str(client_address[client_address_index]))
 
                 debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_next_address_function] uplink bool in list: ' + str(client_address[client_address_index][11]))
                 print('client_address[client_address_index][12]:', client_address[client_address_index][12])
@@ -1149,7 +1149,6 @@ class App(QMainWindow):
 
         def server_line_edit_return_pressed():
             global debug_message
-            self.setFocus()
             debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.server_line_edit_return_pressed]')
             global_self.setFocus()
             global server_address
@@ -1207,6 +1206,7 @@ class App(QMainWindow):
             self.server_notify_alien.setText(str(alien_message_count))
 
         def soft_block_ip_notofication_function():
+            global debug_message
             debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.soft_block_ip_notification_function]')
             global soft_block_ip_count
             global soft_block_ip
@@ -1216,7 +1216,6 @@ class App(QMainWindow):
 
         def mute_server_notify_alien_function():
             global debug_message
-            self.setFocus()
             debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.mute_server_notify_alien_function]')
             global mute_server_notify_alien_bool
             if mute_server_notify_alien_bool is True:
@@ -1230,7 +1229,6 @@ class App(QMainWindow):
 
         def mute_server_notify_cipher_function():
             global debug_message
-            self.setFocus()
             debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.mute_server_notify_cipher_function]')
             global mute_server_notify_cipher_bool
             if mute_server_notify_cipher_bool is True:
@@ -1244,7 +1242,6 @@ class App(QMainWindow):
 
         def server_save_function():
             global debug_message
-            self.setFocus()
             debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.server_save_function]')
             global write_server_configuration_engaged
             global server_address
@@ -1290,7 +1287,6 @@ class App(QMainWindow):
 
         def server_delete_function():
             global debug_message
-            self.setFocus()
             debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.server_delete_function]')
             global write_server_configuration_engaged
             global server_address
@@ -1323,7 +1319,6 @@ class App(QMainWindow):
 
         def start_function():
             global debug_message
-            self.setFocus()
             debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.start_function]')
             global_self.setFocus()
             if len(server_address) > 0:
@@ -1333,7 +1328,6 @@ class App(QMainWindow):
 
         def stop_function():
             global debug_message
-            self.setFocus()
             debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.stop_function]')
             global_self.setFocus()
             if server_thread.isRunning() is True:
@@ -1343,7 +1337,6 @@ class App(QMainWindow):
 
         def restart_function():
             global debug_message
-            self.setFocus()
             debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.restart_function]')
             if server_thread.isRunning() is True:
                 server_thread.stop()
@@ -1351,7 +1344,6 @@ class App(QMainWindow):
 
         def dial_out_cipher_btn_function():
             global debug_message
-            self.setFocus()
             debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.dial_out_cipher_btn_function]')
             global client_address
             global client_address_index
@@ -1381,7 +1373,6 @@ class App(QMainWindow):
 
         def dial_out_override_function():
             global debug_message
-            self.setFocus()
             debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.dial_out_override_function]')
             global client_address
             global client_address_index
@@ -1479,7 +1470,6 @@ class App(QMainWindow):
 
         def dial_out_save_with_key_function():
             global debug_message
-            self.setFocus()
             debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.dial_out_save_with_key_function]')
             global address_save_mode
             global address_reveal_bool
@@ -1511,10 +1501,9 @@ class App(QMainWindow):
             global client_address
             global client_address_index
             global max_client_len
-            self.setFocus()
             debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.format_fingerprint]')
             if address_reveal_bool is True:
-                if len(client_address) >= max_client_len:
+                if len(client_address) >= 0:
                     if len(client_address[client_address_index]) >= 10:
                         if len(client_address[client_address_index][6]) == 1024:
                             self.tb_fingerprint.setText('')
@@ -1532,7 +1521,6 @@ class App(QMainWindow):
             global client_address
             global client_address_index
             global max_client_len
-            self.setFocus()
             debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.check_key]')
             if address_reveal_bool is True:
                 if len(client_address[client_address_index]) >= max_client_len:
@@ -1543,7 +1531,6 @@ class App(QMainWindow):
             global debug_message
             global address_uplink_mode
             global bool_address_uplink
-            self.setFocus()
             debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.address_clear_form_function]')
             self.address_book_label.setStyleSheet(label_stylesheet_yellow_bg_text_white)
             self.dial_out_name.setText('')
@@ -1576,7 +1563,6 @@ class App(QMainWindow):
         def address_undo_form_function():
             global debug_message
             global address_uplink_mode
-            self.setFocus()
             debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.address_undo_form_function]')
             self.address_book_label.setStyleSheet(title_stylesheet_default)
             client_previous_address_function()
@@ -1595,7 +1581,6 @@ class App(QMainWindow):
 
         def address_clear_form_sensitive_function():
             global debug_message
-            self.setFocus()
             debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.address_clear_form_sensitive_function]')
             global address_reveal_bool
             global client_address
@@ -1636,7 +1621,6 @@ class App(QMainWindow):
 
         def generate_fingerprint_function():
             global debug_message
-            self.setFocus()
             self.key_string = ''
             self.fingerprint_str = ''
             debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.generate_fingerprint_function]')
@@ -1654,7 +1638,6 @@ class App(QMainWindow):
 
         def bool_socket_options_function():
             global debug_message
-            self.setFocus()
             debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.generate_fingerprint_function]')
             global bool_socket_options
             if bool_socket_options is True:
@@ -1669,7 +1652,6 @@ class App(QMainWindow):
             global debug_message
             debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.accept_only_address_book_function]')
             global accept_from_key
-            self.setFocus()
             accept_from_key = 'address_book_only'
             debug_message.append('[' + str(datetime.datetime.now()) + '] [App.accept_only_address_book_function] setting accept_from_key: ' + str(accept_from_key))
 
@@ -1687,9 +1669,8 @@ class App(QMainWindow):
 
         def accept_all_function():
             global debug_message
-            global accept_from_key
-            self.setFocus()
             debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.accept_all_function]')
+            global accept_from_key
             accept_from_key = 'accept_all'
             debug_message.append('[' + str(datetime.datetime.now()) + '] [App.accept_all_function] setting accept_from_key: ' + str(accept_from_key))
 
@@ -1707,9 +1688,8 @@ class App(QMainWindow):
 
         def uplink_enable_function():
             global debug_message
-            global uplink_enable_bool
-            self.setFocus()
             debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.uplink_enable_function]')
+            global uplink_enable_bool
             if uplink_enable_bool is False:
                 if get_external_ip_thread.isRunning():
                     get_external_ip_thread.stop()
@@ -1751,7 +1731,6 @@ class App(QMainWindow):
             global bool_address_uplink
             global uplink_addresses
             global address_uplink_mode
-            self.setFocus()
             debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.uplink_address_function]')
 
             if address_uplink_mode != 'save_mode':
@@ -1785,10 +1764,9 @@ class App(QMainWindow):
 
         def get_ext_ip_use_upnp_function():
             global debug_message
-            self.setFocus()
-            global uplink_use_external_service
             debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.get_ext_ip_use_upnp_function]')
 
+            global uplink_use_external_service
             uplink_use_external_service = False
 
             debug_message.append('[' + str(datetime.datetime.now()) + '] [App.get_ext_ip_use_upnp_function] setting uplink_use_external_service: ' + str(uplink_use_external_service))
@@ -1807,10 +1785,9 @@ class App(QMainWindow):
 
         def get_ext_ip_use_ext_service_function():
             global debug_message
-            global uplink_use_external_service
-            self.setFocus()
             debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.get_ext_ip_use_ext_service_function]')
 
+            global uplink_use_external_service
             uplink_use_external_service = True
 
             debug_message.append('[' + str(datetime.datetime.now()) + '] [App.get_ext_ip_use_ext_service_function] setting uplink_use_external_service: ' + str(uplink_use_external_service))
@@ -1830,7 +1807,6 @@ class App(QMainWindow):
         def address_book_address_label_function():
             global debug_message
             global use_address
-            self.setFocus()
             use_address = 'default'
             debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.address_book_address_label_function]')
             self.address_book_address_label.setStyleSheet(button_stylesheet_white_text_high)
@@ -1841,7 +1817,6 @@ class App(QMainWindow):
         def address_book_broadcast_label_function():
             global debug_message
             global use_address
-            self.setFocus()
             use_address = 'broadcast'
             debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.address_book_broadcast_label_function]')
             self.address_book_broadcast_label.setStyleSheet(button_stylesheet_white_text_high)
@@ -1852,7 +1827,6 @@ class App(QMainWindow):
         def address_book_mac_label_function():
             global debug_message
             global use_address
-            self.setFocus()
             use_address = 'mac'
             debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.address_book_mac_label_function]')
             self.address_book_mac_label.setStyleSheet(button_stylesheet_white_text_high)
