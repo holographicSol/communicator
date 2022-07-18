@@ -949,6 +949,15 @@ class App(QMainWindow):
                 client_previous_address_function()
                 client_next_address_function()
 
+            if str(self.address_key.text()) == '':
+                dial_out_dial_out_cipher_bool = False
+                self.dial_out_cipher_bool_btn.setStyleSheet(button_stylesheet_white_text_low)
+                self.dial_out_cipher_bool_btn.setEnabled(False)
+            else:
+                dial_out_dial_out_cipher_bool = True
+                self.dial_out_cipher_bool_btn.setStyleSheet(button_stylesheet_green_text)
+                self.dial_out_cipher_bool_btn.setEnabled(True)
+
             address_mode = 'uplink_current_index'
             self.address_book_label.setStyleSheet(title_stylesheet_default)
             self.dial_out_name.setEnabled(False)
@@ -2661,7 +2670,7 @@ class App(QMainWindow):
 
         # QTimer - Debug Timer
         self.gui_timer = QTimer(self)
-        self.gui_timer.setInterval(620)
+        self.gui_timer.setInterval(840)
         self.gui_timer.timeout.connect(self.gui_function)
         self.gui_jumpstart()
 
