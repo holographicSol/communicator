@@ -86,6 +86,9 @@ Root Description File. The root description xml file may change across rebooting
 designed to handle this by enumerating/re-enumerating the router automatically under certain circumstances in order
 to continue using the correct root description file url for UPNP communication with the router.
 
+Aesthetic:
+Aesthetic purely functional.
+
 If you poke around in the dark, you might poke a bear. Please use with caution and treat as experimental.
 
 
