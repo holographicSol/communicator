@@ -1524,6 +1524,7 @@ class App(QMainWindow):
             self.address_book_mac.setText('')
             self.address_key.setText('')
             self.tb_fingerprint.setText('')
+            self.transmit_display_address.setText('')
             self.codec_select_box.setCurrentIndex(0)
             self.communicator_socket_options_box_0.setCurrentIndex(0)
             self.communicator_socket_options_box_1.setCurrentIndex(0)
