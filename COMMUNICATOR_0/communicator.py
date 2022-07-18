@@ -383,10 +383,10 @@ button_stylesheet_background_matching = """QPushButton{background-color: rgb(0, 
 
 button_stylesheet_yellow_text = """QPushButton{background-color: rgb(0, 0, 0);
                        color: rgb(255, 255, 0);
-                       border-bottom:2px solid rgb(5, 5, 5);
-                       border-right:2px solid rgb(5, 5, 5);
-                       border-top:2px solid rgb(5, 5, 5);
-                       border-left:2px solid rgb(5, 5, 5);}"""
+                       border-bottom:0px solid rgb(5, 5, 5);
+                       border-right:0px solid rgb(5, 5, 5);
+                       border-top:0px solid rgb(5, 5, 5);
+                       border-left:0px solid rgb(5, 5, 5);}"""
 
 button_stylesheet_white_text_high = """QPushButton{background-color: rgb(0, 0, 0);
                        color: rgb(255, 255, 255);
@@ -1831,7 +1831,7 @@ class App(QMainWindow):
             debug_message.append('[' + str(datetime.datetime.now()) + '] [App.accept_only_address_book_function] setting accept_from_key: ' + str(accept_from_key))
 
             # Set Button Green
-            self.accept_only_address_book.setStyleSheet(button_stylesheet_green_text)
+            self.accept_only_address_book.setStyleSheet(button_stylesheet_white_text_high)
 
             # Set Other Options Red
             self.accept_all_traffic.setStyleSheet(button_stylesheet_white_text_low)
@@ -1850,7 +1850,7 @@ class App(QMainWindow):
             debug_message.append('[' + str(datetime.datetime.now()) + '] [App.accept_all_function] setting accept_from_key: ' + str(accept_from_key))
 
             # Set Button Green
-            self.accept_all_traffic.setStyleSheet(button_stylesheet_green_text)
+            self.accept_all_traffic.setStyleSheet(button_stylesheet_white_text_high)
 
             # Set Other Options Red
             self.accept_only_address_book.setStyleSheet(button_stylesheet_white_text_low)
@@ -1870,7 +1870,7 @@ class App(QMainWindow):
                     get_external_ip_thread.stop()
                 uplink_enable_bool = True
                 get_external_ip_thread.start()
-                self.uplink_enable.setStyleSheet(button_stylesheet_green_text)
+                self.uplink_enable.setStyleSheet(button_stylesheet_white_text_high)
 
                 if uplink_thread.isRunning():
                     uplink_thread.stop()
@@ -1947,7 +1947,7 @@ class App(QMainWindow):
             debug_message.append('[' + str(datetime.datetime.now()) + '] [App.get_ext_ip_use_upnp_function] setting uplink_use_external_service: ' + str(uplink_use_external_service))
 
             # Set Button Green
-            self.get_ext_ip_use_upnp.setStyleSheet(button_stylesheet_green_text)
+            self.get_ext_ip_use_upnp.setStyleSheet(button_stylesheet_white_text_high)
 
             # Set Other Options Red
             self.get_ext_ip_use_ext_service.setStyleSheet(button_stylesheet_white_text_low)
@@ -1971,7 +1971,7 @@ class App(QMainWindow):
             self.get_ext_ip_use_upnp.setStyleSheet(button_stylesheet_white_text_low)
 
             # Set Other Options Red
-            self.get_ext_ip_use_ext_service.setStyleSheet(button_stylesheet_green_text)
+            self.get_ext_ip_use_ext_service.setStyleSheet(button_stylesheet_white_text_high)
 
             # Save Changes
             if os.path.exists('./config.txt'):
@@ -2634,16 +2634,16 @@ class App(QMainWindow):
         # Show and set universal uplink settings
         debug_message.append('[' + str(datetime.datetime.now()) + '] [App] uplink_enable_bool: ' + str(uplink_enable_bool))
         if uplink_enable_bool is True:
-            self.uplink_enable.setStyleSheet(button_stylesheet_green_text)
+            self.uplink_enable.setStyleSheet(button_stylesheet_white_text_high)
             get_external_ip_thread.start()
             uplink_thread.start()
 
         # Show and set get external ip address settings
         debug_message.append('[' + str(datetime.datetime.now()) + '] [App] uplink_use_external_service: ' + str(uplink_use_external_service))
         if uplink_use_external_service is False:
-            self.get_ext_ip_use_upnp.setStyleSheet(button_stylesheet_green_text)
+            self.get_ext_ip_use_upnp.setStyleSheet(button_stylesheet_white_text_high)
         elif uplink_use_external_service is True:
-            self.get_ext_ip_use_ext_service.setStyleSheet(button_stylesheet_green_text)
+            self.get_ext_ip_use_ext_service.setStyleSheet(button_stylesheet_white_text_low)
 
         # Set Transmit Confirmation Address
         address_book_address_label_function()
