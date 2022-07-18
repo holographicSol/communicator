@@ -2421,7 +2421,7 @@ class App(QMainWindow):
 
         self.dial_out_prev_addr = QPushButton(self)
         self.dial_out_prev_addr.move(4, self.address_staple_height + 24 + 4)
-        self.dial_out_prev_addr.resize(20, 116)
+        self.dial_out_prev_addr.resize(20, 204)
         self.dial_out_prev_addr.setIcon(QIcon(arrow_left))
         self.dial_out_prev_addr.setIconSize(QSize(20, 20))
         self.dial_out_prev_addr.setStyleSheet(button_scroll_stylesheet_left)
@@ -2429,7 +2429,7 @@ class App(QMainWindow):
 
         self.dial_out_next_addr = QPushButton(self)
         self.dial_out_next_addr.move(self.width - self.btn_20 - self.btn_4, self.address_staple_height + 24 + 4)
-        self.dial_out_next_addr.resize(20, 116)
+        self.dial_out_next_addr.resize(20, 204)
         self.dial_out_next_addr.setIcon(QIcon(arrow_right))
         self.dial_out_next_addr.setIconSize(QSize(20, 20))
         self.dial_out_next_addr.setStyleSheet(button_scroll_stylesheet_right)
