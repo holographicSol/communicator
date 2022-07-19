@@ -2201,14 +2201,14 @@ class App(QMainWindow):
         self.server_rem_addr.clicked.connect(server_delete_function)
 
         self.soft_block_ip_notification = QPushButton(self)
-        self.soft_block_ip_notification.move(self.width - 24 - 60, self.server_staple + 24 + 24 + 24)
+        self.soft_block_ip_notification.move(self.width - 32 - 60, self.server_staple + 24 + 24 + 24)
         self.soft_block_ip_notification.resize(60, 20)
         self.soft_block_ip_notification.setText(str(soft_block_ip_count))
         self.soft_block_ip_notification.setStyleSheet(button_stylesheet_red_text)
         self.soft_block_ip_notification.clicked.connect(soft_block_ip_notofication_function)
 
         self.server_notify_alien = QPushButton(self)
-        self.server_notify_alien.move(self.width - 24 - 60, self.server_staple + 24 + 24)
+        self.server_notify_alien.move(self.width - 32 - 60, self.server_staple + 24 + 24)
         self.server_notify_alien.resize(60, int(self.btn_40 / 2))
         self.server_notify_alien.setStyleSheet(button_stylesheet_yellow_text)
         self.server_notify_alien.setFont(self.font_s7b)
@@ -2216,7 +2216,7 @@ class App(QMainWindow):
         self.server_notify_alien.clicked.connect(server_notify_alien_function)
 
         self.server_notify_cipher = QPushButton(self)
-        self.server_notify_cipher.move(self.width - 24 - 60, self.server_staple + 24)
+        self.server_notify_cipher.move(self.width - 32 - 60, self.server_staple + 24)
         self.server_notify_cipher.resize(60, int(self.btn_40 / 2))
         self.server_notify_cipher.setStyleSheet(button_stylesheet_white_text_high)
         self.server_notify_cipher.setFont(self.font_s7b)
@@ -2224,7 +2224,7 @@ class App(QMainWindow):
         self.server_notify_cipher.clicked.connect(server_notify_cipher_function)
 
         self.mute_server_notify_cipher = QPushButton(self)
-        self.mute_server_notify_cipher.move(self.width - 24 - 60 - 64, self.server_staple + 24)
+        self.mute_server_notify_cipher.move(self.width - 32 - 60 - 64, self.server_staple + 24)
         self.mute_server_notify_cipher.resize(60, int(self.btn_40 / 2))
         self.mute_server_notify_cipher.setStyleSheet(button_stylesheet_default)
         self.mute_server_notify_cipher.setIcon(QIcon(mute_0))
@@ -2232,7 +2232,7 @@ class App(QMainWindow):
         self.mute_server_notify_cipher.clicked.connect(mute_server_notify_cipher_function)
 
         self.mute_server_notify_alien = QPushButton(self)
-        self.mute_server_notify_alien.move(self.width - 24 - 60 - 64, self.server_staple + 24 + 24)
+        self.mute_server_notify_alien.move(self.width - 32 - 60 - 64, self.server_staple + 24 + 24)
         self.mute_server_notify_alien.resize(60, int(self.btn_40 / 2))
         self.mute_server_notify_alien.setStyleSheet(button_stylesheet_yellow_text)
         self.mute_server_notify_alien.setIcon(QIcon(mute_0))
