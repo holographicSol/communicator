@@ -462,10 +462,10 @@ line_edit_stylesheet_green_bg_black_text = """QLineEdit{background-color: rgb(0,
 
 line_edit_stylesheet_is_enabled = """QLineEdit{background-color: rgb(0, 0, 0);
                        color: rgb(255, 255, 255);
-                       border-bottom:3px solid rgb(255 255, 255);
-                       border-right:0px solid rgb(255, 255, 255);
+                       border-bottom:0px solid rgb(255 255, 255);
+                       border-right:3px solid rgb(255, 255, 255);
                        border-top:0px solid rgb(255, 255, 255);
-                       border-left:0px solid rgb(255, 255, 255);}"""
+                       border-left:3px solid rgb(255, 255, 255);}"""
 
 textbox_stylesheet_default = """QTextBrowser {background-color: rgb(0, 0, 0);
                 selection-color: black;
