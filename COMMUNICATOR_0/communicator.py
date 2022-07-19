@@ -82,6 +82,11 @@ player_default.setMedia(player_content_default)
 player_default.setVolume(100)
 
 # Images
+# server_public_white = './resources/image/globe_default.png'
+# server_public_yellow = './resources/image/globe_yellow.png'
+# server_public_amber = './resources/image/globe_amber.png'
+# server_public_green = './resources/image/globe_green.png'
+# server_public_off = './resources/image/globe_off.png'
 mute_0 = './resources/image/mute_0.png'
 mute_1 = './resources/image/mute_1.png'
 advanced_save_0 = './resources/image/advanced_save_0.png'
@@ -305,13 +310,6 @@ label_stylesheet_black_bg_text_yellow = """QLabel{background-color: rgb(0, 0, 0)
                        border-top:0px solid rgb(5, 5, 5);
                        border-left:0px solid rgb(5, 5, 5);}"""
 
-label_stylesheet_black_bg_green_text = """QLabel{background-color: rgb(0, 0, 0);
-                       color: rgb(0, 255, 0);
-                       border-bottom:0px solid rgb(5, 5, 5);
-                       border-right:0px solid rgb(5, 5, 5);
-                       border-top:0px solid rgb(5, 5, 5);
-                       border-left:0px solid rgb(5, 5, 5);}"""
-
 label_stylesheet_white_bg_black_text = """QLabel{background-color: rgb(255, 255, 255);
                        color: rgb(0, 0, 0);
                        border-bottom:0px solid rgb(5, 5, 5);
@@ -326,19 +324,19 @@ label_stylesheet_grey_bg_white_text_high = """QLabel{background-color: rgb(0, 0,
                        border-top:0px solid rgb(5, 5, 5);
                        border-left:0px solid rgb(5, 5, 5);}"""
 
-label_stylesheet_red_bg_black_text = """QLabel{background-color: rgb(0, 0, 0);
-                       color: rgb(255, 0, 0);
+label_stylesheet_red_bg_black_text = """QLabel{background-color: rgb(255, 0, 0);
+                       color: rgb(0, 0, 0);
                        border-bottom:0px solid rgb(5, 5, 5);
-                       border-right:3px solid rgb(255, 0, 0);
-                       border-top:3px solid rgb(255, 0, 0);
-                       border-left:3px solid rgb(255, 0, 0);}"""
+                       border-right:0px solid rgb(5, 5, 5);
+                       border-top:0px solid rgb(5, 5, 5);
+                       border-left:0px solid rgb(5, 5, 5);}"""
 
-label_stylesheet_green_bg_black_text = """QLabel{background-color: rgb(0, 0, 0);
-                       color: rgb(0, 255, 0);
+label_stylesheet_green_bg_black_text = """QLabel{background-color: rgb(0, 255, 0);
+                       color: rgb(0, 0, 0);
                        border-bottom:0px solid rgb(5, 5, 5);
-                       border-right:3px solid rgb(0, 255, 0);
-                       border-top:3px solid rgb(0, 255, 0);
-                       border-left:3px solid rgb(0, 255, 0);}"""
+                       border-right:0px solid rgb(5, 5, 5);
+                       border-top:0px solid rgb(5, 5, 5);
+                       border-left:0px solid rgb(5, 5, 5);}"""
 
 title_stylesheet_default = """QLabel{background-color: rgb(0, 0, 0);
                        color: rgb(255, 255, 255);
@@ -368,19 +366,6 @@ button_scroll_stylesheet_right = """QPushButton{background-color: rgb(0, 0, 0);
                        border-top:3px solid rgb(255, 255, 255);
                        border-left:3px solid rgb(255, 255, 255);}"""
 
-button_scroll_stylesheet_left_red = """QPushButton{background-color: rgb(0, 0, 0);
-                       color: rgb(255, 0, 0);
-                       border-bottom:3px solid rgb(255, 0, 0);
-                       border-right:3px solid rgb(255, 0, 0);
-                       border-top:3px solid rgb(255, 0, 0);
-                       border-left:0px solid rgb(5, 5, 5);}"""
-
-button_scroll_stylesheet_left_green = """QPushButton{background-color: rgb(0, 0, 0);
-                       color: rgb(0, 255, 0);
-                       border-bottom:3px solid rgb(0, 255, 0);
-                       border-right:3px solid rgb(0, 255, 0);
-                       border-top:3px solid rgb(0, 255, 0);
-                       border-left:0px solid rgb(5, 5, 5);}"""
 
 button_stylesheet_default = """QPushButton{background-color: rgb(0, 0, 0);
                        color: rgb(255, 255, 255);
@@ -446,26 +431,26 @@ line_edit_stylesheet_white_text = """QLineEdit{background-color: rgb(0, 0, 0);
                        border-top:0px solid rgb(5, 5, 5);
                        border-left:0px solid rgb(5, 5, 5);}"""
 
-line_edit_stylesheet_red_bg_black_text = """QLineEdit{background-color: rgb(0, 0, 0);
+line_edit_stylesheet_red_bg_black_text = """QLineEdit{background-color: rgb(255, 0, 0);
                        color: rgb(255, 0, 0);
-                       border-bottom:0px solid rgb(5, 5, 5);
-                       border-right:0px solid rgb(5, 5, 5);
-                       border-top:0px solid rgb(5, 5, 5);
-                       border-left:0px solid rgb(5, 5, 5);}"""
+                       border-bottom:0px solid rgb(0, 0, 0);
+                       border-right:3px solid rgb(255, 0, 0);
+                       border-top:0px solid rgb(0, 0, 0);
+                       border-left:3px solid rgb(255 0, 0);}"""
 
 line_edit_stylesheet_green_bg_black_text = """QLineEdit{background-color: rgb(0, 0, 0);
                        color: rgb(0, 255, 0);
-                       border-bottom:0px solid rgb(5, 5, 5);
-                       border-right:0px solid rgb(5, 5, 5);
-                       border-top:0px solid rgb(5, 5, 5);
-                       border-left:0px solid rgb(5, 5, 5);}"""
+                       border-bottom:0px solid rgb(0, 0, 0);
+                       border-right:3px solid rgb(0, 255, 0);
+                       border-top:0px solid rgb(0, 0, 0);
+                       border-left:3px solid rgb(0 255, 0);}"""
 
 line_edit_stylesheet_is_enabled = """QLineEdit{background-color: rgb(0, 0, 0);
                        color: rgb(255, 255, 255);
-                       border-bottom:0px solid rgb(255 255, 255);
+                       border-bottom:0px solid rgb(0, 0, 0);
                        border-right:3px solid rgb(255, 255, 255);
-                       border-top:0px solid rgb(255, 255, 255);
-                       border-left:3px solid rgb(255, 255, 255);}"""
+                       border-top:0px solid rgb(0, 0, 0);
+                       border-left:3px solid rgb(255 255, 255);}"""
 
 textbox_stylesheet_default = """QTextBrowser {background-color: rgb(0, 0, 0);
                 selection-color: black;
@@ -486,19 +471,10 @@ textbox_stylesheet_black_bg = """QTextBrowser {background-color: rgb(0, 0, 0);
                 border-top:0px solid rgb(5, 5, 5);
                 border-left:0px solid rgb(5, 5, 5);}"""
 
-textbox_stylesheet_black_bg_red_text = """QTextBrowser {background-color: rgb(0, 0, 0);
+textbox_stylesheet_white_bg_black_text = """QTextBrowser {background-color: rgb(255, 255, 0);
                 selection-color: black;
                 selection-background-color: rgb(0, 180, 0);
-                color: rgb(255, 0, 0);
-                border-bottom:0px solid rgb(5, 5, 5);
-                border-right:0px solid rgb(5, 5, 5);
-                border-top:0px solid rgb(5, 5, 5);
-                border-left:0px solid rgb(5, 5, 5);}"""
-
-textbox_stylesheet_black_bg_green_text = """QTextBrowser {background-color: rgb(0, 0, 0);
-                selection-color: black;
-                selection-background-color: rgb(0, 180, 0);
-                color: rgb(0, 255, 0);
+                color: rgb(0, 0, 0);
                 border-bottom:0px solid rgb(5, 5, 5);
                 border-right:0px solid rgb(5, 5, 5);
                 border-top:0px solid rgb(5, 5, 5);
@@ -506,20 +482,6 @@ textbox_stylesheet_black_bg_green_text = """QTextBrowser {background-color: rgb(
 
 cmb_menu_style = """QComboBox {background-color: rgb(0, 0, 0);
                    color: rgb(255, 255, 255);
-                   border-top:0px solid rgb(5, 5, 5);
-                   border-bottom:0px solid rgb(5, 5, 5);
-                   border-right:0px solid rgb(5, 5, 5);
-                   border-left:0px solid rgb(0, 0, 0);}"""
-
-cmb_menu_style_black_bg_red_text = """QComboBox {background-color: rgb(0, 0, 0);
-                   color: rgb(255, 0, 0);
-                   border-top:0px solid rgb(5, 5, 5);
-                   border-bottom:0px solid rgb(5, 5, 5);
-                   border-right:0px solid rgb(5, 5, 5);
-                   border-left:0px solid rgb(0, 0, 0);}"""
-
-cmb_menu_style_black_bg_green_text = """QComboBox {background-color: rgb(0, 0, 0);
-                   color: rgb(0, 255, 0);
                    border-top:0px solid rgb(5, 5, 5);
                    border-bottom:0px solid rgb(5, 5, 5);
                    border-right:0px solid rgb(5, 5, 5);
@@ -544,97 +506,93 @@ class App(QMainWindow):
         global_self = self
 
         self.font_s7b = QFont("Segoe UI", 7, QFont.Bold)
-        
-        def set_main_style():
 
-            self.setStyleSheet("""
-                                        QScrollBar:vertical {width: 11px;
-                                        margin: 11px 0 11px 0;
-                                        background-color: black;
-                                        }
-                                        QScrollBar::handle:vertical {
-                                        background-color: black;
-                                        min-height: 11px;
-                                        }
-                                        QScrollBar::add-line:vertical {
-                                        background-color: black;
-                                        height: 11px;
-                                        subcontrol-position: bottom;
-                                        subcontrol-origin: margin;
-                                        }
-                                        QScrollBar::sub-line:vertical {
-                                        background-color: black;
-                                        height: 11px;
-                                        subcontrol-position: top;
-                                        subcontrol-origin: margin;
-                                        }
-                                        QScrollBar::up-arrow:vertical {
-                                        image:url('./resources/image/scroll_white.png');
-                                        height: 11px;
-                                        width: 11px;
-                                        }
-                                        QScrollBar::down-arrow:vertical {
-                                        image:url('./resources/image/scroll_white.png');
-                                        height: 11px;
-                                        width: 11px;
-                                        }
-                                        QScrollBar::add-page:vertical {
-                                        background: rgb(25, 25, 25);
-                                        }
-                                        QScrollBar::sub-page:vertical {
-                                        background: rgb(25, 25, 25);
-                                        }
-    
-                                        QScrollBar:horizontal {
-                                        height: 11px;
-                                        margin: 0px 11px 0 11px;
-                                        background-color: black;
-                                        }
-                                        QScrollBar::handle:horizontal {
-                                        background-color: black;
-                                        min-width: 11px;
-                                        }
-                                        QScrollBar::add-line:horizontal {
-                                        background-color: black;
-                                        width: 11px;
-                                        subcontrol-position: right;
-                                        subcontrol-origin: margin;
-                                        }
-                                        QScrollBar::sub-line:horizontal {
-                                        background-color: black;
-                                        width: 11px;
-                                        subcontrol-position: top left;
-                                        subcontrol-origin: margin;
-                                        position: absolute;
-                                        }
-                                        QScrollBar::left-arrow:horizontal {
-                                        image:url('./resources/image/scroll_white.png');
-                                        height: 11px;
-                                        width: 11px;
-                                        }
-                                        QScrollBar::right-arrow:horizontal {
-                                        image:url('./resources/image/scroll_white.png');
-                                        height: 11px;
-                                        width: 11px;
-                                        }
-                                        QScrollBar::add-page:horizontal {
-                                        background: rgb(25, 25, 25);
-                                        }
-                                        QScrollBar::sub-page:horizontal {
-                                        background: rgb(25, 25, 25);
-                                        }
-                                        """)
-    
-            """ Tooltip """
-            self.tooltip_style = """QToolTip {background-color: rgb(35, 35, 35);
-                                       color: rgb(200, 200, 200);
-                                       border-top:0px solid rgb(35, 35, 35);
-                                       border-bottom:0px solid rgb(35, 35, 35);
-                                       border-right:0px solid rgb(0, 0, 0);
-                                       border-left:0px solid rgb(0, 0, 0);}"""
-            self.setStyleSheet(self.tooltip_style)
-        
-        set_main_style()
+        self.setStyleSheet("""
+                                    QScrollBar:vertical {width: 11px;
+                                    margin: 11px 0 11px 0;
+                                    background-color: black;
+                                    }
+                                    QScrollBar::handle:vertical {
+                                    background-color: black;
+                                    min-height: 11px;
+                                    }
+                                    QScrollBar::add-line:vertical {
+                                    background-color: black;
+                                    height: 11px;
+                                    subcontrol-position: bottom;
+                                    subcontrol-origin: margin;
+                                    }
+                                    QScrollBar::sub-line:vertical {
+                                    background-color: black;
+                                    height: 11px;
+                                    subcontrol-position: top;
+                                    subcontrol-origin: margin;
+                                    }
+                                    QScrollBar::up-arrow:vertical {
+                                    image:url('./resources/image/scroll_white.png');
+                                    height: 11px;
+                                    width: 11px;
+                                    }
+                                    QScrollBar::down-arrow:vertical {
+                                    image:url('./resources/image/scroll_white.png');
+                                    height: 11px;
+                                    width: 11px;
+                                    }
+                                    QScrollBar::add-page:vertical {
+                                    background: rgb(25, 25, 25);
+                                    }
+                                    QScrollBar::sub-page:vertical {
+                                    background: rgb(25, 25, 25);
+                                    }
+
+                                    QScrollBar:horizontal {
+                                    height: 11px;
+                                    margin: 0px 11px 0 11px;
+                                    background-color: black;
+                                    }
+                                    QScrollBar::handle:horizontal {
+                                    background-color: black;
+                                    min-width: 11px;
+                                    }
+                                    QScrollBar::add-line:horizontal {
+                                    background-color: black;
+                                    width: 11px;
+                                    subcontrol-position: right;
+                                    subcontrol-origin: margin;
+                                    }
+                                    QScrollBar::sub-line:horizontal {
+                                    background-color: black;
+                                    width: 11px;
+                                    subcontrol-position: top left;
+                                    subcontrol-origin: margin;
+                                    position: absolute;
+                                    }
+                                    QScrollBar::left-arrow:horizontal {
+                                    image:url('./resources/image/scroll_white.png');
+                                    height: 11px;
+                                    width: 11px;
+                                    }
+                                    QScrollBar::right-arrow:horizontal {
+                                    image:url('./resources/image/scroll_white.png');
+                                    height: 11px;
+                                    width: 11px;
+                                    }
+                                    QScrollBar::add-page:horizontal {
+                                    background: rgb(25, 25, 25);
+                                    }
+                                    QScrollBar::sub-page:horizontal {
+                                    background: rgb(25, 25, 25);
+                                    }
+                                    """)
+
+        """ Tooltip """
+        self.tooltip_style = """QToolTip {background-color: rgb(35, 35, 35);
+                                   color: rgb(200, 200, 200);
+                                   border-top:0px solid rgb(35, 35, 35);
+                                   border-bottom:0px solid rgb(35, 35, 35);
+                                   border-right:0px solid rgb(0, 0, 0);
+                                   border-left:0px solid rgb(0, 0, 0);}"""
+        self.setStyleSheet(self.tooltip_style)
 
         self.key_string = ''
         self.fingerprint_str = ''
@@ -833,7 +791,6 @@ class App(QMainWindow):
 
                             # Continue if not False in the pre-flight check list
                             if False not in allow_save_bool:
-                                port_not_digit = False
 
                                 # Set a new boolean to False and use this variable to allow or disallow the final address book amendment later
                                 bool_allow_write = False
@@ -860,14 +817,6 @@ class App(QMainWindow):
                                 if key_ == '':
                                     key_ = 'x'
 
-                                if port_.isdigit():
-                                    print('port_.isdigit: True')
-                                    port_not_digit = False
-                                    port_ = int(port_)
-                                else:
-                                    print('port_.isdigit: False')
-                                    port_not_digit = True
-
                                 # Get the socket options and create a string of all the socket arguments
                                 s_options_0 = str(self.communicator_socket_options_box_2.currentText())
                                 s_options_1 = str(self.communicator_socket_options_box_3.currentText())
@@ -880,7 +829,7 @@ class App(QMainWindow):
                                 to_address_book = ''
 
                                 # Basic Save Mode
-                                if address_save_mode == 'basic' and port_not_digit is False:
+                                if address_save_mode == 'basic':
 
                                     # Save mode is basic so ensure key and fingerprint have been cleared
                                     self.address_key.setText('')
@@ -906,7 +855,7 @@ class App(QMainWindow):
                                     bool_allow_write = True
 
                                 # Advanced Save Mode
-                                elif address_save_mode == 'advanced' and port_not_digit is False:
+                                elif address_save_mode == 'advanced':
 
                                     # Display key and fingerprint
                                     debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_save_address] key: ' + str((self.address_key.text())))
@@ -984,7 +933,7 @@ class App(QMainWindow):
                                 # Append the new address book entry to the address book file conditionally
                                 if to_address_book != '':
                                     if bool_allow_write is True:
-                                        gui_message.append('address_book_saved_address')
+                                        gui_message.append('saved_address')
                                         if os.path.exists('./communicator_address_book.txt'):
                                             with open('./communicator_address_book.txt', 'a') as fo:
                                                 fo.write(to_address_book + '\n')
@@ -994,21 +943,19 @@ class App(QMainWindow):
 
                                 # Display the potentially new current index as the index may have changed
                                 debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_save_address] current index after sorting: ' + str(client_address_index))
-                                client_previous_address_function()
-                                client_next_address_function()
                     else:
                         debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_save_address] name already exists!')
-                        gui_message.append('address_book_save_invalid_address')
+                        gui_message.append('invalid_address')
                         client_previous_address_function()
                         client_next_address_function()
                 else:
                     debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_save_address] ip and port should not be empty!')
-                    gui_message.append('address_book_save_invalid_address')
+                    gui_message.append('invalid_address')
                     client_previous_address_function()
                     client_next_address_function()
             else:
                 debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_save_address] name should not be empty!')
-                gui_message.append('address_book_save_invalid_address')
+                gui_message.append('invalid_address')
                 client_previous_address_function()
                 client_next_address_function()
 
@@ -1635,9 +1582,6 @@ class App(QMainWindow):
                 self.address_book_label.setText('[ OVERRIDE ]')
                 self.dial_out_label.setText('[ TRANSMIT OVERRIDE ]')
 
-                self.address_book_label.setStyleSheet(label_stylesheet_white_bg_black_text)
-                self.dial_out_label.setStyleSheet(label_stylesheet_white_bg_black_text)
-
                 self.dial_out_prev_addr.hide()
                 self.dial_out_next_addr.hide()
 
@@ -1747,7 +1691,6 @@ class App(QMainWindow):
             global address_mode
             global bool_address_uplink
             debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.address_clear_form_function]')
-            # self.address_book_label.setStyleSheet(label_stylesheet_white_bg_black_text)
             self.dial_out_name.setText('')
             self.dial_out_ip_port.setText('')
             self.address_book_port.setText('')
@@ -1770,10 +1713,10 @@ class App(QMainWindow):
             self.address_book_port.setEnabled(True)
             self.address_book_broadcast.setEnabled(True)
             self.address_book_mac.setEnabled(True)
-            # self.address_key.setEnabled(True)
-            # self.tb_fingerprint.setEnabled(True)
-            # self.generate_key.setEnabled(True)
-            # self.generate_fingerprint.setEnabled(True)
+            self.address_key.setEnabled(True)
+            self.tb_fingerprint.setEnabled(True)
+            self.generate_key.setEnabled(True)
+            self.generate_fingerprint.setEnabled(True)
 
             self.dial_out_name.setStyleSheet(line_edit_stylesheet_is_enabled)
             self.dial_out_ip_port.setStyleSheet(line_edit_stylesheet_is_enabled)
@@ -1781,21 +1724,11 @@ class App(QMainWindow):
             self.address_book_broadcast.setStyleSheet(line_edit_stylesheet_is_enabled)
             self.address_book_mac.setStyleSheet(line_edit_stylesheet_is_enabled)
 
-            # self.dial_out_encoding.setStyleSheet(button_stylesheet_red_text)
-            # self.dial_out_family_type.setStyleSheet(labe)
-            # self.dial_out_socket_type.setStyleSheet(label_stylesheet_white_bg_black_text)
-            # self.bool_socket_options_btn.setStyleSheet(button_stylesheet_red_text)
-
-            # self.address_key.setStyleSheet(line_edit_stylesheet_is_enabled)
-            # self.tb_fingerprint.setStyleSheet(textbox_stylesheet_white_bg_black_text)
-            # self.generate_key.setStyleSheet(button_stylesheet_green_text)
-            # self.generate_fingerprint.setStyleSheet(button_stylesheet_green_text)
-
         def address_undo_form_function():
             global debug_message
             global address_mode
             debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.address_undo_form_function]')
-            # self.address_book_label.setStyleSheet(title_stylesheet_default)
+            self.address_book_label.setStyleSheet(title_stylesheet_default)
             client_previous_address_function()
             client_next_address_function()
             address_mode = 'uplink_current_index'
@@ -1805,10 +1738,10 @@ class App(QMainWindow):
             self.address_book_port.setEnabled(False)
             self.address_book_broadcast.setEnabled(False)
             self.address_book_mac.setEnabled(False)
-            # self.address_key.setEnabled(False)
-            # self.tb_fingerprint.setEnabled(False)
-            # self.generate_key.setEnabled(False)
-            # self.generate_fingerprint.setEnabled(False)
+            self.address_key.setEnabled(False)
+            self.tb_fingerprint.setEnabled(False)
+            self.generate_key.setEnabled(False)
+            self.generate_fingerprint.setEnabled(False)
 
             self.dial_out_name.setStyleSheet(line_edit_stylesheet_white_text)
             self.dial_out_ip_port.setStyleSheet(line_edit_stylesheet_white_text)
@@ -2168,19 +2101,19 @@ class App(QMainWindow):
         self.server_ip_port.setAlignment(Qt.AlignCenter)
 
         self.server_prev_addr = QPushButton(self)
-        self.server_prev_addr.move(4, self.server_staple + 28)
-        self.server_prev_addr.resize(self.btn_20, 60)
+        self.server_prev_addr.move(int((self.width / 2) - (self.btn_240 / 2) - self.btn_20 - self.btn_4), self.server_staple + 24 + 24)
+        self.server_prev_addr.resize(self.btn_20, 20)
         self.server_prev_addr.setIcon(QIcon(arrow_left))
         self.server_prev_addr.setIconSize(QSize(20, 20))
-        self.server_prev_addr.setStyleSheet(button_scroll_stylesheet_left)
+        self.server_prev_addr.setStyleSheet(button_stylesheet_default)
         self.server_prev_addr.clicked.connect(server_prev_addr_function)
 
         self.server_next_addr = QPushButton(self)
-        self.server_next_addr.move(self.width - 24, self.server_staple + 28)
-        self.server_next_addr.resize(20, 60)
+        self.server_next_addr.move(int((self.width / 2) + (self.btn_240 / 2) + self.btn_4), self.server_staple + 24 + 24)
+        self.server_next_addr.resize(20, 20)
         self.server_next_addr.setIcon(QIcon(arrow_right))
         self.server_next_addr.setIconSize(QSize(20, 20))
-        self.server_next_addr.setStyleSheet(button_scroll_stylesheet_right)
+        self.server_next_addr.setStyleSheet(button_stylesheet_default)
         self.server_next_addr.clicked.connect(server_next_addr_function)
 
         self.server_add_addr = QPushButton(self)
@@ -2201,14 +2134,14 @@ class App(QMainWindow):
         self.server_rem_addr.clicked.connect(server_delete_function)
 
         self.soft_block_ip_notification = QPushButton(self)
-        self.soft_block_ip_notification.move(self.width - 32 - 60, self.server_staple + 24 + 24 + 24)
+        self.soft_block_ip_notification.move(self.width - 24 - 60, self.server_staple + 24 + 24 + 24)
         self.soft_block_ip_notification.resize(60, 20)
         self.soft_block_ip_notification.setText(str(soft_block_ip_count))
         self.soft_block_ip_notification.setStyleSheet(button_stylesheet_red_text)
         self.soft_block_ip_notification.clicked.connect(soft_block_ip_notofication_function)
 
         self.server_notify_alien = QPushButton(self)
-        self.server_notify_alien.move(self.width - 32 - 60, self.server_staple + 24 + 24)
+        self.server_notify_alien.move(self.width - 24 - 60, self.server_staple + 24 + 24)
         self.server_notify_alien.resize(60, int(self.btn_40 / 2))
         self.server_notify_alien.setStyleSheet(button_stylesheet_yellow_text)
         self.server_notify_alien.setFont(self.font_s7b)
@@ -2216,7 +2149,7 @@ class App(QMainWindow):
         self.server_notify_alien.clicked.connect(server_notify_alien_function)
 
         self.server_notify_cipher = QPushButton(self)
-        self.server_notify_cipher.move(self.width - 32 - 60, self.server_staple + 24)
+        self.server_notify_cipher.move(self.width - 24 - 60, self.server_staple + 24)
         self.server_notify_cipher.resize(60, int(self.btn_40 / 2))
         self.server_notify_cipher.setStyleSheet(button_stylesheet_white_text_high)
         self.server_notify_cipher.setFont(self.font_s7b)
@@ -2224,7 +2157,7 @@ class App(QMainWindow):
         self.server_notify_cipher.clicked.connect(server_notify_cipher_function)
 
         self.mute_server_notify_cipher = QPushButton(self)
-        self.mute_server_notify_cipher.move(self.width - 32 - 60 - 64, self.server_staple + 24)
+        self.mute_server_notify_cipher.move(self.width - 24 - 60 - 64, self.server_staple + 24)
         self.mute_server_notify_cipher.resize(60, int(self.btn_40 / 2))
         self.mute_server_notify_cipher.setStyleSheet(button_stylesheet_default)
         self.mute_server_notify_cipher.setIcon(QIcon(mute_0))
@@ -2232,7 +2165,7 @@ class App(QMainWindow):
         self.mute_server_notify_cipher.clicked.connect(mute_server_notify_cipher_function)
 
         self.mute_server_notify_alien = QPushButton(self)
-        self.mute_server_notify_alien.move(self.width - 32 - 60 - 64, self.server_staple + 24 + 24)
+        self.mute_server_notify_alien.move(self.width - 24 - 60 - 64, self.server_staple + 24 + 24)
         self.mute_server_notify_alien.resize(60, int(self.btn_40 / 2))
         self.mute_server_notify_alien.setStyleSheet(button_stylesheet_yellow_text)
         self.mute_server_notify_alien.setIcon(QIcon(mute_0))
@@ -2240,7 +2173,7 @@ class App(QMainWindow):
         self.mute_server_notify_alien.clicked.connect(mute_server_notify_alien_function)
 
         self.accept_only_address_book = QPushButton(self)
-        self.accept_only_address_book.move(32, self.server_staple + 24)
+        self.accept_only_address_book.move(28, self.server_staple + 24)
         self.accept_only_address_book.resize(self.btn_120, int(self.btn_40 / 2))
         self.accept_only_address_book.setFont(self.font_s7b)
         self.accept_only_address_book.setText('ACCEPT ONLY ADD.BK')
@@ -2248,7 +2181,7 @@ class App(QMainWindow):
         self.accept_only_address_book.clicked.connect(accept_only_address_book_function)
 
         self.accept_all_traffic = QPushButton(self)
-        self.accept_all_traffic.move(32 + self.btn_120 + 4, self.server_staple + 24)
+        self.accept_all_traffic.move(28 + self.btn_120 + 4, self.server_staple + 24)
         self.accept_all_traffic.resize(self.btn_120, int(self.btn_40 / 2))
         self.accept_all_traffic.setFont(self.font_s7b)
         self.accept_all_traffic.setText('ACCEPT ALL')
@@ -2256,7 +2189,7 @@ class App(QMainWindow):
         self.accept_all_traffic.clicked.connect(accept_all_function)
 
         self.uplink_enable = QPushButton(self)
-        self.uplink_enable.move(32, self.server_staple + 24 + 24)
+        self.uplink_enable.move(28, self.server_staple + 24 + 24)
         self.uplink_enable.resize(self.btn_120, int(self.btn_40 / 2))
         self.uplink_enable.setFont(self.font_s7b)
         self.uplink_enable.setText('UPLINK')
@@ -2264,7 +2197,7 @@ class App(QMainWindow):
         self.uplink_enable.clicked.connect(uplink_enable_function)
 
         self.external_ip_label = QLabel(self)
-        self.external_ip_label.move(32 + self.btn_120 + 4, self.server_staple + 24 + 24)
+        self.external_ip_label.move(28 + self.btn_120 + 4, self.server_staple + 24 + 24)
         self.external_ip_label.resize(self.btn_120, 20)
         self.external_ip_label.setFont(self.font_s7b)
         self.external_ip_label.setText('')
@@ -2272,7 +2205,7 @@ class App(QMainWindow):
         self.external_ip_label.setStyleSheet(label_stylesheet_black_bg_text_white)
 
         self.get_ext_ip_use_upnp = QPushButton(self)
-        self.get_ext_ip_use_upnp.move(32, self.server_staple + 24 + 24 + 24)
+        self.get_ext_ip_use_upnp.move(28, self.server_staple + 24 + 24 + 24)
         self.get_ext_ip_use_upnp.resize(self.btn_120, int(self.btn_40 / 2))
         self.get_ext_ip_use_upnp.setFont(self.font_s7b)
         self.get_ext_ip_use_upnp.setText('UPNP')
@@ -2280,7 +2213,7 @@ class App(QMainWindow):
         self.get_ext_ip_use_upnp.clicked.connect(get_ext_ip_use_upnp_function)
 
         self.get_ext_ip_use_ext_service = QPushButton(self)
-        self.get_ext_ip_use_ext_service.move(32 + self.btn_120 + 4, self.server_staple + 24 + 24 + 24)
+        self.get_ext_ip_use_ext_service.move(28 + self.btn_120 + 4, self.server_staple + 24 + 24 + 24)
         self.get_ext_ip_use_ext_service.resize(self.btn_120, int(self.btn_40 / 2))
         self.get_ext_ip_use_ext_service.setFont(self.font_s7b)
         self.get_ext_ip_use_ext_service.setText('EXT. SERVICE')
@@ -2775,58 +2708,33 @@ class App(QMainWindow):
         self.gui_timer.start()
 
     @QtCore.pyqtSlot()
-    def address_book_set_default_gui_function(self):
-
-        # Address Book Default Palett
-        self.address_book_label.setStyleSheet(title_stylesheet_default)
-        self.dial_out_name.setStyleSheet(line_edit_stylesheet_white_text)
-        self.dial_out_ip_port.setStyleSheet(line_edit_stylesheet_white_text)
-        self.address_book_port.setStyleSheet(line_edit_stylesheet_white_text)
-        self.address_book_broadcast.setStyleSheet(line_edit_stylesheet_white_text)
-        self.address_book_mac.setStyleSheet(line_edit_stylesheet_white_text)
-
-        self.dial_out_encoding.setStyleSheet(button_stylesheet_white_text_high)
-        self.dial_out_family_type.setStyleSheet(label_stylesheet_black_bg_text_white)
-        self.dial_out_socket_type.setStyleSheet(label_stylesheet_black_bg_text_white)
-        self.bool_socket_options_btn.setStyleSheet(button_stylesheet_white_text_high)
-
-        self.address_book_name_label.setStyleSheet(label_stylesheet_black_bg_text_white)
-        self.address_book_address_label.setStyleSheet(button_stylesheet_white_text_high)
-        self.address_book_port_label.setStyleSheet(label_stylesheet_black_bg_text_white)
-        self.address_book_broadcast_label.setStyleSheet(button_stylesheet_white_text_high)
-        self.address_book_mac_label.setStyleSheet(button_stylesheet_white_text_high)
-
-        self.codec_select_box.setStyleSheet(cmb_menu_style)
-        self.communicator_socket_options_box_0.setStyleSheet(cmb_menu_style)
-        self.communicator_socket_options_box_1.setStyleSheet(cmb_menu_style)
-        self.communicator_socket_options_box_2.setStyleSheet(cmb_menu_style)
-        self.communicator_socket_options_box_3.setStyleSheet(cmb_menu_style)
-
-        self.address_key_label.setStyleSheet(label_stylesheet_black_bg_text_white)
-        self.address_fingerprint_label.setStyleSheet(label_stylesheet_black_bg_text_white)
-
-        self.dial_out_prev_addr.setStyleSheet(button_scroll_stylesheet_left)
-        self.dial_out_next_addr.setStyleSheet(button_scroll_stylesheet_right)
-
-    @QtCore.pyqtSlot()
     def gui_function(self):
         global gui_message
 
-        if self.gui_message == 'address_book_save_invalid_address':
+        if self.gui_message == 'invalid_address':
             self.gui_message = ''
-            self.address_book_set_default_gui_function()
+            self.address_book_label.setStyleSheet(title_stylesheet_default)
+            self.dial_out_name.setStyleSheet(line_edit_stylesheet_white_text)
+            self.dial_out_ip_port.setStyleSheet(line_edit_stylesheet_white_text)
+            self.address_book_port.setStyleSheet(line_edit_stylesheet_white_text)
+            self.address_book_broadcast.setStyleSheet(line_edit_stylesheet_white_text)
+            self.address_book_mac.setStyleSheet(line_edit_stylesheet_white_text)
 
-        if self.gui_message == 'address_book_saved_address':
+        if self.gui_message == 'saved_address':
             self.gui_message = ''
-            self.address_book_set_default_gui_function()
+            self.address_book_label.setStyleSheet(title_stylesheet_default)
+            self.dial_out_name.setStyleSheet(line_edit_stylesheet_white_text)
+            self.dial_out_ip_port.setStyleSheet(line_edit_stylesheet_white_text)
+            self.address_book_port.setStyleSheet(line_edit_stylesheet_white_text)
+            self.address_book_broadcast.setStyleSheet(line_edit_stylesheet_white_text)
+            self.address_book_mac.setStyleSheet(line_edit_stylesheet_white_text)
 
         if gui_message:
             gui_message_ = gui_message[-1]
             print(gui_message_)
 
-            # Address Book Red
-            if gui_message_ == 'address_book_save_invalid_address':
-                self.gui_message = 'address_book_save_invalid_address'
+            if gui_message_ == 'invalid_address':
+                self.gui_message = 'invalid_address'
                 print('-- dropped in gui_message:', gui_message_)
                 self.address_book_label.setStyleSheet(label_stylesheet_red_bg_black_text)
                 self.dial_out_name.setStyleSheet(line_edit_stylesheet_red_bg_black_text)
@@ -2835,32 +2743,8 @@ class App(QMainWindow):
                 self.address_book_broadcast.setStyleSheet(line_edit_stylesheet_red_bg_black_text)
                 self.address_book_mac.setStyleSheet(line_edit_stylesheet_red_bg_black_text)
 
-                self.dial_out_encoding.setStyleSheet(button_stylesheet_red_text)
-                self.dial_out_family_type.setStyleSheet(label_stylesheet_red_text)
-                self.dial_out_socket_type.setStyleSheet(label_stylesheet_red_text)
-                self.bool_socket_options_btn.setStyleSheet(button_stylesheet_red_text)
-
-                self.address_book_name_label.setStyleSheet(label_stylesheet_red_text)
-                self.address_book_address_label.setStyleSheet(button_stylesheet_red_text)
-                self.address_book_port_label.setStyleSheet(label_stylesheet_red_text)
-                self.address_book_broadcast_label.setStyleSheet(button_stylesheet_red_text)
-                self.address_book_mac_label.setStyleSheet(button_stylesheet_red_text)
-
-                self.codec_select_box.setStyleSheet(cmb_menu_style_black_bg_red_text)
-                self.communicator_socket_options_box_0.setStyleSheet(cmb_menu_style_black_bg_red_text)
-                self.communicator_socket_options_box_1.setStyleSheet(cmb_menu_style_black_bg_red_text)
-                self.communicator_socket_options_box_2.setStyleSheet(cmb_menu_style_black_bg_red_text)
-                self.communicator_socket_options_box_3.setStyleSheet(cmb_menu_style_black_bg_red_text)
-
-                self.address_key_label.setStyleSheet(label_stylesheet_red_text)
-                self.address_fingerprint_label.setStyleSheet(label_stylesheet_red_text)
-
-                self.dial_out_prev_addr.setStyleSheet(button_scroll_stylesheet_left_red)
-                self.dial_out_next_addr.setStyleSheet(button_scroll_stylesheet_left_red)
-
-            # Address Book Green
-            elif gui_message_ == 'address_book_saved_address':
-                self.gui_message = 'address_book_saved_address'
+            elif gui_message_ == 'saved_address':
+                self.gui_message = 'saved_address'
                 print('-- dropped in gui_message:', gui_message_)
                 self.address_book_label.setStyleSheet(label_stylesheet_green_bg_black_text)
                 self.dial_out_name.setStyleSheet(line_edit_stylesheet_green_bg_black_text)
@@ -2868,30 +2752,6 @@ class App(QMainWindow):
                 self.address_book_port.setStyleSheet(line_edit_stylesheet_green_bg_black_text)
                 self.address_book_broadcast.setStyleSheet(line_edit_stylesheet_green_bg_black_text)
                 self.address_book_mac.setStyleSheet(line_edit_stylesheet_green_bg_black_text)
-
-                self.dial_out_encoding.setStyleSheet(button_stylesheet_green_text)
-                self.dial_out_family_type.setStyleSheet(label_stylesheet_black_bg_green_text)
-                self.dial_out_socket_type.setStyleSheet(label_stylesheet_black_bg_green_text)
-                self.bool_socket_options_btn.setStyleSheet(button_stylesheet_green_text)
-
-                self.dial_out_name.setStyleSheet(label_stylesheet_black_bg_green_text)
-                self.address_book_address_label.setStyleSheet(button_stylesheet_green_text)
-                self.address_book_port_label.setStyleSheet(label_stylesheet_black_bg_green_text)
-                self.address_book_broadcast_label.setStyleSheet(button_stylesheet_green_text)
-                self.address_book_mac_label.setStyleSheet(button_stylesheet_green_text)
-
-                self.codec_select_box.setStyleSheet(cmb_menu_style_black_bg_green_text)
-                self.communicator_socket_options_box_0.setStyleSheet(cmb_menu_style_black_bg_green_text)
-                self.communicator_socket_options_box_1.setStyleSheet(cmb_menu_style_black_bg_green_text)
-                self.communicator_socket_options_box_2.setStyleSheet(cmb_menu_style_black_bg_green_text)
-                self.communicator_socket_options_box_3.setStyleSheet(cmb_menu_style_black_bg_green_text)
-
-                self.address_key_label.setStyleSheet(label_stylesheet_black_bg_green_text)
-                self.address_fingerprint_label.setStyleSheet(label_stylesheet_black_bg_green_text)
-
-                self.dial_out_prev_addr.setStyleSheet(button_scroll_stylesheet_left_green)
-                self.dial_out_next_addr.setStyleSheet(button_scroll_stylesheet_left_green)
-
             gui_message.remove(gui_message_)
 
 
