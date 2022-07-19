@@ -2808,7 +2808,7 @@ class App(QMainWindow):
             self.address_fingerprint_label.setStyleSheet(label_stylesheet_black_bg_text_white)
 
             self.dial_out_prev_addr.setStyleSheet(button_scroll_stylesheet_left)
-            self.dial_out_next_addr.setStyleSheet(button_scroll_stylesheet_left)
+            self.dial_out_next_addr.setStyleSheet(button_scroll_stylesheet_right)
 
             # self.address_key.setStyleSheet(line_edit_stylesheet_white_text)
             # self.tb_fingerprint.setStyleSheet(textbox_stylesheet_black_bg)
@@ -2843,7 +2843,7 @@ class App(QMainWindow):
             self.address_fingerprint_label.setStyleSheet(label_stylesheet_black_bg_text_white)
 
             self.dial_out_prev_addr.setStyleSheet(button_scroll_stylesheet_left)
-            self.dial_out_next_addr.setStyleSheet(button_scroll_stylesheet_left)
+            self.dial_out_next_addr.setStyleSheet(button_scroll_stylesheet_right)
 
             # self.address_key.setStyleSheet(line_edit_stylesheet_white_text)
             # self.tb_fingerprint.setStyleSheet(textbox_stylesheet_black_bg)
