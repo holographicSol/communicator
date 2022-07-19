@@ -368,6 +368,19 @@ button_scroll_stylesheet_right = """QPushButton{background-color: rgb(0, 0, 0);
                        border-top:3px solid rgb(255, 255, 255);
                        border-left:3px solid rgb(255, 255, 255);}"""
 
+button_scroll_stylesheet_left_red = """QPushButton{background-color: rgb(0, 0, 0);
+                       color: rgb(255, 0, 0);
+                       border-bottom:3px solid rgb(255, 0, 0);
+                       border-right:3px solid rgb(255, 0, 0);
+                       border-top:3px solid rgb(255, 0, 0);
+                       border-left:0px solid rgb(5, 5, 5);}"""
+
+button_scroll_stylesheet_left_green = """QPushButton{background-color: rgb(0, 0, 0);
+                       color: rgb(0, 255, 0);
+                       border-bottom:3px solid rgb(0, 255, 0);
+                       border-right:3px solid rgb(0, 255, 0);
+                       border-top:3px solid rgb(0, 255, 0);
+                       border-left:0px solid rgb(5, 5, 5);}"""
 
 button_stylesheet_default = """QPushButton{background-color: rgb(0, 0, 0);
                        color: rgb(255, 255, 255);
@@ -484,6 +497,20 @@ textbox_stylesheet_white_bg_black_text = """QTextBrowser {background-color: rgb(
 
 cmb_menu_style = """QComboBox {background-color: rgb(0, 0, 0);
                    color: rgb(255, 255, 255);
+                   border-top:0px solid rgb(5, 5, 5);
+                   border-bottom:0px solid rgb(5, 5, 5);
+                   border-right:0px solid rgb(5, 5, 5);
+                   border-left:0px solid rgb(0, 0, 0);}"""
+
+cmb_menu_style_black_bg_red_text = """QComboBox {background-color: rgb(0, 0, 0);
+                   color: rgb(255, 0, 0);
+                   border-top:0px solid rgb(5, 5, 5);
+                   border-bottom:0px solid rgb(5, 5, 5);
+                   border-right:0px solid rgb(5, 5, 5);
+                   border-left:0px solid rgb(0, 0, 0);}"""
+
+cmb_menu_style_black_bg_green_text = """QComboBox {background-color: rgb(0, 0, 0);
+                   color: rgb(0, 255, 0);
                    border-top:0px solid rgb(5, 5, 5);
                    border-bottom:0px solid rgb(5, 5, 5);
                    border-right:0px solid rgb(5, 5, 5);
@@ -2747,6 +2774,18 @@ class App(QMainWindow):
             self.address_book_broadcast_label.setStyleSheet(button_stylesheet_white_text_high)
             self.address_book_mac_label.setStyleSheet(button_stylesheet_white_text_high)
 
+            self.codec_select_box.setStyleSheet(cmb_menu_style)
+            self.communicator_socket_options_box_0.setStyleSheet(cmb_menu_style)
+            self.communicator_socket_options_box_1.setStyleSheet(cmb_menu_style)
+            self.communicator_socket_options_box_2.setStyleSheet(cmb_menu_style)
+            self.communicator_socket_options_box_3.setStyleSheet(cmb_menu_style)
+
+            self.address_key_label.setStyleSheet(label_stylesheet_black_bg_text_white)
+            self.address_fingerprint_label.setStyleSheet(label_stylesheet_black_bg_text_white)
+
+            self.dial_out_prev_addr.setStyleSheet(button_scroll_stylesheet_left)
+            self.dial_out_next_addr.setStyleSheet(button_scroll_stylesheet_left)
+
         if self.gui_message == 'saved_address':
             self.gui_message = ''
             self.address_book_label.setStyleSheet(title_stylesheet_default)
@@ -2766,6 +2805,18 @@ class App(QMainWindow):
             self.address_book_port_label.setStyleSheet(label_stylesheet_black_bg_text_white)
             self.address_book_broadcast_label.setStyleSheet(button_stylesheet_white_text_high)
             self.address_book_mac_label.setStyleSheet(button_stylesheet_white_text_high)
+
+            self.codec_select_box.setStyleSheet(cmb_menu_style)
+            self.communicator_socket_options_box_0.setStyleSheet(cmb_menu_style)
+            self.communicator_socket_options_box_1.setStyleSheet(cmb_menu_style)
+            self.communicator_socket_options_box_2.setStyleSheet(cmb_menu_style)
+            self.communicator_socket_options_box_3.setStyleSheet(cmb_menu_style)
+
+            self.address_key_label.setStyleSheet(label_stylesheet_black_bg_text_white)
+            self.address_fingerprint_label.setStyleSheet(label_stylesheet_black_bg_text_white)
+
+            self.dial_out_prev_addr.setStyleSheet(button_scroll_stylesheet_left)
+            self.dial_out_next_addr.setStyleSheet(button_scroll_stylesheet_left)
 
         if gui_message:
             gui_message_ = gui_message[-1]
@@ -2792,6 +2843,18 @@ class App(QMainWindow):
                 self.address_book_broadcast_label.setStyleSheet(button_stylesheet_red_text)
                 self.address_book_mac_label.setStyleSheet(button_stylesheet_red_text)
 
+                self.codec_select_box.setStyleSheet(cmb_menu_style_black_bg_red_text)
+                self.communicator_socket_options_box_0.setStyleSheet(cmb_menu_style_black_bg_red_text)
+                self.communicator_socket_options_box_1.setStyleSheet(cmb_menu_style_black_bg_red_text)
+                self.communicator_socket_options_box_2.setStyleSheet(cmb_menu_style_black_bg_red_text)
+                self.communicator_socket_options_box_3.setStyleSheet(cmb_menu_style_black_bg_red_text)
+
+                self.address_key_label.setStyleSheet(label_stylesheet_red_text)
+                self.address_fingerprint_label.setStyleSheet(label_stylesheet_red_text)
+
+                self.dial_out_prev_addr.setStyleSheet(button_scroll_stylesheet_left_red)
+                self.dial_out_next_addr.setStyleSheet(button_scroll_stylesheet_left_red)
+
             elif gui_message_ == 'saved_address':
                 self.gui_message = 'saved_address'
                 print('-- dropped in gui_message:', gui_message_)
@@ -2812,6 +2875,18 @@ class App(QMainWindow):
                 self.address_book_port_label.setStyleSheet(label_stylesheet_black_bg_green_text)
                 self.address_book_broadcast_label.setStyleSheet(button_stylesheet_green_text)
                 self.address_book_mac_label.setStyleSheet(button_stylesheet_green_text)
+
+                self.codec_select_box.setStyleSheet(cmb_menu_style_black_bg_green_text)
+                self.communicator_socket_options_box_0.setStyleSheet(cmb_menu_style_black_bg_green_text)
+                self.communicator_socket_options_box_1.setStyleSheet(cmb_menu_style_black_bg_green_text)
+                self.communicator_socket_options_box_2.setStyleSheet(cmb_menu_style_black_bg_green_text)
+                self.communicator_socket_options_box_3.setStyleSheet(cmb_menu_style_black_bg_green_text)
+
+                self.address_key_label.setStyleSheet(label_stylesheet_black_bg_green_text)
+                self.address_fingerprint_label.setStyleSheet(label_stylesheet_black_bg_green_text)
+
+                self.dial_out_prev_addr.setStyleSheet(button_scroll_stylesheet_left_green)
+                self.dial_out_next_addr.setStyleSheet(button_scroll_stylesheet_left_green)
 
             gui_message.remove(gui_message_)
 
