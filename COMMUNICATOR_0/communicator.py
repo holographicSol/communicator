@@ -82,11 +82,6 @@ player_default.setMedia(player_content_default)
 player_default.setVolume(100)
 
 # Images
-# server_public_white = './resources/image/globe_default.png'
-# server_public_yellow = './resources/image/globe_yellow.png'
-# server_public_amber = './resources/image/globe_amber.png'
-# server_public_green = './resources/image/globe_green.png'
-# server_public_off = './resources/image/globe_off.png'
 mute_0 = './resources/image/mute_0.png'
 mute_1 = './resources/image/mute_1.png'
 advanced_save_0 = './resources/image/advanced_save_0.png'
@@ -324,19 +319,19 @@ label_stylesheet_grey_bg_white_text_high = """QLabel{background-color: rgb(0, 0,
                        border-top:0px solid rgb(5, 5, 5);
                        border-left:0px solid rgb(5, 5, 5);}"""
 
-label_stylesheet_red_bg_black_text = """QLabel{background-color: rgb(255, 0, 0);
-                       color: rgb(0, 0, 0);
+label_stylesheet_red_bg_black_text = """QLabel{background-color: rgb(0, 0, 0);
+                       color: rgb(255, 255, 255);
                        border-bottom:0px solid rgb(5, 5, 5);
-                       border-right:0px solid rgb(5, 5, 5);
-                       border-top:0px solid rgb(5, 5, 5);
-                       border-left:0px solid rgb(5, 5, 5);}"""
+                       border-right:3px solid rgb(255, 0, 0);
+                       border-top:3px solid rgb(255, 0, 0);
+                       border-left:3px solid rgb(255, 0, 0);}"""
 
-label_stylesheet_green_bg_black_text = """QLabel{background-color: rgb(0, 255, 0);
-                       color: rgb(0, 0, 0);
+label_stylesheet_green_bg_black_text = """QLabel{background-color: rgb(0, 0, 0);
+                       color: rgb(0, 255, 0);
                        border-bottom:0px solid rgb(5, 5, 5);
-                       border-right:0px solid rgb(5, 5, 5);
-                       border-top:0px solid rgb(5, 5, 5);
-                       border-left:0px solid rgb(5, 5, 5);}"""
+                       border-right:3px solid rgb(0, 255, 0);
+                       border-top:3px solid rgb(0, 255, 0);
+                       border-left:3px solid rgb(0, 255, 0);}"""
 
 title_stylesheet_default = """QLabel{background-color: rgb(0, 0, 0);
                        color: rgb(255, 255, 255);
@@ -431,15 +426,15 @@ line_edit_stylesheet_white_text = """QLineEdit{background-color: rgb(0, 0, 0);
                        border-top:0px solid rgb(5, 5, 5);
                        border-left:0px solid rgb(5, 5, 5);}"""
 
-line_edit_stylesheet_red_bg_black_text = """QLineEdit{background-color: rgb(255, 0, 0);
-                       color: rgb(0, 0, 0);
+line_edit_stylesheet_red_bg_black_text = """QLineEdit{background-color: rgb(0, 0, 0);
+                       color: rgb(255, 0, 0);
                        border-bottom:0px solid rgb(5, 5, 5);
                        border-right:0px solid rgb(5, 5, 5);
                        border-top:0px solid rgb(5, 5, 5);
                        border-left:0px solid rgb(5, 5, 5);}"""
 
-line_edit_stylesheet_green_bg_black_text = """QLineEdit{background-color: rgb(0, 255, 0);
-                       color: rgb(0, 0, 0);
+line_edit_stylesheet_green_bg_black_text = """QLineEdit{background-color: rgb(0, 0, 0);
+                       color: rgb(0, 255, 0);
                        border-bottom:0px solid rgb(5, 5, 5);
                        border-right:0px solid rgb(5, 5, 5);
                        border-top:0px solid rgb(5, 5, 5);
@@ -1717,10 +1712,10 @@ class App(QMainWindow):
             self.address_book_port.setEnabled(True)
             self.address_book_broadcast.setEnabled(True)
             self.address_book_mac.setEnabled(True)
-            # self.address_key.setEnabled(True)
-            # self.tb_fingerprint.setEnabled(True)
-            # self.generate_key.setEnabled(True)
-            # self.generate_fingerprint.setEnabled(True)
+            self.address_key.setEnabled(True)
+            self.tb_fingerprint.setEnabled(True)
+            self.generate_key.setEnabled(True)
+            self.generate_fingerprint.setEnabled(True)
 
             self.dial_out_name.setStyleSheet(line_edit_stylesheet_is_enabled)
             self.dial_out_ip_port.setStyleSheet(line_edit_stylesheet_is_enabled)
@@ -1752,10 +1747,10 @@ class App(QMainWindow):
             self.address_book_port.setEnabled(False)
             self.address_book_broadcast.setEnabled(False)
             self.address_book_mac.setEnabled(False)
-            # self.address_key.setEnabled(False)
-            # self.tb_fingerprint.setEnabled(False)
-            # self.generate_key.setEnabled(False)
-            # self.generate_fingerprint.setEnabled(False)
+            self.address_key.setEnabled(False)
+            self.tb_fingerprint.setEnabled(False)
+            self.generate_key.setEnabled(False)
+            self.generate_fingerprint.setEnabled(False)
 
             self.dial_out_name.setStyleSheet(line_edit_stylesheet_white_text)
             self.dial_out_ip_port.setStyleSheet(line_edit_stylesheet_white_text)
