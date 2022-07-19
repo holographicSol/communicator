@@ -833,6 +833,7 @@ class App(QMainWindow):
 
                             # Continue if not False in the pre-flight check list
                             if False not in allow_save_bool:
+                                port_not_digit = False
 
                                 # Set a new boolean to False and use this variable to allow or disallow the final address book amendment later
                                 bool_allow_write = False
@@ -859,6 +860,14 @@ class App(QMainWindow):
                                 if key_ == '':
                                     key_ = 'x'
 
+                                if port_.isdigit():
+                                    print('port_.isdigit: True')
+                                    port_not_digit = False
+                                    port_ = int(port_)
+                                else:
+                                    print('port_.isdigit: False')
+                                    port_not_digit = True
+
                                 # Get the socket options and create a string of all the socket arguments
                                 s_options_0 = str(self.communicator_socket_options_box_2.currentText())
                                 s_options_1 = str(self.communicator_socket_options_box_3.currentText())
@@ -871,7 +880,7 @@ class App(QMainWindow):
                                 to_address_book = ''
 
                                 # Basic Save Mode
-                                if address_save_mode == 'basic':
+                                if address_save_mode == 'basic' and port_not_digit is False:
 
                                     # Save mode is basic so ensure key and fingerprint have been cleared
                                     self.address_key.setText('')
@@ -897,7 +906,7 @@ class App(QMainWindow):
                                     bool_allow_write = True
 
                                 # Advanced Save Mode
-                                elif address_save_mode == 'advanced':
+                                elif address_save_mode == 'advanced' and port_not_digit is False:
 
                                     # Display key and fingerprint
                                     debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_save_address] key: ' + str((self.address_key.text())))
@@ -985,6 +994,8 @@ class App(QMainWindow):
 
                                 # Display the potentially new current index as the index may have changed
                                 debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_save_address] current index after sorting: ' + str(client_address_index))
+                                client_previous_address_function()
+                                client_next_address_function()
                     else:
                         debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_save_address] name already exists!')
                         gui_message.append('invalid_address')
@@ -2157,19 +2168,19 @@ class App(QMainWindow):
         self.server_ip_port.setAlignment(Qt.AlignCenter)
 
         self.server_prev_addr = QPushButton(self)
-        self.server_prev_addr.move(int((self.width / 2) - (self.btn_240 / 2) - self.btn_20 - self.btn_4), self.server_staple + 24 + 24)
-        self.server_prev_addr.resize(self.btn_20, 20)
+        self.server_prev_addr.move(4, self.server_staple + 28)
+        self.server_prev_addr.resize(self.btn_20, 60)
         self.server_prev_addr.setIcon(QIcon(arrow_left))
         self.server_prev_addr.setIconSize(QSize(20, 20))
-        self.server_prev_addr.setStyleSheet(button_stylesheet_default)
+        self.server_prev_addr.setStyleSheet(button_scroll_stylesheet_left)
         self.server_prev_addr.clicked.connect(server_prev_addr_function)
 
         self.server_next_addr = QPushButton(self)
-        self.server_next_addr.move(int((self.width / 2) + (self.btn_240 / 2) + self.btn_4), self.server_staple + 24 + 24)
-        self.server_next_addr.resize(20, 20)
+        self.server_next_addr.move(self.width - 24, self.server_staple + 28)
+        self.server_next_addr.resize(20, 60)
         self.server_next_addr.setIcon(QIcon(arrow_right))
         self.server_next_addr.setIconSize(QSize(20, 20))
-        self.server_next_addr.setStyleSheet(button_stylesheet_default)
+        self.server_next_addr.setStyleSheet(button_scroll_stylesheet_right)
         self.server_next_addr.clicked.connect(server_next_addr_function)
 
         self.server_add_addr = QPushButton(self)
