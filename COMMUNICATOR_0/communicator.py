@@ -984,7 +984,7 @@ class App(QMainWindow):
                                 # Append the new address book entry to the address book file conditionally
                                 if to_address_book != '':
                                     if bool_allow_write is True:
-                                        gui_message.append('saved_address')
+                                        gui_message.append('address_book_saved_address')
                                         if os.path.exists('./communicator_address_book.txt'):
                                             with open('./communicator_address_book.txt', 'a') as fo:
                                                 fo.write(to_address_book + '\n')
@@ -998,17 +998,17 @@ class App(QMainWindow):
                                 client_next_address_function()
                     else:
                         debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_save_address] name already exists!')
-                        gui_message.append('invalid_address')
+                        gui_message.append('address_book_save_invalid_address')
                         client_previous_address_function()
                         client_next_address_function()
                 else:
                     debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_save_address] ip and port should not be empty!')
-                    gui_message.append('invalid_address')
+                    gui_message.append('address_book_save_invalid_address')
                     client_previous_address_function()
                     client_next_address_function()
             else:
                 debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_save_address] name should not be empty!')
-                gui_message.append('invalid_address')
+                gui_message.append('address_book_save_invalid_address')
                 client_previous_address_function()
                 client_next_address_function()
 
@@ -2775,85 +2775,58 @@ class App(QMainWindow):
         self.gui_timer.start()
 
     @QtCore.pyqtSlot()
+    def address_book_set_default_gui_function(self):
+
+        # Address Book Default Palett
+        self.address_book_label.setStyleSheet(title_stylesheet_default)
+        self.dial_out_name.setStyleSheet(line_edit_stylesheet_white_text)
+        self.dial_out_ip_port.setStyleSheet(line_edit_stylesheet_white_text)
+        self.address_book_port.setStyleSheet(line_edit_stylesheet_white_text)
+        self.address_book_broadcast.setStyleSheet(line_edit_stylesheet_white_text)
+        self.address_book_mac.setStyleSheet(line_edit_stylesheet_white_text)
+
+        self.dial_out_encoding.setStyleSheet(button_stylesheet_white_text_high)
+        self.dial_out_family_type.setStyleSheet(label_stylesheet_black_bg_text_white)
+        self.dial_out_socket_type.setStyleSheet(label_stylesheet_black_bg_text_white)
+        self.bool_socket_options_btn.setStyleSheet(button_stylesheet_white_text_high)
+
+        self.address_book_name_label.setStyleSheet(label_stylesheet_black_bg_text_white)
+        self.address_book_address_label.setStyleSheet(button_stylesheet_white_text_high)
+        self.address_book_port_label.setStyleSheet(label_stylesheet_black_bg_text_white)
+        self.address_book_broadcast_label.setStyleSheet(button_stylesheet_white_text_high)
+        self.address_book_mac_label.setStyleSheet(button_stylesheet_white_text_high)
+
+        self.codec_select_box.setStyleSheet(cmb_menu_style)
+        self.communicator_socket_options_box_0.setStyleSheet(cmb_menu_style)
+        self.communicator_socket_options_box_1.setStyleSheet(cmb_menu_style)
+        self.communicator_socket_options_box_2.setStyleSheet(cmb_menu_style)
+        self.communicator_socket_options_box_3.setStyleSheet(cmb_menu_style)
+
+        self.address_key_label.setStyleSheet(label_stylesheet_black_bg_text_white)
+        self.address_fingerprint_label.setStyleSheet(label_stylesheet_black_bg_text_white)
+
+        self.dial_out_prev_addr.setStyleSheet(button_scroll_stylesheet_left)
+        self.dial_out_next_addr.setStyleSheet(button_scroll_stylesheet_right)
+
+    @QtCore.pyqtSlot()
     def gui_function(self):
         global gui_message
 
-        if self.gui_message == 'invalid_address':
+        if self.gui_message == 'address_book_save_invalid_address':
             self.gui_message = ''
-            self.address_book_label.setStyleSheet(title_stylesheet_default)
-            self.dial_out_name.setStyleSheet(line_edit_stylesheet_white_text)
-            self.dial_out_ip_port.setStyleSheet(line_edit_stylesheet_white_text)
-            self.address_book_port.setStyleSheet(line_edit_stylesheet_white_text)
-            self.address_book_broadcast.setStyleSheet(line_edit_stylesheet_white_text)
-            self.address_book_mac.setStyleSheet(line_edit_stylesheet_white_text)
+            self.address_book_set_default_gui_function()
 
-            self.dial_out_encoding.setStyleSheet(button_stylesheet_white_text_high)
-            self.dial_out_family_type.setStyleSheet(label_stylesheet_black_bg_text_white)
-            self.dial_out_socket_type.setStyleSheet(label_stylesheet_black_bg_text_white)
-            self.bool_socket_options_btn.setStyleSheet(button_stylesheet_white_text_high)
-
-            self.address_book_name_label.setStyleSheet(label_stylesheet_black_bg_text_white)
-            self.address_book_address_label.setStyleSheet(button_stylesheet_white_text_high)
-            self.address_book_port_label.setStyleSheet(label_stylesheet_black_bg_text_white)
-            self.address_book_broadcast_label.setStyleSheet(button_stylesheet_white_text_high)
-            self.address_book_mac_label.setStyleSheet(button_stylesheet_white_text_high)
-
-            self.codec_select_box.setStyleSheet(cmb_menu_style)
-            self.communicator_socket_options_box_0.setStyleSheet(cmb_menu_style)
-            self.communicator_socket_options_box_1.setStyleSheet(cmb_menu_style)
-            self.communicator_socket_options_box_2.setStyleSheet(cmb_menu_style)
-            self.communicator_socket_options_box_3.setStyleSheet(cmb_menu_style)
-
-            self.address_key_label.setStyleSheet(label_stylesheet_black_bg_text_white)
-            self.address_fingerprint_label.setStyleSheet(label_stylesheet_black_bg_text_white)
-
-            self.dial_out_prev_addr.setStyleSheet(button_scroll_stylesheet_left)
-            self.dial_out_next_addr.setStyleSheet(button_scroll_stylesheet_right)
-
-            # self.address_key.setStyleSheet(line_edit_stylesheet_white_text)
-            # self.tb_fingerprint.setStyleSheet(textbox_stylesheet_black_bg)
-
-        if self.gui_message == 'saved_address':
+        if self.gui_message == 'address_book_saved_address':
             self.gui_message = ''
-            self.address_book_label.setStyleSheet(title_stylesheet_default)
-            self.dial_out_name.setStyleSheet(line_edit_stylesheet_white_text)
-            self.dial_out_ip_port.setStyleSheet(line_edit_stylesheet_white_text)
-            self.address_book_port.setStyleSheet(line_edit_stylesheet_white_text)
-            self.address_book_broadcast.setStyleSheet(line_edit_stylesheet_white_text)
-            self.address_book_mac.setStyleSheet(line_edit_stylesheet_white_text)
-
-            self.dial_out_encoding.setStyleSheet(button_stylesheet_white_text_high)
-            self.dial_out_family_type.setStyleSheet(label_stylesheet_black_bg_text_white)
-            self.dial_out_socket_type.setStyleSheet(label_stylesheet_black_bg_text_white)
-            self.bool_socket_options_btn.setStyleSheet(button_stylesheet_white_text_high)
-
-            self.address_book_name_label.setStyleSheet(label_stylesheet_black_bg_text_white)
-            self.address_book_address_label.setStyleSheet(button_stylesheet_white_text_high)
-            self.address_book_port_label.setStyleSheet(label_stylesheet_black_bg_text_white)
-            self.address_book_broadcast_label.setStyleSheet(button_stylesheet_white_text_high)
-            self.address_book_mac_label.setStyleSheet(button_stylesheet_white_text_high)
-
-            self.codec_select_box.setStyleSheet(cmb_menu_style)
-            self.communicator_socket_options_box_0.setStyleSheet(cmb_menu_style)
-            self.communicator_socket_options_box_1.setStyleSheet(cmb_menu_style)
-            self.communicator_socket_options_box_2.setStyleSheet(cmb_menu_style)
-            self.communicator_socket_options_box_3.setStyleSheet(cmb_menu_style)
-
-            self.address_key_label.setStyleSheet(label_stylesheet_black_bg_text_white)
-            self.address_fingerprint_label.setStyleSheet(label_stylesheet_black_bg_text_white)
-
-            self.dial_out_prev_addr.setStyleSheet(button_scroll_stylesheet_left)
-            self.dial_out_next_addr.setStyleSheet(button_scroll_stylesheet_right)
-
-            # self.address_key.setStyleSheet(line_edit_stylesheet_white_text)
-            # self.tb_fingerprint.setStyleSheet(textbox_stylesheet_black_bg)
+            self.address_book_set_default_gui_function()
 
         if gui_message:
             gui_message_ = gui_message[-1]
             print(gui_message_)
 
-            if gui_message_ == 'invalid_address':
-                self.gui_message = 'invalid_address'
+            # Address Book Red
+            if gui_message_ == 'address_book_save_invalid_address':
+                self.gui_message = 'address_book_save_invalid_address'
                 print('-- dropped in gui_message:', gui_message_)
                 self.address_book_label.setStyleSheet(label_stylesheet_red_bg_black_text)
                 self.dial_out_name.setStyleSheet(line_edit_stylesheet_red_bg_black_text)
@@ -2885,11 +2858,9 @@ class App(QMainWindow):
                 self.dial_out_prev_addr.setStyleSheet(button_scroll_stylesheet_left_red)
                 self.dial_out_next_addr.setStyleSheet(button_scroll_stylesheet_left_red)
 
-                # self.address_key.setStyleSheet(line_edit_stylesheet_red_bg_black_text)
-                # self.tb_fingerprint.setStyleSheet(textbox_stylesheet_black_bg_red_text)
-
-            elif gui_message_ == 'saved_address':
-                self.gui_message = 'saved_address'
+            # Address Book Green
+            elif gui_message_ == 'address_book_saved_address':
+                self.gui_message = 'address_book_saved_address'
                 print('-- dropped in gui_message:', gui_message_)
                 self.address_book_label.setStyleSheet(label_stylesheet_green_bg_black_text)
                 self.dial_out_name.setStyleSheet(line_edit_stylesheet_green_bg_black_text)
@@ -2920,9 +2891,6 @@ class App(QMainWindow):
 
                 self.dial_out_prev_addr.setStyleSheet(button_scroll_stylesheet_left_green)
                 self.dial_out_next_addr.setStyleSheet(button_scroll_stylesheet_left_green)
-
-                # self.address_key.setStyleSheet(line_edit_stylesheet_green_bg_black_text)
-                # self.tb_fingerprint.setStyleSheet(textbox_stylesheet_black_bg_green_text)
 
             gui_message.remove(gui_message_)
 
