@@ -2240,7 +2240,7 @@ class App(QMainWindow):
         self.mute_server_notify_alien.clicked.connect(mute_server_notify_alien_function)
 
         self.accept_only_address_book = QPushButton(self)
-        self.accept_only_address_book.move(28, self.server_staple + 24)
+        self.accept_only_address_book.move(32, self.server_staple + 24)
         self.accept_only_address_book.resize(self.btn_120, int(self.btn_40 / 2))
         self.accept_only_address_book.setFont(self.font_s7b)
         self.accept_only_address_book.setText('ACCEPT ONLY ADD.BK')
@@ -2248,7 +2248,7 @@ class App(QMainWindow):
         self.accept_only_address_book.clicked.connect(accept_only_address_book_function)
 
         self.accept_all_traffic = QPushButton(self)
-        self.accept_all_traffic.move(28 + self.btn_120 + 4, self.server_staple + 24)
+        self.accept_all_traffic.move(32 + self.btn_120 + 4, self.server_staple + 24)
         self.accept_all_traffic.resize(self.btn_120, int(self.btn_40 / 2))
         self.accept_all_traffic.setFont(self.font_s7b)
         self.accept_all_traffic.setText('ACCEPT ALL')
@@ -2256,7 +2256,7 @@ class App(QMainWindow):
         self.accept_all_traffic.clicked.connect(accept_all_function)
 
         self.uplink_enable = QPushButton(self)
-        self.uplink_enable.move(28, self.server_staple + 24 + 24)
+        self.uplink_enable.move(32, self.server_staple + 24 + 24)
         self.uplink_enable.resize(self.btn_120, int(self.btn_40 / 2))
         self.uplink_enable.setFont(self.font_s7b)
         self.uplink_enable.setText('UPLINK')
@@ -2264,7 +2264,7 @@ class App(QMainWindow):
         self.uplink_enable.clicked.connect(uplink_enable_function)
 
         self.external_ip_label = QLabel(self)
-        self.external_ip_label.move(28 + self.btn_120 + 4, self.server_staple + 24 + 24)
+        self.external_ip_label.move(32 + self.btn_120 + 4, self.server_staple + 24 + 24)
         self.external_ip_label.resize(self.btn_120, 20)
         self.external_ip_label.setFont(self.font_s7b)
         self.external_ip_label.setText('')
@@ -2272,7 +2272,7 @@ class App(QMainWindow):
         self.external_ip_label.setStyleSheet(label_stylesheet_black_bg_text_white)
 
         self.get_ext_ip_use_upnp = QPushButton(self)
-        self.get_ext_ip_use_upnp.move(28, self.server_staple + 24 + 24 + 24)
+        self.get_ext_ip_use_upnp.move(32, self.server_staple + 24 + 24 + 24)
         self.get_ext_ip_use_upnp.resize(self.btn_120, int(self.btn_40 / 2))
         self.get_ext_ip_use_upnp.setFont(self.font_s7b)
         self.get_ext_ip_use_upnp.setText('UPNP')
@@ -2280,7 +2280,7 @@ class App(QMainWindow):
         self.get_ext_ip_use_upnp.clicked.connect(get_ext_ip_use_upnp_function)
 
         self.get_ext_ip_use_ext_service = QPushButton(self)
-        self.get_ext_ip_use_ext_service.move(28 + self.btn_120 + 4, self.server_staple + 24 + 24 + 24)
+        self.get_ext_ip_use_ext_service.move(32 + self.btn_120 + 4, self.server_staple + 24 + 24 + 24)
         self.get_ext_ip_use_ext_service.resize(self.btn_120, int(self.btn_40 / 2))
         self.get_ext_ip_use_ext_service.setFont(self.font_s7b)
         self.get_ext_ip_use_ext_service.setText('EXT. SERVICE')
