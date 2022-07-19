@@ -100,7 +100,7 @@ send_yellow = './resources/image/send_yellow.png'
 clear_all = './resources/image/clear_all.png'
 visibility_0 = './resources/image/visibility_0.png'
 visibility_1 = './resources/image/visibility_1.png'
-play_green = './resources/image/play_white.png'
+play_default = './resources/image/play_white.png'
 play_yellow = './resources/image/play_yellow.png'
 replay_yellow = './resources/image/replay_white.png'
 stop_red = './resources/image/stop_white.png'
@@ -310,7 +310,7 @@ label_stylesheet_black_bg_text_yellow = """QLabel{background-color: rgb(0, 0, 0)
                        border-top:0px solid rgb(5, 5, 5);
                        border-left:0px solid rgb(5, 5, 5);}"""
 
-label_stylesheet_yellow_bg_text_white = """QLabel{background-color: rgb(255, 255, 0);
+label_stylesheet_white_bg_black_text = """QLabel{background-color: rgb(255, 255, 255);
                        color: rgb(0, 0, 0);
                        border-bottom:0px solid rgb(5, 5, 5);
                        border-right:0px solid rgb(5, 5, 5);
@@ -395,6 +395,14 @@ button_stylesheet_white_text_high = """QPushButton{background-color: rgb(0, 0, 0
                        border-top:0px solid rgb(5, 5, 5);
                        border-left:0px solid rgb(5, 5, 5);}"""
 
+button_stylesheet_white_bg_black_text = """QPushButton{background-color: rgb(255, 255, 255);
+                       color: rgb(0, 0, 0);
+                       border-bottom:0px solid rgb(5, 5, 5);
+                       border-right:0px solid rgb(5, 5, 5);
+                       border-top:0px solid rgb(5, 5, 5);
+                       border-left:0px solid rgb(5, 5, 5);}"""
+
+
 button_stylesheet_white_text_low = """QPushButton{background-color: rgb(0, 0, 0);
                        color: rgb(72, 72, 72);
                        border-bottom:0px solid rgb(5, 5, 5);
@@ -437,7 +445,7 @@ line_edit_stylesheet_green_bg_black_text = """QLineEdit{background-color: rgb(0,
                        border-top:0px solid rgb(5, 5, 5);
                        border-left:0px solid rgb(5, 5, 5);}"""
 
-line_edit_stylesheet_is_enabled = """QLineEdit{background-color: rgb(255, 255, 0);
+line_edit_stylesheet_is_enabled = """QLineEdit{background-color: rgb(255, 255, 255);
                        color: rgb(0, 0, 0);
                        border-bottom:0px solid rgb(5, 5, 5);
                        border-right:0px solid rgb(5, 5, 5);
@@ -1574,8 +1582,8 @@ class App(QMainWindow):
                 self.address_book_label.setText('[ OVERRIDE ]')
                 self.dial_out_label.setText('[ TRANSMIT OVERRIDE ]')
 
-                self.address_book_label.setStyleSheet(label_stylesheet_yellow_bg_text_white)
-                self.dial_out_label.setStyleSheet(label_stylesheet_yellow_bg_text_white)
+                self.address_book_label.setStyleSheet(label_stylesheet_white_bg_black_text)
+                self.dial_out_label.setStyleSheet(label_stylesheet_white_bg_black_text)
 
                 self.dial_out_prev_addr.hide()
                 self.dial_out_next_addr.hide()
@@ -1686,7 +1694,7 @@ class App(QMainWindow):
             global address_mode
             global bool_address_uplink
             debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.address_clear_form_function]')
-            self.address_book_label.setStyleSheet(label_stylesheet_yellow_bg_text_white)
+            self.address_book_label.setStyleSheet(label_stylesheet_white_bg_black_text)
             self.dial_out_name.setText('')
             self.dial_out_ip_port.setText('')
             self.address_book_port.setText('')
@@ -1719,6 +1727,12 @@ class App(QMainWindow):
             self.address_book_port.setStyleSheet(line_edit_stylesheet_is_enabled)
             self.address_book_broadcast.setStyleSheet(line_edit_stylesheet_is_enabled)
             self.address_book_mac.setStyleSheet(line_edit_stylesheet_is_enabled)
+
+            # self.dial_out_encoding.setStyleSheet(button_stylesheet_white_bg_black_text)
+            # self.dial_out_family_type.setStyleSheet(label_stylesheet_white_bg_black_text)
+            # self.dial_out_socket_type.setStyleSheet(label_stylesheet_white_bg_black_text)
+            # self.bool_socket_options_btn.setStyleSheet(button_stylesheet_white_bg_black_text)
+
             # self.address_key.setStyleSheet(line_edit_stylesheet_is_enabled)
             # self.tb_fingerprint.setStyleSheet(textbox_stylesheet_white_bg_black_text)
             # self.generate_key.setStyleSheet(button_stylesheet_green_text)
@@ -1748,6 +1762,12 @@ class App(QMainWindow):
             self.address_book_port.setStyleSheet(line_edit_stylesheet_white_text)
             self.address_book_broadcast.setStyleSheet(line_edit_stylesheet_white_text)
             self.address_book_mac.setStyleSheet(line_edit_stylesheet_white_text)
+
+            # self.dial_out_encoding.setStyleSheet(button_stylesheet_white_text_high)
+            # self.dial_out_family_type.setStyleSheet(label_stylesheet_black_bg_text_white)
+            # self.dial_out_socket_type.setStyleSheet(label_stylesheet_black_bg_text_white)
+            # self.bool_socket_options_btn.setStyleSheet(button_stylesheet_white_text_high)
+
             # self.address_key.setStyleSheet(line_edit_stylesheet_white_text)
             # self.tb_fingerprint.setStyleSheet(textbox_stylesheet_black_bg)
             # self.generate_key.setStyleSheet(button_stylesheet_white_text_low)
@@ -2064,7 +2084,7 @@ class App(QMainWindow):
         self.server_start = QPushButton(self)
         self.server_start.move(int((self.width / 2) - (self.btn_60 / 2)), self.server_staple - 24)
         self.server_start.resize(self.btn_60, self.btn_20)
-        self.server_start.setIcon(QIcon(play_green))
+        self.server_start.setIcon(QIcon(play_default))
         self.server_start.setIconSize(QSize(9, 9))
         self.server_start.setStyleSheet(button_stylesheet_red_text)
         self.server_start.clicked.connect(start_function)
@@ -2126,13 +2146,6 @@ class App(QMainWindow):
         self.server_rem_addr.setIconSize(QSize(14, 14))
         self.server_rem_addr.setStyleSheet(button_stylesheet_default)
         self.server_rem_addr.clicked.connect(server_delete_function)
-
-        # self.server_incoming = QPushButton(self)
-        # self.server_incoming.move(self.width - 72, self.server_staple + 24)
-        # self.server_incoming.resize(68, 68)
-        # self.server_incoming.setIcon(QIcon(server_public_off))
-        # self.server_incoming.setIconSize(QSize(48, 48))
-        # self.server_incoming.setStyleSheet(button_stylesheet_background_matching)
 
         self.soft_block_ip_notification = QPushButton(self)
         self.soft_block_ip_notification.move(self.width - 24 - 60, self.server_staple + 24 + 24 + 24)
@@ -2325,8 +2338,6 @@ class App(QMainWindow):
         self.address_clear_form = QPushButton(self)
         self.address_clear_form.move(int((self.width / 2) - (self.btn_240 / 2)), self.address_staple_height + 28)
         self.address_clear_form.resize(self.btn_120 - 2, self.btn_20)
-        # self.address_clear_form.setIcon(QIcon())
-        # self.address_clear_form.setIconSize(QSize(self.btn_20 - 8, self.btn_20 - 8))
         self.address_clear_form.setFont(self.font_s7b)
         self.address_clear_form.setText('+')
         self.address_clear_form.setStyleSheet(button_stylesheet_white_text_high)
@@ -3513,18 +3524,14 @@ class ServerDataHandlerClass(QThread):
         debug_message.append('[' + str(datetime.datetime.now()) + '] [ServerDataHandlerClass.notification] ' + str(mute_server_notify_cipher_bool))
 
         if self.notification_key == 'green':
-            # self.server_incoming.setIcon(QIcon(server_public_green))
             if mute_server_notify_cipher_bool is False:
                 self.play_notification_sound()
 
         elif self.notification_key == 'amber':
-            # self.server_incoming.setIcon(QIcon(server_public_amber))
             if mute_server_notify_alien_bool is False:
                 self.play_notification_sound()
 
         time.sleep(1)
-
-        # self.server_incoming.setIcon(QIcon(server_public_white))
 
     def run(self):
         global debug_message
@@ -3659,8 +3666,7 @@ class ServerClass(QThread):
         while True:
             try:
                 self.server_status_label.setText('SERVER STATUS: ONLINE')
-                # self.server_incoming.setIcon(QIcon(server_public_white))
-                self.server_start.setIcon(QIcon(play_green))
+                self.server_start.setIcon(QIcon(play_default))
                 self.listen()
             except Exception as e:
                 self.data = str('[' + str(datetime.datetime.now()) + '] [ServerClass.run] [0] failed: ' + str(e))
@@ -3668,7 +3674,6 @@ class ServerClass(QThread):
                 self.server_logger()
 
                 self.server_status_label.setText('SERVER STATUS: TRYING TO START')
-                # self.server_incoming.setIcon(QIcon(server_public_yellow))
                 self.server_start.setIcon(QIcon(play_yellow))
                 time.sleep(1)
 
@@ -3744,8 +3749,7 @@ class ServerClass(QThread):
                 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as SOCKET_SERVER:
                     SOCKET_SERVER.bind((self.SERVER_HOST, self.SERVER_PORT))
                     self.server_status_label.setText('SERVER STATUS: ONLINE')
-                    # self.server_incoming.setIcon(QIcon(server_public_white))
-                    self.server_start.setIcon(QIcon(play_green))
+                    self.server_start.setIcon(QIcon(play_default))
 
                     SOCKET_SERVER.listen()
 
@@ -3876,7 +3880,6 @@ class ServerClass(QThread):
                                     debug_message.append('[' + str(datetime.datetime.now()) + '] [ServerClass.listen] [2] failed: ' + str(e))
                                     textbox_0_messages.append('[' + str(datetime.datetime.now()) + '] [2] ' + str(e))
                                     self.server_status_label.setText('SERVER STATUS: TRYING TO START')
-                                    # self.server_incoming.setIcon(QIcon(server_public_yellow))
                                     self.server_start.setIcon(QIcon(play_yellow))
                                     time.sleep(1)
                                     break
@@ -3886,7 +3889,6 @@ class ServerClass(QThread):
                 debug_message.append('[' + str(datetime.datetime.now()) + '] [ServerClass.listen] [3] failed: ' + str(e))
                 textbox_0_messages.append('[' + str(datetime.datetime.now()) + '] [3] ' + str(e))
                 self.server_status_label.setText('SERVER STATUS: TRYING TO START')
-                # self.server_incoming.setIcon(QIcon(server_public_yellow))
                 self.server_start.setIcon(QIcon(play_yellow))
                 time.sleep(1)
                 break
@@ -3902,8 +3904,7 @@ class ServerClass(QThread):
         except Exception as e:
             debug_message.append('[' + str(datetime.datetime.now()) + '] [ServerClass.stop] failed: ' + str(e))
         self.server_status_label.setText('SERVER STATUS: OFFLINE')
-        # self.server_incoming.setIcon(QIcon(server_public_off))
-        self.server_start.setIcon(QIcon(play_green))
+        self.server_start.setIcon(QIcon(play_default))
         global_self.setFocus()
         self.terminate()
 
