@@ -486,10 +486,19 @@ textbox_stylesheet_black_bg = """QTextBrowser {background-color: rgb(0, 0, 0);
                 border-top:0px solid rgb(5, 5, 5);
                 border-left:0px solid rgb(5, 5, 5);}"""
 
-textbox_stylesheet_white_bg_black_text = """QTextBrowser {background-color: rgb(255, 255, 0);
+textbox_stylesheet_black_bg_red_text = """QTextBrowser {background-color: rgb(0, 0, 0);
                 selection-color: black;
                 selection-background-color: rgb(0, 180, 0);
-                color: rgb(0, 0, 0);
+                color: rgb(255, 0, 0);
+                border-bottom:0px solid rgb(5, 5, 5);
+                border-right:0px solid rgb(5, 5, 5);
+                border-top:0px solid rgb(5, 5, 5);
+                border-left:0px solid rgb(5, 5, 5);}"""
+
+textbox_stylesheet_black_bg_green_text = """QTextBrowser {background-color: rgb(0, 0, 0);
+                selection-color: black;
+                selection-background-color: rgb(0, 180, 0);
+                color: rgb(0, 255, 0);
                 border-bottom:0px solid rgb(5, 5, 5);
                 border-right:0px solid rgb(5, 5, 5);
                 border-top:0px solid rgb(5, 5, 5);
@@ -535,93 +544,97 @@ class App(QMainWindow):
         global_self = self
 
         self.font_s7b = QFont("Segoe UI", 7, QFont.Bold)
+        
+        def set_main_style():
 
-        self.setStyleSheet("""
-                                    QScrollBar:vertical {width: 11px;
-                                    margin: 11px 0 11px 0;
-                                    background-color: black;
-                                    }
-                                    QScrollBar::handle:vertical {
-                                    background-color: black;
-                                    min-height: 11px;
-                                    }
-                                    QScrollBar::add-line:vertical {
-                                    background-color: black;
-                                    height: 11px;
-                                    subcontrol-position: bottom;
-                                    subcontrol-origin: margin;
-                                    }
-                                    QScrollBar::sub-line:vertical {
-                                    background-color: black;
-                                    height: 11px;
-                                    subcontrol-position: top;
-                                    subcontrol-origin: margin;
-                                    }
-                                    QScrollBar::up-arrow:vertical {
-                                    image:url('./resources/image/scroll_white.png');
-                                    height: 11px;
-                                    width: 11px;
-                                    }
-                                    QScrollBar::down-arrow:vertical {
-                                    image:url('./resources/image/scroll_white.png');
-                                    height: 11px;
-                                    width: 11px;
-                                    }
-                                    QScrollBar::add-page:vertical {
-                                    background: rgb(25, 25, 25);
-                                    }
-                                    QScrollBar::sub-page:vertical {
-                                    background: rgb(25, 25, 25);
-                                    }
-
-                                    QScrollBar:horizontal {
-                                    height: 11px;
-                                    margin: 0px 11px 0 11px;
-                                    background-color: black;
-                                    }
-                                    QScrollBar::handle:horizontal {
-                                    background-color: black;
-                                    min-width: 11px;
-                                    }
-                                    QScrollBar::add-line:horizontal {
-                                    background-color: black;
-                                    width: 11px;
-                                    subcontrol-position: right;
-                                    subcontrol-origin: margin;
-                                    }
-                                    QScrollBar::sub-line:horizontal {
-                                    background-color: black;
-                                    width: 11px;
-                                    subcontrol-position: top left;
-                                    subcontrol-origin: margin;
-                                    position: absolute;
-                                    }
-                                    QScrollBar::left-arrow:horizontal {
-                                    image:url('./resources/image/scroll_white.png');
-                                    height: 11px;
-                                    width: 11px;
-                                    }
-                                    QScrollBar::right-arrow:horizontal {
-                                    image:url('./resources/image/scroll_white.png');
-                                    height: 11px;
-                                    width: 11px;
-                                    }
-                                    QScrollBar::add-page:horizontal {
-                                    background: rgb(25, 25, 25);
-                                    }
-                                    QScrollBar::sub-page:horizontal {
-                                    background: rgb(25, 25, 25);
-                                    }
-                                    """)
-
-        """ Tooltip """
-        self.tooltip_style = """QToolTip {background-color: rgb(35, 35, 35);
-                                   color: rgb(200, 200, 200);
-                                   border-top:0px solid rgb(35, 35, 35);
-                                   border-bottom:0px solid rgb(35, 35, 35);
-                                   border-right:0px solid rgb(0, 0, 0);
-                                   border-left:0px solid rgb(0, 0, 0);}"""
-        self.setStyleSheet(self.tooltip_style)
+            self.setStyleSheet("""
+                                        QScrollBar:vertical {width: 11px;
+                                        margin: 11px 0 11px 0;
+                                        background-color: black;
+                                        }
+                                        QScrollBar::handle:vertical {
+                                        background-color: black;
+                                        min-height: 11px;
+                                        }
+                                        QScrollBar::add-line:vertical {
+                                        background-color: black;
+                                        height: 11px;
+                                        subcontrol-position: bottom;
+                                        subcontrol-origin: margin;
+                                        }
+                                        QScrollBar::sub-line:vertical {
+                                        background-color: black;
+                                        height: 11px;
+                                        subcontrol-position: top;
+                                        subcontrol-origin: margin;
+                                        }
+                                        QScrollBar::up-arrow:vertical {
+                                        image:url('./resources/image/scroll_white.png');
+                                        height: 11px;
+                                        width: 11px;
+                                        }
+                                        QScrollBar::down-arrow:vertical {
+                                        image:url('./resources/image/scroll_white.png');
+                                        height: 11px;
+                                        width: 11px;
+                                        }
+                                        QScrollBar::add-page:vertical {
+                                        background: rgb(25, 25, 25);
+                                        }
+                                        QScrollBar::sub-page:vertical {
+                                        background: rgb(25, 25, 25);
+                                        }
+    
+                                        QScrollBar:horizontal {
+                                        height: 11px;
+                                        margin: 0px 11px 0 11px;
+                                        background-color: black;
+                                        }
+                                        QScrollBar::handle:horizontal {
+                                        background-color: black;
+                                        min-width: 11px;
+                                        }
+                                        QScrollBar::add-line:horizontal {
+                                        background-color: black;
+                                        width: 11px;
+                                        subcontrol-position: right;
+                                        subcontrol-origin: margin;
+                                        }
+                                        QScrollBar::sub-line:horizontal {
+                                        background-color: black;
+                                        width: 11px;
+                                        subcontrol-position: top left;
+                                        subcontrol-origin: margin;
+                                        position: absolute;
+                                        }
+                                        QScrollBar::left-arrow:horizontal {
+                                        image:url('./resources/image/scroll_white.png');
+                                        height: 11px;
+                                        width: 11px;
+                                        }
+                                        QScrollBar::right-arrow:horizontal {
+                                        image:url('./resources/image/scroll_white.png');
+                                        height: 11px;
+                                        width: 11px;
+                                        }
+                                        QScrollBar::add-page:horizontal {
+                                        background: rgb(25, 25, 25);
+                                        }
+                                        QScrollBar::sub-page:horizontal {
+                                        background: rgb(25, 25, 25);
+                                        }
+                                        """)
+    
+            """ Tooltip """
+            self.tooltip_style = """QToolTip {background-color: rgb(35, 35, 35);
+                                       color: rgb(200, 200, 200);
+                                       border-top:0px solid rgb(35, 35, 35);
+                                       border-bottom:0px solid rgb(35, 35, 35);
+                                       border-right:0px solid rgb(0, 0, 0);
+                                       border-left:0px solid rgb(0, 0, 0);}"""
+            self.setStyleSheet(self.tooltip_style)
+        
+        set_main_style()
 
         self.key_string = ''
         self.fingerprint_str = ''
@@ -1746,10 +1759,10 @@ class App(QMainWindow):
             self.address_book_port.setEnabled(True)
             self.address_book_broadcast.setEnabled(True)
             self.address_book_mac.setEnabled(True)
-            self.address_key.setEnabled(True)
-            self.tb_fingerprint.setEnabled(True)
-            self.generate_key.setEnabled(True)
-            self.generate_fingerprint.setEnabled(True)
+            # self.address_key.setEnabled(True)
+            # self.tb_fingerprint.setEnabled(True)
+            # self.generate_key.setEnabled(True)
+            # self.generate_fingerprint.setEnabled(True)
 
             self.dial_out_name.setStyleSheet(line_edit_stylesheet_is_enabled)
             self.dial_out_ip_port.setStyleSheet(line_edit_stylesheet_is_enabled)
@@ -1781,10 +1794,10 @@ class App(QMainWindow):
             self.address_book_port.setEnabled(False)
             self.address_book_broadcast.setEnabled(False)
             self.address_book_mac.setEnabled(False)
-            self.address_key.setEnabled(False)
-            self.tb_fingerprint.setEnabled(False)
-            self.generate_key.setEnabled(False)
-            self.generate_fingerprint.setEnabled(False)
+            # self.address_key.setEnabled(False)
+            # self.tb_fingerprint.setEnabled(False)
+            # self.generate_key.setEnabled(False)
+            # self.generate_fingerprint.setEnabled(False)
 
             self.dial_out_name.setStyleSheet(line_edit_stylesheet_white_text)
             self.dial_out_ip_port.setStyleSheet(line_edit_stylesheet_white_text)
@@ -2786,6 +2799,9 @@ class App(QMainWindow):
             self.dial_out_prev_addr.setStyleSheet(button_scroll_stylesheet_left)
             self.dial_out_next_addr.setStyleSheet(button_scroll_stylesheet_left)
 
+            # self.address_key.setStyleSheet(line_edit_stylesheet_white_text)
+            # self.tb_fingerprint.setStyleSheet(textbox_stylesheet_black_bg)
+
         if self.gui_message == 'saved_address':
             self.gui_message = ''
             self.address_book_label.setStyleSheet(title_stylesheet_default)
@@ -2817,6 +2833,9 @@ class App(QMainWindow):
 
             self.dial_out_prev_addr.setStyleSheet(button_scroll_stylesheet_left)
             self.dial_out_next_addr.setStyleSheet(button_scroll_stylesheet_left)
+
+            # self.address_key.setStyleSheet(line_edit_stylesheet_white_text)
+            # self.tb_fingerprint.setStyleSheet(textbox_stylesheet_black_bg)
 
         if gui_message:
             gui_message_ = gui_message[-1]
@@ -2855,6 +2874,9 @@ class App(QMainWindow):
                 self.dial_out_prev_addr.setStyleSheet(button_scroll_stylesheet_left_red)
                 self.dial_out_next_addr.setStyleSheet(button_scroll_stylesheet_left_red)
 
+                # self.address_key.setStyleSheet(line_edit_stylesheet_red_bg_black_text)
+                # self.tb_fingerprint.setStyleSheet(textbox_stylesheet_black_bg_red_text)
+
             elif gui_message_ == 'saved_address':
                 self.gui_message = 'saved_address'
                 print('-- dropped in gui_message:', gui_message_)
@@ -2887,6 +2909,9 @@ class App(QMainWindow):
 
                 self.dial_out_prev_addr.setStyleSheet(button_scroll_stylesheet_left_green)
                 self.dial_out_next_addr.setStyleSheet(button_scroll_stylesheet_left_green)
+
+                # self.address_key.setStyleSheet(line_edit_stylesheet_green_bg_black_text)
+                # self.tb_fingerprint.setStyleSheet(textbox_stylesheet_black_bg_green_text)
 
             gui_message.remove(gui_message_)
 
