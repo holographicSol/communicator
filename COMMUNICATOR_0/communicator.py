@@ -320,7 +320,7 @@ label_stylesheet_grey_bg_white_text_high = """QLabel{background-color: rgb(0, 0,
                        border-left:0px solid rgb(5, 5, 5);}"""
 
 label_stylesheet_red_bg_black_text = """QLabel{background-color: rgb(0, 0, 0);
-                       color: rgb(255, 255, 255);
+                       color: rgb(255, 0, 0);
                        border-bottom:0px solid rgb(5, 5, 5);
                        border-right:3px solid rgb(255, 0, 0);
                        border-top:3px solid rgb(255, 0, 0);
