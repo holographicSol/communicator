@@ -460,12 +460,12 @@ line_edit_stylesheet_green_bg_black_text = """QLineEdit{background-color: rgb(0,
                        border-top:0px solid rgb(5, 5, 5);
                        border-left:0px solid rgb(5, 5, 5);}"""
 
-line_edit_stylesheet_is_enabled = """QLineEdit{background-color: rgb(255, 255, 255);
-                       color: rgb(0, 0, 0);
-                       border-bottom:0px solid rgb(5, 5, 5);
-                       border-right:0px solid rgb(5, 5, 5);
-                       border-top:0px solid rgb(5, 5, 5);
-                       border-left:0px solid rgb(5, 5, 5);}"""
+line_edit_stylesheet_is_enabled = """QLineEdit{background-color: rgb(0, 0, 0);
+                       color: rgb(255, 255, 255);
+                       border-bottom:3px solid rgb(255 255, 255);
+                       border-right:0px solid rgb(255, 255, 255);
+                       border-top:0px solid rgb(255, 255, 255);
+                       border-left:0px solid rgb(255, 255, 255);}"""
 
 textbox_stylesheet_default = """QTextBrowser {background-color: rgb(0, 0, 0);
                 selection-color: black;
@@ -1747,7 +1747,7 @@ class App(QMainWindow):
             global address_mode
             global bool_address_uplink
             debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.address_clear_form_function]')
-            self.address_book_label.setStyleSheet(label_stylesheet_white_bg_black_text)
+            # self.address_book_label.setStyleSheet(label_stylesheet_white_bg_black_text)
             self.dial_out_name.setText('')
             self.dial_out_ip_port.setText('')
             self.address_book_port.setText('')
@@ -1795,7 +1795,7 @@ class App(QMainWindow):
             global debug_message
             global address_mode
             debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.address_undo_form_function]')
-            self.address_book_label.setStyleSheet(title_stylesheet_default)
+            # self.address_book_label.setStyleSheet(title_stylesheet_default)
             client_previous_address_function()
             client_next_address_function()
             address_mode = 'uplink_current_index'
