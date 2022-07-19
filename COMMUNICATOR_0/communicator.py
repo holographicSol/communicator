@@ -305,6 +305,13 @@ label_stylesheet_black_bg_text_yellow = """QLabel{background-color: rgb(0, 0, 0)
                        border-top:0px solid rgb(5, 5, 5);
                        border-left:0px solid rgb(5, 5, 5);}"""
 
+label_stylesheet_black_bg_green_text = """QLabel{background-color: rgb(0, 0, 0);
+                       color: rgb(0, 255, 0);
+                       border-bottom:0px solid rgb(5, 5, 5);
+                       border-right:0px solid rgb(5, 5, 5);
+                       border-top:0px solid rgb(5, 5, 5);
+                       border-left:0px solid rgb(5, 5, 5);}"""
+
 label_stylesheet_white_bg_black_text = """QLabel{background-color: rgb(255, 255, 255);
                        color: rgb(0, 0, 0);
                        border-bottom:0px solid rgb(5, 5, 5);
@@ -1723,10 +1730,10 @@ class App(QMainWindow):
             self.address_book_broadcast.setStyleSheet(line_edit_stylesheet_is_enabled)
             self.address_book_mac.setStyleSheet(line_edit_stylesheet_is_enabled)
 
-            # self.dial_out_encoding.setStyleSheet(button_stylesheet_white_bg_black_text)
-            # self.dial_out_family_type.setStyleSheet(label_stylesheet_white_bg_black_text)
+            # self.dial_out_encoding.setStyleSheet(button_stylesheet_red_text)
+            # self.dial_out_family_type.setStyleSheet(labe)
             # self.dial_out_socket_type.setStyleSheet(label_stylesheet_white_bg_black_text)
-            # self.bool_socket_options_btn.setStyleSheet(button_stylesheet_white_bg_black_text)
+            # self.bool_socket_options_btn.setStyleSheet(button_stylesheet_red_text)
 
             # self.address_key.setStyleSheet(line_edit_stylesheet_is_enabled)
             # self.tb_fingerprint.setStyleSheet(textbox_stylesheet_white_bg_black_text)
@@ -2729,6 +2736,17 @@ class App(QMainWindow):
             self.address_book_broadcast.setStyleSheet(line_edit_stylesheet_white_text)
             self.address_book_mac.setStyleSheet(line_edit_stylesheet_white_text)
 
+            self.dial_out_encoding.setStyleSheet(button_stylesheet_white_text_high)
+            self.dial_out_family_type.setStyleSheet(label_stylesheet_black_bg_text_white)
+            self.dial_out_socket_type.setStyleSheet(label_stylesheet_black_bg_text_white)
+            self.bool_socket_options_btn.setStyleSheet(button_stylesheet_white_text_high)
+
+            self.address_book_name_label.setStyleSheet(label_stylesheet_black_bg_text_white)
+            self.address_book_address_label.setStyleSheet(button_stylesheet_white_text_high)
+            self.address_book_port_label.setStyleSheet(label_stylesheet_black_bg_text_white)
+            self.address_book_broadcast_label.setStyleSheet(button_stylesheet_white_text_high)
+            self.address_book_mac_label.setStyleSheet(button_stylesheet_white_text_high)
+
         if self.gui_message == 'saved_address':
             self.gui_message = ''
             self.address_book_label.setStyleSheet(title_stylesheet_default)
@@ -2737,6 +2755,17 @@ class App(QMainWindow):
             self.address_book_port.setStyleSheet(line_edit_stylesheet_white_text)
             self.address_book_broadcast.setStyleSheet(line_edit_stylesheet_white_text)
             self.address_book_mac.setStyleSheet(line_edit_stylesheet_white_text)
+
+            self.dial_out_encoding.setStyleSheet(button_stylesheet_white_text_high)
+            self.dial_out_family_type.setStyleSheet(label_stylesheet_black_bg_text_white)
+            self.dial_out_socket_type.setStyleSheet(label_stylesheet_black_bg_text_white)
+            self.bool_socket_options_btn.setStyleSheet(button_stylesheet_white_text_high)
+
+            self.address_book_name_label.setStyleSheet(label_stylesheet_black_bg_text_white)
+            self.address_book_address_label.setStyleSheet(button_stylesheet_white_text_high)
+            self.address_book_port_label.setStyleSheet(label_stylesheet_black_bg_text_white)
+            self.address_book_broadcast_label.setStyleSheet(button_stylesheet_white_text_high)
+            self.address_book_mac_label.setStyleSheet(button_stylesheet_white_text_high)
 
         if gui_message:
             gui_message_ = gui_message[-1]
@@ -2752,6 +2781,17 @@ class App(QMainWindow):
                 self.address_book_broadcast.setStyleSheet(line_edit_stylesheet_red_bg_black_text)
                 self.address_book_mac.setStyleSheet(line_edit_stylesheet_red_bg_black_text)
 
+                self.dial_out_encoding.setStyleSheet(button_stylesheet_red_text)
+                self.dial_out_family_type.setStyleSheet(label_stylesheet_red_text)
+                self.dial_out_socket_type.setStyleSheet(label_stylesheet_red_text)
+                self.bool_socket_options_btn.setStyleSheet(button_stylesheet_red_text)
+
+                self.address_book_name_label.setStyleSheet(label_stylesheet_red_text)
+                self.address_book_address_label.setStyleSheet(button_stylesheet_red_text)
+                self.address_book_port_label.setStyleSheet(label_stylesheet_red_text)
+                self.address_book_broadcast_label.setStyleSheet(button_stylesheet_red_text)
+                self.address_book_mac_label.setStyleSheet(button_stylesheet_red_text)
+
             elif gui_message_ == 'saved_address':
                 self.gui_message = 'saved_address'
                 print('-- dropped in gui_message:', gui_message_)
@@ -2761,6 +2801,18 @@ class App(QMainWindow):
                 self.address_book_port.setStyleSheet(line_edit_stylesheet_green_bg_black_text)
                 self.address_book_broadcast.setStyleSheet(line_edit_stylesheet_green_bg_black_text)
                 self.address_book_mac.setStyleSheet(line_edit_stylesheet_green_bg_black_text)
+
+                self.dial_out_encoding.setStyleSheet(button_stylesheet_green_text)
+                self.dial_out_family_type.setStyleSheet(label_stylesheet_black_bg_green_text)
+                self.dial_out_socket_type.setStyleSheet(label_stylesheet_black_bg_green_text)
+                self.bool_socket_options_btn.setStyleSheet(button_stylesheet_green_text)
+
+                self.dial_out_name.setStyleSheet(label_stylesheet_black_bg_green_text)
+                self.address_book_address_label.setStyleSheet(button_stylesheet_green_text)
+                self.address_book_port_label.setStyleSheet(label_stylesheet_black_bg_green_text)
+                self.address_book_broadcast_label.setStyleSheet(button_stylesheet_green_text)
+                self.address_book_mac_label.setStyleSheet(button_stylesheet_green_text)
+
             gui_message.remove(gui_message_)
 
 
