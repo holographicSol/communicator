@@ -3349,6 +3349,7 @@ class DialOutClass(QThread):
         debug_message.append('[' + str(datetime.datetime.now()) + '] [Starting Thread] [DialOutClass.run]')
         global client_address
         global client_address_index
+        global use_address
 
         debug_message.append('[' + str(datetime.datetime.now()) + '] [DialOutClass.run] bool_dial_out_override: ' + str(bool_dial_out_override))
 
