@@ -1163,12 +1163,15 @@ class App(QMainWindow):
                 if str(client_address[client_address_index][4]) != 'x':
                     self.address_book_mac.setText(str(client_address[client_address_index][4]))
 
-                if use_address == 'default':
+                if client_address[client_address_index][13] == 'default':
                     self.transmit_display_address.setText(self.dial_out_ip_port.text())
-                elif use_address == 'broadcast':
+                    address_book_address_label_function()
+                elif client_address[client_address_index][13] == 'broadcast':
                     self.transmit_display_address.setText(self.address_book_broadcast.text())
-                elif use_address == 'mac':
+                    address_book_broadcast_label_function()
+                elif client_address[client_address_index][13] == 'mac':
                     self.transmit_display_address.setText(self.address_book_mac.text())
+                    address_book_mac_label_function()
 
                 check_key()
                 format_fingerprint()
@@ -1261,12 +1264,15 @@ class App(QMainWindow):
                 if str(client_address[client_address_index][4]) != 'x':
                     self.address_book_mac.setText(str(client_address[client_address_index][4]))
 
-                if use_address == 'default':
+                if client_address[client_address_index][13] == 'default':
                     self.transmit_display_address.setText(self.dial_out_ip_port.text())
-                elif use_address == 'broadcast':
+                    address_book_address_label_function()
+                elif client_address[client_address_index][13] == 'broadcast':
                     self.transmit_display_address.setText(self.address_book_broadcast.text())
-                elif use_address == 'mac':
+                    address_book_broadcast_label_function()
+                elif client_address[client_address_index][13] == 'mac':
                     self.transmit_display_address.setText(self.address_book_mac.text())
+                    address_book_mac_label_function()
 
                 check_key()
                 format_fingerprint()
