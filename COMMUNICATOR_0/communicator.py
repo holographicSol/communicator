@@ -503,7 +503,14 @@ class App(QMainWindow):
         global uplink_enable_bool
         global uplink_use_external_service
         global gui_message
+
         global_self = self
+
+        # QTimer - Debug Timer
+        self.debug_timer = QTimer(self)
+        self.debug_timer.setInterval(0)
+        self.debug_timer.timeout.connect(self.debug_function)
+        self.debug_jumpstart()
 
         self.font_s7b = QFont("Segoe UI", 7, QFont.Bold)
 
@@ -847,7 +854,7 @@ class App(QMainWindow):
                                     client_address.append([str(name_), str(address_), int(port_), str(broadcast_address_), str(mac_), str(key_), str(fingerprint_path_), s_enc, s_address_family, s_soc_type, s_options_0, s_options_1, bool_address_uplink])
 
                                     # Alphabetically sort the address book in memory
-                                    client_address.sort(key=lambda x: x[0])
+                                    client_address.sort(key=lambda x: canonical_caseless(x[0]))
 
                                     # Find the new index of the new address book entry in memory after sorting and set the new current address book index accordingly
                                     client_address_index = client_address.index([str(name_), str(address_), int(port_), str(broadcast_address_), str(mac_), str(key_), str(fingerprint_path_), s_enc, s_address_family, s_soc_type, s_options_0, s_options_1, bool_address_uplink])
@@ -914,7 +921,7 @@ class App(QMainWindow):
                                             client_address.append([str(name_), str(address_), int(port_), str(broadcast_address_), str(mac_), bytes(self.address_key.text(), 'utf-8'), str(self.fingerprint_str), s_enc, s_address_family, s_soc_type, s_options_0, s_options_1, bool_address_uplink])
 
                                             # Alphabetically sort the address book in memory
-                                            client_address.sort(key=lambda x: x[0])
+                                            client_address.sort(key=lambda x: canonical_caseless(x[0]))
 
                                             # Find the new index of the new address book entry in memory after sorting and set the new current address book index accordingly
                                             client_address_index = client_address.index([str(name_), str(address_), int(port_), str(broadcast_address_), str(mac_), bytes(self.address_key.text(), 'utf-8'), str(self.fingerprint_str), s_enc, s_address_family, s_soc_type, s_options_0, s_options_1, bool_address_uplink])
@@ -2021,7 +2028,7 @@ class App(QMainWindow):
         self.setWindowIcon(QIcon('./resources/image/icon.ico'))
 
         # Window Geometry
-        self.width, self.height = 1132, 640
+        self.width, self.height = 1132, 664
         app_pos_w, app_pos_h = (GetSystemMetrics(0) / 2 - (self.width / 2)), (GetSystemMetrics(1) / 2 - (self.height / 2))
         self.left, self.top = int(app_pos_w), int(app_pos_h)
         self.setGeometry(self.left, self.top, self.width, self.height)
@@ -2060,7 +2067,7 @@ class App(QMainWindow):
         self.server_status_label.setStyleSheet(title_stylesheet_default)
 
         self.server_status_label_ip_in_use = QLabel(self)
-        self.server_status_label_ip_in_use.move(int((self.width / 2) - (self.btn_240 / 2)), self.server_staple + 24)
+        self.server_status_label_ip_in_use.move(int((self.width / 2) - (self.btn_240 / 2)), self.server_staple + 24 + 24)
         self.server_status_label_ip_in_use.resize(self.btn_240, 20)
         self.server_status_label_ip_in_use.setFont(self.font_s7b)
         self.server_status_label_ip_in_use.setText('')
@@ -2092,7 +2099,7 @@ class App(QMainWindow):
         self.server_restart.clicked.connect(restart_function)
 
         self.server_ip_port = QLineEdit(self)
-        self.server_ip_port.move(int((self.width / 2) - (self.btn_240 / 2)), self.server_staple + 24 + 24)
+        self.server_ip_port.move(int((self.width / 2) - (self.btn_240 / 2)), self.server_staple + 24 + 24 + 24)
         self.server_ip_port.resize(self.btn_240, 20)
         self.server_ip_port.returnPressed.connect(server_line_edit_return_pressed)
         self.server_ip_port.setFont(self.font_s7b)
@@ -2101,23 +2108,23 @@ class App(QMainWindow):
         self.server_ip_port.setAlignment(Qt.AlignCenter)
 
         self.server_prev_addr = QPushButton(self)
-        self.server_prev_addr.move(int((self.width / 2) - (self.btn_240 / 2) - self.btn_20 - self.btn_4), self.server_staple + 24 + 24)
-        self.server_prev_addr.resize(self.btn_20, 20)
+        self.server_prev_addr.move(4, self.server_staple + 28)
+        self.server_prev_addr.resize(self.btn_20, 84)
         self.server_prev_addr.setIcon(QIcon(arrow_left))
         self.server_prev_addr.setIconSize(QSize(20, 20))
-        self.server_prev_addr.setStyleSheet(button_stylesheet_default)
+        self.server_prev_addr.setStyleSheet(button_scroll_stylesheet_left)
         self.server_prev_addr.clicked.connect(server_prev_addr_function)
 
         self.server_next_addr = QPushButton(self)
-        self.server_next_addr.move(int((self.width / 2) + (self.btn_240 / 2) + self.btn_4), self.server_staple + 24 + 24)
-        self.server_next_addr.resize(20, 20)
+        self.server_next_addr.move(self.width - 24, self.server_staple + 28)
+        self.server_next_addr.resize(20, 84)
         self.server_next_addr.setIcon(QIcon(arrow_right))
         self.server_next_addr.setIconSize(QSize(20, 20))
-        self.server_next_addr.setStyleSheet(button_stylesheet_default)
+        self.server_next_addr.setStyleSheet(button_scroll_stylesheet_right)
         self.server_next_addr.clicked.connect(server_next_addr_function)
 
         self.server_add_addr = QPushButton(self)
-        self.server_add_addr.move(int((self.width / 2) - (self.btn_240 / 2)), self.server_staple + 24 + 24 + 24)
+        self.server_add_addr.move(int((self.width / 2) - (self.btn_240 / 2)), self.server_staple + 24 + 24 + 24 + 24)
         self.server_add_addr.resize(60, int(self.btn_40 / 2))
         self.server_add_addr.setFont(self.font_s7b)
         self.server_add_addr.setText('SAVE')
@@ -2125,7 +2132,7 @@ class App(QMainWindow):
         self.server_add_addr.clicked.connect(server_save_function)
 
         self.server_rem_addr = QPushButton(self)
-        self.server_rem_addr.move(int((self.width / 2) + (self.btn_240 / 2) - self.btn_60), self.server_staple + 24 + 24 + 24)
+        self.server_rem_addr.move(int((self.width / 2) + (self.btn_240 / 2) - self.btn_60), self.server_staple + 24 + 24 + 24 + 24)
         self.server_rem_addr.resize(self.btn_60, int(self.btn_40 / 2))
         self.server_rem_addr.setFont(self.font_s7b)
         self.server_rem_addr.setText('DELETE')
@@ -2197,8 +2204,8 @@ class App(QMainWindow):
         self.uplink_enable.clicked.connect(uplink_enable_function)
 
         self.external_ip_label = QLabel(self)
-        self.external_ip_label.move(28 + self.btn_120 + 4, self.server_staple + 24 + 24)
-        self.external_ip_label.resize(self.btn_120, 20)
+        self.external_ip_label.move(int((self.width / 2) - (self.btn_240 / 2)), self.server_staple + 24)
+        self.external_ip_label.resize(self.btn_240, 20)
         self.external_ip_label.setFont(self.font_s7b)
         self.external_ip_label.setText('')
         self.external_ip_label.setAlignment(Qt.AlignCenter)
@@ -2222,7 +2229,7 @@ class App(QMainWindow):
 
         # ##########################################################################################################
 
-        self.address_staple_height = self.server_staple + 28 + 24 + 24 + 24 + 148
+        self.address_staple_height = self.server_staple + 28 + 24 + 24 + 24 + 148 + 24
 
         self.address_book_label = QLabel(self)
         self.address_book_label.move(12, self.address_staple_height)
@@ -2647,7 +2654,7 @@ class App(QMainWindow):
 
         # Initiate window into Communicator program
         self.textbox_0 = QTextBrowser(self)
-        self.textbox_0.move(12, self.server_staple + 28 + 24 + 24 + 24)
+        self.textbox_0.move(12, self.server_staple + 28 + 24 + 24 + 24 + 24)
         self.textbox_0.resize(self.width - 24, 128)
         self.textbox_0.setObjectName("textbox_0")
         self.textbox_0.setFont(self.font_s7b)
@@ -2660,12 +2667,6 @@ class App(QMainWindow):
         self.textbox_timer_0.setInterval(0)
         self.textbox_timer_0.timeout.connect(self.textbox_timer_0_function)
         self.textbox_timer_0_jumpstart()
-
-        # QTimer - Debug Timer
-        self.debug_timer = QTimer(self)
-        self.debug_timer.setInterval(0)
-        self.debug_timer.timeout.connect(self.debug_function)
-        self.debug_jumpstart()
 
         # QTimer - Debug Timer
         self.gui_timer = QTimer(self)
@@ -2699,9 +2700,9 @@ class App(QMainWindow):
         global debug_message
         if debug_message:
             db_msg = debug_message[-1]
+            debug_message.remove(debug_message[-1])
             if debug_bool is True:
                 print(db_msg)
-            debug_message.remove(db_msg)
 
     @QtCore.pyqtSlot()
     def gui_jumpstart(self):
@@ -3246,7 +3247,7 @@ class ConfigurationClass(QThread):
                         client_address.append([str(line[1]), str(line[2]), int(line[3]), str(line[4]), str(line[5]), bytes(line[6], 'utf-8'), str(line[7]), str(line[8]), str(line[9]), str(line[10]), str(line[11]), str(line[12]), str(line[13])])
                         debug_message.append('[' + str(datetime.datetime.now()) + '] [ConfigurationClass.run] entry: ' + str(client_address[-1]))
 
-        client_address.sort(key=lambda x: x[0])
+        client_address.sort(key=lambda x: canonical_caseless(x[0]))
         debug_message.append('[' + str(datetime.datetime.now()) + '] [ConfigurationClass.run] sort complete')
 
         for _ in client_address:
