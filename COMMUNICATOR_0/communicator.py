@@ -129,7 +129,7 @@ uplink_use_external_service = False
 transmit_method = 'socket'
 use_address = 'default'
 address_mode = 'uplink_current_index'
-max_client_len = 13
+max_client_len = 14
 
 gui_message = []
 uplink_addresses = []
@@ -324,12 +324,12 @@ label_stylesheet_grey_bg_white_text_high = """QLabel{background-color: rgb(0, 0,
                        border-top:0px solid rgb(5, 5, 5);
                        border-left:0px solid rgb(5, 5, 5);}"""
 
-label_stylesheet_red_bg_black_text = """QLabel{background-color: rgb(255, 0, 0);
-                       color: rgb(0, 0, 0);
-                       border-bottom:0px solid rgb(5, 5, 5);
-                       border-right:0px solid rgb(5, 5, 5);
-                       border-top:0px solid rgb(5, 5, 5);
-                       border-left:0px solid rgb(5, 5, 5);}"""
+label_stylesheet_red_bg_black_text = """QLabel{background-color: rgb(0, 0, 0);
+                       color: rgb(255, 0, 0);
+                       border-bottom:0px solid rgb(0, 0, 0);
+                       border-right:3px solid rgb(255, 0, 0);
+                       border-top:3px solid rgb(255, 0, 0);
+                       border-left:3px solid rgb(255, 0, 0);}"""
 
 label_stylesheet_green_bg_black_text = """QLabel{background-color: rgb(0, 255, 0);
                        color: rgb(0, 0, 0);
@@ -431,12 +431,12 @@ line_edit_stylesheet_white_text = """QLineEdit{background-color: rgb(0, 0, 0);
                        border-top:0px solid rgb(5, 5, 5);
                        border-left:0px solid rgb(5, 5, 5);}"""
 
-line_edit_stylesheet_red_bg_black_text = """QLineEdit{background-color: rgb(255, 0, 0);
+line_edit_stylesheet_red_text_black_text = """QLineEdit{background-color: rgb(0, 0, 0);
                        color: rgb(255, 0, 0);
                        border-bottom:0px solid rgb(0, 0, 0);
                        border-right:3px solid rgb(255, 0, 0);
-                       border-top:0px solid rgb(0, 0, 0);
-                       border-left:3px solid rgb(255 0, 0);}"""
+                       border-top:0px solid rgb(255, 0, 0);
+                       border-left:3px solid rgb(255, 0, 0);}"""
 
 line_edit_stylesheet_green_bg_black_text = """QLineEdit{background-color: rgb(0, 0, 0);
                        color: rgb(0, 255, 0);
@@ -670,7 +670,8 @@ class App(QMainWindow):
                                                                           str(remove_address[9]),
                                                                           str(remove_address[10]),
                                                                           str(remove_address[11]),
-                                                                          str(remove_address[12])]
+                                                                          str(remove_address[12]),
+                                                                          str(remove_address[13])]
 
                                                 # Create a thorough but partial list from line in file (item excluded is fingerprint path)
                                                 compare_line_address = [str(line_split[1]),
@@ -684,7 +685,8 @@ class App(QMainWindow):
                                                                         str(line_split[10]),
                                                                         str(line_split[11]),
                                                                         str(line_split[12]),
-                                                                        str(line_split[13])]
+                                                                        str(line_split[13]),
+                                                                        str(line_split[14])]
 
                                                 # Display to compare
                                                 debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_remove_address] MEM LIST COMPARE: ' + str(compare_remove_address))
@@ -726,7 +728,6 @@ class App(QMainWindow):
                                 client_previous_address_function()
                                 client_next_address_function()
 
-
             address_mode = 'uplink_current_index'
             self.address_book_label.setStyleSheet(title_stylesheet_default)
             self.dial_out_name.setEnabled(False)
@@ -762,6 +763,7 @@ class App(QMainWindow):
             global dial_out_dial_out_cipher_bool
             global address_mode
             global gui_message
+            global use_address
 
             # Attempt to only run this function if this function is not already in progress
             if write_client_configuration_engaged is False:
@@ -775,7 +777,7 @@ class App(QMainWindow):
                         if self.dial_out_name.text() in _:
                             allow_name_bool.append(False)
 
-                    if not False in allow_name_bool:
+                    if False not in allow_name_bool:
                         # Address field must not be empty
                         if self.dial_out_ip_port.text() != '':
 
@@ -860,17 +862,17 @@ class App(QMainWindow):
                                     # if self.dial_out_ip_port.text() != '':
 
                                     # Set the string which should be appended to the address book
-                                    to_address_book = 'DATA ' + name_ + ' ' + address_ + ' ' + port_ + ' ' + broadcast_address_ + ' ' + mac_ + ' ' + key_ + ' ' + fingerprint_path_ + ' ' + s_args + ' ' + str(bool_address_uplink)
+                                    to_address_book = 'DATA ' + name_ + ' ' + address_ + ' ' + port_ + ' ' + broadcast_address_ + ' ' + mac_ + ' ' + key_ + ' ' + fingerprint_path_ + ' ' + s_args + ' ' + str(bool_address_uplink) + ' ' + str(use_address)
 
                                     # Append a new list to the address book list in memory
                                     # client_address.append([str(self.dial_out_name.text()), str(self.dial_out_ip_port.text()), int(self.address_book_port.text()), bytes('x', 'utf-8'), 'x', 'x', s_enc, s_address_family, s_soc_type, s_options_0, s_options_1, bool_address_uplink])
-                                    client_address.append([str(name_), str(address_), int(port_), str(broadcast_address_), str(mac_), str(key_), str(fingerprint_path_), s_enc, s_address_family, s_soc_type, s_options_0, s_options_1, bool_address_uplink])
+                                    client_address.append([str(name_), str(address_), int(port_), str(broadcast_address_), str(mac_), str(key_), str(fingerprint_path_), s_enc, s_address_family, s_soc_type, s_options_0, s_options_1, bool_address_uplink, str(use_address)])
 
                                     # Alphabetically sort the address book in memory
                                     client_address.sort(key=lambda x: canonical_caseless(x[0]))
 
                                     # Find the new index of the new address book entry in memory after sorting and set the new current address book index accordingly
-                                    client_address_index = client_address.index([str(name_), str(address_), int(port_), str(broadcast_address_), str(mac_), str(key_), str(fingerprint_path_), s_enc, s_address_family, s_soc_type, s_options_0, s_options_1, bool_address_uplink])
+                                    client_address_index = client_address.index([str(name_), str(address_), int(port_), str(broadcast_address_), str(mac_), str(key_), str(fingerprint_path_), s_enc, s_address_family, s_soc_type, s_options_0, s_options_1, bool_address_uplink, str(use_address)])
 
                                     bool_allow_write = True
 
@@ -928,16 +930,16 @@ class App(QMainWindow):
                                         if len(self.fingerprint_str) == 1024:
 
                                             # Set the string which should be appended to the address book
-                                            to_address_book = 'DATA ' + name_ + ' ' + address_ + ' ' + port_ + ' ' + broadcast_address_ + ' ' + mac_ + ' ' + self.address_key.text() + ' ' + fingerprint_fname + ' ' + s_args + ' ' + str(bool_address_uplink)
+                                            to_address_book = 'DATA ' + name_ + ' ' + address_ + ' ' + port_ + ' ' + broadcast_address_ + ' ' + mac_ + ' ' + self.address_key.text() + ' ' + fingerprint_fname + ' ' + s_args + ' ' + str(bool_address_uplink) + ' ' + str(use_address)
 
                                             # Append a new list to the address book list in memory
-                                            client_address.append([str(name_), str(address_), int(port_), str(broadcast_address_), str(mac_), bytes(self.address_key.text(), 'utf-8'), str(self.fingerprint_str), s_enc, s_address_family, s_soc_type, s_options_0, s_options_1, bool_address_uplink])
+                                            client_address.append([str(name_), str(address_), int(port_), str(broadcast_address_), str(mac_), bytes(self.address_key.text(), 'utf-8'), str(self.fingerprint_str), s_enc, s_address_family, s_soc_type, s_options_0, s_options_1, bool_address_uplink, str(use_address)])
 
                                             # Alphabetically sort the address book in memory
                                             client_address.sort(key=lambda x: canonical_caseless(x[0]))
 
                                             # Find the new index of the new address book entry in memory after sorting and set the new current address book index accordingly
-                                            client_address_index = client_address.index([str(name_), str(address_), int(port_), str(broadcast_address_), str(mac_), bytes(self.address_key.text(), 'utf-8'), str(self.fingerprint_str), s_enc, s_address_family, s_soc_type, s_options_0, s_options_1, bool_address_uplink])
+                                            client_address_index = client_address.index([str(name_), str(address_), int(port_), str(broadcast_address_), str(mac_), bytes(self.address_key.text(), 'utf-8'), str(self.fingerprint_str), s_enc, s_address_family, s_soc_type, s_options_0, s_options_1, bool_address_uplink, str(use_address)])
 
                                             bool_allow_write = True
 
@@ -964,7 +966,7 @@ class App(QMainWindow):
                                 # Display the potentially new current index as the index may have changed
                                 debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_save_address] current index after sorting: ' + str(client_address_index))
                     else:
-                        debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_save_address] name already exists!')
+                        debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_save_address] name or key already exists!')
                         gui_message.append('invalid_address')
                 else:
                     debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_save_address] ip and port should not be empty!')
@@ -1932,34 +1934,35 @@ class App(QMainWindow):
             global address_mode
             debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.uplink_address_function]')
 
-            if address_mode != 'save_mode':
+            if client_address[client_address_index][5] != 'x' and len(client_address[client_address_index][5]) == 32:
+                if address_mode != 'save_mode':
 
-                if bool_address_uplink is False:
-                    self.uplink_btn.setStyleSheet(button_stylesheet_green_text)
-                    bool_address_uplink = True
-                    print('uplink_addresses:', uplink_addresses)
-                    if client_address[client_address_index] not in uplink_addresses:
-                        print('client_address[client_address_index] not in uplink_addresses: append')
-                        uplink_addresses.append(client_address[client_address_index])
-                        print('client_address[client_address_index][12]:', client_address[client_address_index][12])
-                        client_address[client_address_index][12] = 'True'
-                elif bool_address_uplink is True:
-                    self.uplink_btn.setStyleSheet(button_stylesheet_white_text_low)
-                    bool_address_uplink = False
-                    print('uplink_addresses:', uplink_addresses)
-                    if client_address[client_address_index] in uplink_addresses:
-                        print('client_address[client_address_index] not in uplink_addresses: remove')
-                        uplink_addresses.remove(client_address[client_address_index])
-                        print('client_address[client_address_index][12]:', client_address[client_address_index][12])
-                        client_address[client_address_index][12] = 'False'
-                debug_message.append('[' + str(datetime.datetime.now()) + '] [App.uplink_address_function] setting bool_address_uplink: ' + str(bool_address_uplink))
-            else:
-                if bool_address_uplink is False:
-                    self.uplink_btn.setStyleSheet(button_stylesheet_green_text)
-                    bool_address_uplink = True
-                elif bool_address_uplink is True:
-                    self.uplink_btn.setStyleSheet(button_stylesheet_white_text_low)
-                    bool_address_uplink = False
+                    if bool_address_uplink is False:
+                        self.uplink_btn.setStyleSheet(button_stylesheet_green_text)
+                        bool_address_uplink = True
+                        print('uplink_addresses:', uplink_addresses)
+                        if client_address[client_address_index] not in uplink_addresses:
+                            print('client_address[client_address_index] not in uplink_addresses: append')
+                            uplink_addresses.append(client_address[client_address_index])
+                            print('client_address[client_address_index][12]:', client_address[client_address_index][12])
+                            client_address[client_address_index][12] = 'True'
+                    elif bool_address_uplink is True:
+                        self.uplink_btn.setStyleSheet(button_stylesheet_white_text_low)
+                        bool_address_uplink = False
+                        print('uplink_addresses:', uplink_addresses)
+                        if client_address[client_address_index] in uplink_addresses:
+                            print('client_address[client_address_index] not in uplink_addresses: remove')
+                            uplink_addresses.remove(client_address[client_address_index])
+                            print('client_address[client_address_index][12]:', client_address[client_address_index][12])
+                            client_address[client_address_index][12] = 'False'
+                    debug_message.append('[' + str(datetime.datetime.now()) + '] [App.uplink_address_function] setting bool_address_uplink: ' + str(bool_address_uplink))
+                else:
+                    if bool_address_uplink is False:
+                        self.uplink_btn.setStyleSheet(button_stylesheet_green_text)
+                        bool_address_uplink = True
+                    elif bool_address_uplink is True:
+                        self.uplink_btn.setStyleSheet(button_stylesheet_white_text_low)
+                        bool_address_uplink = False
 
         def get_ext_ip_use_upnp_function():
             global debug_message
@@ -2748,17 +2751,15 @@ class App(QMainWindow):
             if gui_message_ == 'invalid_address':
                 self.gui_message = 'invalid_address'
                 print('-- dropped in gui_message:', gui_message_)
-                self.address_book_label.setStyleSheet(label_stylesheet_red_bg_black_text)
-                self.dial_out_name.setStyleSheet(line_edit_stylesheet_red_bg_black_text)
-                self.dial_out_ip_port.setStyleSheet(line_edit_stylesheet_red_bg_black_text)
-                self.address_book_port.setStyleSheet(line_edit_stylesheet_red_bg_black_text)
-                self.address_book_broadcast.setStyleSheet(line_edit_stylesheet_red_bg_black_text)
-                self.address_book_mac.setStyleSheet(line_edit_stylesheet_red_bg_black_text)
+                self.dial_out_name.setStyleSheet(line_edit_stylesheet_red_text_black_text)
+                self.dial_out_ip_port.setStyleSheet(line_edit_stylesheet_red_text_black_text)
+                self.address_book_port.setStyleSheet(line_edit_stylesheet_red_text_black_text)
+                self.address_book_broadcast.setStyleSheet(line_edit_stylesheet_red_text_black_text)
+                self.address_book_mac.setStyleSheet(line_edit_stylesheet_red_text_black_text)
 
             elif gui_message_ == 'saved_address':
                 self.gui_message = 'saved_address'
                 print('-- dropped in gui_message:', gui_message_)
-                self.address_book_label.setStyleSheet(label_stylesheet_green_bg_black_text)
                 self.dial_out_name.setStyleSheet(line_edit_stylesheet_green_bg_black_text)
                 self.dial_out_ip_port.setStyleSheet(line_edit_stylesheet_green_bg_black_text)
                 self.address_book_port.setStyleSheet(line_edit_stylesheet_green_bg_black_text)
@@ -3254,8 +3255,8 @@ class ConfigurationClass(QThread):
                 line = line.split(' ')
                 if str(line[0]) == 'DATA':
                     debug_message.append('[' + str(datetime.datetime.now()) + '] [ConfigurationClass.run] len(line): ' + str(len(line)))
-                    if len(line) >= 13:
-                        client_address.append([str(line[1]), str(line[2]), int(line[3]), str(line[4]), str(line[5]), bytes(line[6], 'utf-8'), str(line[7]), str(line[8]), str(line[9]), str(line[10]), str(line[11]), str(line[12]), str(line[13])])
+                    if len(line) >= 14:
+                        client_address.append([str(line[1]), str(line[2]), int(line[3]), str(line[4]), str(line[5]), bytes(line[6], 'utf-8'), str(line[7]), str(line[8]), str(line[9]), str(line[10]), str(line[11]), str(line[12]), str(line[13]), str(line[14])])
                         debug_message.append('[' + str(datetime.datetime.now()) + '] [ConfigurationClass.run] entry: ' + str(client_address[-1]))
 
         client_address.sort(key=lambda x: canonical_caseless(x[0]))
