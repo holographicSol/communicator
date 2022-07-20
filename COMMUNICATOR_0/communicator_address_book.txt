@@ -1,3 +1,6 @@
-DATA Toshiba 192.168.1.15 55555 192.168.1.255 70:54:B4:84:20:FE x x utf_16 AF_INET SOCK_STREAM SOCK_DGRAM SO_BROADCAST False
-DATA SuperOmegaSpaceRay 192.168.1.11 55555 x x YSWNfHt|{Yew&T`TY!>fmOBn`[qz}U=[ ./fingerprints/SuperOmegaSpaceRay.txt utf_8 AF_INET SOCK_STREAM Unselected Unselected False
-DATA SuperMegaCatRobot 192.168.1.11 55555 x x x x utf_8 AF_INET SOCK_STREAM Unselected Unselected False
+DATA Toshiba 192.168.1.15 55555 192.168.1.255 70:54:B4:84:20:FE x x utf_16 AF_INET SOCK_STREAM SOCK_DGRAM SO_BROADCAST False default
+DATA SuperOmegaSpaceRay 192.168.1.11 55555 x x YSWNfHt|{Yew&T`TY!>fmOBn`[qz}U=[ ./fingerprints/SuperOmegaSpaceRay.txt utf_8 AF_INET SOCK_STREAM Unselected Unselected False default
+DATA SuperMegaCatRobot 192.168.1.11 55555 x x x x utf_8 AF_INET SOCK_STREAM Unselected Unselected False default
+DATA super_foo 192.168.1.11 55555 x x ,.~|K_\=.JT:ds{PAGvP=mG^R##EM{-t ./fingerprints/super_foo.txt utf_8 AF_INET SOCK_STREAM Unselected Unselected False default
+DATA foobar 198.168.1.11 55555 x x x x base64_codec AF_INET AF_DECnet Unselected Unselected False default
+DATA 9 9 9 x x x x base64_codec AF_APPLETALK AF_INET6 Unselected Unselected False broadcast
