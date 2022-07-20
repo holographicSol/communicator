@@ -838,6 +838,9 @@ class App(QMainWindow):
                                 if key_ == '':
                                     key_ = 'x'
 
+                                if port_.isdigit():
+                                    port_ = int(port_)
+
                                 # Get the socket options and create a string of all the socket arguments
                                 s_options_0 = str(self.communicator_socket_options_box_2.currentText())
                                 s_options_1 = str(self.communicator_socket_options_box_3.currentText())
@@ -865,13 +868,13 @@ class App(QMainWindow):
 
                                     # Append a new list to the address book list in memory
                                     # client_address.append([str(self.dial_out_name.text()), str(self.dial_out_ip_port.text()), int(self.address_book_port.text()), bytes('x', 'utf-8'), 'x', 'x', s_enc, s_address_family, s_soc_type, s_options_0, s_options_1, bool_address_uplink])
-                                    client_address.append([str(name_), str(address_), int(port_), str(broadcast_address_), str(mac_), str(key_), str(fingerprint_path_), s_enc, s_address_family, s_soc_type, s_options_0, s_options_1, bool_address_uplink, use_address])
+                                    client_address.append([str(name_), str(address_), port_, str(broadcast_address_), str(mac_), str(key_), str(fingerprint_path_), s_enc, s_address_family, s_soc_type, s_options_0, s_options_1, bool_address_uplink, use_address])
 
                                     # Alphabetically sort the address book in memory
                                     client_address.sort(key=lambda x: canonical_caseless(x[0]))
 
                                     # Find the new index of the new address book entry in memory after sorting and set the new current address book index accordingly
-                                    client_address_index = client_address.index([str(name_), str(address_), int(port_), str(broadcast_address_), str(mac_), str(key_), str(fingerprint_path_), s_enc, s_address_family, s_soc_type, s_options_0, s_options_1, bool_address_uplink, use_address])
+                                    client_address_index = client_address.index([str(name_), str(address_), port_, str(broadcast_address_), str(mac_), str(key_), str(fingerprint_path_), s_enc, s_address_family, s_soc_type, s_options_0, s_options_1, bool_address_uplink, use_address])
 
                                     bool_allow_write = True
 
@@ -932,13 +935,13 @@ class App(QMainWindow):
                                             to_address_book = 'DATA ' + name_ + ' ' + address_ + ' ' + port_ + ' ' + broadcast_address_ + ' ' + mac_ + ' ' + self.address_key.text() + ' ' + fingerprint_fname + ' ' + s_args + ' ' + str(bool_address_uplink) + ' ' + str(use_address)
 
                                             # Append a new list to the address book list in memory
-                                            client_address.append([str(name_), str(address_), int(port_), str(broadcast_address_), str(mac_), bytes(self.address_key.text(), 'utf-8'), str(self.fingerprint_str), s_enc, s_address_family, s_soc_type, s_options_0, s_options_1, bool_address_uplink, use_address])
+                                            client_address.append([str(name_), str(address_), port_, str(broadcast_address_), str(mac_), bytes(self.address_key.text(), 'utf-8'), str(self.fingerprint_str), s_enc, s_address_family, s_soc_type, s_options_0, s_options_1, bool_address_uplink, use_address])
 
                                             # Alphabetically sort the address book in memory
                                             client_address.sort(key=lambda x: canonical_caseless(x[0]))
 
                                             # Find the new index of the new address book entry in memory after sorting and set the new current address book index accordingly
-                                            client_address_index = client_address.index([str(name_), str(address_), int(port_), str(broadcast_address_), str(mac_), bytes(self.address_key.text(), 'utf-8'), str(self.fingerprint_str), s_enc, s_address_family, s_soc_type, s_options_0, s_options_1, bool_address_uplink, use_address])
+                                            client_address_index = client_address.index([str(name_), str(address_), port_, str(broadcast_address_), str(mac_), bytes(self.address_key.text(), 'utf-8'), str(self.fingerprint_str), s_enc, s_address_family, s_soc_type, s_options_0, s_options_1, bool_address_uplink, use_address])
 
                                             bool_allow_write = True
 
@@ -3256,7 +3259,11 @@ class ConfigurationClass(QThread):
                 if str(line[0]) == 'DATA':
                     debug_message.append('[' + str(datetime.datetime.now()) + '] [ConfigurationClass.run] len(line): ' + str(len(line)))
                     if len(line) >= 14:
-                        client_address.append([str(line[1]), str(line[2]), int(line[3]), str(line[4]), str(line[5]), bytes(line[6], 'utf-8'), str(line[7]), str(line[8]), str(line[9]), str(line[10]), str(line[11]), str(line[12]), str(line[13]), str(line[14])])
+                        if line[3].isdigit():
+                            line_3 = int(line[3])
+                        else:
+                            line_3 = line[3]
+                        client_address.append([str(line[1]), str(line[2]), line_3, str(line[4]), str(line[5]), bytes(line[6], 'utf-8'), str(line[7]), str(line[8]), str(line[9]), str(line[10]), str(line[11]), str(line[12]), str(line[13]), str(line[14])])
                         debug_message.append('[' + str(datetime.datetime.now()) + '] [ConfigurationClass.run] entry: ' + str(client_address[-1]))
 
         client_address.sort(key=lambda x: canonical_caseless(x[0]))
