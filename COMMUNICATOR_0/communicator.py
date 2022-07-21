@@ -1900,7 +1900,11 @@ class App(QMainWindow):
                     get_external_ip_thread.stop()
                 uplink_enable_bool = True
                 get_external_ip_thread.start()
-                self.uplink_enable.setStyleSheet(button_stylesheet_white_text_high)
+
+                if uplink_use_external_service is False:
+                    self.obtain_external_ip_box_0.setCurrentIndex(1)
+                elif uplink_use_external_service is True:
+                    self.obtain_external_ip_box_0.setCurrentIndex(2)
 
                 if uplink_thread.isRunning():
                     uplink_thread.stop()
@@ -1918,7 +1922,7 @@ class App(QMainWindow):
                 else:
                     debug_message.append('[' + str(datetime.datetime.now()) + '] [App.uplink_enable_function] get_external_ip_thread: already stopped')
                 uplink_enable_bool = False
-                self.uplink_enable.setStyleSheet(button_stylesheet_white_text_low)
+                self.obtain_external_ip_box_0.setCurrentIndex(0)
 
                 if uplink_thread.isRunning():
                     uplink_thread.stop()
@@ -1969,6 +1973,7 @@ class App(QMainWindow):
 
         def get_ext_ip_use_upnp_function():
             global debug_message
+            global uplink_enable_bool
             debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.get_ext_ip_use_upnp_function]')
 
             global uplink_use_external_service
@@ -1982,8 +1987,12 @@ class App(QMainWindow):
                 for line in fileinput.input(filein, inplace=True):
                     print(line.rstrip().replace('use_external_service', 'use_upnp')),
 
+            uplink_enable_bool = False
+            uplink_enable_function()
+
         def get_ext_ip_use_ext_service_function():
             global debug_message
+            global uplink_enable_bool
             debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.get_ext_ip_use_ext_service_function]')
 
             global uplink_use_external_service
@@ -1997,10 +2006,17 @@ class App(QMainWindow):
                 for line in fileinput.input(filein, inplace=True):
                     print(line.rstrip().replace('use_upnp', 'use_external_service')),
 
+            uplink_enable_bool = False
+            uplink_enable_function()
+
         def obtain_external_ip_function():
             global debug_message
+            global uplink_enable_bool
             debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.obtain_external_ip_function]')
-            if self.obtain_external_ip_box_0.currentText() == 'UPNP':
+            if self.obtain_external_ip_box_0.currentText() == 'Disabled':
+                uplink_enable_bool = True
+                uplink_enable_function()
+            elif self.obtain_external_ip_box_0.currentText() == 'UPNP':
                 get_ext_ip_use_upnp_function()
             elif self.obtain_external_ip_box_0.currentText() == 'Use external service':
                 get_ext_ip_use_ext_service_function()
@@ -2209,13 +2225,13 @@ class App(QMainWindow):
         self.server_accept_incoming_rule_box_0.addItem('Only allow from address book')
         self.server_accept_incoming_rule_box_0.currentIndexChanged.connect(server_accept_incoming_function)
 
-        self.uplink_enable = QPushButton(self)
+        self.uplink_enable = QLabel(self)
         self.uplink_enable.move(28, self.server_staple + 24 + 24)
         self.uplink_enable.resize(self.btn_120, int(self.btn_40 / 2))
         self.uplink_enable.setFont(self.font_s7b)
         self.uplink_enable.setText('UPLINK')
-        self.uplink_enable.setStyleSheet(button_stylesheet_white_text_low)
-        self.uplink_enable.clicked.connect(uplink_enable_function)
+        self.uplink_enable.setAlignment(Qt.AlignCenter)
+        self.uplink_enable.setStyleSheet(label_stylesheet_black_bg_text_white)
 
         self.external_ip_label = QLabel(self)
         self.external_ip_label.move(int((self.width / 2) - (self.btn_240 / 2)), self.server_staple + 24)
@@ -2225,19 +2241,12 @@ class App(QMainWindow):
         self.external_ip_label.setAlignment(Qt.AlignCenter)
         self.external_ip_label.setStyleSheet(label_stylesheet_black_bg_text_white)
 
-        self.obtain_external_ip_label = QLabel(self)
-        self.obtain_external_ip_label.move(28, self.server_staple + 24 + 24 + 24)
-        self.obtain_external_ip_label.resize(self.btn_120, 20)
-        self.obtain_external_ip_label.setFont(self.font_s7b)
-        self.obtain_external_ip_label.setText('EXTERNAL ADDRESS')
-        self.obtain_external_ip_label.setAlignment(Qt.AlignCenter)
-        self.obtain_external_ip_label.setStyleSheet(label_stylesheet_black_bg_text_white)
-
         self.obtain_external_ip_box_0 = QComboBox(self)
-        self.obtain_external_ip_box_0.move(28 + self.btn_120 + 4, self.server_staple + 24 + 24 + 24)
+        self.obtain_external_ip_box_0.move(28 + self.btn_120 + 4, self.server_staple + 24 + 24)
         self.obtain_external_ip_box_0.resize(186, 20)
         self.obtain_external_ip_box_0.setStyleSheet(cmb_menu_style)
         self.obtain_external_ip_box_0.setFont(self.font_s7b)
+        self.obtain_external_ip_box_0.addItem('Disabled')
         self.obtain_external_ip_box_0.addItem('UPNP')
         self.obtain_external_ip_box_0.addItem('Use external service')
         self.obtain_external_ip_box_0.currentIndexChanged.connect(obtain_external_ip_function)
@@ -2655,16 +2664,17 @@ class App(QMainWindow):
         # Show and set universal uplink settings
         debug_message.append('[' + str(datetime.datetime.now()) + '] [App] uplink_enable_bool: ' + str(uplink_enable_bool))
         if uplink_enable_bool is True:
-            self.uplink_enable.setStyleSheet(button_stylesheet_white_text_high)
+            # Show and set get external ip address settings
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [App] uplink_use_external_service: ' + str(uplink_use_external_service))
+            if uplink_use_external_service is False:
+                self.obtain_external_ip_box_0.setCurrentIndex(1)
+            elif uplink_use_external_service is True:
+                self.obtain_external_ip_box_0.setCurrentIndex(2)
+
             get_external_ip_thread.start()
             uplink_thread.start()
-
-        # Show and set get external ip address settings
-        debug_message.append('[' + str(datetime.datetime.now()) + '] [App] uplink_use_external_service: ' + str(uplink_use_external_service))
-        # if uplink_use_external_service is False:
-        #     self.get_ext_ip_use_upnp.setStyleSheet(button_stylesheet_white_text_high)
-        # elif uplink_use_external_service is True:
-        #     self.get_ext_ip_use_ext_service.setStyleSheet(button_stylesheet_white_text_low)
+        else:
+            self.obtain_external_ip_box_0.setCurrentIndex(0)
 
         # Set Transmit Confirmation Address
         address_book_address_label_function()
