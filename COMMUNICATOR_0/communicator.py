@@ -604,6 +604,40 @@ class App(QMainWindow):
         self.key_string = ''
         self.fingerprint_str = ''
 
+        def accept_only_address_book_function():
+            global debug_message
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.accept_only_address_book_function]')
+            global accept_from_key
+            accept_from_key = 'address_book_only'
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [App.accept_only_address_book_function] setting accept_from_key: ' + str(accept_from_key))
+
+            # Save Changes
+            if os.path.exists('./config.txt'):
+                filein = './config.txt'
+                for line in fileinput.input(filein, inplace=True):
+                    print(line.rstrip().replace('accept_all', 'address_book_only')),
+
+        def accept_all_function():
+            global debug_message
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.accept_all_function]')
+            global accept_from_key
+            accept_from_key = 'accept_all'
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [App.accept_all_function] setting accept_from_key: ' + str(accept_from_key))
+
+            # Save Changes
+            if os.path.exists('./config.txt'):
+                filein = './config.txt'
+                for line in fileinput.input(filein, inplace=True):
+                    print(line.rstrip().replace('address_book_only', 'accept_all')),
+
+        def server_accept_incoming_function():
+            global debug_message
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.server_accept_incoming_function]')
+            if self.server_accept_incoming_rule_box_0.currentText() == 'Allow from any address':
+                accept_all_function()
+            elif self.server_accept_incoming_rule_box_0.currentText() == 'Only allow from address book':
+                accept_only_address_book_function()
+
         def send_message_function():
             global debug_message
             debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.send_message_function]')
@@ -1857,44 +1891,6 @@ class App(QMainWindow):
                 self.bool_socket_options_btn.setStyleSheet(button_stylesheet_green_text)
             debug_message.append('[' + str(datetime.datetime.now()) + '] [App.generate_fingerprint_function] setting bool_socket_options: ' + str(bool_socket_options))
 
-        def accept_only_address_book_function():
-            global debug_message
-            debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.accept_only_address_book_function]')
-            global accept_from_key
-            accept_from_key = 'address_book_only'
-            debug_message.append('[' + str(datetime.datetime.now()) + '] [App.accept_only_address_book_function] setting accept_from_key: ' + str(accept_from_key))
-
-            # Set Button Green
-            self.accept_only_address_book.setStyleSheet(button_stylesheet_white_text_high)
-
-            # Set Other Options Red
-            self.accept_all_traffic.setStyleSheet(button_stylesheet_white_text_low)
-
-            # Save Changes
-            if os.path.exists('./config.txt'):
-                filein = './config.txt'
-                for line in fileinput.input(filein, inplace=True):
-                    print(line.rstrip().replace('accept_all', 'address_book_only')),
-
-        def accept_all_function():
-            global debug_message
-            debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.accept_all_function]')
-            global accept_from_key
-            accept_from_key = 'accept_all'
-            debug_message.append('[' + str(datetime.datetime.now()) + '] [App.accept_all_function] setting accept_from_key: ' + str(accept_from_key))
-
-            # Set Button Green
-            self.accept_all_traffic.setStyleSheet(button_stylesheet_white_text_high)
-
-            # Set Other Options Red
-            self.accept_only_address_book.setStyleSheet(button_stylesheet_white_text_low)
-
-            # Save Changes
-            if os.path.exists('./config.txt'):
-                filein = './config.txt'
-                for line in fileinput.input(filein, inplace=True):
-                    print(line.rstrip().replace('address_book_only', 'accept_all')),
-
         def uplink_enable_function():
             global debug_message
             debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.uplink_enable_function]')
@@ -1980,12 +1976,6 @@ class App(QMainWindow):
 
             debug_message.append('[' + str(datetime.datetime.now()) + '] [App.get_ext_ip_use_upnp_function] setting uplink_use_external_service: ' + str(uplink_use_external_service))
 
-            # Set Button Green
-            self.get_ext_ip_use_upnp.setStyleSheet(button_stylesheet_white_text_high)
-
-            # Set Other Options Red
-            self.get_ext_ip_use_ext_service.setStyleSheet(button_stylesheet_white_text_low)
-
             # Save Changes
             if os.path.exists('./config.txt'):
                 filein = './config.txt'
@@ -2001,17 +1991,19 @@ class App(QMainWindow):
 
             debug_message.append('[' + str(datetime.datetime.now()) + '] [App.get_ext_ip_use_ext_service_function] setting uplink_use_external_service: ' + str(uplink_use_external_service))
 
-            # Set Button Green
-            self.get_ext_ip_use_upnp.setStyleSheet(button_stylesheet_white_text_low)
-
-            # Set Other Options Red
-            self.get_ext_ip_use_ext_service.setStyleSheet(button_stylesheet_white_text_high)
-
             # Save Changes
             if os.path.exists('./config.txt'):
                 filein = './config.txt'
                 for line in fileinput.input(filein, inplace=True):
                     print(line.rstrip().replace('use_upnp', 'use_external_service')),
+
+        def obtain_external_ip_function():
+            global debug_message
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.obtain_external_ip_function]')
+            if self.obtain_external_ip_box_0.currentText() == 'UPNP':
+                get_ext_ip_use_upnp_function()
+            elif self.obtain_external_ip_box_0.currentText() == 'Use external service':
+                get_ext_ip_use_ext_service_function()
 
         def address_book_address_label_function():
             global debug_message
@@ -2200,21 +2192,22 @@ class App(QMainWindow):
         self.mute_server_notify_alien.setIconSize(QSize(14, 14))
         self.mute_server_notify_alien.clicked.connect(mute_server_notify_alien_function)
 
-        self.accept_only_address_book = QPushButton(self)
-        self.accept_only_address_book.move(28, self.server_staple + 24)
-        self.accept_only_address_book.resize(self.btn_120, int(self.btn_40 / 2))
-        self.accept_only_address_book.setFont(self.font_s7b)
-        self.accept_only_address_book.setText('ACCEPT ONLY ADD.BK')
-        self.accept_only_address_book.setStyleSheet(button_stylesheet_white_text_high)
-        self.accept_only_address_book.clicked.connect(accept_only_address_book_function)
+        self.server_accept_incoming_rule = QLabel(self)
+        self.server_accept_incoming_rule.move(28, self.server_staple + 24)
+        self.server_accept_incoming_rule.resize(self.btn_120, 20)
+        self.server_accept_incoming_rule.setFont(self.font_s7b)
+        self.server_accept_incoming_rule.setText('ALLOW INCOMING')
+        self.server_accept_incoming_rule.setAlignment(Qt.AlignCenter)
+        self.server_accept_incoming_rule.setStyleSheet(label_stylesheet_grey_bg_white_text_high)
 
-        self.accept_all_traffic = QPushButton(self)
-        self.accept_all_traffic.move(28 + self.btn_120 + 4, self.server_staple + 24)
-        self.accept_all_traffic.resize(self.btn_120, int(self.btn_40 / 2))
-        self.accept_all_traffic.setFont(self.font_s7b)
-        self.accept_all_traffic.setText('ACCEPT ALL')
-        self.accept_all_traffic.setStyleSheet(button_stylesheet_white_text_high)
-        self.accept_all_traffic.clicked.connect(accept_all_function)
+        self.server_accept_incoming_rule_box_0 = QComboBox(self)
+        self.server_accept_incoming_rule_box_0.move(28 + self.btn_120 + 4, self.server_staple + 24)
+        self.server_accept_incoming_rule_box_0.resize(186, 20)
+        self.server_accept_incoming_rule_box_0.setStyleSheet(cmb_menu_style)
+        self.server_accept_incoming_rule_box_0.setFont(self.font_s7b)
+        self.server_accept_incoming_rule_box_0.addItem('Allow from any address')
+        self.server_accept_incoming_rule_box_0.addItem('Only allow from address book')
+        self.server_accept_incoming_rule_box_0.currentIndexChanged.connect(server_accept_incoming_function)
 
         self.uplink_enable = QPushButton(self)
         self.uplink_enable.move(28, self.server_staple + 24 + 24)
@@ -2232,21 +2225,22 @@ class App(QMainWindow):
         self.external_ip_label.setAlignment(Qt.AlignCenter)
         self.external_ip_label.setStyleSheet(label_stylesheet_black_bg_text_white)
 
-        self.get_ext_ip_use_upnp = QPushButton(self)
-        self.get_ext_ip_use_upnp.move(28, self.server_staple + 24 + 24 + 24)
-        self.get_ext_ip_use_upnp.resize(self.btn_120, int(self.btn_40 / 2))
-        self.get_ext_ip_use_upnp.setFont(self.font_s7b)
-        self.get_ext_ip_use_upnp.setText('UPNP')
-        self.get_ext_ip_use_upnp.setStyleSheet(button_stylesheet_white_text_low)
-        self.get_ext_ip_use_upnp.clicked.connect(get_ext_ip_use_upnp_function)
+        self.obtain_external_ip_label = QLabel(self)
+        self.obtain_external_ip_label.move(28, self.server_staple + 24 + 24 + 24)
+        self.obtain_external_ip_label.resize(self.btn_120, 20)
+        self.obtain_external_ip_label.setFont(self.font_s7b)
+        self.obtain_external_ip_label.setText('EXTERNAL ADDRESS')
+        self.obtain_external_ip_label.setAlignment(Qt.AlignCenter)
+        self.obtain_external_ip_label.setStyleSheet(label_stylesheet_black_bg_text_white)
 
-        self.get_ext_ip_use_ext_service = QPushButton(self)
-        self.get_ext_ip_use_ext_service.move(28 + self.btn_120 + 4, self.server_staple + 24 + 24 + 24)
-        self.get_ext_ip_use_ext_service.resize(self.btn_120, int(self.btn_40 / 2))
-        self.get_ext_ip_use_ext_service.setFont(self.font_s7b)
-        self.get_ext_ip_use_ext_service.setText('EXT. SERVICE')
-        self.get_ext_ip_use_ext_service.setStyleSheet(button_stylesheet_white_text_low)
-        self.get_ext_ip_use_ext_service.clicked.connect(get_ext_ip_use_ext_service_function)
+        self.obtain_external_ip_box_0 = QComboBox(self)
+        self.obtain_external_ip_box_0.move(28 + self.btn_120 + 4, self.server_staple + 24 + 24 + 24)
+        self.obtain_external_ip_box_0.resize(186, 20)
+        self.obtain_external_ip_box_0.setStyleSheet(cmb_menu_style)
+        self.obtain_external_ip_box_0.setFont(self.font_s7b)
+        self.obtain_external_ip_box_0.addItem('UPNP')
+        self.obtain_external_ip_box_0.addItem('Use external service')
+        self.obtain_external_ip_box_0.currentIndexChanged.connect(obtain_external_ip_function)
 
         # ##########################################################################################################
 
@@ -2653,7 +2647,9 @@ class App(QMainWindow):
         # Show and set server accept connection settings
         if accept_from_key == 'address_book_only':
             accept_only_address_book_function()
+            self.server_accept_incoming_rule_box_0.setCurrentIndex(1)
         elif accept_from_key == 'accept_all':
+            self.server_accept_incoming_rule_box_0.setCurrentIndex(0)
             accept_all_function()
 
         # Show and set universal uplink settings
@@ -2665,10 +2661,10 @@ class App(QMainWindow):
 
         # Show and set get external ip address settings
         debug_message.append('[' + str(datetime.datetime.now()) + '] [App] uplink_use_external_service: ' + str(uplink_use_external_service))
-        if uplink_use_external_service is False:
-            self.get_ext_ip_use_upnp.setStyleSheet(button_stylesheet_white_text_high)
-        elif uplink_use_external_service is True:
-            self.get_ext_ip_use_ext_service.setStyleSheet(button_stylesheet_white_text_low)
+        # if uplink_use_external_service is False:
+        #     self.get_ext_ip_use_upnp.setStyleSheet(button_stylesheet_white_text_high)
+        # elif uplink_use_external_service is True:
+        #     self.get_ext_ip_use_ext_service.setStyleSheet(button_stylesheet_white_text_low)
 
         # Set Transmit Confirmation Address
         address_book_address_label_function()
