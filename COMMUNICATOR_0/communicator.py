@@ -2716,8 +2716,8 @@ class App(QMainWindow):
     def debug_function(self):
         global debug_message
         if debug_message:
-            db_msg = debug_message[-1]
-            debug_message.remove(debug_message[-1])
+            db_msg = debug_message[0]
+            debug_message.remove(debug_message[0])
             if debug_bool is True:
                 print(db_msg)
 
