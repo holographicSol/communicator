@@ -754,7 +754,7 @@ class App(QMainWindow):
                             # If the target line in address book was found then write lines from the list into a temporary file
                             if write_bool is True:
                                 open('./communicator_address_book.tmp', 'w').close()
-                                with open('./communicator_address_book.tmp', 'w') as fo_tmp:
+                                with open('./communicator_address_book.tmp', 'w', encoding='utf-8') as fo_tmp:
                                     for _ in fo_list:
                                         fo_tmp.write(str(_) + '\n')
                                 fo_tmp.close()
@@ -1002,7 +1002,7 @@ class App(QMainWindow):
                                             split_strings = [self.fingerprint_str[index: index + 32] for index in range(0, len(self.fingerprint_str), 32)]
                                             if not os.path.exists(fingerprint_fname):
                                                 open(fingerprint_fname, 'w').close()
-                                            with open(fingerprint_fname, 'w') as fo:
+                                            with open(fingerprint_fname, 'w', encoding='utf-8') as fo:
                                                 for _ in split_strings:
                                                     fo.write(_ + '\n')
                                             fo.close()
@@ -1012,7 +1012,7 @@ class App(QMainWindow):
                                     if bool_allow_write is True:
                                         gui_message.append('saved_address')
                                         if os.path.exists('./communicator_address_book.txt'):
-                                            with open('./communicator_address_book.txt', 'a') as fo:
+                                            with open('./communicator_address_book.txt', 'a', encoding='utf-8') as fo:
                                                 fo.write(to_address_book + '\n')
                                                 fo.write(str('TIMER_MESSAGE ' + name_ + ' ' + transmit_message) + '\n')
                                             fo.close()
@@ -1495,20 +1495,20 @@ class App(QMainWindow):
                 if write_server_configuration_engaged is False:
                     write_server_configuration_engaged = True
                     fo_list = []
-                    with open('./config.txt', 'r') as fo:
+                    with open('./config.txt', 'r', encoding='utf-8') as fo:
                         for line in fo:
                             line = line.strip()
                             if line != '':
                                 if not line.replace('SERVER_ADDRESS ', '') == str(server_address[server_address_index][0]) + ' ' + str(server_address[server_address_index][1]):
                                     fo_list.append(line)
                     fo_list.append('SERVER_ADDRESS ' + str(self.server_ip_port.text()))
-                    with open('./config.txt', 'w') as fo:
+                    with open('./config.txt', 'w', encoding='utf-8') as fo:
                         for _ in fo_list:
                             fo.write(_ + '\n')
                     fo.close()
                     non_success_write = []
                     if os.path.exists('./config.txt'):
-                        with open('./config.txt', 'r') as fo:
+                        with open('./config.txt', 'r', encoding='utf-8') as fo:
                             i = 0
                             for line in fo:
                                 line = line.strip()
@@ -1539,14 +1539,14 @@ class App(QMainWindow):
 
                     if os.path.exists('./config.txt'):
                         fo_list = []
-                        with open('./config.txt', 'r') as fo:
+                        with open('./config.txt', 'r', encoding='utf-8') as fo:
                             for line in fo:
                                 line = line.strip()
                                 if line != '':
                                     if not line.replace('SERVER_ADDRESS ', '') == str(server_address[server_address_index][0]) + ' ' + str(server_address[server_address_index][1]):
                                         fo_list.append(line)
                         open('./config.tmp', 'w').close()
-                        with open('./config.tmp', 'w') as fo:
+                        with open('./config.tmp', 'w', encoding='utf-8') as fo:
                             for _ in fo_list:
                                 fo.write(str(_) + '\n')
                         fo.close()
@@ -3103,7 +3103,7 @@ class UplinkClass(QThread):
     def uplink_logger(self):
         if not os.path.exists(dial_out_log):
             open('./log/uplink_log.txt', 'w').close()
-        with open('./log/uplink_log.txt', 'a') as fo:
+        with open('./log/uplink_log.txt', 'a', encoding='utf-8') as fo:
             fo.write('\n' + self.data + '\n')
         fo.close()
 
@@ -3541,7 +3541,7 @@ class ConfigurationClass(QThread):
 
         # Read And Set Server Configuration
         server_address = []
-        with open('./config.txt', 'r') as fo:
+        with open('./config.txt', 'r', encoding='utf-8') as fo:
             for line in fo:
                 line = line.strip()
                 debug_message.append('[' + str(datetime.datetime.now()) + '] [ConfigurationClass.run] configuration server: ' + str(line))
@@ -3608,7 +3608,7 @@ class ConfigurationClass(QThread):
             if os.path.exists(_[6]):
                 debug_message.append('[' + str(datetime.datetime.now()) + '] [ConfigurationClass.run] path found: ' + str(_[6]))
                 address_fingerprint_string = ''
-                with open(_[6], 'r') as fo:
+                with open(_[6], 'r', encoding='utf-8') as fo:
                     for line in fo:
                         line = line.strip()
                         address_fingerprint_string = address_fingerprint_string + line
@@ -3727,7 +3727,7 @@ class DialOutClass(QThread):
     def dial_out_logger(self):
         if not os.path.exists(dial_out_log):
             open(dial_out_log, 'w').close()
-        with open(dial_out_log, 'a') as fo:
+        with open(dial_out_log, 'a', encoding='utf-8') as fo:
             fo.write('\n' + self.data + '\n')
         fo.close()
 
@@ -3848,7 +3848,7 @@ class ServerDataHandlerClass(QThread):
     def server_logger(self):
         if not os.path.exists(server_log):
             open(server_log, 'w').close()
-        with open(server_log, 'a') as fo:
+        with open(server_log, 'a', encoding='utf-8') as fo:
             fo.write('\n' + self.data + '\n')
         fo.close()
 
@@ -4021,7 +4021,7 @@ class ServerClass(QThread):
     def server_logger(self):
         if not os.path.exists(server_log):
             open(server_log, 'w').close()
-        with open(server_log, 'a') as fo:
+        with open(server_log, 'a', encoding='utf-8') as fo:
             fo.write('\n' + self.data + '\n')
         fo.close()
 
