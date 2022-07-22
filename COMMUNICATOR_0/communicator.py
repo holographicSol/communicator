@@ -2981,6 +2981,11 @@ class DialOutTimerMessageThread(QThread):
                 sok = socket.socket(COMMUNICATOR_SOCK.get(self.timer_message_list_[8]), COMMUNICATOR_SOCK.get(self.timer_message_list_[9]))
                 debug_message.append('[' + str(datetime.datetime.now()) + '] [DialOutTimerMessageThread.message_send] variably setting socket as: ' + str(sok))
 
+                # Setup Socket Options
+                if self.timer_message_list_[10] != 'Unselected' and self.timer_message_list_[11] != 'Unselected':
+                    sok.setsockopt(COMMUNICATOR_SOCK.get(self.timer_message_list_[10]), COMMUNICATOR_SOCK.get(self.timer_message_list_[11]), 1)
+                    debug_message.append('[' + str(datetime.datetime.now()) + '] [DialOutClass.DialOutTimerMessageThread] variably setting socket options: ' + str(sok))
+
                 with sok as SOCKET_MECHANIZE:
 
                     debug_message.append('[' + str(datetime.datetime.now()) + '] [DialOutTimerMessageThread.message_send] using address: ' + str(self.HOST_SEND))
@@ -3572,7 +3577,7 @@ class ConfigurationClass(QThread):
 
         # Read And Set Client Configuration
         client_address = []
-        with open('./communicator_address_book.txt', 'r') as fo:
+        with open('./communicator_address_book.txt', 'r', encoding='utf-8') as fo:
             for line in fo:
                 line_0 = line.strip()
                 line = line_0.split(' ')
