@@ -786,8 +786,7 @@ class App(QMainWindow):
 
         def client_save_address():
             global debug_message
-            print('plugged in save')
-            # debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.client_save_address]')
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.client_save_address]')
             global write_client_configuration_engaged
             global client_address
             global client_address_index
@@ -799,31 +798,21 @@ class App(QMainWindow):
             global gui_message
             global use_address
 
-            print('finished globals')
-
             # Attempt to only run this function if this function is not already in progress
             if write_client_configuration_engaged is False:
                 write_client_configuration_engaged = True
 
-                print('1')
-
                 # Name must not be empty and there must not be space in name
                 if self.dial_out_name.text() != '' and ' ' not in self.dial_out_name.text():
-
-                    print('2')
 
                     allow_name_bool = []
                     for _ in client_address:
                         if self.dial_out_name.text() in _:
                             allow_name_bool.append(False)
 
-                    print('3')
-
                     if not False in allow_name_bool:
                         # Address field must not be empty
                         if self.dial_out_ip_port.text() != '':
-
-                            print('4')
 
                             # Clearly display the save mode
                             debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_save_address] using address_save_mode: ' + str(address_save_mode))
