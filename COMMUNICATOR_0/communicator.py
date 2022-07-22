@@ -126,7 +126,7 @@ from_file_bool = False
 bool_address_uplink = False
 get_external_ip_finnished_reading = False
 uplink_use_external_service = False
-timer_bool = False
+mechanize_timer_bool = False
 transmit_method = 'socket'
 use_address = 'default'
 address_mode = 'uplink_current_index'
@@ -806,7 +806,7 @@ class App(QMainWindow):
             global address_mode
             global gui_message
             global use_address
-            global timer_bool
+            global mechanize_timer_bool
 
             # Attempt to only run this function if this function is not already in progress
             if write_client_configuration_engaged is False:
@@ -917,17 +917,17 @@ class App(QMainWindow):
                                     # if self.dial_out_ip_port.text() != '':
 
                                     # Set the string which should be appended to the address book
-                                    to_address_book = 'DATA ' + name_ + ' ' + address_ + ' ' + str(port_) + ' ' + broadcast_address_ + ' ' + mac_ + ' ' + key_ + ' ' + fingerprint_path_ + ' ' + s_args + ' ' + str(bool_address_uplink) + ' ' + str(use_address) + ' ' + str(timer_bool) + ' ' + str(transmit_timer)
+                                    to_address_book = 'DATA ' + name_ + ' ' + address_ + ' ' + str(port_) + ' ' + broadcast_address_ + ' ' + mac_ + ' ' + key_ + ' ' + fingerprint_path_ + ' ' + s_args + ' ' + str(bool_address_uplink) + ' ' + str(use_address) + ' ' + str(mechanize_timer_bool) + ' ' + str(transmit_timer)
 
                                     # Append a new list to the address book list in memory
                                     # client_address.append([str(self.dial_out_name.text()), str(self.dial_out_ip_port.text()), int(self.address_book_port.text()), bytes('x', 'utf-8'), 'x', 'x', s_enc, s_address_family, s_soc_type, s_options_0, s_options_1, bool_address_uplink])
-                                    client_address.append([str(name_), str(address_), port_, str(broadcast_address_), str(mac_), bytes(key_, 'utf-8'), str(fingerprint_path_), s_enc, s_address_family, s_soc_type, s_options_0, s_options_1, bool_address_uplink, use_address, timer_bool, float(transmit_timer), transmit_message])
+                                    client_address.append([str(name_), str(address_), port_, str(broadcast_address_), str(mac_), bytes(key_, 'utf-8'), str(fingerprint_path_), s_enc, s_address_family, s_soc_type, s_options_0, s_options_1, bool_address_uplink, use_address, mechanize_timer_bool, float(transmit_timer), transmit_message])
 
                                     # Alphabetically sort the address book in memory
                                     client_address.sort(key=lambda x: canonical_caseless(x[0]))
 
                                     # Find the new index of the new address book entry in memory after sorting and set the new current address book index accordingly
-                                    client_address_index = client_address.index([str(name_), str(address_), port_, str(broadcast_address_), str(mac_), bytes(key_, 'utf-8'), str(fingerprint_path_), s_enc, s_address_family, s_soc_type, s_options_0, s_options_1, bool_address_uplink, use_address, timer_bool, float(transmit_timer), transmit_message])
+                                    client_address_index = client_address.index([str(name_), str(address_), port_, str(broadcast_address_), str(mac_), bytes(key_, 'utf-8'), str(fingerprint_path_), s_enc, s_address_family, s_soc_type, s_options_0, s_options_1, bool_address_uplink, use_address, mechanize_timer_bool, float(transmit_timer), transmit_message])
 
                                     bool_allow_write = True
 
@@ -985,16 +985,16 @@ class App(QMainWindow):
                                         if len(self.fingerprint_str) == 1024:
 
                                             # Set the string which should be appended to the address book
-                                            to_address_book = 'DATA ' + name_ + ' ' + address_ + ' ' + str(port_) + ' ' + broadcast_address_ + ' ' + mac_ + ' ' + self.address_key.text() + ' ' + fingerprint_fname + ' ' + s_args + ' ' + str(bool_address_uplink) + ' ' + str(use_address) + ' ' + str(timer_bool) + ' ' + str(transmit_timer)
+                                            to_address_book = 'DATA ' + name_ + ' ' + address_ + ' ' + str(port_) + ' ' + broadcast_address_ + ' ' + mac_ + ' ' + self.address_key.text() + ' ' + fingerprint_fname + ' ' + s_args + ' ' + str(bool_address_uplink) + ' ' + str(use_address) + ' ' + str(mechanize_timer_bool) + ' ' + str(transmit_timer)
 
                                             # Append a new list to the address book list in memory
-                                            client_address.append([str(name_), str(address_), port_, str(broadcast_address_), str(mac_), bytes(self.address_key.text(), 'utf-8'), str(self.fingerprint_str), s_enc, s_address_family, s_soc_type, s_options_0, s_options_1, bool_address_uplink, use_address, timer_bool, float(transmit_timer), transmit_message])
+                                            client_address.append([str(name_), str(address_), port_, str(broadcast_address_), str(mac_), bytes(self.address_key.text(), 'utf-8'), str(self.fingerprint_str), s_enc, s_address_family, s_soc_type, s_options_0, s_options_1, bool_address_uplink, use_address, mechanize_timer_bool, float(transmit_timer), transmit_message])
 
                                             # Alphabetically sort the address book in memory
                                             client_address.sort(key=lambda x: canonical_caseless(x[0]))
 
                                             # Find the new index of the new address book entry in memory after sorting and set the new current address book index accordingly
-                                            client_address_index = client_address.index([str(name_), str(address_), port_, str(broadcast_address_), str(mac_), bytes(self.address_key.text(), 'utf-8'), str(self.fingerprint_str), s_enc, s_address_family, s_soc_type, s_options_0, s_options_1, bool_address_uplink, use_address, timer_bool, float(transmit_timer), transmit_message])
+                                            client_address_index = client_address.index([str(name_), str(address_), port_, str(broadcast_address_), str(mac_), bytes(self.address_key.text(), 'utf-8'), str(self.fingerprint_str), s_enc, s_address_family, s_soc_type, s_options_0, s_options_1, bool_address_uplink, use_address, mechanize_timer_bool, float(transmit_timer), transmit_message])
 
                                             bool_allow_write = True
 
@@ -1168,7 +1168,7 @@ class App(QMainWindow):
             global bool_address_uplink
             global use_address
             global address_mode
-            global timer_bool
+            global mechanize_timer_bool
 
             self.dial_out_name.setText('')
             self.dial_out_ip_port.setText('')
@@ -1258,10 +1258,10 @@ class App(QMainWindow):
 
                 if client_address[client_address_index][14] == 'False':
                     self.timer_btn.setStyleSheet(button_stylesheet_white_text_low)
-                    timer_bool = False
+                    mechanize_timer_bool = False
                 elif client_address[client_address_index][14] == 'True':
                     self.timer_btn.setStyleSheet(button_stylesheet_white_text_high)
-                    timer_bool = True
+                    mechanize_timer_bool = True
 
                 self.timer_edit.setText(str(client_address[client_address_index][15]))
 
@@ -1283,7 +1283,7 @@ class App(QMainWindow):
             global dial_out_dial_out_cipher_bool
             global bool_address_uplink
             global address_mode
-            global timer_bool
+            global mechanize_timer_bool
 
             self.dial_out_name.setText('')
             self.dial_out_ip_port.setText('')
@@ -1371,10 +1371,10 @@ class App(QMainWindow):
 
                 if client_address[client_address_index][14] == 'False':
                     self.timer_btn.setStyleSheet(button_stylesheet_white_text_low)
-                    timer_bool = False
+                    mechanize_timer_bool = False
                 elif client_address[client_address_index][14] == 'True':
                     self.timer_btn.setStyleSheet(button_stylesheet_white_text_high)
-                    timer_bool = True
+                    mechanize_timer_bool = True
 
                 self.timer_edit.setText(str(client_address[client_address_index][15]))
 
@@ -2097,7 +2097,7 @@ class App(QMainWindow):
 
         def timer_btn_function():
             global debug_message
-            global timer_bool
+            global mechanize_timer_bool
             global address_mode
             global client_address
             global client_address_index
@@ -2106,27 +2106,27 @@ class App(QMainWindow):
             debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.timer_btn_function]')
 
             if address_mode == 'save_mode':
-                if timer_bool is False:
-                    timer_bool = True
+                if mechanize_timer_bool is False:
+                    mechanize_timer_bool = True
                     self.timer_btn.setStyleSheet(button_stylesheet_white_text_high)
-                elif timer_bool is True:
-                    timer_bool = False
+                elif mechanize_timer_bool is True:
+                    mechanize_timer_bool = False
                     self.timer_btn.setStyleSheet(button_stylesheet_white_text_low)
-                debug_message.append('[' + str(datetime.datetime.now()) + '] [App.timer_btn_function] setting timer_bool: ' + str(timer_bool))
+                debug_message.append('[' + str(datetime.datetime.now()) + '] [App.timer_btn_function] setting mechanize_timer_bool: ' + str(mechanize_timer_bool))
             else:
-                if timer_bool is False:
+                if mechanize_timer_bool is False:
                     self.timer_btn.setStyleSheet(button_stylesheet_white_text_high)
-                    timer_bool = True
+                    mechanize_timer_bool = True
                     client_address[client_address_index][14] = 'True'
                     client_address[client_address_index][15] = float(self.timer_edit.text())
 
-                elif timer_bool is True:
+                elif mechanize_timer_bool is True:
                     self.timer_btn.setStyleSheet(button_stylesheet_white_text_low)
-                    timer_bool = False
+                    mechanize_timer_bool = False
                     client_address[client_address_index][14] = 'False'
                     client_address[client_address_index][15] = float(self.timer_edit.text())
 
-                debug_message.append('[' + str(datetime.datetime.now()) + '] [App.timer_btn_function] setting timer_bool: ' + str(timer_bool))
+                debug_message.append('[' + str(datetime.datetime.now()) + '] [App.timer_btn_function] setting mechanize_timer_bool: ' + str(mechanize_timer_bool))
             display_current_client_address_index()
 
         def display_current_client_address_index():
@@ -2431,7 +2431,7 @@ class App(QMainWindow):
         self.timer_btn.move(32, self.address_staple_height + 32 + 24 + 24 + 24 + 24 + 24 + 24)
         self.timer_btn.resize(self.btn_120, self.btn_20)
         self.timer_btn.setFont(self.font_s7b)
-        self.timer_btn.setText('TIMER')
+        self.timer_btn.setText('MECH TIMER')
         self.timer_btn.setStyleSheet(button_stylesheet_white_text_high)
         self.timer_btn.clicked.connect(timer_btn_function)
 
