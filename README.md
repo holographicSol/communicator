@@ -91,6 +91,8 @@ The Communicator is in the early stages of its mechanized transmit feature. This
 feature and I do not in any way condone weaponizing the Communicator but it is possible that the Communicator can
 even attack itself if configured too. The Communicator is intended to be an extremely versatile, dynamic and flexible
 communications tool capable of a wide variety if not infinite applications.
+Mechanization allows for an infinite amount of things to be done to an infinite amount of things simultanioulsy and
+specifically.
 
 Aesthetic:
 Aesthetic purely functional.
