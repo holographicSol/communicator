@@ -644,7 +644,7 @@ class App(QMainWindow):
         def send_message_function():
             global debug_message
             debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.send_message_function]')
-            global_self.setFocus()
+            # global_self.setFocus()
             if self.dial_out_message.text() != '':
                 if dial_out_thread.isRunning() is True:
                     dial_out_thread.stop()
@@ -1069,7 +1069,7 @@ class App(QMainWindow):
         def server_prev_addr_function():
             global debug_message
             debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.server_prev_addr_function]')
-            global_self.setFocus()
+            # global_self.setFocus()
             global server_address_index
             global server_address
 
@@ -1090,7 +1090,7 @@ class App(QMainWindow):
         def server_next_addr_function():
             global debug_message
             debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.server_next_addr_function]')
-            global_self.setFocus()
+            # global_self.setFocus()
 
             global server_address_index
             global server_address
@@ -1390,7 +1390,7 @@ class App(QMainWindow):
         def server_line_edit_return_pressed():
             global debug_message
             debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.server_line_edit_return_pressed]')
-            global_self.setFocus()
+            # global_self.setFocus()
             global server_address
             global server_address_index
             global server_save_bool
@@ -1560,7 +1560,7 @@ class App(QMainWindow):
         def start_function():
             global debug_message
             debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.start_function]')
-            global_self.setFocus()
+            # global_self.setFocus()
             if len(server_address) > 0:
                 if server_thread.isRunning() is True:
                     server_thread.stop()
@@ -1569,7 +1569,7 @@ class App(QMainWindow):
         def stop_function():
             global debug_message
             debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.stop_function]')
-            global_self.setFocus()
+            # global_self.setFocus()
             if server_thread.isRunning() is True:
                 server_thread.stop()
             else:
@@ -3519,7 +3519,7 @@ class GetExternalIPClass(QThread):
         enum = []
         self.external_ip_label.setText('')
         self.current_external_ip_address = ''
-        global_self.setFocus()
+        # global_self.setFocus()
         self.terminate()
 
 
@@ -3821,7 +3821,7 @@ class DialOutClass(QThread):
             self.dial_out_message_send.setIcon(QIcon(send_red))
             time.sleep(1)
             self.dial_out_message_send.setIcon(QIcon(send_white))
-            global_self.setFocus()
+            # global_self.setFocus()
 
     def stop(self):
         global debug_message
@@ -3832,7 +3832,7 @@ class DialOutClass(QThread):
             SOCKET_DIAL_OUT.close()
         except Exception as e:
             debug_message.append('[' + str(datetime.datetime.now()) + '] [DialOutClass.stop] ' + str(e))
-        global_self.setFocus()
+        # global_self.setFocus()
         self.terminate()
 
 
@@ -3947,7 +3947,7 @@ class ServerDataHandlerClass(QThread):
                             self.server_logger()
                             self.notification_key = 'green'
                             self.notification()
-                            global_self.setFocus()
+                            # global_self.setFocus()
                         else:
                             self.data = str(datetime.datetime.now()) + ' [ServerDataHandlerClass.run] message is not encrypted using keys in address book: ' + str(ciphertext)
                             debug_message.append(self.data)
@@ -3963,7 +3963,7 @@ class ServerDataHandlerClass(QThread):
 
                             self.notification_key = 'amber'
                             self.notification()
-                            global_self.setFocus()
+                            # global_self.setFocus()
                         i_0 += 1
 
                     except Exception as e:
@@ -4246,7 +4246,7 @@ class ServerClass(QThread):
             debug_message.append('[' + str(datetime.datetime.now()) + '] [ServerClass.stop] failed: ' + str(e))
         self.server_status_label.setText('SERVER STATUS: OFFLINE')
         self.server_start.setIcon(QIcon(play_default))
-        global_self.setFocus()
+        # global_self.setFocus()
         self.terminate()
 
 
