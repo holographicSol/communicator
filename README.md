@@ -90,7 +90,7 @@ MECHANIZED TRANSMISSION:
 The Communicator is in the early stages of its mechanized transmit feature. This feature is intended to be a friendly
 feature and I do not in any way condone weaponizing the Communicator but it is possible that the Communicator can
 even attack itself if configured too. The Communicator is intended to be an extremely versatile, dynamic and flexible
-communications tool capapble of a wide variety if not infinite applications.
+communications tool capable of a wide variety if not infinite applications.
 
 Aesthetic:
 Aesthetic purely functional.
