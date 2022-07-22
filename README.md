@@ -86,6 +86,12 @@ Root Description File. The root description xml file may change across rebooting
 designed to handle this by enumerating/re-enumerating the router automatically under certain circumstances in order
 to continue using the correct root description file url for UPNP communication with the router.
 
+MECHANIZED TRANSMISSION:
+The Communicator is in the early stages of its mechanized tranmit feature. This feature is intended to be a friendly
+feature and I do not in any way condone weaponizing the Communicator but it is possible that the Communicator can
+even attack itself if configured too. The Communicator is intended to be an extremely versatile, dynamic and flexible
+communications tool.
+
 Aesthetic:
 Aesthetic purely functional.
 
