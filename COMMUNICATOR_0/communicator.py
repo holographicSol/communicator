@@ -7,7 +7,7 @@ import sys
 import time
 import datetime
 import socket
-from win32api import GetSystemMetrics
+# from win32api import GetSystemMetrics
 from PyQt5.QtCore import Qt, QThread, QSize, QTimer
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
@@ -126,10 +126,12 @@ from_file_bool = False
 bool_address_uplink = False
 get_external_ip_finnished_reading = False
 uplink_use_external_service = False
+timer_bool = False
 transmit_method = 'socket'
 use_address = 'default'
 address_mode = 'uplink_current_index'
-max_client_len = 14
+max_client_len = 16
+timer_message_list = []
 
 gui_message = []
 uplink_addresses = []
@@ -797,6 +799,7 @@ class App(QMainWindow):
             global address_mode
             global gui_message
             global use_address
+            global timer_bool
 
             # Attempt to only run this function if this function is not already in progress
             if write_client_configuration_engaged is False:
@@ -880,6 +883,15 @@ class App(QMainWindow):
                                 s_options_1 = str(self.communicator_socket_options_box_3.currentText())
                                 s_args = s_enc + ' ' + s_address_family + ' ' + s_soc_type + ' ' + s_options_0 + ' ' + s_options_1
 
+                                transmit_timer = self.timer_edit.text()
+                                if not str(transmit_timer).replace('.', '').isdigit():
+                                    transmit_timer = float(0.0)
+                                else:
+                                    transmit_timer = float(transmit_timer)
+
+                                # todo --> handle spaces as address book entries are split by a space delimiter
+                                transmit_message = self.timer_message_edit.text()
+
                                 # Display current address index for comparison later
                                 debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_save_address] current index before potentially sorting: ' + str(client_address_index))
 
@@ -898,17 +910,17 @@ class App(QMainWindow):
                                     # if self.dial_out_ip_port.text() != '':
 
                                     # Set the string which should be appended to the address book
-                                    to_address_book = 'DATA ' + name_ + ' ' + address_ + ' ' + str(port_) + ' ' + broadcast_address_ + ' ' + mac_ + ' ' + key_ + ' ' + fingerprint_path_ + ' ' + s_args + ' ' + str(bool_address_uplink) + ' ' + str(use_address)
+                                    to_address_book = 'DATA ' + name_ + ' ' + address_ + ' ' + str(port_) + ' ' + broadcast_address_ + ' ' + mac_ + ' ' + key_ + ' ' + fingerprint_path_ + ' ' + s_args + ' ' + str(bool_address_uplink) + ' ' + str(use_address) + ' ' + str(timer_bool) + ' ' + str(transmit_timer)
 
                                     # Append a new list to the address book list in memory
                                     # client_address.append([str(self.dial_out_name.text()), str(self.dial_out_ip_port.text()), int(self.address_book_port.text()), bytes('x', 'utf-8'), 'x', 'x', s_enc, s_address_family, s_soc_type, s_options_0, s_options_1, bool_address_uplink])
-                                    client_address.append([str(name_), str(address_), port_, str(broadcast_address_), str(mac_), bytes(key_, 'utf-8'), str(fingerprint_path_), s_enc, s_address_family, s_soc_type, s_options_0, s_options_1, bool_address_uplink, use_address])
+                                    client_address.append([str(name_), str(address_), port_, str(broadcast_address_), str(mac_), bytes(key_, 'utf-8'), str(fingerprint_path_), s_enc, s_address_family, s_soc_type, s_options_0, s_options_1, bool_address_uplink, use_address, timer_bool, float(transmit_timer), transmit_message])
 
                                     # Alphabetically sort the address book in memory
                                     client_address.sort(key=lambda x: canonical_caseless(x[0]))
 
                                     # Find the new index of the new address book entry in memory after sorting and set the new current address book index accordingly
-                                    client_address_index = client_address.index([str(name_), str(address_), port_, str(broadcast_address_), str(mac_), bytes(key_, 'utf-8'), str(fingerprint_path_), s_enc, s_address_family, s_soc_type, s_options_0, s_options_1, bool_address_uplink, use_address])
+                                    client_address_index = client_address.index([str(name_), str(address_), port_, str(broadcast_address_), str(mac_), bytes(key_, 'utf-8'), str(fingerprint_path_), s_enc, s_address_family, s_soc_type, s_options_0, s_options_1, bool_address_uplink, use_address, timer_bool, float(transmit_timer), transmit_message])
 
                                     bool_allow_write = True
 
@@ -966,16 +978,16 @@ class App(QMainWindow):
                                         if len(self.fingerprint_str) == 1024:
 
                                             # Set the string which should be appended to the address book
-                                            to_address_book = 'DATA ' + name_ + ' ' + address_ + ' ' + str(port_) + ' ' + broadcast_address_ + ' ' + mac_ + ' ' + self.address_key.text() + ' ' + fingerprint_fname + ' ' + s_args + ' ' + str(bool_address_uplink) + ' ' + str(use_address)
+                                            to_address_book = 'DATA ' + name_ + ' ' + address_ + ' ' + str(port_) + ' ' + broadcast_address_ + ' ' + mac_ + ' ' + self.address_key.text() + ' ' + fingerprint_fname + ' ' + s_args + ' ' + str(bool_address_uplink) + ' ' + str(use_address) + ' ' + str(timer_bool) + ' ' + str(transmit_timer)
 
                                             # Append a new list to the address book list in memory
-                                            client_address.append([str(name_), str(address_), port_, str(broadcast_address_), str(mac_), bytes(self.address_key.text(), 'utf-8'), str(self.fingerprint_str), s_enc, s_address_family, s_soc_type, s_options_0, s_options_1, bool_address_uplink, use_address])
+                                            client_address.append([str(name_), str(address_), port_, str(broadcast_address_), str(mac_), bytes(self.address_key.text(), 'utf-8'), str(self.fingerprint_str), s_enc, s_address_family, s_soc_type, s_options_0, s_options_1, bool_address_uplink, use_address, timer_bool, float(transmit_timer), transmit_message])
 
                                             # Alphabetically sort the address book in memory
                                             client_address.sort(key=lambda x: canonical_caseless(x[0]))
 
                                             # Find the new index of the new address book entry in memory after sorting and set the new current address book index accordingly
-                                            client_address_index = client_address.index([str(name_), str(address_), port_, str(broadcast_address_), str(mac_), bytes(self.address_key.text(), 'utf-8'), str(self.fingerprint_str), s_enc, s_address_family, s_soc_type, s_options_0, s_options_1, bool_address_uplink, use_address])
+                                            client_address_index = client_address.index([str(name_), str(address_), port_, str(broadcast_address_), str(mac_), bytes(self.address_key.text(), 'utf-8'), str(self.fingerprint_str), s_enc, s_address_family, s_soc_type, s_options_0, s_options_1, bool_address_uplink, use_address, timer_bool, float(transmit_timer), transmit_message])
 
                                             bool_allow_write = True
 
@@ -995,6 +1007,7 @@ class App(QMainWindow):
                                         if os.path.exists('./communicator_address_book.txt'):
                                             with open('./communicator_address_book.txt', 'a') as fo:
                                                 fo.write(to_address_book + '\n')
+                                                fo.write(str('TIMER_MESSAGE ' + name_ + ' ' + transmit_message) + '\n')
                                             fo.close()
                                     else:
                                         debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_save_address] entry will not be appended to the address book as something went wrong. try again.')
@@ -1148,6 +1161,7 @@ class App(QMainWindow):
             global bool_address_uplink
             global use_address
             global address_mode
+            global timer_bool
 
             self.dial_out_name.setText('')
             self.dial_out_ip_port.setText('')
@@ -1235,6 +1249,17 @@ class App(QMainWindow):
                     self.uplink_btn.setStyleSheet(button_stylesheet_green_text)
                     bool_address_uplink = True
 
+                if client_address[client_address_index][14] == 'False':
+                    self.timer_btn.setStyleSheet(button_stylesheet_white_text_low)
+                    timer_bool = False
+                elif client_address[client_address_index][14] == 'True':
+                    self.timer_btn.setStyleSheet(button_stylesheet_white_text_high)
+                    timer_bool = True
+
+                self.timer_edit.setText(str(client_address[client_address_index][15]))
+
+                self.timer_message_edit.setText(client_address[client_address_index][-1])
+
                 sck_set_arguments_function()
 
                 debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_previous_address_function] dial_out_dial_out_cipher_bool: ' + str(dial_out_dial_out_cipher_bool))
@@ -1251,6 +1276,7 @@ class App(QMainWindow):
             global dial_out_dial_out_cipher_bool
             global bool_address_uplink
             global address_mode
+            global timer_bool
 
             self.dial_out_name.setText('')
             self.dial_out_ip_port.setText('')
@@ -1335,6 +1361,17 @@ class App(QMainWindow):
                 elif client_address[client_address_index][12] == 'True':
                     self.uplink_btn.setStyleSheet(button_stylesheet_green_text)
                     bool_address_uplink = True
+
+                if client_address[client_address_index][14] == 'False':
+                    self.timer_btn.setStyleSheet(button_stylesheet_white_text_low)
+                    timer_bool = False
+                elif client_address[client_address_index][14] == 'True':
+                    self.timer_btn.setStyleSheet(button_stylesheet_white_text_high)
+                    timer_bool = True
+
+                self.timer_edit.setText(str(client_address[client_address_index][15]))
+
+                self.timer_message_edit.setText(client_address[client_address_index][-1])
 
                 sck_set_arguments_function()
 
@@ -2051,6 +2088,44 @@ class App(QMainWindow):
             self.address_book_broadcast_label.setStyleSheet(button_stylesheet_white_text_low)
             self.transmit_display_address.setText(self.address_book_mac.text())
 
+        def timer_btn_function():
+            global debug_message
+            global timer_bool
+            global address_mode
+            global client_address
+            global client_address_index
+
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.timer_btn_function]')
+
+            if address_mode == 'save_mode':
+                if timer_bool is False:
+                    timer_bool = True
+                    self.timer_btn.setStyleSheet(button_stylesheet_white_text_high)
+                elif timer_bool is True:
+                    timer_bool = False
+                    self.timer_btn.setStyleSheet(button_stylesheet_white_text_low)
+                debug_message.append('[' + str(datetime.datetime.now()) + '] [App.timer_btn_function] setting timer_bool: ' + str(timer_bool))
+            else:
+                if timer_bool is False:
+                    self.timer_btn.setStyleSheet(button_stylesheet_white_text_high)
+                    timer_bool = True
+                    client_address[client_address_index][14] = True
+                    client_address[client_address_index][15] = float(self.timer_edit.text())
+
+                elif timer_bool is True:
+                    self.timer_btn.setStyleSheet(button_stylesheet_white_text_low)
+                    timer_bool = False
+                    client_address[client_address_index][14] = False
+                    client_address[client_address_index][15] = float(self.timer_edit.text())
+
+                debug_message.append('[' + str(datetime.datetime.now()) + '] [App.timer_btn_function] setting timer_bool: ' + str(timer_bool))
+            display_current_client_address_index()
+
+        def display_current_client_address_index():
+            global client_address
+            global client_address_index
+            print(client_address[client_address_index])
+
         # Window Title
         self.title = "Communicator"
         self.setWindowTitle('Communicator')
@@ -2058,7 +2133,8 @@ class App(QMainWindow):
 
         # Window Geometry
         self.width, self.height = 1132, 664
-        app_pos_w, app_pos_h = (GetSystemMetrics(0) / 2 - (self.width / 2)), (GetSystemMetrics(1) / 2 - (self.height / 2))
+        # app_pos_w, app_pos_h = (GetSystemMetrics(0) / 2 - (self.width / 2)), (GetSystemMetrics(1) / 2 - (self.height / 2))
+        app_pos_w, app_pos_h = 0, 0
         self.left, self.top = int(app_pos_w), int(app_pos_h)
         self.setGeometry(self.left, self.top, self.width, self.height)
         self.setFixedSize(self.width, self.height)
@@ -2342,6 +2418,36 @@ class App(QMainWindow):
             self.communicator_socket_options_box_1.addItem(str(v))
             self.communicator_socket_options_box_2.addItem(str(v))
             self.communicator_socket_options_box_3.addItem(str(v))
+
+        self.timer_btn = QPushButton(self)
+        self.timer_btn.move(32, self.address_staple_height + 32 + 24 + 24 + 24 + 24 + 24 + 24)
+        self.timer_btn.resize(self.btn_120, self.btn_20)
+        self.timer_btn.setFont(self.font_s7b)
+        self.timer_btn.setText('TIMER')
+        self.timer_btn.setStyleSheet(button_stylesheet_white_text_high)
+        self.timer_btn.clicked.connect(timer_btn_function)
+
+        self.timer_edit = QLineEdit(self)
+        self.timer_edit.move(32 + self.btn_120 + 4, self.address_staple_height + 32 + 24 + 24 + 24 + 24 + 24 + 24)
+        self.timer_edit.resize(self.btn_120, 20)
+        self.timer_edit.setFont(self.font_s7b)
+        self.timer_edit.setText('0')
+        self.timer_edit.setStyleSheet(line_edit_stylesheet_white_text)
+
+        self.timer_message_label = QLabel(self)
+        self.timer_message_label.move(32, self.address_staple_height + 32 + 24 + 24 + 24 + 24 + 24 + 24 + 24)
+        self.timer_message_label.resize(self.btn_120, self.btn_20)
+        self.timer_message_label.setFont(self.font_s7b)
+        self.timer_message_label.setText('MESSAGE')
+        self.timer_message_label.setAlignment(Qt.AlignCenter)
+        self.timer_message_label.setStyleSheet(label_stylesheet_black_bg_text_white)
+
+        self.timer_message_edit = QLineEdit(self)
+        self.timer_message_edit.move(32 + self.btn_120 + 4, self.address_staple_height + 32 + 24 + 24 + 24 + 24 + 24 + 24 + 24)
+        self.timer_message_edit.resize(self.btn_120, 20)
+        self.timer_message_edit.setFont(self.font_s7b)
+        self.timer_message_edit.setText('')
+        self.timer_message_edit.setStyleSheet(line_edit_stylesheet_white_text)
 
         self.reveal_btn = QPushButton(self)
         self.reveal_btn.move(int((self.width / 2) + (self.btn_240 / 2) - self.btn_120 + 2), self.address_staple_height + 28)
@@ -2703,6 +2809,14 @@ class App(QMainWindow):
 
         self.gui_message = ''
 
+        dial_out_timer_thread = DialOutTimerThread(self.codec_select_box,
+                                       self.communicator_socket_options_box_0,
+                                       self.communicator_socket_options_box_1,
+                                       self.communicator_socket_options_box_2,
+                                       self.communicator_socket_options_box_3)
+
+        dial_out_timer_thread.start()
+
         self.initUI()
 
     def initUI(self):
@@ -2781,6 +2895,198 @@ class App(QMainWindow):
                 self.address_book_broadcast.setStyleSheet(line_edit_stylesheet_green_bg_black_text)
                 self.address_book_mac.setStyleSheet(line_edit_stylesheet_green_bg_black_text)
             gui_message.remove(gui_message_)
+
+
+class DialOutTimerMessageThread(QThread):
+    def __init__(self, codec_select_box,
+                 communicator_socket_options_box_0,
+                 communicator_socket_options_box_1,
+                 communicator_socket_options_box_2,
+                 communicator_socket_options_box_3):
+        QThread.__init__(self)
+
+        self.codec_select_box = codec_select_box
+        self.communicator_socket_options_box_0 = communicator_socket_options_box_0
+        self.communicator_socket_options_box_1 = communicator_socket_options_box_1
+        self.communicator_socket_options_box_2 = communicator_socket_options_box_2
+        self.communicator_socket_options_box_3 = communicator_socket_options_box_3
+
+        self.name_ = ''
+        self.timer_ = float()
+        self.message_ = ''
+        self.HOST_SEND = ''
+        self.PORT_SEND = int()
+        self.KEY = bytes()
+        self.FINGERPRINT = ''
+        self.MESSAGE_CONTENT = ''
+        self.timer_message_list_ = []
+        self.codec_ = ''
+
+    def run(self):
+        global debug_message
+        global timer_message_list
+
+        self.timer_message_list_ = timer_message_list[-1]
+        print('timer_message_list:', self.timer_message_list_)
+        print('timer_message_list len:', len(self.timer_message_list_))
+        print('timer_message_list_:', self.timer_message_list_)
+
+        self.name_ = str(self.timer_message_list_[0])
+        self.timer_ = float(self.timer_message_list_[15])
+        self.message_ = str(self.timer_message_list_[-1])
+
+        if use_address == 'default':
+            self.HOST_SEND = self.timer_message_list_[1]
+        elif use_address == 'broadcast':
+            self.HOST_SEND = self.timer_message_list_[3]
+        elif use_address == 'mac':
+            self.HOST_SEND = self.timer_message_list_[4]
+
+        self.PORT_SEND = self.timer_message_list_[2]
+        self.KEY = self.timer_message_list_[5]
+        self.FINGERPRINT = self.timer_message_list_[6]
+        self.MESSAGE_CONTENT = self.message_
+
+        self.codec_ = self.timer_message_list_[7]
+
+        while True:
+            print('-' * 200)
+            print('Name:', self.name_)
+            print('To:', self.HOST_SEND)
+            print('Port:', self.PORT_SEND)
+            # print('Key:', self.KEY)
+            # print('Fingerprint:', self.FINGERPRINT)
+            print('Message:', self.MESSAGE_CONTENT)
+            self.message_send()
+            time.sleep(self.timer_)
+
+    def message_send(self):
+        global debug_message
+
+        debug_message.append('[' + str(datetime.datetime.now()) + '] [DialOutTimerMessageThread.message_send] outgoing to: ' + str(self.HOST_SEND) + ':' + str(self.PORT_SEND))
+
+        try:
+            data_response = ''
+            if len(client_address[client_address_index]) >= max_client_len:
+
+                # Setup Socket
+                sok = socket.socket(COMMUNICATOR_SOCK.get(self.timer_message_list_[8]), COMMUNICATOR_SOCK.get(self.timer_message_list_[9]))
+                debug_message.append('[' + str(datetime.datetime.now()) + '] [DialOutTimerMessageThread.message_send] variably setting socket as: ' + str(sok))
+
+                with sok as SOCKET_MECHANIZE:
+
+                    debug_message.append('[' + str(datetime.datetime.now()) + '] [DialOutTimerMessageThread.message_send] using address: ' + str(self.HOST_SEND))
+                    SOCKET_MECHANIZE.connect((self.HOST_SEND, self.PORT_SEND))
+
+                    if len(self.KEY) == 32 and len(self.FINGERPRINT) == 1024:
+                        debug_message.append('[' + str(datetime.datetime.now()) + '] [DialOutTimerMessageThread.message_send] handing message to AESCipher')
+                        debug_message.append('[' + str(datetime.datetime.now()) + '] [DialOutTimerMessageThread.message_send] using key: ' + str(self.KEY))
+                        debug_message.append('[' + str(datetime.datetime.now()) + '] [DialOutTimerMessageThread.message_send] using fingerprint: ' + str(self.FINGERPRINT))
+                        cipher = AESCipher(self.KEY)
+                        ciphertext = cipher.encrypt(str(self.FINGERPRINT) + self.MESSAGE_CONTENT)
+                        debug_message.append('[' + str(datetime.datetime.now()) + '] [DialOutTimerMessageThread.message_send] ciphertext: ' + str((ciphertext)))
+                        textbox_0_messages.append('[' + str(datetime.datetime.now()) + '] [SENDING ENCRYPTED] [' + str(self.HOST_SEND) + ':' + str(self.PORT_SEND) + ']')
+                    else:
+                        ciphertext = bytes(self.MESSAGE_CONTENT, self.codec_)
+                        textbox_0_messages.append('[' + str(datetime.datetime.now()) + '] [SENDING UNENCRYPTED] [' + str(self.HOST_SEND) + ':' + str(self.PORT_SEND) + ']')
+
+                    debug_message.append('[' + str(datetime.datetime.now()) + '] [DialOutTimerMessageThread.message_send] attempting to send ciphertext')
+
+                    SOCKET_MECHANIZE.send(ciphertext)
+                    SOCKET_MECHANIZE.settimeout(1)
+
+                    debug_message.append('[' + str(datetime.datetime.now()) + '] [DialOutTimerMessageThread.message_send] waiting for response from recipient')
+
+                    try:
+                        data_response = ''
+                        SOCKET_MECHANIZE.setblocking(0)
+                        ready = select.select([SOCKET_MECHANIZE], [], [], 3)
+                        if ready[0]:
+                            data_response = SOCKET_MECHANIZE.recv(4096)
+
+                    except Exception as e:
+                        debug_message.append('[' + str(datetime.datetime.now()) + '] [DialOutTimerMessageThread.message_send] ' + str(e))
+                        self.data = '[' + str(datetime.datetime.now()) + '] [EXCEPTION HANDLED DURING WAITING FOR RESPONSE] [' + str(self.HOST_SEND) + ':' + str(self.PORT_SEND) + ']'
+                        textbox_0_messages.append(self.data)
+                        # self.dial_out_logger()
+
+                if data_response == ciphertext:
+                    # self.dial_out_message.setText('')
+                    self.data = '[' + str(datetime.datetime.now()) + '] [DELIVERY CONFIRMATION] [' + str(self.HOST_SEND) + ':' + str(self.PORT_SEND) + ']'
+                    textbox_0_messages.append(self.data)
+
+                    debug_message.append('[' + str(datetime.datetime.now()) + '] [DialOutTimerMessageThread.message_send] response from recipient equals ciphertext: ' + str(data_response))
+                    # self.dial_out_message_send.setIcon(QIcon(send_green))
+                    # time.sleep(1)
+                    # self.dial_out_message_send.setIcon(QIcon(send_white))
+
+                else:
+                    # self.dial_out_message.setText('')
+                    self.data = '[' + str(datetime.datetime.now()) + '] [RESPONSE] [' + str(self.HOST_SEND) + ':' + str(self.PORT_SEND) + '] ' + str(data_response)
+                    textbox_0_messages.append(self.data)
+                    debug_message.append('[' + str(datetime.datetime.now()) + '] [DialOutTimerMessageThread.message_send] [RESPONSE] [' + str(self.HOST_SEND) + ':' + str(self.PORT_SEND) + '] ' + str(data_response))
+                    # self.dial_out_logger()
+
+                    # self.dial_out_message_send.setIcon(QIcon(send_yellow))
+                    # time.sleep(1)
+                    # self.dial_out_message_send.setIcon(QIcon(send_white))
+
+        except Exception as e:
+            self.data = '[' + str(datetime.datetime.now()) + '] [EXCEPTION] [' + str(self.HOST_SEND) + ':' + str(self.PORT_SEND) + '] ' + str(e)
+            textbox_0_messages.append(self.data)
+            # self.dial_out_logger()
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [DialOutTimerMessageThread.message_send] [EXCEPTION] [' + str(self.HOST_SEND) + ':' + str(self.PORT_SEND) + '] ' + str(e))
+
+            # self.dial_out_message_send.setIcon(QIcon(send_red))
+            # time.sleep(1)
+            # self.dial_out_message_send.setIcon(QIcon(send_white))
+            # global_self.setFocus()
+
+    def stop(self):
+        global debug_message
+        debug_message.append('[' + str(datetime.datetime.now()) + '] [Terminating Thread] [DialOutTimerMessageThread.stop]')
+        self.terminate()
+
+
+class DialOutTimerThread(QThread):
+    def __init__(self, codec_select_box,
+                 communicator_socket_options_box_0,
+                 communicator_socket_options_box_1,
+                 communicator_socket_options_box_2,
+                 communicator_socket_options_box_3):
+        QThread.__init__(self)
+
+        self.codec_select_box = codec_select_box
+        self.communicator_socket_options_box_0 = communicator_socket_options_box_0
+        self.communicator_socket_options_box_1 = communicator_socket_options_box_1
+        self.communicator_socket_options_box_2 = communicator_socket_options_box_2
+        self.communicator_socket_options_box_3 = communicator_socket_options_box_3
+
+    def run(self):
+        global debug_message
+        global timer_message_list
+        debug_message.append('[' + str(datetime.datetime.now()) + '] [Starting Thread] [DialOutTimerThread.run]')
+        time.sleep(5)
+        while True:
+            for _ in client_address:
+                if str(_[14]) == 'True':
+                    if _ not in timer_message_list:
+                        timer_message_list.append(_)
+                        debug_message.append('[' + str(datetime.datetime.now()) + '] [DialOutTimerThread.run] timer message enabled for: ' + str(_))
+                        thread_timer_message = DialOutTimerMessageThread(self.codec_select_box,
+                                                                         self.communicator_socket_options_box_0,
+                                                                         self.communicator_socket_options_box_1,
+                                                                         self.communicator_socket_options_box_2,
+                                                                         self.communicator_socket_options_box_3)
+                        thread_timer_message.start()
+                # elif str(_[14]) == 'False':
+                    # stop assiciated thread if running
+            time.sleep(1)
+    
+    def stop(self):
+        global debug_message
+        debug_message.append('[' + str(datetime.datetime.now()) + '] [Terminating Thread] [DialOutTimerThread.stop]')
+        self.terminate()
 
 
 class UplinkClass(QThread):
@@ -3266,17 +3572,26 @@ class ConfigurationClass(QThread):
         client_address = []
         with open('./communicator_address_book.txt', 'r') as fo:
             for line in fo:
-                line = line.strip()
-                line = line.split(' ')
+                line_0 = line.strip()
+                line = line_0.split(' ')
                 if str(line[0]) == 'DATA':
                     debug_message.append('[' + str(datetime.datetime.now()) + '] [ConfigurationClass.run] len(line): ' + str(len(line)))
-                    if len(line) >= 14:
+                    if len(line) >= max_client_len:
                         if line[3].isdigit():
                             line_3 = int(line[3])
                         else:
                             line_3 = line[3]
-                        client_address.append([str(line[1]), str(line[2]), line_3, str(line[4]), str(line[5]), bytes(line[6], 'utf-8'), str(line[7]), str(line[8]), str(line[9]), str(line[10]), str(line[11]), str(line[12]), str(line[13]), str(line[14])])
+                        client_address.append([str(line[1]), str(line[2]), line_3, str(line[4]), str(line[5]), bytes(line[6], 'utf-8'), str(line[7]), str(line[8]), str(line[9]), str(line[10]), str(line[11]), str(line[12]), str(line[13]), str(line[14]), str(line[15]), float(line[16])])
                         debug_message.append('[' + str(datetime.datetime.now()) + '] [ConfigurationClass.run] entry: ' + str(client_address[-1]))
+
+                elif str(line[0]) == 'TIMER_MESSAGE':
+                    if len(line) >= 2:
+                        print(line)
+                        for _ in client_address:
+                            if line[1] in _:
+                                print('adding to client address:', _)
+                                _.append(str(line_0.replace(line[0], '').replace(line[1], '')))
+                                print('client address after append', _)
 
         client_address.sort(key=lambda x: canonical_caseless(x[0]))
         debug_message.append('[' + str(datetime.datetime.now()) + '] [ConfigurationClass.run] sort complete')
