@@ -4,5 +4,5 @@ DATA SuperOmegaSpaceRay 192.168.1.11 55555 x x YSWNfHt|{Yew&T`TY!>fmOBn`[qz}U=[ 
 TIMER_MESSAGE SuperOmegaSpaceRay any message
 DATA SuperMegaCatRobot 192.168.1.11 55555 x x x x utf_8 AF_INET SOCK_STREAM Unselected Unselected False default False 5.0
 TIMER_MESSAGE SuperMegaCatRobot hello world!
-DATA mechanized_0 192.168.1.11 55555 x x AZW)j.%;:ODYgqkx:,vgv%}`eCb&yPdS ./fingerprints/mechanized_00.txt utf_8 AF_INET SOCK_STREAM Unselected Unselected False default True 5.0
+DATA mechanized_0 192.168.1.11 55555 x x AZW)j.%;:ODYgqkx:,vgv%}`eCb&yPdS ./fingerprints/mechanized_00.txt utf_8 AF_INET SOCK_STREAM Unselected Unselected False default False 5.0
 TIMER_MESSAGE mechanized_0 mechanized message
