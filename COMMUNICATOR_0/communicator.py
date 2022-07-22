@@ -1226,7 +1226,7 @@ class App(QMainWindow):
                 else:
                     debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_previous_address_function] incorrect key length: ' + str(client_address[client_address_index]))
 
-                debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_previous_address_function] uplink bool in list: ' + str(client_address[client_address_index][11]))
+                debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_previous_address_function] uplink bool in list: ' + str(client_address[client_address_index][12]))
                 print('client_address[client_address_index][12]:', client_address[client_address_index][12])
                 if client_address[client_address_index][12] == 'False':
                     self.uplink_btn.setStyleSheet(button_stylesheet_white_text_low)
@@ -1327,7 +1327,7 @@ class App(QMainWindow):
                 else:
                     debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_next_address_function] incorrect key length: ' + str(client_address[client_address_index]))
 
-                debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_next_address_function] uplink bool in list: ' + str(client_address[client_address_index][11]))
+                debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_next_address_function] uplink bool in list: ' + str(client_address[client_address_index][12]))
                 print('client_address[client_address_index][12]:', client_address[client_address_index][12])
                 if client_address[client_address_index][12] == 'False':
                     self.uplink_btn.setStyleSheet(button_stylesheet_white_text_low)
