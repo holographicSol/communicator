@@ -2,7 +2,7 @@ DATA Toshiba 192.168.1.15 55555 192.168.1.255 70:54:B4:84:20:FE x x utf_16 AF_IN
 TIMER_MESSAGE Toshiba
 DATA SuperOmegaSpaceRay 192.168.1.11 55555 x x YSWNfHt|{Yew&T`TY!>fmOBn`[qz}U=[ ./fingerprints/SuperOmegaSpaceRay.txt utf_8 AF_INET SOCK_STREAM Unselected Unselected False default True 5
 TIMER_MESSAGE SuperOmegaSpaceRay hello world!
-DATA SuperMegaCatRobot 192.168.1.11 55555 x x x x utf_8 AF_INET SOCK_STREAM Unselected Unselected False default True 2
+DATA SuperMegaCatRobot 192.168.1.11 55555 x x x x utf_8 AF_INET SOCK_STREAM Unselected Unselected False default False 2
 TIMER_MESSAGE SuperMegaCatRobot i am super mega cat robot!
 DATA super_foo 192.168.1.11 55555 x x ,.~|K_\=.JT:ds{PAGvP=mG^R##EM{-t ./fingerprints/super_foo.txt utf_8 AF_INET SOCK_STREAM Unselected Unselected False default False 0.4
 TIMER_MESSAGE super_foo i am super foo
