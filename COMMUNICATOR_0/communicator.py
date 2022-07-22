@@ -786,7 +786,8 @@ class App(QMainWindow):
 
         def client_save_address():
             global debug_message
-            debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.client_save_address]')
+            print('plugged in save')
+            # debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.client_save_address]')
             global write_client_configuration_engaged
             global client_address
             global client_address_index
@@ -798,21 +799,31 @@ class App(QMainWindow):
             global gui_message
             global use_address
 
+            print('finished globals')
+
             # Attempt to only run this function if this function is not already in progress
             if write_client_configuration_engaged is False:
                 write_client_configuration_engaged = True
 
+                print('1')
+
                 # Name must not be empty and there must not be space in name
                 if self.dial_out_name.text() != '' and ' ' not in self.dial_out_name.text():
+
+                    print('2')
 
                     allow_name_bool = []
                     for _ in client_address:
                         if self.dial_out_name.text() in _:
                             allow_name_bool.append(False)
 
+                    print('3')
+
                     if not False in allow_name_bool:
                         # Address field must not be empty
                         if self.dial_out_ip_port.text() != '':
+
+                            print('4')
 
                             # Clearly display the save mode
                             debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_save_address] using address_save_mode: ' + str(address_save_mode))
@@ -898,17 +909,17 @@ class App(QMainWindow):
                                     # if self.dial_out_ip_port.text() != '':
 
                                     # Set the string which should be appended to the address book
-                                    to_address_book = 'DATA ' + name_ + ' ' + address_ + ' ' + port_ + ' ' + broadcast_address_ + ' ' + mac_ + ' ' + key_ + ' ' + fingerprint_path_ + ' ' + s_args + ' ' + str(bool_address_uplink) + ' ' + str(use_address)
+                                    to_address_book = 'DATA ' + name_ + ' ' + address_ + ' ' + str(port_) + ' ' + broadcast_address_ + ' ' + mac_ + ' ' + key_ + ' ' + fingerprint_path_ + ' ' + s_args + ' ' + str(bool_address_uplink) + ' ' + str(use_address)
 
                                     # Append a new list to the address book list in memory
                                     # client_address.append([str(self.dial_out_name.text()), str(self.dial_out_ip_port.text()), int(self.address_book_port.text()), bytes('x', 'utf-8'), 'x', 'x', s_enc, s_address_family, s_soc_type, s_options_0, s_options_1, bool_address_uplink])
-                                    client_address.append([str(name_), str(address_), port_, str(broadcast_address_), str(mac_), str(key_), str(fingerprint_path_), s_enc, s_address_family, s_soc_type, s_options_0, s_options_1, bool_address_uplink, use_address])
+                                    client_address.append([str(name_), str(address_), port_, str(broadcast_address_), str(mac_), bytes(key_, 'utf-8'), str(fingerprint_path_), s_enc, s_address_family, s_soc_type, s_options_0, s_options_1, bool_address_uplink, use_address])
 
                                     # Alphabetically sort the address book in memory
                                     client_address.sort(key=lambda x: canonical_caseless(x[0]))
 
                                     # Find the new index of the new address book entry in memory after sorting and set the new current address book index accordingly
-                                    client_address_index = client_address.index([str(name_), str(address_), port_, str(broadcast_address_), str(mac_), str(key_), str(fingerprint_path_), s_enc, s_address_family, s_soc_type, s_options_0, s_options_1, bool_address_uplink, use_address])
+                                    client_address_index = client_address.index([str(name_), str(address_), port_, str(broadcast_address_), str(mac_), bytes(key_, 'utf-8'), str(fingerprint_path_), s_enc, s_address_family, s_soc_type, s_options_0, s_options_1, bool_address_uplink, use_address])
 
                                     bool_allow_write = True
 
@@ -966,7 +977,7 @@ class App(QMainWindow):
                                         if len(self.fingerprint_str) == 1024:
 
                                             # Set the string which should be appended to the address book
-                                            to_address_book = 'DATA ' + name_ + ' ' + address_ + ' ' + port_ + ' ' + broadcast_address_ + ' ' + mac_ + ' ' + self.address_key.text() + ' ' + fingerprint_fname + ' ' + s_args + ' ' + str(bool_address_uplink) + ' ' + str(use_address)
+                                            to_address_book = 'DATA ' + name_ + ' ' + address_ + ' ' + str(port_) + ' ' + broadcast_address_ + ' ' + mac_ + ' ' + self.address_key.text() + ' ' + fingerprint_fname + ' ' + s_args + ' ' + str(bool_address_uplink) + ' ' + str(use_address)
 
                                             # Append a new list to the address book list in memory
                                             client_address.append([str(name_), str(address_), port_, str(broadcast_address_), str(mac_), bytes(self.address_key.text(), 'utf-8'), str(self.fingerprint_str), s_enc, s_address_family, s_soc_type, s_options_0, s_options_1, bool_address_uplink, use_address])
