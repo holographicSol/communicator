@@ -890,14 +890,14 @@ class App(QMainWindow):
                                 s_options_1 = str(self.communicator_socket_options_box_3.currentText())
                                 s_args = s_enc + ' ' + s_address_family + ' ' + s_soc_type + ' ' + s_options_0 + ' ' + s_options_1
 
-                                transmit_timer = self.timer_edit.text()
+                                transmit_timer = self.mechanized_timer_edit.text()
                                 if not str(transmit_timer).replace('.', '').isdigit():
                                     transmit_timer = float(0.0)
                                 else:
                                     transmit_timer = float(transmit_timer)
 
                                 # todo --> handle spaces as address book entries are split by a space delimiter
-                                transmit_message = self.timer_message_edit.text()
+                                transmit_message = self.mechanized_timer_message_edit.text()
 
                                 # Display current address index for comparison later
                                 debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_save_address] current index before potentially sorting: ' + str(client_address_index))
@@ -1257,15 +1257,15 @@ class App(QMainWindow):
                     bool_address_uplink = True
 
                 if client_address[client_address_index][14] == 'False':
-                    self.timer_btn.setStyleSheet(button_stylesheet_white_text_low)
+                    self.mechanized_timer_btn.setStyleSheet(button_stylesheet_white_text_low)
                     mechanize_timer_bool = False
                 elif client_address[client_address_index][14] == 'True':
-                    self.timer_btn.setStyleSheet(button_stylesheet_white_text_high)
+                    self.mechanized_timer_btn.setStyleSheet(button_stylesheet_white_text_high)
                     mechanize_timer_bool = True
 
-                self.timer_edit.setText(str(client_address[client_address_index][15]))
+                self.mechanized_timer_edit.setText(str(client_address[client_address_index][15]))
 
-                self.timer_message_edit.setText(str(client_address[client_address_index][-1]))
+                self.mechanized_timer_message_edit.setText(str(client_address[client_address_index][-1]))
 
                 sck_set_arguments_function()
 
@@ -1370,15 +1370,15 @@ class App(QMainWindow):
                     bool_address_uplink = True
 
                 if client_address[client_address_index][14] == 'False':
-                    self.timer_btn.setStyleSheet(button_stylesheet_white_text_low)
+                    self.mechanized_timer_btn.setStyleSheet(button_stylesheet_white_text_low)
                     mechanize_timer_bool = False
                 elif client_address[client_address_index][14] == 'True':
-                    self.timer_btn.setStyleSheet(button_stylesheet_white_text_high)
+                    self.mechanized_timer_btn.setStyleSheet(button_stylesheet_white_text_high)
                     mechanize_timer_bool = True
 
-                self.timer_edit.setText(str(client_address[client_address_index][15]))
+                self.mechanized_timer_edit.setText(str(client_address[client_address_index][15]))
 
-                self.timer_message_edit.setText(str(client_address[client_address_index][-1]))
+                self.mechanized_timer_message_edit.setText(str(client_address[client_address_index][-1]))
 
                 sck_set_arguments_function()
 
@@ -2095,7 +2095,7 @@ class App(QMainWindow):
             self.address_book_broadcast_label.setStyleSheet(button_stylesheet_white_text_low)
             self.transmit_display_address.setText(self.address_book_mac.text())
 
-        def timer_btn_function():
+        def mechanized_timer_btn_function():
             global debug_message
             global mechanize_timer_bool
             global address_mode
@@ -2103,30 +2103,30 @@ class App(QMainWindow):
             global client_address_index
             global timer_message_threads
 
-            debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.timer_btn_function]')
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.mechanized_timer_btn_function]')
 
             if address_mode == 'save_mode':
                 if mechanize_timer_bool is False:
                     mechanize_timer_bool = True
-                    self.timer_btn.setStyleSheet(button_stylesheet_white_text_high)
+                    self.mechanized_timer_btn.setStyleSheet(button_stylesheet_white_text_high)
                 elif mechanize_timer_bool is True:
                     mechanize_timer_bool = False
-                    self.timer_btn.setStyleSheet(button_stylesheet_white_text_low)
-                debug_message.append('[' + str(datetime.datetime.now()) + '] [App.timer_btn_function] setting mechanize_timer_bool: ' + str(mechanize_timer_bool))
+                    self.mechanized_timer_btn.setStyleSheet(button_stylesheet_white_text_low)
+                debug_message.append('[' + str(datetime.datetime.now()) + '] [App.mechanized_timer_btn_function] setting mechanize_timer_bool: ' + str(mechanize_timer_bool))
             else:
                 if mechanize_timer_bool is False:
-                    self.timer_btn.setStyleSheet(button_stylesheet_white_text_high)
+                    self.mechanized_timer_btn.setStyleSheet(button_stylesheet_white_text_high)
                     mechanize_timer_bool = True
                     client_address[client_address_index][14] = 'True'
-                    client_address[client_address_index][15] = float(self.timer_edit.text())
+                    client_address[client_address_index][15] = float(self.mechanized_timer_edit.text())
 
                 elif mechanize_timer_bool is True:
-                    self.timer_btn.setStyleSheet(button_stylesheet_white_text_low)
+                    self.mechanized_timer_btn.setStyleSheet(button_stylesheet_white_text_low)
                     mechanize_timer_bool = False
                     client_address[client_address_index][14] = 'False'
-                    client_address[client_address_index][15] = float(self.timer_edit.text())
+                    client_address[client_address_index][15] = float(self.mechanized_timer_edit.text())
 
-                debug_message.append('[' + str(datetime.datetime.now()) + '] [App.timer_btn_function] setting mechanize_timer_bool: ' + str(mechanize_timer_bool))
+                debug_message.append('[' + str(datetime.datetime.now()) + '] [App.mechanized_timer_btn_function] setting mechanize_timer_bool: ' + str(mechanize_timer_bool))
             display_current_client_address_index()
 
         def display_current_client_address_index():
@@ -2427,35 +2427,35 @@ class App(QMainWindow):
             self.communicator_socket_options_box_2.addItem(str(v))
             self.communicator_socket_options_box_3.addItem(str(v))
 
-        self.timer_btn = QPushButton(self)
-        self.timer_btn.move(32, self.address_staple_height + 32 + 24 + 24 + 24 + 24 + 24 + 24)
-        self.timer_btn.resize(self.btn_120, self.btn_20)
-        self.timer_btn.setFont(self.font_s7b)
-        self.timer_btn.setText('MECH TIMER')
-        self.timer_btn.setStyleSheet(button_stylesheet_white_text_high)
-        self.timer_btn.clicked.connect(timer_btn_function)
+        self.mechanized_timer_btn = QPushButton(self)
+        self.mechanized_timer_btn.move(32, self.address_staple_height + 32 + 24 + 24 + 24 + 24 + 24 + 24)
+        self.mechanized_timer_btn.resize(self.btn_120, self.btn_20)
+        self.mechanized_timer_btn.setFont(self.font_s7b)
+        self.mechanized_timer_btn.setText('MECH TIMER')
+        self.mechanized_timer_btn.setStyleSheet(button_stylesheet_white_text_high)
+        self.mechanized_timer_btn.clicked.connect(mechanized_timer_btn_function)
 
-        self.timer_edit = QLineEdit(self)
-        self.timer_edit.move(32 + self.btn_120 + 4, self.address_staple_height + 32 + 24 + 24 + 24 + 24 + 24 + 24)
-        self.timer_edit.resize(self.btn_120, 20)
-        self.timer_edit.setFont(self.font_s7b)
-        self.timer_edit.setText('0')
-        self.timer_edit.setStyleSheet(line_edit_stylesheet_white_text)
+        self.mechanized_timer_edit = QLineEdit(self)
+        self.mechanized_timer_edit.move(32 + self.btn_120 + 4, self.address_staple_height + 32 + 24 + 24 + 24 + 24 + 24 + 24)
+        self.mechanized_timer_edit.resize(self.btn_120, 20)
+        self.mechanized_timer_edit.setFont(self.font_s7b)
+        self.mechanized_timer_edit.setText('0')
+        self.mechanized_timer_edit.setStyleSheet(line_edit_stylesheet_white_text)
 
-        self.timer_message_label = QLabel(self)
-        self.timer_message_label.move(32, self.address_staple_height + 32 + 24 + 24 + 24 + 24 + 24 + 24 + 24)
-        self.timer_message_label.resize(self.btn_120, self.btn_20)
-        self.timer_message_label.setFont(self.font_s7b)
-        self.timer_message_label.setText('MESSAGE')
-        self.timer_message_label.setAlignment(Qt.AlignCenter)
-        self.timer_message_label.setStyleSheet(label_stylesheet_black_bg_text_white)
+        self.mechanized_timer_message_label = QLabel(self)
+        self.mechanized_timer_message_label.move(32, self.address_staple_height + 32 + 24 + 24 + 24 + 24 + 24 + 24 + 24)
+        self.mechanized_timer_message_label.resize(self.btn_120, self.btn_20)
+        self.mechanized_timer_message_label.setFont(self.font_s7b)
+        self.mechanized_timer_message_label.setText('MESSAGE')
+        self.mechanized_timer_message_label.setAlignment(Qt.AlignCenter)
+        self.mechanized_timer_message_label.setStyleSheet(label_stylesheet_black_bg_text_white)
 
-        self.timer_message_edit = QLineEdit(self)
-        self.timer_message_edit.move(32 + self.btn_120 + 4, self.address_staple_height + 32 + 24 + 24 + 24 + 24 + 24 + 24 + 24)
-        self.timer_message_edit.resize(self.btn_120, 20)
-        self.timer_message_edit.setFont(self.font_s7b)
-        self.timer_message_edit.setText('')
-        self.timer_message_edit.setStyleSheet(line_edit_stylesheet_white_text)
+        self.mechanized_timer_message_edit = QLineEdit(self)
+        self.mechanized_timer_message_edit.move(32 + self.btn_120 + 4, self.address_staple_height + 32 + 24 + 24 + 24 + 24 + 24 + 24 + 24)
+        self.mechanized_timer_message_edit.resize(self.btn_120, 20)
+        self.mechanized_timer_message_edit.setFont(self.font_s7b)
+        self.mechanized_timer_message_edit.setText('')
+        self.mechanized_timer_message_edit.setStyleSheet(line_edit_stylesheet_white_text)
 
         self.reveal_btn = QPushButton(self)
         self.reveal_btn.move(int((self.width / 2) + (self.btn_240 / 2) - self.btn_120 + 2), self.address_staple_height + 28)
