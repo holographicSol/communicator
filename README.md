@@ -87,7 +87,7 @@ designed to handle this by enumerating/re-enumerating the router automatically u
 to continue using the correct root description file url for UPNP communication with the router.
 
 MECHANIZED TRANSMISSION:
-The Communicator is in the early stages of its mechanized tranmit feature. This feature is intended to be a friendly
+The Communicator is in the early stages of its mechanized transmit feature. This feature is intended to be a friendly
 feature and I do not in any way condone weaponizing the Communicator but it is possible that the Communicator can
 even attack itself if configured too. The Communicator is intended to be an extremely versatile, dynamic and flexible
 communications tool.
