@@ -136,6 +136,7 @@ timer_message_list = []
 gui_message = []
 uplink_addresses = []
 enum = []
+timer_message_threads = {}
 external_ip_address = ''
 
 COMMUNICATOR_SOCK = {
@@ -654,135 +655,141 @@ class App(QMainWindow):
         def client_remove_address():
             global debug_message
             debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.client_remove_address]')
-            # global write_client_configuration_engaged
-            # global client_address
-            # global client_address_index
-            # global address_mode
-            # global use_address
-            #
-            # # Attempt to only run this function if this function is not already in progress
-            # if write_client_configuration_engaged is False:
-            #     write_client_configuration_engaged = True
-            #
-            #     # Name must not be empty
-            #     if self.dial_out_name.text() != '':
-            #         if self.dial_out_ip_port.text() != '':
-            #
-            #             # Create a temporary list to manipulate and use to compare to line in the address book
-            #             remove_address = client_address[client_address_index]
-            #             print('remove_address:', remove_address)
-            #
-            #             # Check if address book exists
-            #             if os.path.exists('./communicator_address_book.txt'):
-            #
-            #                 # Create a temporary list to store lines from the address book
-            #                 fo_list = []
-            #
-            #                 # Set a boolean condition to prevent an unnecessary write if the event that a target line is not found
-            #                 write_bool = False
-            #
-            #                 # Open the address book to read
-            #                 with codecs.open('./communicator_address_book.txt', 'r', encoding='utf-8') as fo:
-            #                     for line in fo:
-            #                         line = line.strip()
-            #
-            #                         print('line:', line)
-            #
-            #                         # Create a list from the expected space delimited line and then check the line
-            #                         line_split = line.split(' ')
-            #                         if len(line_split) > 0:
-            #                             if line != '' and line_split[0] == 'DATA':
-            #
-            #                                 try:
-            #
-            #                                     # Create a thorough but partial list from current client address in memory (item excluded is the actual fingerprint)
-            #                                     compare_remove_address = [str(remove_address[0]),
-            #                                                               str(remove_address[1]),
-            #                                                               str(remove_address[2]),
-            #                                                               str(remove_address[3]),
-            #                                                               str(remove_address[4]),
-            #                                                               str(remove_address[7]),
-            #                                                               str(remove_address[8]),
-            #                                                               str(remove_address[9]),
-            #                                                               str(remove_address[10]),
-            #                                                               str(remove_address[11]),
-            #                                                               str(remove_address[12]),
-            #                                                               str(remove_address[13])]
-            #
-            #                                     # Create a thorough but partial list from line in file (item excluded is fingerprint path)
-            #                                     compare_line_address = [str(line_split[1]),
-            #                                                             str(line_split[2]),
-            #                                                             str(line_split[3]),
-            #                                                             str(line_split[4]),
-            #                                                             str(line_split[5]),
-            #                                                             str(line_split[8]),
-            #                                                             str(line_split[9]),
-            #                                                             str(line_split[10]),
-            #                                                             str(line_split[11]),
-            #                                                             str(line_split[12]),
-            #                                                             str(line_split[13]),
-            #                                                             str(line_split[14])]
-            #
-            #                                     # Display to compare
-            #                                     debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_remove_address] MEM LIST COMPARE: ' + str(compare_remove_address))
-            #                                     debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_remove_address] FILE LIST COMPARE: ' + str(compare_line_address))
-            #
-            #                                     # Append unequal lines to a list
-            #                                     if compare_remove_address != compare_line_address:
-            #                                         fo_list.append(line)
-            #                                         debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_remove_address] KEEPING LINE: ' + str(line))
-            #
-            #                                     # Clearly display the line that is equal and do not add the line to a list
-            #                                     else:
-            #                                         debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_remove_address] TARGET REMOVE: ' + str(line))
-            #                                         write_bool = True
-            #
-            #                                     del compare_remove_address
-            #                                     del compare_line_address
-            #                                 except Exception as e:
-            #                                     print('e:', e)
-            #
-            #                 fo.close()
-            #
-            #                 # If the target line in address book was found then write lines from the list into a temporary file
-            #                 if write_bool is True:
-            #                     open('./communicator_address_book.tmp', 'w').close()
-            #                     with open('./communicator_address_book.tmp', 'w') as fo_tmp:
-            #                         for _ in fo_list:
-            #                             fo_tmp.write(str(_) + '\n')
-            #                     fo_tmp.close()
-            #
-            #                     # Replace address book contents with the contents of the temporary file
-            #                     if os.path.exists('./communicator_address_book.tmp'):
-            #                         os.replace('./communicator_address_book.tmp', './communicator_address_book.txt')
-            #
-            #                     # Remove the currently selected address from client address list in memory
-            #                     client_address.remove(remove_address)
-            #
-            #                     # Turn the page (previous and next address functions handle empty address list)
-            #                     client_previous_address_function()
-            #                     client_next_address_function()
-            #
-            # address_mode = 'uplink_current_index'
-            # self.address_book_label.setStyleSheet(title_stylesheet_default)
-            # self.dial_out_name.setEnabled(False)
-            # self.dial_out_ip_port.setEnabled(False)
-            # self.address_book_port.setEnabled(False)
-            # self.address_book_broadcast.setEnabled(False)
-            # self.address_book_mac.setEnabled(False)
-            # self.address_key.setEnabled(False)
-            # self.tb_fingerprint.setEnabled(False)
-            # self.generate_key.setEnabled(False)
-            # self.generate_fingerprint.setEnabled(False)
-            #
-            # self.dial_out_name.setStyleSheet(line_edit_stylesheet_white_text)
-            # self.dial_out_ip_port.setStyleSheet(line_edit_stylesheet_white_text)
-            # self.address_book_port.setStyleSheet(line_edit_stylesheet_white_text)
-            # self.address_book_broadcast.setStyleSheet(line_edit_stylesheet_white_text)
-            # self.address_book_mac.setStyleSheet(line_edit_stylesheet_white_text)
-            # self.address_key.setStyleSheet(line_edit_stylesheet_white_text)
-            # self.generate_key.setStyleSheet(button_stylesheet_white_text_low)
-            # self.generate_fingerprint.setStyleSheet(button_stylesheet_white_text_low)
+            global write_client_configuration_engaged
+            global client_address
+            global client_address_index
+            global address_mode
+            global use_address
+
+            # Attempt to only run this function if this function is not already in progress
+            if write_client_configuration_engaged is False:
+                write_client_configuration_engaged = True
+
+                # Name must not be empty
+                if self.dial_out_name.text() != '':
+                    if self.dial_out_ip_port.text() != '':
+
+                        # Create a temporary list to manipulate and use to compare to line in the address book
+                        remove_address = client_address[client_address_index]
+                        print('remove_address:', remove_address)
+
+                        # Check if address book exists
+                        if os.path.exists('./communicator_address_book.txt'):
+
+                            # Create a temporary list to store lines from the address book
+                            fo_list = []
+
+                            # Set a boolean condition to prevent an unnecessary write if the event that a target line is not found
+                            write_bool = False
+
+                            # Open the address book to read
+                            with codecs.open('./communicator_address_book.txt', 'r', encoding='utf-8') as fo:
+                                for line in fo:
+                                    line = line.strip()
+
+                                    print('line:', line)
+
+                                    # Create a list from the expected space delimited line and then check the line
+                                    line_split = line.split(' ')
+                                    if len(line_split) > 0:
+                                        if line != '' and line_split[0] == 'DATA':
+
+                                            try:
+
+                                                # Create a thorough but partial list from current client address in memory (item excluded is the actual fingerprint)
+                                                compare_remove_address = [str(remove_address[0]),
+                                                                          str(remove_address[1]),
+                                                                          str(remove_address[2]),
+                                                                          str(remove_address[3]),
+                                                                          str(remove_address[4]),
+                                                                          str(remove_address[7]),
+                                                                          str(remove_address[8]),
+                                                                          str(remove_address[9]),
+                                                                          str(remove_address[10]),
+                                                                          str(remove_address[11]),
+                                                                          str(remove_address[12]),
+                                                                          str(remove_address[13])]
+
+                                                # Create a thorough but partial list from line in file (item excluded is fingerprint path)
+                                                compare_line_address = [str(line_split[1]),
+                                                                        str(line_split[2]),
+                                                                        str(line_split[3]),
+                                                                        str(line_split[4]),
+                                                                        str(line_split[5]),
+                                                                        str(line_split[8]),
+                                                                        str(line_split[9]),
+                                                                        str(line_split[10]),
+                                                                        str(line_split[11]),
+                                                                        str(line_split[12]),
+                                                                        str(line_split[13]),
+                                                                        str(line_split[14])]
+
+                                                # Display to compare
+                                                debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_remove_address] MEM LIST COMPARE: ' + str(compare_remove_address))
+                                                debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_remove_address] FILE LIST COMPARE: ' + str(compare_line_address))
+
+                                                # Append unequal lines to a list
+                                                if compare_remove_address != compare_line_address:
+                                                    fo_list.append(line)
+                                                    debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_remove_address] KEEPING LINE: ' + str(line))
+
+                                                # Clearly display the line that is equal and do not add the line to a list
+                                                else:
+                                                    debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_remove_address] TARGET REMOVE: ' + str(line))
+                                                    write_bool = True
+
+                                                del compare_remove_address
+                                                del compare_line_address
+                                            except Exception as e:
+                                                print('e:', e)
+                                        elif line != '' and line_split[0] == 'TIMER_MESSAGE':
+                                            if not line_split[1] == client_address[client_address_index][0]:
+                                                fo_list.append(line)
+                                                debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_remove_address] KEEPING LINE: ' + str(line))
+                                            else:
+                                                debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_remove_address] TARGET REMOVE: ' + str(line))
+                                                write_bool = True
+                            fo.close()
+
+                            # If the target line in address book was found then write lines from the list into a temporary file
+                            if write_bool is True:
+                                open('./communicator_address_book.tmp', 'w').close()
+                                with open('./communicator_address_book.tmp', 'w') as fo_tmp:
+                                    for _ in fo_list:
+                                        fo_tmp.write(str(_) + '\n')
+                                fo_tmp.close()
+
+                                # Replace address book contents with the contents of the temporary file
+                                if os.path.exists('./communicator_address_book.tmp'):
+                                    os.replace('./communicator_address_book.tmp', './communicator_address_book.txt')
+
+                                # Remove the currently selected address from client address list in memory
+                                client_address.remove(remove_address)
+
+                                # Turn the page (previous and next address functions handle empty address list)
+                                client_previous_address_function()
+                                client_next_address_function()
+
+            address_mode = 'uplink_current_index'
+            self.address_book_label.setStyleSheet(title_stylesheet_default)
+            self.dial_out_name.setEnabled(False)
+            self.dial_out_ip_port.setEnabled(False)
+            self.address_book_port.setEnabled(False)
+            self.address_book_broadcast.setEnabled(False)
+            self.address_book_mac.setEnabled(False)
+            self.address_key.setEnabled(False)
+            self.tb_fingerprint.setEnabled(False)
+            self.generate_key.setEnabled(False)
+            self.generate_fingerprint.setEnabled(False)
+
+            self.dial_out_name.setStyleSheet(line_edit_stylesheet_white_text)
+            self.dial_out_ip_port.setStyleSheet(line_edit_stylesheet_white_text)
+            self.address_book_port.setStyleSheet(line_edit_stylesheet_white_text)
+            self.address_book_broadcast.setStyleSheet(line_edit_stylesheet_white_text)
+            self.address_book_mac.setStyleSheet(line_edit_stylesheet_white_text)
+            self.address_key.setStyleSheet(line_edit_stylesheet_white_text)
+            self.generate_key.setStyleSheet(button_stylesheet_white_text_low)
+            self.generate_fingerprint.setStyleSheet(button_stylesheet_white_text_low)
 
             write_client_configuration_engaged = False
 
@@ -2094,6 +2101,7 @@ class App(QMainWindow):
             global address_mode
             global client_address
             global client_address_index
+            global timer_message_threads
 
             debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.timer_btn_function]')
 
@@ -2109,13 +2117,13 @@ class App(QMainWindow):
                 if timer_bool is False:
                     self.timer_btn.setStyleSheet(button_stylesheet_white_text_high)
                     timer_bool = True
-                    client_address[client_address_index][14] = True
+                    client_address[client_address_index][14] = 'True'
                     client_address[client_address_index][15] = float(self.timer_edit.text())
 
                 elif timer_bool is True:
                     self.timer_btn.setStyleSheet(button_stylesheet_white_text_low)
                     timer_bool = False
-                    client_address[client_address_index][14] = False
+                    client_address[client_address_index][14] = 'False'
                     client_address[client_address_index][15] = float(self.timer_edit.text())
 
                 debug_message.append('[' + str(datetime.datetime.now()) + '] [App.timer_btn_function] setting timer_bool: ' + str(timer_bool))
@@ -3008,39 +3016,22 @@ class DialOutTimerMessageThread(QThread):
                         debug_message.append('[' + str(datetime.datetime.now()) + '] [DialOutTimerMessageThread.message_send] ' + str(e))
                         self.data = '[' + str(datetime.datetime.now()) + '] [EXCEPTION HANDLED DURING WAITING FOR RESPONSE] [' + str(self.HOST_SEND) + ':' + str(self.PORT_SEND) + ']'
                         textbox_0_messages.append(self.data)
-                        # self.dial_out_logger()
 
                 if data_response == ciphertext:
-                    # self.dial_out_message.setText('')
                     self.data = '[' + str(datetime.datetime.now()) + '] [DELIVERY CONFIRMATION] [' + str(self.HOST_SEND) + ':' + str(self.PORT_SEND) + ']'
                     textbox_0_messages.append(self.data)
 
                     debug_message.append('[' + str(datetime.datetime.now()) + '] [DialOutTimerMessageThread.message_send] response from recipient equals ciphertext: ' + str(data_response))
-                    # self.dial_out_message_send.setIcon(QIcon(send_green))
-                    # time.sleep(1)
-                    # self.dial_out_message_send.setIcon(QIcon(send_white))
 
                 else:
-                    # self.dial_out_message.setText('')
                     self.data = '[' + str(datetime.datetime.now()) + '] [RESPONSE] [' + str(self.HOST_SEND) + ':' + str(self.PORT_SEND) + '] ' + str(data_response)
                     textbox_0_messages.append(self.data)
                     debug_message.append('[' + str(datetime.datetime.now()) + '] [DialOutTimerMessageThread.message_send] [RESPONSE] [' + str(self.HOST_SEND) + ':' + str(self.PORT_SEND) + '] ' + str(data_response))
-                    # self.dial_out_logger()
-
-                    # self.dial_out_message_send.setIcon(QIcon(send_yellow))
-                    # time.sleep(1)
-                    # self.dial_out_message_send.setIcon(QIcon(send_white))
 
         except Exception as e:
             self.data = '[' + str(datetime.datetime.now()) + '] [EXCEPTION] [' + str(self.HOST_SEND) + ':' + str(self.PORT_SEND) + '] ' + str(e)
             textbox_0_messages.append(self.data)
-            # self.dial_out_logger()
             debug_message.append('[' + str(datetime.datetime.now()) + '] [DialOutTimerMessageThread.message_send] [EXCEPTION] [' + str(self.HOST_SEND) + ':' + str(self.PORT_SEND) + '] ' + str(e))
-
-            # self.dial_out_message_send.setIcon(QIcon(send_red))
-            # time.sleep(1)
-            # self.dial_out_message_send.setIcon(QIcon(send_white))
-            # global_self.setFocus()
 
     def stop(self):
         global debug_message
@@ -3065,6 +3056,7 @@ class DialOutTimerThread(QThread):
     def run(self):
         global debug_message
         global timer_message_list
+        global timer_message_threads
         debug_message.append('[' + str(datetime.datetime.now()) + '] [Starting Thread] [DialOutTimerThread.run]')
         time.sleep(5)
         while True:
@@ -3078,9 +3070,19 @@ class DialOutTimerThread(QThread):
                                                                          self.communicator_socket_options_box_1,
                                                                          self.communicator_socket_options_box_2,
                                                                          self.communicator_socket_options_box_3)
+                        timer_message_threads[_[0]] = thread_timer_message
+                        print('timer_message_threads:', timer_message_threads)
+                        print('timer_message_threads len:', len(timer_message_threads))
                         thread_timer_message.start()
-                # elif str(_[14]) == 'False':
-                    # stop assiciated thread if running
+
+                elif str(_[14]) == 'False':
+                    if _ in timer_message_list:
+                        print('changed to False:', _)
+                        timer_message_list.remove(_)
+                        print('timer_message_threads before change:', timer_message_threads)
+                        timer_message_threads[_[0]].stop()
+                        timer_message_threads.pop(_[0])
+                        print('timer_message_threads after change:', timer_message_threads)
             time.sleep(1)
     
     def stop(self):
