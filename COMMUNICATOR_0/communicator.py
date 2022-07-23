@@ -82,11 +82,6 @@ player_default.setMedia(player_content_default)
 player_default.setVolume(100)
 
 # Images
-# server_public_white = './resources/image/globe_default.png'
-# server_public_yellow = './resources/image/globe_yellow.png'
-# server_public_amber = './resources/image/globe_amber.png'
-# server_public_green = './resources/image/globe_green.png'
-# server_public_off = './resources/image/globe_off.png'
 mute_0 = './resources/image/mute_0.png'
 mute_1 = './resources/image/mute_1.png'
 advanced_save_0 = './resources/image/advanced_save_0.png'
@@ -130,14 +125,13 @@ mechanize_timer_bool = False
 transmit_method = 'socket'
 use_address = 'default'
 address_mode = 'uplink_current_index'
-max_client_len = 16
-timer_message_list = []
-
+external_ip_address = ''
 gui_message = []
 uplink_addresses = []
 enum = []
-timer_message_threads = {}
-external_ip_address = ''
+mechanized_message_list = []
+mechanized_message_threads = {}
+max_client_len = 16
 
 COMMUNICATOR_SOCK = {
     "Unselected" : unpopulated,
@@ -640,8 +634,10 @@ class App(QMainWindow):
 
         def accept_only_address_book_function():
             global debug_message
-            debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.accept_only_address_book_function]')
             global accept_from_key
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.accept_only_address_book_function]')
+
+            # Set accept_from_key
             accept_from_key = 'address_book_only'
             debug_message.append('[' + str(datetime.datetime.now()) + '] [App.accept_only_address_book_function] setting accept_from_key: ' + str(accept_from_key))
 
@@ -653,8 +649,10 @@ class App(QMainWindow):
 
         def accept_all_function():
             global debug_message
-            debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.accept_all_function]')
             global accept_from_key
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.accept_all_function]')
+
+            # Set accept_from_key
             accept_from_key = 'accept_all'
             debug_message.append('[' + str(datetime.datetime.now()) + '] [App.accept_all_function] setting accept_from_key: ' + str(accept_from_key))
 
@@ -667,6 +665,7 @@ class App(QMainWindow):
         def server_accept_incoming_function():
             global debug_message
             debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.server_accept_incoming_function]')
+
             if self.server_accept_incoming_rule_box_0.currentText() == 'Allow from any address':
                 accept_all_function()
             elif self.server_accept_incoming_rule_box_0.currentText() == 'Only allow from address book':
@@ -675,7 +674,7 @@ class App(QMainWindow):
         def send_message_function():
             global debug_message
             debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.send_message_function]')
-            # global_self.setFocus()
+
             if self.dial_out_message.text() != '':
                 if dial_out_thread.isRunning() is True:
                     dial_out_thread.stop()
@@ -717,7 +716,6 @@ class App(QMainWindow):
                             with codecs.open('./communicator_address_book.txt', 'r', encoding='utf-8') as fo:
                                 for line in fo:
                                     line = line.strip()
-
                                     print('line:', line)
 
                                     # Create a list from the expected space delimited line and then check the line
@@ -773,7 +771,9 @@ class App(QMainWindow):
                                                 del compare_line_address
                                             except Exception as e:
                                                 print('e:', e)
-                                        elif line != '' and line_split[0] == 'TIMER_MESSAGE':
+
+                                        # Attempt to remove address book entries associated mechanized message
+                                        elif line != '' and line_split[0] == 'MECHANIZED_MESSAGE':
                                             if not line_split[1] == client_address[client_address_index][0]:
                                                 fo_list.append(line)
                                                 debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_remove_address] KEEPING LINE: ' + str(line))
@@ -1030,7 +1030,7 @@ class App(QMainWindow):
                                         if os.path.exists('./communicator_address_book.txt'):
                                             with open('./communicator_address_book.txt', 'a', encoding='utf-8') as fo:
                                                 fo.write(to_address_book + '\n')
-                                                fo.write(str('TIMER_MESSAGE ' + name_ + ' ' + transmit_message) + '\n')
+                                                fo.write(str('MECHANIZED_MESSAGE ' + name_ + ' ' + transmit_message) + '\n')
                                             fo.close()
                                     else:
                                         debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_save_address] entry will not be appended to the address book as something went wrong. try again.')
@@ -2048,7 +2048,7 @@ class App(QMainWindow):
             global address_mode
             global client_address
             global client_address_index
-            global timer_message_threads
+            global mechanized_message_threads
 
             debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.mechanized_timer_btn_function]')
 
@@ -2764,7 +2764,7 @@ class App(QMainWindow):
 
         self.gui_message = ''
 
-        dial_out_timer_thread = DialOutTimerThread(self.codec_select_box,
+        dial_out_timer_thread = MechanizedMessageHandlerClass(self.codec_select_box,
                                        self.communicator_socket_options_box_0,
                                        self.communicator_socket_options_box_1,
                                        self.communicator_socket_options_box_2,
@@ -2852,7 +2852,7 @@ class App(QMainWindow):
             gui_message.remove(gui_message_)
 
 
-class DialOutTimerMessageThread(QThread):
+class MechanizedMessageClass(QThread):
     def __init__(self, codec_select_box,
                  communicator_socket_options_box_0,
                  communicator_socket_options_box_1,
@@ -2874,43 +2874,41 @@ class DialOutTimerMessageThread(QThread):
         self.KEY = bytes()
         self.FINGERPRINT = ''
         self.MESSAGE_CONTENT = ''
-        self.timer_message_list_ = []
+        self.mechanized_message_list_ = []
         self.codec_ = ''
 
     def run(self):
         global debug_message
-        global timer_message_list
+        global mechanized_message_list
 
-        self.timer_message_list_ = timer_message_list[-1]
-        print('timer_message_list:', self.timer_message_list_)
-        print('timer_message_list len:', len(self.timer_message_list_))
-        print('timer_message_list_:', self.timer_message_list_)
+        self.mechanized_message_list_ = mechanized_message_list[-1]
+        print('mechanized_message_list:', self.mechanized_message_list_)
+        print('mechanized_message_list len:', len(self.mechanized_message_list_))
+        print('mechanized_message_list_:', self.mechanized_message_list_)
 
-        self.name_ = str(self.timer_message_list_[0])
-        self.timer_ = float(self.timer_message_list_[15])
-        self.message_ = str(self.timer_message_list_[-1])
+        self.name_ = str(self.mechanized_message_list_[0])
+        self.timer_ = float(self.mechanized_message_list_[15])
+        self.message_ = str(self.mechanized_message_list_[-1])
 
         if use_address == 'default':
-            self.HOST_SEND = self.timer_message_list_[1]
+            self.HOST_SEND = self.mechanized_message_list_[1]
         elif use_address == 'broadcast':
-            self.HOST_SEND = self.timer_message_list_[3]
+            self.HOST_SEND = self.mechanized_message_list_[3]
         elif use_address == 'mac':
-            self.HOST_SEND = self.timer_message_list_[4]
+            self.HOST_SEND = self.mechanized_message_list_[4]
 
-        self.PORT_SEND = self.timer_message_list_[2]
-        self.KEY = self.timer_message_list_[5]
-        self.FINGERPRINT = self.timer_message_list_[6]
+        self.PORT_SEND = self.mechanized_message_list_[2]
+        self.KEY = self.mechanized_message_list_[5]
+        self.FINGERPRINT = self.mechanized_message_list_[6]
         self.MESSAGE_CONTENT = self.message_
 
-        self.codec_ = self.timer_message_list_[7]
+        self.codec_ = self.mechanized_message_list_[7]
 
         while True:
             print('-' * 200)
             print('Name:', self.name_)
             print('To:', self.HOST_SEND)
             print('Port:', self.PORT_SEND)
-            # print('Key:', self.KEY)
-            # print('Fingerprint:', self.FINGERPRINT)
             print('Message:', self.MESSAGE_CONTENT)
             self.message_send()
             time.sleep(self.timer_)
@@ -2918,44 +2916,44 @@ class DialOutTimerMessageThread(QThread):
     def message_send(self):
         global debug_message
 
-        debug_message.append('[' + str(datetime.datetime.now()) + '] [DialOutTimerMessageThread.message_send] outgoing to: ' + str(self.HOST_SEND) + ':' + str(self.PORT_SEND))
+        debug_message.append('[' + str(datetime.datetime.now()) + '] [MechanizedMessageClass.message_send] outgoing to: ' + str(self.HOST_SEND) + ':' + str(self.PORT_SEND))
 
         try:
             data_response = ''
             if len(client_address[client_address_index]) >= max_client_len:
 
                 # Setup Socket
-                sok = socket.socket(COMMUNICATOR_SOCK.get(self.timer_message_list_[8]), COMMUNICATOR_SOCK.get(self.timer_message_list_[9]))
-                debug_message.append('[' + str(datetime.datetime.now()) + '] [DialOutTimerMessageThread.message_send] variably setting socket as: ' + str(sok))
+                sok = socket.socket(COMMUNICATOR_SOCK.get(self.mechanized_message_list_[8]), COMMUNICATOR_SOCK.get(self.mechanized_message_list_[9]))
+                debug_message.append('[' + str(datetime.datetime.now()) + '] [MechanizedMessageClass.message_send] variably setting socket as: ' + str(sok))
 
                 # Setup Socket Options
-                if self.timer_message_list_[10] != 'Unselected' and self.timer_message_list_[11] != 'Unselected':
-                    sok.setsockopt(COMMUNICATOR_SOCK.get(self.timer_message_list_[10]), COMMUNICATOR_SOCK.get(self.timer_message_list_[11]), 1)
-                    debug_message.append('[' + str(datetime.datetime.now()) + '] [DialOutClass.DialOutTimerMessageThread] variably setting socket options: ' + str(sok))
+                if self.mechanized_message_list_[10] != 'Unselected' and self.mechanized_message_list_[11] != 'Unselected':
+                    sok.setsockopt(COMMUNICATOR_SOCK.get(self.mechanized_message_list_[10]), COMMUNICATOR_SOCK.get(self.mechanized_message_list_[11]), 1)
+                    debug_message.append('[' + str(datetime.datetime.now()) + '] [DialOutClass.MechanizedMessageClass] variably setting socket options: ' + str(sok))
 
                 with sok as SOCKET_MECHANIZE:
 
-                    debug_message.append('[' + str(datetime.datetime.now()) + '] [DialOutTimerMessageThread.message_send] using address: ' + str(self.HOST_SEND))
+                    debug_message.append('[' + str(datetime.datetime.now()) + '] [MechanizedMessageClass.message_send] using address: ' + str(self.HOST_SEND))
                     SOCKET_MECHANIZE.connect((self.HOST_SEND, self.PORT_SEND))
 
                     if len(self.KEY) == 32 and len(self.FINGERPRINT) == 1024:
-                        debug_message.append('[' + str(datetime.datetime.now()) + '] [DialOutTimerMessageThread.message_send] handing message to AESCipher')
-                        debug_message.append('[' + str(datetime.datetime.now()) + '] [DialOutTimerMessageThread.message_send] using key: ' + str(self.KEY))
-                        debug_message.append('[' + str(datetime.datetime.now()) + '] [DialOutTimerMessageThread.message_send] using fingerprint: ' + str(self.FINGERPRINT))
+                        debug_message.append('[' + str(datetime.datetime.now()) + '] [MechanizedMessageClass.message_send] handing message to AESCipher')
+                        debug_message.append('[' + str(datetime.datetime.now()) + '] [MechanizedMessageClass.message_send] using key: ' + str(self.KEY))
+                        debug_message.append('[' + str(datetime.datetime.now()) + '] [MechanizedMessageClass.message_send] using fingerprint: ' + str(self.FINGERPRINT))
                         cipher = AESCipher(self.KEY)
                         ciphertext = cipher.encrypt(str(self.FINGERPRINT) + self.MESSAGE_CONTENT)
-                        debug_message.append('[' + str(datetime.datetime.now()) + '] [DialOutTimerMessageThread.message_send] ciphertext: ' + str((ciphertext)))
+                        debug_message.append('[' + str(datetime.datetime.now()) + '] [MechanizedMessageClass.message_send] ciphertext: ' + str((ciphertext)))
                         textbox_0_messages.append('[' + str(datetime.datetime.now()) + '] [SENDING ENCRYPTED] [' + str(self.HOST_SEND) + ':' + str(self.PORT_SEND) + ']')
                     else:
                         ciphertext = bytes(self.MESSAGE_CONTENT, self.codec_)
                         textbox_0_messages.append('[' + str(datetime.datetime.now()) + '] [SENDING UNENCRYPTED] [' + str(self.HOST_SEND) + ':' + str(self.PORT_SEND) + ']')
 
-                    debug_message.append('[' + str(datetime.datetime.now()) + '] [DialOutTimerMessageThread.message_send] attempting to send ciphertext')
+                    debug_message.append('[' + str(datetime.datetime.now()) + '] [MechanizedMessageClass.message_send] attempting to send ciphertext')
 
                     SOCKET_MECHANIZE.send(ciphertext)
                     SOCKET_MECHANIZE.settimeout(1)
 
-                    debug_message.append('[' + str(datetime.datetime.now()) + '] [DialOutTimerMessageThread.message_send] waiting for response from recipient')
+                    debug_message.append('[' + str(datetime.datetime.now()) + '] [MechanizedMessageClass.message_send] waiting for response from recipient')
 
                     try:
                         data_response = ''
@@ -2965,7 +2963,7 @@ class DialOutTimerMessageThread(QThread):
                             data_response = SOCKET_MECHANIZE.recv(4096)
 
                     except Exception as e:
-                        debug_message.append('[' + str(datetime.datetime.now()) + '] [DialOutTimerMessageThread.message_send] ' + str(e))
+                        debug_message.append('[' + str(datetime.datetime.now()) + '] [MechanizedMessageClass.message_send] ' + str(e))
                         self.data = '[' + str(datetime.datetime.now()) + '] [EXCEPTION HANDLED DURING WAITING FOR RESPONSE] [' + str(self.HOST_SEND) + ':' + str(self.PORT_SEND) + ']'
                         textbox_0_messages.append(self.data)
 
@@ -2973,25 +2971,25 @@ class DialOutTimerMessageThread(QThread):
                     self.data = '[' + str(datetime.datetime.now()) + '] [DELIVERY CONFIRMATION] [' + str(self.HOST_SEND) + ':' + str(self.PORT_SEND) + ']'
                     textbox_0_messages.append(self.data)
 
-                    debug_message.append('[' + str(datetime.datetime.now()) + '] [DialOutTimerMessageThread.message_send] response from recipient equals ciphertext: ' + str(data_response))
+                    debug_message.append('[' + str(datetime.datetime.now()) + '] [MechanizedMessageClass.message_send] response from recipient equals ciphertext: ' + str(data_response))
 
                 else:
                     self.data = '[' + str(datetime.datetime.now()) + '] [RESPONSE] [' + str(self.HOST_SEND) + ':' + str(self.PORT_SEND) + '] ' + str(data_response)
                     textbox_0_messages.append(self.data)
-                    debug_message.append('[' + str(datetime.datetime.now()) + '] [DialOutTimerMessageThread.message_send] [RESPONSE] [' + str(self.HOST_SEND) + ':' + str(self.PORT_SEND) + '] ' + str(data_response))
+                    debug_message.append('[' + str(datetime.datetime.now()) + '] [MechanizedMessageClass.message_send] [RESPONSE] [' + str(self.HOST_SEND) + ':' + str(self.PORT_SEND) + '] ' + str(data_response))
 
         except Exception as e:
             self.data = '[' + str(datetime.datetime.now()) + '] [EXCEPTION] [' + str(self.HOST_SEND) + ':' + str(self.PORT_SEND) + '] ' + str(e)
             textbox_0_messages.append(self.data)
-            debug_message.append('[' + str(datetime.datetime.now()) + '] [DialOutTimerMessageThread.message_send] [EXCEPTION] [' + str(self.HOST_SEND) + ':' + str(self.PORT_SEND) + '] ' + str(e))
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [MechanizedMessageClass.message_send] [EXCEPTION] [' + str(self.HOST_SEND) + ':' + str(self.PORT_SEND) + '] ' + str(e))
 
     def stop(self):
         global debug_message
-        debug_message.append('[' + str(datetime.datetime.now()) + '] [Terminating Thread] [DialOutTimerMessageThread.stop]')
+        debug_message.append('[' + str(datetime.datetime.now()) + '] [Terminating Thread] [MechanizedMessageClass.stop]')
         self.terminate()
 
 
-class DialOutTimerThread(QThread):
+class MechanizedMessageHandlerClass(QThread):
     def __init__(self, codec_select_box,
                  communicator_socket_options_box_0,
                  communicator_socket_options_box_1,
@@ -3007,39 +3005,39 @@ class DialOutTimerThread(QThread):
 
     def run(self):
         global debug_message
-        global timer_message_list
-        global timer_message_threads
-        debug_message.append('[' + str(datetime.datetime.now()) + '] [Starting Thread] [DialOutTimerThread.run]')
+        global mechanized_message_list
+        global mechanized_message_threads
+        debug_message.append('[' + str(datetime.datetime.now()) + '] [Starting Thread] [MechanizedMessageHandlerClass.run]')
         time.sleep(5)
         while True:
             for _ in client_address:
                 if str(_[14]) == 'True':
-                    if _ not in timer_message_list:
-                        timer_message_list.append(_)
-                        debug_message.append('[' + str(datetime.datetime.now()) + '] [DialOutTimerThread.run] timer message enabled for: ' + str(_))
-                        thread_timer_message = DialOutTimerMessageThread(self.codec_select_box,
+                    if _ not in mechanized_message_list:
+                        mechanized_message_list.append(_)
+                        debug_message.append('[' + str(datetime.datetime.now()) + '] [MechanizedMessageHandlerClass.run] timer message enabled for: ' + str(_))
+                        thread_mechanized_message = MechanizedMessageClass(self.codec_select_box,
                                                                          self.communicator_socket_options_box_0,
                                                                          self.communicator_socket_options_box_1,
                                                                          self.communicator_socket_options_box_2,
                                                                          self.communicator_socket_options_box_3)
-                        timer_message_threads[_[0]] = thread_timer_message
-                        print('timer_message_threads:', timer_message_threads)
-                        print('timer_message_threads len:', len(timer_message_threads))
-                        thread_timer_message.start()
+                        mechanized_message_threads[_[0]] = thread_mechanized_message
+                        print('mechanized_message_threads:', mechanized_message_threads)
+                        print('mechanized_message_threads len:', len(mechanized_message_threads))
+                        thread_mechanized_message.start()
 
                 elif str(_[14]) == 'False':
-                    if _ in timer_message_list:
+                    if _ in mechanized_message_list:
                         print('changed to False:', _)
-                        timer_message_list.remove(_)
-                        print('timer_message_threads before change:', timer_message_threads)
-                        timer_message_threads[_[0]].stop()
-                        timer_message_threads.pop(_[0])
-                        print('timer_message_threads after change:', timer_message_threads)
+                        mechanized_message_list.remove(_)
+                        print('mechanized_message_threads before change:', mechanized_message_threads)
+                        mechanized_message_threads[_[0]].stop()
+                        mechanized_message_threads.pop(_[0])
+                        print('mechanized_message_threads after change:', mechanized_message_threads)
             time.sleep(1)
     
     def stop(self):
         global debug_message
-        debug_message.append('[' + str(datetime.datetime.now()) + '] [Terminating Thread] [DialOutTimerThread.stop]')
+        debug_message.append('[' + str(datetime.datetime.now()) + '] [Terminating Thread] [MechanizedMessageHandlerClass.stop]')
         self.terminate()
 
 
@@ -3538,7 +3536,7 @@ class ConfigurationClass(QThread):
                         client_address.append([str(line[1]), str(line[2]), line_3, str(line[4]), str(line[5]), bytes(line[6], 'utf-8'), str(line[7]), str(line[8]), str(line[9]), str(line[10]), str(line[11]), str(line[12]), str(line[13]), str(line[14]), str(line[15]), float(line[16])])
                         debug_message.append('[' + str(datetime.datetime.now()) + '] [ConfigurationClass.run] entry: ' + str(client_address[-1]))
 
-                elif str(line[0]) == 'TIMER_MESSAGE':
+                elif str(line[0]) == 'MECHANIZED_MESSAGE':
                     if len(line) >= 2:
                         print(line)
                         for _ in client_address:
