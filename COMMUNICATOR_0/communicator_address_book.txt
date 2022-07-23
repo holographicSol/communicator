@@ -1,8 +1,8 @@
 DATA Toshiba 192.168.1.15 55555 192.168.1.255 70:54:B4:84:20:FE x x utf_16 AF_INET SOCK_DGRAM SOL_SOCKET SO_BROADCAST False broadcast False 2.0
-TIMER_MESSAGE Toshiba ￿￿￿呰蒴︠呰蒴︠呰蒴︠呰蒴︠呰蒴︠呰蒴︠呰蒴︠呰蒴︠呰蒴︠呰蒴︠呰蒴︠呰蒴︠呰蒴︠呰蒴︠呰蒴︠呰蒴︠
+MECHANIZED_MESSAGE Toshiba ￿￿￿呰蒴︠呰蒴︠呰蒴︠呰蒴︠呰蒴︠呰蒴︠呰蒴︠呰蒴︠呰蒴︠呰蒴︠呰蒴︠呰蒴︠呰蒴︠呰蒴︠呰蒴︠呰蒴︠
 DATA SuperOmegaSpaceRay 192.168.1.11 55555 x x YSWNfHt|{Yew&T`TY!>fmOBn`[qz}U=[ ./fingerprints/SuperOmegaSpaceRay.txt utf_8 AF_INET SOCK_STREAM Unselected Unselected False default False 10.0
-TIMER_MESSAGE SuperOmegaSpaceRay any message
+MECHANIZED_MESSAGE SuperOmegaSpaceRay any message
 DATA SuperMegaCatRobot 192.168.1.11 55555 x x x x utf_8 AF_INET SOCK_STREAM Unselected Unselected False default False 5.0
-TIMER_MESSAGE SuperMegaCatRobot hello world!
+MECHANIZED_MESSAGE SuperMegaCatRobot hello world!
 DATA mechanized_0 192.168.1.11 55555 x x AZW)j.%;:ODYgqkx:,vgv%}`eCb&yPdS ./fingerprints/mechanized_00.txt utf_8 AF_INET SOCK_STREAM Unselected Unselected False default False 5.0
-TIMER_MESSAGE mechanized_0 mechanized message
+MECHANIZED_MESSAGE mechanized_0 mechanized message
