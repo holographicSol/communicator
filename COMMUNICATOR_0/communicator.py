@@ -607,6 +607,37 @@ class App(QMainWindow):
         self.key_string = ''
         self.fingerprint_str = ''
 
+        def disable_address_book_0():
+            self.dial_out_name.setEnabled(False)
+            self.dial_out_ip_port.setEnabled(False)
+            self.address_book_port.setEnabled(False)
+            self.address_book_broadcast.setEnabled(False)
+            self.address_book_mac.setEnabled(False)
+            self.address_key.setEnabled(False)
+            self.generate_key.setEnabled(False)
+            self.generate_fingerprint.setEnabled(False)
+
+        def enable_address_book_0():
+            self.dial_out_name.setEnabled(True)
+            self.dial_out_ip_port.setEnabled(True)
+            self.address_book_port.setEnabled(True)
+            self.address_book_broadcast.setEnabled(True)
+            self.address_book_mac.setEnabled(True)
+            self.address_key.setEnabled(True)
+            self.generate_key.setEnabled(True)
+            self.generate_fingerprint.setEnabled(True)
+
+        def style_0():
+            self.address_book_label.setStyleSheet(title_stylesheet_default)
+            self.dial_out_name.setStyleSheet(line_edit_stylesheet_white_text)
+            self.dial_out_ip_port.setStyleSheet(line_edit_stylesheet_white_text)
+            self.address_book_port.setStyleSheet(line_edit_stylesheet_white_text)
+            self.address_book_broadcast.setStyleSheet(line_edit_stylesheet_white_text)
+            self.address_book_mac.setStyleSheet(line_edit_stylesheet_white_text)
+            self.address_key.setStyleSheet(line_edit_stylesheet_white_text)
+            self.generate_key.setStyleSheet(button_stylesheet_white_text_low)
+            self.generate_fingerprint.setStyleSheet(button_stylesheet_white_text_low)
+
         def accept_only_address_book_function():
             global debug_message
             debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.accept_only_address_book_function]')
@@ -771,25 +802,10 @@ class App(QMainWindow):
                                 client_next_address_function()
 
             address_mode = 'uplink_current_index'
-            self.address_book_label.setStyleSheet(title_stylesheet_default)
-            self.dial_out_name.setEnabled(False)
-            self.dial_out_ip_port.setEnabled(False)
-            self.address_book_port.setEnabled(False)
-            self.address_book_broadcast.setEnabled(False)
-            self.address_book_mac.setEnabled(False)
-            self.address_key.setEnabled(False)
-            self.tb_fingerprint.setEnabled(False)
-            self.generate_key.setEnabled(False)
-            self.generate_fingerprint.setEnabled(False)
 
-            self.dial_out_name.setStyleSheet(line_edit_stylesheet_white_text)
-            self.dial_out_ip_port.setStyleSheet(line_edit_stylesheet_white_text)
-            self.address_book_port.setStyleSheet(line_edit_stylesheet_white_text)
-            self.address_book_broadcast.setStyleSheet(line_edit_stylesheet_white_text)
-            self.address_book_mac.setStyleSheet(line_edit_stylesheet_white_text)
-            self.address_key.setStyleSheet(line_edit_stylesheet_white_text)
-            self.generate_key.setStyleSheet(button_stylesheet_white_text_low)
-            self.generate_fingerprint.setStyleSheet(button_stylesheet_white_text_low)
+            disable_address_book_0()
+
+            style_0()
 
             write_client_configuration_engaged = False
 
@@ -1041,25 +1057,10 @@ class App(QMainWindow):
                 self.dial_out_cipher_bool_btn.setEnabled(True)
 
             address_mode = 'uplink_current_index'
-            self.address_book_label.setStyleSheet(title_stylesheet_default)
-            self.dial_out_name.setEnabled(False)
-            self.dial_out_ip_port.setEnabled(False)
-            self.address_book_port.setEnabled(False)
-            self.address_book_broadcast.setEnabled(False)
-            self.address_book_mac.setEnabled(False)
-            self.address_key.setEnabled(False)
-            self.tb_fingerprint.setEnabled(False)
-            self.generate_key.setEnabled(False)
-            self.generate_fingerprint.setEnabled(False)
 
-            self.dial_out_name.setStyleSheet(line_edit_stylesheet_white_text)
-            self.dial_out_ip_port.setStyleSheet(line_edit_stylesheet_white_text)
-            self.address_book_port.setStyleSheet(line_edit_stylesheet_white_text)
-            self.address_book_broadcast.setStyleSheet(line_edit_stylesheet_white_text)
-            self.address_book_mac.setStyleSheet(line_edit_stylesheet_white_text)
-            self.address_key.setStyleSheet(line_edit_stylesheet_white_text)
-            self.generate_key.setStyleSheet(button_stylesheet_white_text_low)
-            self.generate_fingerprint.setStyleSheet(button_stylesheet_white_text_low)
+            disable_address_book_0()
+
+            style_0()
 
             client_previous_address_function()
             client_next_address_function()
@@ -1179,24 +1180,11 @@ class App(QMainWindow):
             self.tb_fingerprint.setText('')
 
             address_mode = 'uplink_current_index'
-            self.address_book_label.setStyleSheet(title_stylesheet_default)
 
-            self.dial_out_name.setEnabled(False)
-            self.dial_out_ip_port.setEnabled(False)
-            self.address_book_port.setEnabled(False)
-            self.address_book_broadcast.setEnabled(False)
-            self.address_book_mac.setEnabled(False)
-            self.address_key.setEnabled(False)
-            self.tb_fingerprint.setEnabled(False)
-            self.generate_key.setEnabled(False)
-            self.generate_fingerprint.setEnabled(False)
+            disable_address_book_0()
 
             # todo
-            self.dial_out_name.setStyleSheet(line_edit_stylesheet_white_text)
-            self.dial_out_ip_port.setStyleSheet(line_edit_stylesheet_white_text)
-            self.address_book_port.setStyleSheet(line_edit_stylesheet_white_text)
-            self.address_book_broadcast.setStyleSheet(line_edit_stylesheet_white_text)
-            self.address_book_mac.setStyleSheet(line_edit_stylesheet_white_text)
+            style_0()
 
             # Set Index
             debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_previous_address_function] len(client_address): ' + str(len(client_address)))
@@ -1294,23 +1282,11 @@ class App(QMainWindow):
             self.tb_fingerprint.setText('')
 
             address_mode = 'uplink_current_index'
-            self.address_book_label.setStyleSheet(title_stylesheet_default)
-            self.dial_out_name.setEnabled(False)
-            self.dial_out_ip_port.setEnabled(False)
-            self.address_book_port.setEnabled(False)
-            self.address_book_broadcast.setEnabled(False)
-            self.address_book_mac.setEnabled(False)
-            self.address_key.setEnabled(False)
-            self.tb_fingerprint.setEnabled(False)
-            self.generate_key.setEnabled(False)
-            self.generate_fingerprint.setEnabled(False)
+
+            disable_address_book_0()
 
             # todo
-            self.dial_out_name.setStyleSheet(line_edit_stylesheet_white_text)
-            self.dial_out_ip_port.setStyleSheet(line_edit_stylesheet_white_text)
-            self.address_book_port.setStyleSheet(line_edit_stylesheet_white_text)
-            self.address_book_broadcast.setStyleSheet(line_edit_stylesheet_white_text)
-            self.address_book_mac.setStyleSheet(line_edit_stylesheet_white_text)
+            style_0()
 
             debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_next_address_function] len(client_address): ' + str(len(client_address)))
             if len(client_address) > 0:
@@ -1805,6 +1781,8 @@ class App(QMainWindow):
             self.address_key.setText('')
             self.tb_fingerprint.setText('')
             self.transmit_display_address.setText('')
+            self.mechanized_timer_edit.setText('')
+            self.mechanized_timer_message_edit.setText('')
             self.codec_select_box.setCurrentIndex(0)
             self.communicator_socket_options_box_0.setCurrentIndex(0)
             self.communicator_socket_options_box_1.setCurrentIndex(0)
@@ -1814,15 +1792,7 @@ class App(QMainWindow):
             address_mode = 'save_mode'
             bool_address_uplink = False
 
-            self.dial_out_name.setEnabled(True)
-            self.dial_out_ip_port.setEnabled(True)
-            self.address_book_port.setEnabled(True)
-            self.address_book_broadcast.setEnabled(True)
-            self.address_book_mac.setEnabled(True)
-            self.address_key.setEnabled(True)
-            self.tb_fingerprint.setEnabled(True)
-            self.generate_key.setEnabled(True)
-            self.generate_fingerprint.setEnabled(True)
+            enable_address_book_0()
 
             self.dial_out_name.setStyleSheet(line_edit_stylesheet_is_enabled)
             self.dial_out_ip_port.setStyleSheet(line_edit_stylesheet_is_enabled)
@@ -1834,36 +1804,13 @@ class App(QMainWindow):
             global debug_message
             global address_mode
             debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.address_undo_form_function]')
-            self.address_book_label.setStyleSheet(title_stylesheet_default)
             client_previous_address_function()
             client_next_address_function()
             address_mode = 'uplink_current_index'
 
-            self.dial_out_name.setEnabled(False)
-            self.dial_out_ip_port.setEnabled(False)
-            self.address_book_port.setEnabled(False)
-            self.address_book_broadcast.setEnabled(False)
-            self.address_book_mac.setEnabled(False)
-            self.address_key.setEnabled(False)
-            self.tb_fingerprint.setEnabled(False)
-            self.generate_key.setEnabled(False)
-            self.generate_fingerprint.setEnabled(False)
+            disable_address_book_0()
 
-            self.dial_out_name.setStyleSheet(line_edit_stylesheet_white_text)
-            self.dial_out_ip_port.setStyleSheet(line_edit_stylesheet_white_text)
-            self.address_book_port.setStyleSheet(line_edit_stylesheet_white_text)
-            self.address_book_broadcast.setStyleSheet(line_edit_stylesheet_white_text)
-            self.address_book_mac.setStyleSheet(line_edit_stylesheet_white_text)
-
-            # self.dial_out_encoding.setStyleSheet(button_stylesheet_white_text_high)
-            # self.dial_out_family_type.setStyleSheet(label_stylesheet_black_bg_text_white)
-            # self.dial_out_socket_type.setStyleSheet(label_stylesheet_black_bg_text_white)
-            # self.bool_socket_options_btn.setStyleSheet(button_stylesheet_white_text_high)
-
-            # self.address_key.setStyleSheet(line_edit_stylesheet_white_text)
-            # self.tb_fingerprint.setStyleSheet(textbox_stylesheet_black_bg)
-            # self.generate_key.setStyleSheet(button_stylesheet_white_text_low)
-            # self.generate_fingerprint.setStyleSheet(button_stylesheet_white_text_low)
+            style_0()
 
         def address_clear_form_sensitive_function():
             global debug_message
