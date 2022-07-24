@@ -26,6 +26,7 @@ import fileinput
 import upnpclient
 import codecs
 from requests import get
+from importlib import reload
 
 enc = ['ascii', 'base64_codec', 'big5', 'big5hkscs', 'bz2_codec', 'cp037', 'cp1026', 'cp1125', 'cp1140',
                'cp1250', 'cp1251', 'cp1252', 'cp1253', 'cp1254', 'cp1255', 'cp1256', 'cp1257', 'cp1258', 'cp273',
@@ -76,6 +77,7 @@ debug_message = []
 cipher_message_count = 0
 alien_message_count = 0
 soft_block_ip_count = 0
+enable_power_decode_bool = False
 
 # Files
 server_log = './log/server_log.txt'
@@ -2088,6 +2090,38 @@ class App(QMainWindow):
             global client_address_index
             print(client_address[client_address_index])
 
+        def power_decode_mode_function():
+            global debug_message
+            global enable_power_decode_bool
+
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.power_decode_mode_function]')
+
+            if self.power_decode_mode_box.currentText() == 'Disabled':
+                enable_power_decode_bool = False
+                self.power_decode_bytes_str_lbl.hide()
+                self.power_decode_bytes_str.hide()
+
+            elif self.power_decode_mode_box.currentText() == 'Enabled':
+                enable_power_decode_bool = True
+                self.power_decode_bytes_str_lbl.hide()
+                self.power_decode_bytes_str.hide()
+
+            elif self.power_decode_mode_box.currentText() == 'Specific':
+                enable_power_decode_bool = False
+
+                self.power_decode_bytes_str_lbl.show()
+                self.power_decode_bytes_str.show()
+
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [App.power_decode_mode_function] setting enable_power_decode_bool: ' + str(enable_power_decode_bool))
+
+        def power_decode_bytes_str_function():
+            global debug_message
+
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.power_decode_bytes_str_function]')
+            if power_decode_thread.isRunning():
+                power_decode_thread.stop()
+            power_decode_thread.start()
+
         # Window Title
         self.title = "Communicator"
         self.setWindowTitle('Communicator')
@@ -2288,6 +2322,42 @@ class App(QMainWindow):
         self.obtain_external_ip_box_0.addItem('UPNP')
         self.obtain_external_ip_box_0.addItem('Use external service')
         self.obtain_external_ip_box_0.currentIndexChanged.connect(obtain_external_ip_function)
+
+        self.power_decode_mode = QLabel(self)
+        self.power_decode_mode.move(28, self.server_staple + 24 + 24 + 24)
+        self.power_decode_mode.resize(self.btn_120, int(self.btn_40 / 2))
+        self.power_decode_mode.setFont(self.font_s7b)
+        self.power_decode_mode.setText('POWER DECODE')
+        self.power_decode_mode.setAlignment(Qt.AlignCenter)
+        self.power_decode_mode.setStyleSheet(label_stylesheet_black_bg_text_white)
+
+        self.power_decode_mode_box = QComboBox(self)
+        self.power_decode_mode_box.move(28 + self.btn_120 + 4, self.server_staple + 24 + 24 + 24)
+        self.power_decode_mode_box.resize(186, 20)
+        self.power_decode_mode_box.setStyleSheet(cmb_menu_style)
+        self.power_decode_mode_box.setFont(self.font_s7b)
+        self.power_decode_mode_box.addItem('Disabled')
+        self.power_decode_mode_box.addItem('Enabled')
+        self.power_decode_mode_box.addItem('Specific')
+        self.power_decode_mode_box.currentIndexChanged.connect(power_decode_mode_function)
+
+        self.power_decode_bytes_str_lbl = QLabel(self)
+        self.power_decode_bytes_str_lbl.move(28, self.server_staple + 24 + 24 + 24 + 24)
+        self.power_decode_bytes_str_lbl.resize(self.btn_120, int(self.btn_40 / 2))
+        self.power_decode_bytes_str_lbl.setFont(self.font_s7b)
+        self.power_decode_bytes_str_lbl.setText('BYTES STRING')
+        self.power_decode_bytes_str_lbl.setAlignment(Qt.AlignCenter)
+        self.power_decode_bytes_str_lbl.setStyleSheet(label_stylesheet_black_bg_text_white)
+        self.power_decode_bytes_str_lbl.hide()
+
+        self.power_decode_bytes_str = QLineEdit(self)
+        self.power_decode_bytes_str.move(28 + self.btn_120 + 4, self.server_staple + 24 + 24 + 24 + 24)
+        self.power_decode_bytes_str.resize(self.btn_120, 20)
+        self.power_decode_bytes_str.setFont(self.font_s7b)
+        self.power_decode_bytes_str.setText('')
+        self.power_decode_bytes_str.setStyleSheet(line_edit_stylesheet_white_text)
+        self.power_decode_bytes_str.returnPressed.connect(power_decode_bytes_str_function)
+        self.power_decode_bytes_str.hide()
 
         # ##########################################################################################################
 
@@ -2698,6 +2768,9 @@ class App(QMainWindow):
         get_external_ip_thread = GetExternalIPClass(self.external_ip_label)
         uplink_thread = UplinkClass()
 
+        # Thread Power Decode
+        power_decode_thread = PowerDecode(self.power_decode_bytes_str)
+
         # Thread - Configuration
         configuration_thread_ = ConfigurationClass()
         configuration_thread.append(configuration_thread_)
@@ -2784,10 +2857,10 @@ class App(QMainWindow):
         self.gui_message = ''
 
         dial_out_timer_thread = MechanizedMessageHandlerClass(self.codec_select_box,
-                                       self.communicator_socket_options_box_0,
-                                       self.communicator_socket_options_box_1,
-                                       self.communicator_socket_options_box_2,
-                                       self.communicator_socket_options_box_3)
+                                                              self.communicator_socket_options_box_0,
+                                                              self.communicator_socket_options_box_1,
+                                                              self.communicator_socket_options_box_2,
+                                                              self.communicator_socket_options_box_3)
 
         dial_out_timer_thread.start()
 
@@ -2881,6 +2954,49 @@ class App(QMainWindow):
                 self.address_book_broadcast.setStyleSheet(line_edit_stylesheet_green_bg_black_text)
                 self.address_book_mac.setStyleSheet(line_edit_stylesheet_green_bg_black_text)
             gui_message.remove(gui_message_)
+
+
+class PowerDecode(QThread):
+    def __init__(self, power_decode_bytes_str):
+        QThread.__init__(self)
+
+        self.power_decode_bytes_str = power_decode_bytes_str
+
+    def run(self):
+        global debug_message
+        global textbox_1_messages
+
+        debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.power_decode_bytes_str_function]')
+
+        my_bytes = ''
+
+        # Example of a pre crafted magic packet -->
+        # \xff\xff\xff\xff\xff\xffpT\xb4\x84 \xfepT\xb4\x84 \xfepT\xb4\x84 \xfepT\xb4\x84 \xfepT\xb4\x84 \xfepT\xb4\x84 \xfepT\xb4\x84 \xfepT\xb4\x84 \xfepT\xb4\x84 \xfepT\xb4\x84 \xfepT\xb4\x84 \xfepT\xb4\x84 \xfepT\xb4\x84 \xfepT\xb4\x84 \xfepT\xb4\x84 \xfepT\xb4\x84 \xfe
+        # Which should look correct in utf-16 -->
+        # ￿￿￿呰蒴︠呰蒴︠呰蒴︠呰蒴︠呰蒴︠呰蒴︠呰蒴︠呰蒴︠呰蒴︠呰蒴︠呰蒴︠呰蒴︠呰蒴︠呰蒴︠呰蒴︠呰蒴︠
+
+        str_ = self.power_decode_bytes_str.text()
+        with open('make_a_byte_string.py', 'w') as fo:
+            fo.write('my_bytes = b"' + str_ + '"')
+        fo.close()
+
+        import make_a_byte_string
+        reload(make_a_byte_string)
+        from make_a_byte_string import my_bytes
+
+        print('my_bytes:', my_bytes)
+        print('[ATTEMPT DECODE]', my_bytes)
+        for _ in enc:
+            try:
+                decoded = my_bytes.decode(_)
+                print(f'-- {_}:', decoded)
+                textbox_1_messages.append('[' + str(_) + '] ' + str(decoded))
+            except Exception as e:
+                print(e)
+        print('[DECODE END]')
+
+    def stop(self):
+        self.terminate()
 
 
 class MechanizedMessageClass(QThread):
@@ -3721,6 +3837,7 @@ class DialOutClass(QThread):
         global bool_socket_options
         global max_client_len
         global textbox_1_messages
+        global enable_power_decode_bool
 
         debug_message.append('[' + str(datetime.datetime.now()) + '] [DialOutClass.message_send] outgoing to: ' + str(self.HOST_SEND) + ':' + str(self.PORT_SEND))
 
@@ -3798,14 +3915,15 @@ class DialOutClass(QThread):
                     time.sleep(1)
                     self.dial_out_message_send.setIcon(QIcon(send_white))
 
-                print('[ATTEMPT DECODE]', data_response)
-                for _ in enc:
-                    try:
-                        decoded = data_response.decode(_)
-                        print(f'-- {_}:', decoded)
-                        textbox_1_messages.append('[' + str(datetime.datetime.now()) + '] [' + str(self.HOST_SEND) + ':' + str(self.PORT_SEND) + '] [' + str(_) + '] ' + str(decoded))
-                    except:
-                        pass
+                if enable_power_decode_bool is True:
+                    print('[ATTEMPT DECODE]', data_response)
+                    for _ in enc:
+                        try:
+                            decoded = data_response.decode(_)
+                            print(f'-- {_}:', decoded)
+                            textbox_1_messages.append('[' + str(datetime.datetime.now()) + '] [' + str(self.HOST_SEND) + ':' + str(self.PORT_SEND) + '] [' + str(_) + '] ' + str(decoded))
+                        except:
+                            pass
 
         except Exception as e:
             self.data = '[' + str(datetime.datetime.now()) + '] [EXCEPTION] [' + str(self.HOST_SEND) + ':' + str(self.PORT_SEND) + '] ' + str(e)
@@ -3871,6 +3989,7 @@ class ServerDataHandlerClass(QThread):
         global server_address_messages
         global cipher_message_count
         global alien_message_count
+        global enable_power_decode_bool
 
         while True:
             try:
@@ -3882,15 +4001,16 @@ class ServerDataHandlerClass(QThread):
                         ciphertext = self.server_data_0[i_0]
                         addr_data = server_address_messages[i_0]
 
-                        print('[ATTEMPT DECODE]', server_messages[0])
-                        for _ in enc:
-                            try:
-                                decoded = ciphertext.decode(_)
-                                print(f'-- {_}:', decoded)
-                                textbox_1_messages.append('[' + str(datetime.datetime.now()) + '] [' + addr_data + '] [' + str(_) + '] ' + str(decoded))
-                            except:
-                                pass
-                        print('[DECODE END]')
+                        if enable_power_decode_bool is True:
+                            print('[ATTEMPT DECODE]', server_messages[0])
+                            for _ in enc:
+                                try:
+                                    decoded = ciphertext.decode(_)
+                                    print(f'-- {_}:', decoded)
+                                    textbox_1_messages.append('[' + str(datetime.datetime.now()) + '] [' + addr_data + '] [' + str(_) + '] ' + str(decoded))
+                                except:
+                                    pass
+                            print('[DECODE END]')
 
                         # remove currently iterated over item from server_messages to keep the list low and performance high
                         server_messages.remove(ciphertext)
@@ -4039,8 +4159,6 @@ class ServerClass(QThread):
         global soft_block_ip_count
 
         global accept_from_key
-
-        global textbox_1_messages
 
         debug_message.append('[' + str(datetime.datetime.now()) + '] [ServerClass.listen] SERVER_HOST: ' + str(self.SERVER_HOST))
         debug_message.append('[' + str(datetime.datetime.now()) + '] [ServerClass.listen] SERVER_PORT: ' + str(self.SERVER_PORT))
