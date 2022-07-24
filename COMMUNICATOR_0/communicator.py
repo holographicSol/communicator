@@ -27,6 +27,19 @@ import upnpclient
 import codecs
 from requests import get
 
+enc = ['ascii', 'base64_codec', 'big5', 'big5hkscs', 'bz2_codec', 'cp037', 'cp1026', 'cp1125', 'cp1140',
+               'cp1250', 'cp1251', 'cp1252', 'cp1253', 'cp1254', 'cp1255', 'cp1256', 'cp1257', 'cp1258', 'cp273',
+               'cp424', 'cp437', 'cp500', 'cp775', 'cp850', 'cp852', 'cp855', 'cp857', 'cp858', 'cp860', 'cp861',
+               'cp862', 'cp863', 'cp864', 'cp865', 'cp866', 'cp869', 'cp932', 'cp949', 'cp950', 'euc_jis_2004',
+               'euc_jisx0213', 'euc_jp', 'euc_kr', 'gb18030', 'gb2312', 'gbk', 'hex_codec', 'hp_roman8', 'hz',
+               'iso2022_jp', 'iso2022_jp_1', 'iso2022_jp_2', 'iso2022_jp_2004', 'iso2022_jp_3', 'iso2022_jp_ext',
+               'iso2022_kr', 'iso8859_10', 'iso8859_11', 'iso8859_13', 'iso8859_14', 'iso8859_15', 'iso8859_16',
+               'iso8859_2', 'iso8859_3', 'iso8859_4', 'iso8859_5', 'iso8859_6', 'iso8859_7', 'iso8859_8', 'iso8859_9',
+               'johab', 'koi8_r', 'kz1048', 'latin_1', 'mac_cyrillic', 'mac_greek', 'mac_iceland', 'mac_latin2',
+               'mac_roman', 'mac_turkish', 'mbcs', 'ptcp154', 'quopri_codec', 'rot_13', 'shift_jis', 'shift_jis_2004',
+               'shift_jisx0213', 'tis_620', 'utf_16', 'utf_16_be', 'utf_16_le', 'utf_32', 'utf_32_be', 'utf_32_le',
+               'utf_7', 'utf_8', 'uu_codec', 'zlib_codec']
+
 # Threads
 configuration_thread = []
 
@@ -45,6 +58,7 @@ client_address = []
 server_address_index = 0
 client_address_index = 0
 address_save_mode = 'basic'
+max_client_len = 16
 
 # Soft Blocking Variables
 x_time = round(time.time() * 1000)
@@ -53,13 +67,10 @@ prev_addr = []
 soft_block_ip = []
 violation_count = []
 
-# Uplinking
-devices = []
-rety_uplink = []
-
-# textbox_0_Messages
+# Messages
 server_messages = []
 textbox_0_messages = []
+textbox_1_messages = []
 server_address_messages = []
 debug_message = []
 cipher_message_count = 0
@@ -109,7 +120,6 @@ bool_dial_out_override = False
 server_save_bool = False
 address_reveal_bool = False
 bool_socket_options = False
-accept_from_key = ''
 unpopulated = None
 uplink_enum_bool = False
 uplink_enable_bool = False
@@ -118,175 +128,179 @@ bool_address_uplink = False
 get_external_ip_finnished_reading = False
 uplink_use_external_service = False
 mechanize_timer_bool = False
+
+# Keys
+accept_from_key = ''
 transmit_method = 'socket'
 use_address = 'default'
 address_mode = 'uplink_current_index'
 external_ip_address = ''
+
+# Lists & Dictionaries
 gui_message = []
 uplink_addresses = []
 enum = []
 mechanized_message_list = []
 mechanized_message_threads = {}
-max_client_len = 16
 
 COMMUNICATOR_SOCK = {
-    "Unselected" : unpopulated,
-    "AF_APPLETALK" : socket.AF_APPLETALK,
-    "AF_BLUETOOTH" : socket.AF_BLUETOOTH,
-    "AF_DECnet" : socket.AF_DECnet,
-    "AF_INET" : socket.AF_INET,
-    "AF_INET6" : socket.AF_INET6,
-    "AF_IPX" : socket.AF_IPX,
-    "AF_IRDA" : socket.AF_IRDA,
-    "AF_LINK" : socket.AF_LINK,
-    "AF_SNA" : socket.AF_SNA,
-    "AF_UNSPEC" : socket.AF_UNSPEC,
-    "AI_ADDRCONFIG" : socket.AI_ADDRCONFIG,
-    "AI_ALL" : socket.AI_ALL,
-    "AI_CANONNAME" : socket.AI_CANONNAME,
-    "AI_NUMERICHOST" : socket.AI_NUMERICHOST,
-    "AI_NUMERICSERV" : socket.AI_NUMERICSERV,
-    "AI_PASSIVE" : socket.AI_PASSIVE,
-    "AI_V4MAPPED" : socket.AI_V4MAPPED,
-    "BDADDR_ANY" : socket.BDADDR_ANY,
-    "BDADDR_LOCAL" : socket.BDADDR_LOCAL,
-    "BTPROTO_RFCOMM" : socket.BTPROTO_RFCOMM,
-    "EAI_AGAIN" : socket.EAI_AGAIN,
-    "EAI_BADFLAGS" : socket.EAI_BADFLAGS,
-    "EAI_FAIL" : socket.EAI_FAIL,
-    "EAI_FAMILY" : socket.EAI_FAMILY,
-    "EAI_MEMORY" : socket.EAI_MEMORY,
-    "EAI_NODATA" : socket.EAI_NODATA,
-    "EAI_NONAME" : socket.EAI_NONAME,
-    "EAI_SERVICE" : socket.EAI_SERVICE,
-    "EAI_SOCKTYPE" : socket.EAI_SOCKTYPE,
-    "has_ipv6" : socket.has_ipv6,
-    "INADDR_ALLHOSTS_GROUP" : socket.INADDR_ALLHOSTS_GROUP,
-    "INADDR_ANY" : socket.INADDR_ANY,
-    "INADDR_BROADCAST" : socket.INADDR_BROADCAST,
-    "INADDR_LOOPBACK" : socket.INADDR_LOOPBACK,
-    "INADDR_MAX_LOCAL_GROUP" : socket.INADDR_MAX_LOCAL_GROUP,
-    "INADDR_NONE" : socket.INADDR_NONE,
-    "INADDR_UNSPEC_GROUP" : socket.INADDR_UNSPEC_GROUP,
-    "IPPORT_RESERVED" : socket.IPPORT_RESERVED,
-    "IPPORT_USERRESERVED" : socket.IPPORT_USERRESERVED,
-    "IPPROTO_AH" : socket.IPPROTO_AH,
-    "IPPROTO_CBT" : socket.IPPROTO_CBT,
-    "IPPROTO_DSTOPTS" : socket.IPPROTO_DSTOPTS,
-    "IPPROTO_EGP" : socket.IPPROTO_EGP,
-    "IPPROTO_ESP" : socket.IPPROTO_ESP,
-    "IPPROTO_FRAGMENT" : socket.IPPROTO_FRAGMENT,
-    "IPPROTO_GGP" : socket.IPPROTO_GGP,
-    "IPPROTO_HOPOPTS" : socket.IPPROTO_HOPOPTS,
-    "IPPROTO_ICLFXBM" : socket.IPPROTO_ICLFXBM,
-    "IPPROTO_ICMP" : socket.IPPROTO_ICMP,
-    "IPPROTO_ICMPV6" : socket.IPPROTO_ICMPV6,
-    "IPPROTO_IDP" : socket.IPPROTO_IDP,
-    "IPPROTO_IGMP" : socket.IPPROTO_IGMP,
-    "IPPROTO_IGP" : socket.IPPROTO_IGP,
-    "IPPROTO_IP" : socket.IPPROTO_IP,
-    "IPPROTO_IPV4" : socket.IPPROTO_IPV4,
-    "IPPROTO_IPV6" : socket.IPPROTO_IPV6,
-    "IPPROTO_L2TP" : socket.IPPROTO_L2TP,
-    "IPPROTO_MAX" : socket.IPPROTO_MAX,
-    "IPPROTO_ND" : socket.IPPROTO_ND,
-    "IPPROTO_NONE" : socket.IPPROTO_NONE,
-    "IPPROTO_PGM" : socket.IPPROTO_PGM,
-    "IPPROTO_PIM" : socket.IPPROTO_PIM,
-    "IPPROTO_PUP" : socket.IPPROTO_PUP,
-    "IPPROTO_RAW" : socket.IPPROTO_RAW,
-    "IPPROTO_RDP" : socket.IPPROTO_RDP,
-    "IPPROTO_ROUTING" : socket.IPPROTO_ROUTING,
-    "IPPROTO_SCTP" : socket.IPPROTO_SCTP,
-    "IPPROTO_ST" : socket.IPPROTO_ST,
-    "IPPROTO_TCP" : socket.IPPROTO_TCP,
-    "IPPROTO_UDP" : socket.IPPROTO_UDP,
-    "IPV6_CHECKSUM" : socket.IPV6_CHECKSUM,
-    "IPV6_DONTFRAG" : socket.IPV6_DONTFRAG,
-    "IPV6_HOPLIMIT" : socket.IPV6_HOPLIMIT,
-    "IPV6_HOPOPTS" : socket.IPV6_HOPOPTS,
-    "IPV6_JOIN_GROUP" : socket.IPV6_JOIN_GROUP,
-    "IPV6_LEAVE_GROUP" : socket.IPV6_LEAVE_GROUP,
-    "IPV6_MULTICAST_HOPS" : socket.IPV6_MULTICAST_HOPS,
-    "IPV6_MULTICAST_IF" : socket.IPV6_MULTICAST_IF,
-    "IPV6_MULTICAST_LOOP" : socket.IPV6_MULTICAST_LOOP,
-    "IPV6_PKTINFO" : socket.IPV6_PKTINFO,
-    "IPV6_RECVRTHDR" : socket.IPV6_RECVRTHDR,
-    "IPV6_RECVTCLASS" : socket.IPV6_RECVTCLASS,
-    "IPV6_RTHDR" : socket.IPV6_RTHDR,
-    "IPV6_TCLASS" : socket.IPV6_TCLASS,
-    "IPV6_UNICAST_HOPS" : socket.IPV6_UNICAST_HOPS,
-    "IPV6_V6ONLY" : socket.IPV6_V6ONLY,
-    "IP_ADD_MEMBERSHIP" : socket.IP_ADD_MEMBERSHIP,
-    "IP_DROP_MEMBERSHIP" : socket.IP_DROP_MEMBERSHIP,
-    "IP_HDRINCL" : socket.IP_HDRINCL,
-    "IP_MULTICAST_IF" : socket.IP_MULTICAST_IF,
-    "IP_MULTICAST_LOOP" : socket.IP_MULTICAST_LOOP,
-    "IP_MULTICAST_TTL" : socket.IP_MULTICAST_TTL,
-    "IP_OPTIONS" : socket.IP_OPTIONS,
-    "IP_RECVDSTADDR" : socket.IP_RECVDSTADDR,
-    "IP_TOS" : socket.IP_TOS,
-    "IP_TTL" : socket.IP_TTL,
-    "MSG_BCAST" : socket.MSG_BCAST,
-    "MSG_CTRUNC" : socket.MSG_CTRUNC,
-    "MSG_DONTROUTE" : socket.MSG_DONTROUTE,
-    "MSG_ERRQUEUE" : socket.MSG_ERRQUEUE,
-    "MSG_MCAST" : socket.MSG_MCAST,
-    "MSG_OOB" : socket.MSG_OOB,
-    "MSG_PEEK" : socket.MSG_PEEK,
-    "MSG_TRUNC" : socket.MSG_TRUNC,
-    "MSG_WAITALL" : socket.MSG_WAITALL,
-    "NI_DGRAM" : socket.NI_DGRAM,
-    "NI_MAXHOST" : socket.NI_MAXHOST,
-    "NI_MAXSERV" : socket.NI_MAXSERV,
-    "NI_NAMEREQD" : socket.NI_NAMEREQD,
-    "NI_NOFQDN" : socket.NI_NOFQDN,
-    "NI_NUMERICHOST" : socket.NI_NUMERICHOST,
-    "NI_NUMERICSERV" : socket.NI_NUMERICSERV,
-    "RCVALL_MAX" : socket.RCVALL_MAX,
-    "RCVALL_OFF" : socket.RCVALL_OFF,
-    "RCVALL_ON" : socket.RCVALL_ON,
-    "RCVALL_SOCKETLEVELONLY" : socket.RCVALL_SOCKETLEVELONLY,
-    "SHUT_RD" : socket.SHUT_RD,
-    "SHUT_RDWR" : socket.SHUT_RDWR,
-    "SHUT_WR" : socket.SHUT_WR,
-    "SIO_KEEPALIVE_VALS" : socket.SIO_KEEPALIVE_VALS,
-    "SIO_LOOPBACK_FAST_PATH" : socket.SIO_LOOPBACK_FAST_PATH,
-    "SIO_RCVALL" : socket.SIO_RCVALL,
-    "SOCK_DGRAM" : socket.SOCK_DGRAM,
-    "SOCK_RAW" : socket.SOCK_RAW,
-    "SOCK_RDM" : socket.SOCK_RDM,
-    "SOCK_SEQPACKET" : socket.SOCK_SEQPACKET,
-    "SOCK_STREAM" : socket.SOCK_STREAM,
-    "SOL_IP" : socket.SOL_IP,
-    "SOL_SOCKET" : socket.SOL_SOCKET,
-    "SOL_TCP" : socket.SOL_TCP,
-    "SOL_UDP" : socket.SOL_UDP,
-    "SOMAXCONN" : socket.SOMAXCONN,
-    "SO_ACCEPTCONN" : socket.SO_ACCEPTCONN,
-    "SO_BROADCAST" : socket.SO_BROADCAST,
-    "SO_DEBUG" : socket.SO_DEBUG,
-    "SO_DONTROUTE" : socket.SO_DONTROUTE,
-    "SO_ERROR" : socket.SO_ERROR,
-    "SO_EXCLUSIVEADDRUSE" : socket.SO_EXCLUSIVEADDRUSE,
-    "SO_KEEPALIVE" : socket.SO_KEEPALIVE,
-    "SO_LINGER" : socket.SO_LINGER,
-    "SO_OOBINLINE" : socket.SO_OOBINLINE,
-    "SO_RCVBUF" : socket.SO_RCVBUF,
-    "SO_RCVLOWAT" : socket.SO_RCVLOWAT,
-    "SO_RCVTIMEO" : socket.SO_RCVTIMEO,
-    "SO_REUSEADDR" : socket.SO_REUSEADDR,
-    "SO_SNDBUF" : socket.SO_SNDBUF,
-    "SO_SNDLOWAT" : socket.SO_SNDLOWAT,
-    "SO_SNDTIMEO" : socket.SO_SNDTIMEO,
-    "SO_TYPE" : socket.SO_TYPE,
-    "SO_USELOOPBACK" : socket.SO_USELOOPBACK,
-    "TCP_FASTOPEN" : socket.TCP_FASTOPEN,
-    "TCP_KEEPCNT" : socket.TCP_KEEPCNT,
-    "TCP_KEEPIDLE" : socket.TCP_KEEPIDLE,
-    "TCP_KEEPINTVL" : socket.TCP_KEEPINTVL,
-    "TCP_MAXSEG" : socket.TCP_MAXSEG,
-    "TCP_NODELAY" : socket.TCP_NODELAY
+    "Unselected": unpopulated,
+    "AF_APPLETALK": socket.AF_APPLETALK,
+    "AF_BLUETOOTH": socket.AF_BLUETOOTH,
+    "AF_DECnet": socket.AF_DECnet,
+    "AF_INET": socket.AF_INET,
+    "AF_INET6": socket.AF_INET6,
+    "AF_IPX": socket.AF_IPX,
+    "AF_IRDA": socket.AF_IRDA,
+    "AF_LINK": socket.AF_LINK,
+    "AF_SNA": socket.AF_SNA,
+    "AF_UNSPEC": socket.AF_UNSPEC,
+    "AI_ADDRCONFIG": socket.AI_ADDRCONFIG,
+    "AI_ALL": socket.AI_ALL,
+    "AI_CANONNAME": socket.AI_CANONNAME,
+    "AI_NUMERICHOST": socket.AI_NUMERICHOST,
+    "AI_NUMERICSERV": socket.AI_NUMERICSERV,
+    "AI_PASSIVE": socket.AI_PASSIVE,
+    "AI_V4MAPPED": socket.AI_V4MAPPED,
+    "BDADDR_ANY": socket.BDADDR_ANY,
+    "BDADDR_LOCAL": socket.BDADDR_LOCAL,
+    "BTPROTO_RFCOMM": socket.BTPROTO_RFCOMM,
+    "EAI_AGAIN": socket.EAI_AGAIN,
+    "EAI_BADFLAGS": socket.EAI_BADFLAGS,
+    "EAI_FAIL": socket.EAI_FAIL,
+    "EAI_FAMILY": socket.EAI_FAMILY,
+    "EAI_MEMORY": socket.EAI_MEMORY,
+    "EAI_NODATA": socket.EAI_NODATA,
+    "EAI_NONAME": socket.EAI_NONAME,
+    "EAI_SERVICE": socket.EAI_SERVICE,
+    "EAI_SOCKTYPE": socket.EAI_SOCKTYPE,
+    "has_ipv6": socket.has_ipv6,
+    "INADDR_ALLHOSTS_GROUP": socket.INADDR_ALLHOSTS_GROUP,
+    "INADDR_ANY": socket.INADDR_ANY,
+    "INADDR_BROADCAST": socket.INADDR_BROADCAST,
+    "INADDR_LOOPBACK": socket.INADDR_LOOPBACK,
+    "INADDR_MAX_LOCAL_GROUP": socket.INADDR_MAX_LOCAL_GROUP,
+    "INADDR_NONE": socket.INADDR_NONE,
+    "INADDR_UNSPEC_GROUP": socket.INADDR_UNSPEC_GROUP,
+    "IPPORT_RESERVED": socket.IPPORT_RESERVED,
+    "IPPORT_USERRESERVED": socket.IPPORT_USERRESERVED,
+    "IPPROTO_AH": socket.IPPROTO_AH,
+    "IPPROTO_CBT": socket.IPPROTO_CBT,
+    "IPPROTO_DSTOPTS": socket.IPPROTO_DSTOPTS,
+    "IPPROTO_EGP": socket.IPPROTO_EGP,
+    "IPPROTO_ESP": socket.IPPROTO_ESP,
+    "IPPROTO_FRAGMENT": socket.IPPROTO_FRAGMENT,
+    "IPPROTO_GGP": socket.IPPROTO_GGP,
+    "IPPROTO_HOPOPTS": socket.IPPROTO_HOPOPTS,
+    "IPPROTO_ICLFXBM": socket.IPPROTO_ICLFXBM,
+    "IPPROTO_ICMP": socket.IPPROTO_ICMP,
+    "IPPROTO_ICMPV6": socket.IPPROTO_ICMPV6,
+    "IPPROTO_IDP": socket.IPPROTO_IDP,
+    "IPPROTO_IGMP": socket.IPPROTO_IGMP,
+    "IPPROTO_IGP": socket.IPPROTO_IGP,
+    "IPPROTO_IP": socket.IPPROTO_IP,
+    "IPPROTO_IPV4": socket.IPPROTO_IPV4,
+    "IPPROTO_IPV6": socket.IPPROTO_IPV6,
+    "IPPROTO_L2TP": socket.IPPROTO_L2TP,
+    "IPPROTO_MAX": socket.IPPROTO_MAX,
+    "IPPROTO_ND": socket.IPPROTO_ND,
+    "IPPROTO_NONE": socket.IPPROTO_NONE,
+    "IPPROTO_PGM": socket.IPPROTO_PGM,
+    "IPPROTO_PIM": socket.IPPROTO_PIM,
+    "IPPROTO_PUP": socket.IPPROTO_PUP,
+    "IPPROTO_RAW": socket.IPPROTO_RAW,
+    "IPPROTO_RDP": socket.IPPROTO_RDP,
+    "IPPROTO_ROUTING": socket.IPPROTO_ROUTING,
+    "IPPROTO_SCTP": socket.IPPROTO_SCTP,
+    "IPPROTO_ST": socket.IPPROTO_ST,
+    "IPPROTO_TCP": socket.IPPROTO_TCP,
+    "IPPROTO_UDP": socket.IPPROTO_UDP,
+    "IPV6_CHECKSUM": socket.IPV6_CHECKSUM,
+    "IPV6_DONTFRAG": socket.IPV6_DONTFRAG,
+    "IPV6_HOPLIMIT": socket.IPV6_HOPLIMIT,
+    "IPV6_HOPOPTS": socket.IPV6_HOPOPTS,
+    "IPV6_JOIN_GROUP": socket.IPV6_JOIN_GROUP,
+    "IPV6_LEAVE_GROUP": socket.IPV6_LEAVE_GROUP,
+    "IPV6_MULTICAST_HOPS": socket.IPV6_MULTICAST_HOPS,
+    "IPV6_MULTICAST_IF": socket.IPV6_MULTICAST_IF,
+    "IPV6_MULTICAST_LOOP": socket.IPV6_MULTICAST_LOOP,
+    "IPV6_PKTINFO": socket.IPV6_PKTINFO,
+    "IPV6_RECVRTHDR": socket.IPV6_RECVRTHDR,
+    "IPV6_RECVTCLASS": socket.IPV6_RECVTCLASS,
+    "IPV6_RTHDR": socket.IPV6_RTHDR,
+    "IPV6_TCLASS": socket.IPV6_TCLASS,
+    "IPV6_UNICAST_HOPS": socket.IPV6_UNICAST_HOPS,
+    "IPV6_V6ONLY": socket.IPV6_V6ONLY,
+    "IP_ADD_MEMBERSHIP": socket.IP_ADD_MEMBERSHIP,
+    "IP_DROP_MEMBERSHIP": socket.IP_DROP_MEMBERSHIP,
+    "IP_HDRINCL": socket.IP_HDRINCL,
+    "IP_MULTICAST_IF": socket.IP_MULTICAST_IF,
+    "IP_MULTICAST_LOOP": socket.IP_MULTICAST_LOOP,
+    "IP_MULTICAST_TTL": socket.IP_MULTICAST_TTL,
+    "IP_OPTIONS": socket.IP_OPTIONS,
+    "IP_RECVDSTADDR": socket.IP_RECVDSTADDR,
+    "IP_TOS": socket.IP_TOS,
+    "IP_TTL": socket.IP_TTL,
+    "MSG_BCAST": socket.MSG_BCAST,
+    "MSG_CTRUNC": socket.MSG_CTRUNC,
+    "MSG_DONTROUTE": socket.MSG_DONTROUTE,
+    "MSG_ERRQUEUE": socket.MSG_ERRQUEUE,
+    "MSG_MCAST": socket.MSG_MCAST,
+    "MSG_OOB": socket.MSG_OOB,
+    "MSG_PEEK": socket.MSG_PEEK,
+    "MSG_TRUNC": socket.MSG_TRUNC,
+    "MSG_WAITALL": socket.MSG_WAITALL,
+    "NI_DGRAM": socket.NI_DGRAM,
+    "NI_MAXHOST": socket.NI_MAXHOST,
+    "NI_MAXSERV": socket.NI_MAXSERV,
+    "NI_NAMEREQD": socket.NI_NAMEREQD,
+    "NI_NOFQDN": socket.NI_NOFQDN,
+    "NI_NUMERICHOST": socket.NI_NUMERICHOST,
+    "NI_NUMERICSERV": socket.NI_NUMERICSERV,
+    "RCVALL_MAX": socket.RCVALL_MAX,
+    "RCVALL_OFF": socket.RCVALL_OFF,
+    "RCVALL_ON": socket.RCVALL_ON,
+    "RCVALL_SOCKETLEVELONLY": socket.RCVALL_SOCKETLEVELONLY,
+    "SHUT_RD": socket.SHUT_RD,
+    "SHUT_RDWR": socket.SHUT_RDWR,
+    "SHUT_WR": socket.SHUT_WR,
+    "SIO_KEEPALIVE_VALS": socket.SIO_KEEPALIVE_VALS,
+    "SIO_LOOPBACK_FAST_PATH": socket.SIO_LOOPBACK_FAST_PATH,
+    "SIO_RCVALL": socket.SIO_RCVALL,
+    "SOCK_DGRAM": socket.SOCK_DGRAM,
+    "SOCK_RAW": socket.SOCK_RAW,
+    "SOCK_RDM": socket.SOCK_RDM,
+    "SOCK_SEQPACKET": socket.SOCK_SEQPACKET,
+    "SOCK_STREAM": socket.SOCK_STREAM,
+    "SOL_IP": socket.SOL_IP,
+    "SOL_SOCKET": socket.SOL_SOCKET,
+    "SOL_TCP": socket.SOL_TCP,
+    "SOL_UDP": socket.SOL_UDP,
+    "SOMAXCONN": socket.SOMAXCONN,
+    "SO_ACCEPTCONN": socket.SO_ACCEPTCONN,
+    "SO_BROADCAST": socket.SO_BROADCAST,
+    "SO_DEBUG": socket.SO_DEBUG,
+    "SO_DONTROUTE": socket.SO_DONTROUTE,
+    "SO_ERROR": socket.SO_ERROR,
+    "SO_EXCLUSIVEADDRUSE": socket.SO_EXCLUSIVEADDRUSE,
+    "SO_KEEPALIVE": socket.SO_KEEPALIVE,
+    "SO_LINGER": socket.SO_LINGER,
+    "SO_OOBINLINE": socket.SO_OOBINLINE,
+    "SO_RCVBUF": socket.SO_RCVBUF,
+    "SO_RCVLOWAT": socket.SO_RCVLOWAT,
+    "SO_RCVTIMEO": socket.SO_RCVTIMEO,
+    "SO_REUSEADDR": socket.SO_REUSEADDR,
+    "SO_SNDBUF": socket.SO_SNDBUF,
+    "SO_SNDLOWAT": socket.SO_SNDLOWAT,
+    "SO_SNDTIMEO": socket.SO_SNDTIMEO,
+    "SO_TYPE": socket.SO_TYPE,
+    "SO_USELOOPBACK": socket.SO_USELOOPBACK,
+    "TCP_FASTOPEN": socket.TCP_FASTOPEN,
+    "TCP_KEEPCNT": socket.TCP_KEEPCNT,
+    "TCP_KEEPIDLE": socket.TCP_KEEPIDLE,
+    "TCP_KEEPINTVL": socket.TCP_KEEPINTVL,
+    "TCP_MAXSEG": socket.TCP_MAXSEG,
+    "TCP_NODELAY": socket.TCP_NODELAY
 }
 
 label_stylesheet_black_bg_text_white = """QLabel{background-color: rgb(0, 0, 0);
@@ -597,6 +611,8 @@ class App(QMainWindow):
         self.key_string = ''
         self.fingerprint_str = ''
 
+        # EMPHASIS TO IMPORTANCE
+
         def disable_address_book_0():
             self.dial_out_name.setEnabled(False)
             self.dial_out_ip_port.setEnabled(False)
@@ -628,6 +644,8 @@ class App(QMainWindow):
             self.generate_key.setStyleSheet(button_stylesheet_white_text_low)
             self.generate_fingerprint.setStyleSheet(button_stylesheet_white_text_low)
 
+        # WRITES
+
         def accept_only_address_book_function():
             global debug_message
             global accept_from_key
@@ -657,26 +675,6 @@ class App(QMainWindow):
                 filein = './config.txt'
                 for line in fileinput.input(filein, inplace=True):
                     print(line.rstrip().replace('address_book_only', 'accept_all')),
-
-        def server_accept_incoming_function():
-            global debug_message
-            debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.server_accept_incoming_function]')
-
-            if self.server_accept_incoming_rule_box_0.currentText() == 'Allow from any address':
-                accept_all_function()
-            elif self.server_accept_incoming_rule_box_0.currentText() == 'Only allow from address book':
-                accept_only_address_book_function()
-
-        def send_message_function():
-            global debug_message
-            debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.send_message_function]')
-
-            if self.dial_out_message.text() != '':
-                if dial_out_thread.isRunning() is True:
-                    dial_out_thread.stop()
-                dial_out_thread.start()
-            else:
-                debug_message.append('[' + str(datetime.datetime.now()) + '] [App.send_message_function] blocking empty message send')
 
         def client_remove_address():
             global debug_message
@@ -1063,6 +1061,183 @@ class App(QMainWindow):
 
             write_client_configuration_engaged = False
 
+        def server_save_function():
+            global debug_message
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.server_save_function]')
+            global write_server_configuration_engaged
+            global server_address
+            global server_address_index
+            global server_save_bool
+
+            self.server_add_addr.setEnabled(False)
+
+            if server_save_bool is True:
+
+                if write_server_configuration_engaged is False:
+                    write_server_configuration_engaged = True
+                    fo_list = []
+                    with open('./config.txt', 'r', encoding='utf-8') as fo:
+                        for line in fo:
+                            line = line.strip()
+                            if line != '':
+                                if not line.replace('SERVER_ADDRESS ', '') == str(server_address[server_address_index][0]) + ' ' + str(server_address[server_address_index][1]):
+                                    fo_list.append(line)
+                    fo_list.append('SERVER_ADDRESS ' + str(self.server_ip_port.text()))
+                    with open('./config.txt', 'w', encoding='utf-8') as fo:
+                        for _ in fo_list:
+                            fo.write(_ + '\n')
+                    fo.close()
+                    non_success_write = []
+                    if os.path.exists('./config.txt'):
+                        with open('./config.txt', 'r', encoding='utf-8') as fo:
+                            i = 0
+                            for line in fo:
+                                line = line.strip()
+                                debug_message.append('[' + str(datetime.datetime.now()) + '] [App.server_save_function] comparing line:')
+                                debug_message.append('[' + str(datetime.datetime.now()) + '] [App.server_save_function] fo_line:       ' + str(line))
+                                debug_message.append('[' + str(datetime.datetime.now()) + '] [App.server_save_function] fo_list_line:  ' + str((fo_list[i])))
+                                if not line == fo_list[i]:
+                                    non_success_write.append(False)
+                                i += 1
+                    if not False in non_success_write:
+                        debug_message.append('[' + str(datetime.datetime.now()) + '] [App.server_save_function] server address saved successfully')
+                    else:
+                        debug_message.append('[' + str(datetime.datetime.now()) + '] [App.server_save_function] server address save failed')
+                write_server_configuration_engaged = False
+                self.server_add_addr.setStyleSheet(button_stylesheet_white_text_low)
+
+        def server_delete_function():
+            global debug_message
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.server_delete_function]')
+            global write_server_configuration_engaged
+            global server_address
+            global server_address_index
+
+            if self.server_ip_port.text() != '':
+
+                if write_server_configuration_engaged is False:
+                    write_server_configuration_engaged = True
+
+                    if os.path.exists('./config.txt'):
+                        fo_list = []
+                        with open('./config.txt', 'r', encoding='utf-8') as fo:
+                            for line in fo:
+                                line = line.strip()
+                                if line != '':
+                                    if not line.replace('SERVER_ADDRESS ', '') == str(server_address[server_address_index][0]) + ' ' + str(server_address[server_address_index][1]):
+                                        fo_list.append(line)
+                        open('./config.tmp', 'w').close()
+                        with open('./config.tmp', 'w', encoding='utf-8') as fo:
+                            for _ in fo_list:
+                                fo.write(str(_) + '\n')
+                        fo.close()
+                        if os.path.exists('./config.tmp'):
+                            os.replace('./config.tmp', './config.txt')
+                        del server_address[server_address_index]
+                        server_prev_addr_function()
+
+                    write_server_configuration_engaged = False
+
+        def uplink_enable_function():
+            global debug_message
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.uplink_enable_function]')
+            global uplink_enable_bool
+            if uplink_enable_bool is False:
+                if get_external_ip_thread.isRunning():
+                    get_external_ip_thread.stop()
+                uplink_enable_bool = True
+                get_external_ip_thread.start()
+
+                if uplink_use_external_service is False:
+                    self.obtain_external_ip_box_0.setCurrentIndex(1)
+                elif uplink_use_external_service is True:
+                    self.obtain_external_ip_box_0.setCurrentIndex(2)
+
+                if uplink_thread.isRunning():
+                    uplink_thread.stop()
+                uplink_thread.start()
+
+                # Save Changes
+                if os.path.exists('./config.txt'):
+                    filein = './config.txt'
+                    for line in fileinput.input(filein, inplace=True):
+                        print(line.rstrip().replace('UNIVERSAL_UPLINK false', 'UNIVERSAL_UPLINK true')),
+
+            elif uplink_enable_bool is True:
+                if get_external_ip_thread.isRunning():
+                    get_external_ip_thread.stop()
+                else:
+                    debug_message.append('[' + str(datetime.datetime.now()) + '] [App.uplink_enable_function] get_external_ip_thread: already stopped')
+                uplink_enable_bool = False
+                self.obtain_external_ip_box_0.setCurrentIndex(0)
+
+                if uplink_thread.isRunning():
+                    uplink_thread.stop()
+
+                    # Save Changes
+                    if os.path.exists('./config.txt'):
+                        filein = './config.txt'
+                        for line in fileinput.input(filein, inplace=True):
+                            print(line.rstrip().replace('UNIVERSAL_UPLINK true', 'UNIVERSAL_UPLINK false')),
+
+        def get_ext_ip_use_upnp_function():
+            global debug_message
+            global uplink_enable_bool
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.get_ext_ip_use_upnp_function]')
+
+            global uplink_use_external_service
+            uplink_use_external_service = False
+
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [App.get_ext_ip_use_upnp_function] setting uplink_use_external_service: ' + str(uplink_use_external_service))
+
+            # Save Changes
+            if os.path.exists('./config.txt'):
+                filein = './config.txt'
+                for line in fileinput.input(filein, inplace=True):
+                    print(line.rstrip().replace('use_external_service', 'use_upnp')),
+
+            uplink_enable_bool = False
+            uplink_enable_function()
+
+        def get_ext_ip_use_ext_service_function():
+            global debug_message
+            global uplink_enable_bool
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.get_ext_ip_use_ext_service_function]')
+
+            global uplink_use_external_service
+            uplink_use_external_service = True
+
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [App.get_ext_ip_use_ext_service_function] setting uplink_use_external_service: ' + str(uplink_use_external_service))
+
+            # Save Changes
+            if os.path.exists('./config.txt'):
+                filein = './config.txt'
+                for line in fileinput.input(filein, inplace=True):
+                    print(line.rstrip().replace('use_upnp', 'use_external_service')),
+
+            uplink_enable_bool = False
+            uplink_enable_function()
+
+        def server_accept_incoming_function():
+            global debug_message
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.server_accept_incoming_function]')
+
+            if self.server_accept_incoming_rule_box_0.currentText() == 'Allow from any address':
+                accept_all_function()
+            elif self.server_accept_incoming_rule_box_0.currentText() == 'Only allow from address book':
+                accept_only_address_book_function()
+
+        def send_message_function():
+            global debug_message
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.send_message_function]')
+
+            if self.dial_out_message.text() != '':
+                if dial_out_thread.isRunning() is True:
+                    dial_out_thread.stop()
+                dial_out_thread.start()
+            else:
+                debug_message.append('[' + str(datetime.datetime.now()) + '] [App.send_message_function] blocking empty message send')
+
         def server_prev_addr_function():
             global debug_message
             debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.server_prev_addr_function]')
@@ -1177,7 +1352,6 @@ class App(QMainWindow):
 
             disable_address_book_0()
 
-            # todo
             style_0()
 
             # Set Index
@@ -1279,7 +1453,6 @@ class App(QMainWindow):
 
             disable_address_book_0()
 
-            # todo
             style_0()
 
             debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_next_address_function] len(client_address): ' + str(len(client_address)))
@@ -1448,83 +1621,6 @@ class App(QMainWindow):
                 mute_server_notify_cipher_bool = True
                 self.mute_server_notify_cipher.setIcon(QIcon(mute_1))
                 debug_message.append('[' + str(datetime.datetime.now()) + '] [App.mute_server_notify_cipher_function] setting mute: ' + str(mute_server_notify_cipher_bool))
-
-        def server_save_function():
-            global debug_message
-            debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.server_save_function]')
-            global write_server_configuration_engaged
-            global server_address
-            global server_address_index
-            global server_save_bool
-
-            self.server_add_addr.setEnabled(False)
-
-            if server_save_bool is True:
-
-                if write_server_configuration_engaged is False:
-                    write_server_configuration_engaged = True
-                    fo_list = []
-                    with open('./config.txt', 'r', encoding='utf-8') as fo:
-                        for line in fo:
-                            line = line.strip()
-                            if line != '':
-                                if not line.replace('SERVER_ADDRESS ', '') == str(server_address[server_address_index][0]) + ' ' + str(server_address[server_address_index][1]):
-                                    fo_list.append(line)
-                    fo_list.append('SERVER_ADDRESS ' + str(self.server_ip_port.text()))
-                    with open('./config.txt', 'w', encoding='utf-8') as fo:
-                        for _ in fo_list:
-                            fo.write(_ + '\n')
-                    fo.close()
-                    non_success_write = []
-                    if os.path.exists('./config.txt'):
-                        with open('./config.txt', 'r', encoding='utf-8') as fo:
-                            i = 0
-                            for line in fo:
-                                line = line.strip()
-                                debug_message.append('[' + str(datetime.datetime.now()) + '] [App.server_save_function] comparing line:')
-                                debug_message.append('[' + str(datetime.datetime.now()) + '] [App.server_save_function] fo_line:       ' + str(line))
-                                debug_message.append('[' + str(datetime.datetime.now()) + '] [App.server_save_function] fo_list_line:  ' + str((fo_list[i])))
-                                if not line == fo_list[i]:
-                                    non_success_write.append(False)
-                                i += 1
-                    if not False in non_success_write:
-                        debug_message.append('[' + str(datetime.datetime.now()) + '] [App.server_save_function] server address saved successfully')
-                    else:
-                        debug_message.append('[' + str(datetime.datetime.now()) + '] [App.server_save_function] server address save failed')
-                write_server_configuration_engaged = False
-                self.server_add_addr.setStyleSheet(button_stylesheet_white_text_low)
-
-        def server_delete_function():
-            global debug_message
-            debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.server_delete_function]')
-            global write_server_configuration_engaged
-            global server_address
-            global server_address_index
-
-            if self.server_ip_port.text() != '':
-
-                if write_server_configuration_engaged is False:
-                    write_server_configuration_engaged = True
-
-                    if os.path.exists('./config.txt'):
-                        fo_list = []
-                        with open('./config.txt', 'r', encoding='utf-8') as fo:
-                            for line in fo:
-                                line = line.strip()
-                                if line != '':
-                                    if not line.replace('SERVER_ADDRESS ', '') == str(server_address[server_address_index][0]) + ' ' + str(server_address[server_address_index][1]):
-                                        fo_list.append(line)
-                        open('./config.tmp', 'w').close()
-                        with open('./config.tmp', 'w', encoding='utf-8') as fo:
-                            for _ in fo_list:
-                                fo.write(str(_) + '\n')
-                        fo.close()
-                        if os.path.exists('./config.tmp'):
-                            os.replace('./config.tmp', './config.txt')
-                        del server_address[server_address_index]
-                        server_prev_addr_function()
-
-                    write_server_configuration_engaged = False
 
         def start_function():
             global debug_message
@@ -1873,48 +1969,6 @@ class App(QMainWindow):
                 self.bool_socket_options_btn.setStyleSheet(button_stylesheet_green_text)
             debug_message.append('[' + str(datetime.datetime.now()) + '] [App.generate_fingerprint_function] setting bool_socket_options: ' + str(bool_socket_options))
 
-        def uplink_enable_function():
-            global debug_message
-            debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.uplink_enable_function]')
-            global uplink_enable_bool
-            if uplink_enable_bool is False:
-                if get_external_ip_thread.isRunning():
-                    get_external_ip_thread.stop()
-                uplink_enable_bool = True
-                get_external_ip_thread.start()
-
-                if uplink_use_external_service is False:
-                    self.obtain_external_ip_box_0.setCurrentIndex(1)
-                elif uplink_use_external_service is True:
-                    self.obtain_external_ip_box_0.setCurrentIndex(2)
-
-                if uplink_thread.isRunning():
-                    uplink_thread.stop()
-                uplink_thread.start()
-
-                # Save Changes
-                if os.path.exists('./config.txt'):
-                    filein = './config.txt'
-                    for line in fileinput.input(filein, inplace=True):
-                        print(line.rstrip().replace('UNIVERSAL_UPLINK false', 'UNIVERSAL_UPLINK true')),
-
-            elif uplink_enable_bool is True:
-                if get_external_ip_thread.isRunning():
-                    get_external_ip_thread.stop()
-                else:
-                    debug_message.append('[' + str(datetime.datetime.now()) + '] [App.uplink_enable_function] get_external_ip_thread: already stopped')
-                uplink_enable_bool = False
-                self.obtain_external_ip_box_0.setCurrentIndex(0)
-
-                if uplink_thread.isRunning():
-                    uplink_thread.stop()
-
-                    # Save Changes
-                    if os.path.exists('./config.txt'):
-                        filein = './config.txt'
-                        for line in fileinput.input(filein, inplace=True):
-                            print(line.rstrip().replace('UNIVERSAL_UPLINK true', 'UNIVERSAL_UPLINK false')),
-
         def uplink_address_function():
             global debug_message
             global client_address
@@ -1952,44 +2006,6 @@ class App(QMainWindow):
                 elif bool_address_uplink is True:
                     self.uplink_btn.setStyleSheet(button_stylesheet_white_text_low)
                     bool_address_uplink = False
-
-        def get_ext_ip_use_upnp_function():
-            global debug_message
-            global uplink_enable_bool
-            debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.get_ext_ip_use_upnp_function]')
-
-            global uplink_use_external_service
-            uplink_use_external_service = False
-
-            debug_message.append('[' + str(datetime.datetime.now()) + '] [App.get_ext_ip_use_upnp_function] setting uplink_use_external_service: ' + str(uplink_use_external_service))
-
-            # Save Changes
-            if os.path.exists('./config.txt'):
-                filein = './config.txt'
-                for line in fileinput.input(filein, inplace=True):
-                    print(line.rstrip().replace('use_external_service', 'use_upnp')),
-
-            uplink_enable_bool = False
-            uplink_enable_function()
-
-        def get_ext_ip_use_ext_service_function():
-            global debug_message
-            global uplink_enable_bool
-            debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.get_ext_ip_use_ext_service_function]')
-
-            global uplink_use_external_service
-            uplink_use_external_service = True
-
-            debug_message.append('[' + str(datetime.datetime.now()) + '] [App.get_ext_ip_use_ext_service_function] setting uplink_use_external_service: ' + str(uplink_use_external_service))
-
-            # Save Changes
-            if os.path.exists('./config.txt'):
-                filein = './config.txt'
-                for line in fileinput.input(filein, inplace=True):
-                    print(line.rstrip().replace('use_upnp', 'use_external_service')),
-
-            uplink_enable_bool = False
-            uplink_enable_function()
 
         def obtain_external_ip_function():
             global debug_message
@@ -2078,7 +2094,7 @@ class App(QMainWindow):
         self.setWindowIcon(QIcon('./resources/image/icon.ico'))
 
         # Window Geometry
-        self.width, self.height = 1132, 664
+        self.width, self.height = 1132, 780
         # app_pos_w, app_pos_h = (GetSystemMetrics(0) / 2 - (self.width / 2)), (GetSystemMetrics(1) / 2 - (self.height / 2))
         app_pos_w, app_pos_h = 0, 0
         self.left, self.top = int(app_pos_w), int(app_pos_h)
@@ -2275,7 +2291,7 @@ class App(QMainWindow):
 
         # ##########################################################################################################
 
-        self.address_staple_height = self.server_staple + 28 + 24 + 24 + 24 + 148 + 24
+        self.address_staple_height = self.server_staple + 28 + 24 + 24 + 24 + 148 + 24 + 90 + 24 + 24
 
         self.address_book_label = QLabel(self)
         self.address_book_label.move(12, self.address_staple_height)
@@ -2747,6 +2763,22 @@ class App(QMainWindow):
         self.textbox_timer_0.timeout.connect(self.textbox_timer_0_function)
         self.textbox_timer_0_jumpstart()
 
+        # Initiate window into Communicator program
+        self.textbox_1 = QTextBrowser(self)
+        self.textbox_1.move(12, self.server_staple + 28 + 24 + 24 + 24 + 24 + 136)
+        self.textbox_1.resize(self.width - 24, 128)
+        self.textbox_1.setObjectName("textbox_1")
+        self.textbox_1.setFont(self.font_s7b)
+        self.textbox_1.setStyleSheet(textbox_stylesheet_default)
+        self.textbox_1.setLineWrapMode(QTextBrowser.NoWrap)
+        self.textbox_1.horizontalScrollBar().setValue(0)
+
+        # QTimer - TextBox Timer
+        self.textbox_timer_1 = QTimer(self)
+        self.textbox_timer_1.setInterval(0)
+        self.textbox_timer_1.timeout.connect(self.textbox_timer_1_function)
+        self.textbox_timer_1_jumpstart()
+
         # QTimer - Debug Timer
         self.gui_timer = QTimer(self)
         self.gui_timer.setInterval(840)
@@ -2774,9 +2806,21 @@ class App(QMainWindow):
 
     @QtCore.pyqtSlot()
     def textbox_timer_0_function(self):
+        global textbox_0_messages
         if textbox_0_messages:
-            self.textbox_0.append(textbox_0_messages[-1])
-            textbox_0_messages.remove(textbox_0_messages[-1])
+            self.textbox_0.append(textbox_0_messages[0])
+            textbox_0_messages.remove(textbox_0_messages[0])
+
+    @QtCore.pyqtSlot()
+    def textbox_timer_1_jumpstart(self):
+        self.textbox_timer_1.start()
+
+    @QtCore.pyqtSlot()
+    def textbox_timer_1_function(self):
+        global textbox_1_messages
+        if textbox_1_messages:
+            self.textbox_1.append(textbox_1_messages[0])
+            textbox_1_messages.remove(textbox_1_messages[0])
 
     @QtCore.pyqtSlot()
     def debug_jumpstart(self):
@@ -2920,7 +2964,7 @@ class MechanizedMessageClass(QThread):
                 # Setup Socket Options
                 if self.mechanized_message_list_[10] != 'Unselected' and self.mechanized_message_list_[11] != 'Unselected':
                     sok.setsockopt(COMMUNICATOR_SOCK.get(self.mechanized_message_list_[10]), COMMUNICATOR_SOCK.get(self.mechanized_message_list_[11]), 1)
-                    debug_message.append('[' + str(datetime.datetime.now()) + '] [DialOutClass.MechanizedMessageClass] variably setting socket options: ' + str(sok))
+                    debug_message.append('[' + str(datetime.datetime.now()) + '] [MechanizedMessageClass.MechanizedMessageClass] variably setting socket options: ' + str(sok))
 
                 with sok as SOCKET_MECHANIZE:
 
@@ -3126,6 +3170,11 @@ class UplinkClass(QThread):
             # Setup socket using address book address family and socket type while ignoring socket options for now (extended feature update)
             sok = socket.socket(COMMUNICATOR_SOCK.get(addr_family), COMMUNICATOR_SOCK.get(soc_type))
             debug_message.append('[' + str(datetime.datetime.now()) + '] [UplinkClass.uplink] setting socket as: ' + str(sok))
+
+            # Setup Socket Options
+            if _[10] != 'Unselected' and _[11] != 'Unselected':
+                sok.setsockopt(COMMUNICATOR_SOCK.get(_[10]), COMMUNICATOR_SOCK.get(_[11]), 1)
+                debug_message.append('[' + str(datetime.datetime.now()) + '] [UplinkClass.uplink] variably setting socket options: ' + str(sok))
 
             try:
                 with sok as SOCKET_UPLINK:
@@ -3672,6 +3721,7 @@ class DialOutClass(QThread):
         global bool_dial_out_override
         global bool_socket_options
         global max_client_len
+        global textbox_1_messages
 
         debug_message.append('[' + str(datetime.datetime.now()) + '] [DialOutClass.message_send] outgoing to: ' + str(self.HOST_SEND) + ':' + str(self.PORT_SEND))
 
@@ -3746,6 +3796,15 @@ class DialOutClass(QThread):
                     time.sleep(1)
                     self.dial_out_message_send.setIcon(QIcon(send_white))
 
+                print('[ATTEMPT DECODE]', data_response)
+                for _ in enc:
+                    try:
+                        decoded = data_response.decode(_)
+                        print(f'-- {_}:', decoded)
+                        textbox_1_messages.append('[' + str(datetime.datetime.now()) + '] [' + str(self.HOST_SEND) + ':' + str(self.PORT_SEND) + '] [' + str(_) + '] ' + str(decoded))
+                    except:
+                        pass
+
         except Exception as e:
             self.data = '[' + str(datetime.datetime.now()) + '] [EXCEPTION] [' + str(self.HOST_SEND) + ':' + str(self.PORT_SEND) + '] ' + str(e)
             textbox_0_messages.append(self.data)
@@ -3806,18 +3865,30 @@ class ServerDataHandlerClass(QThread):
         debug_message.append('[' + str(datetime.datetime.now()) + '] [Starting Thread] [ServerDataHandlerClass.run]')
         global server_messages
         global textbox_0_messages
+        global textbox_1_messages
         global server_address_messages
         global cipher_message_count
         global alien_message_count
 
         while True:
             try:
+
                 self.server_data_0 = server_messages
                 i_0 = 0
                 for self.server_data_0s in self.server_data_0:
                     try:
                         ciphertext = self.server_data_0[i_0]
                         addr_data = server_address_messages[i_0]
+
+                        print('[ATTEMPT DECODE]', server_messages[0])
+                        for _ in enc:
+                            try:
+                                decoded = ciphertext.decode(_)
+                                print(f'-- {_}:', decoded)
+                                textbox_1_messages.append('[' + str(datetime.datetime.now()) + '] [' + addr_data + '] [' + str(_) + '] ' + str(decoded))
+                            except:
+                                pass
+                        print('[DECODE END]')
 
                         # remove currently iterated over item from server_messages to keep the list low and performance high
                         server_messages.remove(ciphertext)
@@ -3850,7 +3921,7 @@ class ServerDataHandlerClass(QThread):
                                         if decrypted.startswith(str(_[6])):
                                             debug_message.append('[' + str(datetime.datetime.now()) + '] [ServerDataHandlerClass.run] fingerprint: validated as ' + str((_[0])))
                                             decrypted_message = decrypted.replace(str(_[6]), '')
-                                            textbox_0_messages.append('[' + str(datetime.datetime.now()) + '] [[DECIPHERED] [' + str(addr_data) + '] [' + str(_[0]) + '] ' + decrypted_message)
+                                            textbox_0_messages.append('[' + str(datetime.datetime.now()) + '] [DECIPHERED] [' + str(addr_data) + '] [' + str(_[0]) + '] ' + decrypted_message)
                                             debug_message.append('[' + str(datetime.datetime.now()) + '] [ServerDataHandlerClass.run] decrypted_message: ' + str(decrypted_message))
 
                                             if not cipher_message_count == '999+':
@@ -3966,6 +4037,8 @@ class ServerClass(QThread):
         global soft_block_ip_count
 
         global accept_from_key
+
+        global textbox_1_messages
 
         debug_message.append('[' + str(datetime.datetime.now()) + '] [ServerClass.listen] SERVER_HOST: ' + str(self.SERVER_HOST))
         debug_message.append('[' + str(datetime.datetime.now()) + '] [ServerClass.listen] SERVER_PORT: ' + str(self.SERVER_PORT))
