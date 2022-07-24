@@ -96,7 +96,7 @@ Mechanization allows for an infinite amount of things to be done to an infinite 
 specifically and potentially extremely quickly.
 
 OMEGA DECODER:
-A tactical decoder for responses and incoming bytes. (Expensive).
+A tactical decoder for humans for responses and other incoming bytes. (Expensive).
 
 Aesthetic:
 Aesthetic purely functional.
