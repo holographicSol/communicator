@@ -2644,7 +2644,6 @@ class App(QMainWindow):
         self.dial_out_message.setText('')
         self.dial_out_message.setStyleSheet(line_edit_stylesheet_white_text)
 
-        # todo --> display dial out configuration --> address (ipv4 / ipv6 / domain-name / broadcast-address / mac) - port
         self.transmit_display_address = QLabel(self)
         self.transmit_display_address.move(4, self.transmission_staple + 24)
         self.transmit_display_address.resize(self.width - 8, 20)
@@ -2661,8 +2660,6 @@ class App(QMainWindow):
 
         # todo --> voice call
 
-        # todo --> loop a transmit - to do something repeatedly every x amount of time (information/action) over the network using configured address settings
-
         self.dial_out_message_send = QPushButton(self)
         self.dial_out_message_send.move(int((self.width / 2) + (self.btn_240 / 2) + self.btn_4), self.transmission_staple + 24 + 24 + 24)
         self.dial_out_message_send.resize(self.btn_60, self.btn_20)
@@ -2676,7 +2673,6 @@ class App(QMainWindow):
         self.dial_out_cipher_bool_btn.resize(self.btn_60, self.btn_20)
         self.dial_out_cipher_bool_btn.setText('CIPHER')
         self.dial_out_cipher_bool_btn.setFont(self.font_s7b)
-        # self.dial_out_cipher_bool_btn.setStyleSheet(button_stylesheet_green_text)
         self.dial_out_cipher_bool_btn.clicked.connect(dial_out_cipher_btn_function)
 
         # ##########################################################################################################
@@ -3749,11 +3745,14 @@ class DialOutClass(QThread):
                         debug_message.append('[' + str(datetime.datetime.now()) + '] [DialOutClass.message_send] using fingerprint: ' + str(self.FINGERPRINT))
                         cipher = AESCipher(self.KEY)
                         ciphertext = cipher.encrypt(str(self.FINGERPRINT) + self.MESSAGE_CONTENT)
-                        debug_message.append('[' + str(datetime.datetime.now()) + '] [DialOutClass.message_send] ciphertext: ' + str((ciphertext)))
-                        textbox_0_messages.append('[' + str(datetime.datetime.now()) + '] [SENDING ENCRYPTED] [' + str(self.HOST_SEND) + ':' + str(self.PORT_SEND) + ']')
+                        debug_message.append('[' + str(datetime.datetime.now()) + '] [DialOutClass.message_send] ciphertext: ' + str(ciphertext))
+                        textbox_0_messages.append('[' + str(datetime.datetime.now()) + '] [SENDING ENCRYPTED] [' + str(self.HOST_SEND) + ':' + str(self.PORT_SEND) + '] [DATA] ' + str(ciphertext))
                     else:
-                        ciphertext = bytes(self.MESSAGE_CONTENT, str(client_address[client_address_index][7]))
-                        textbox_0_messages.append('[' + str(datetime.datetime.now()) + '] [SENDING UNENCRYPTED] [' + str(self.HOST_SEND) + ':' + str(self.PORT_SEND) + ']')
+                        print('self.MESSAGE_CONTENT:', self.MESSAGE_CONTENT)
+                        ciphertext = self.MESSAGE_CONTENT.encode()
+                        ciphertext = ciphertext.decode('unicode-escape').encode(str(client_address[client_address_index][7]))
+                        debug_message.append('[' + str(datetime.datetime.now()) + '] [DialOutClass.message_send] ciphertext: ' + str(ciphertext))
+                        textbox_0_messages.append('[' + str(datetime.datetime.now()) + '] [SENDING UNENCRYPTED] [' + str(self.HOST_SEND) + ':' + str(self.PORT_SEND) + '] [CODEC] ' + str(client_address[client_address_index][7]) + ' [DATA] ' + str(ciphertext))
 
                     debug_message.append('[' + str(datetime.datetime.now()) + '] [DialOutClass.message_send] attempting to send ciphertext')
 
