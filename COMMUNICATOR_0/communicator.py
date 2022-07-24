@@ -2976,7 +2976,8 @@ class MechanizedMessageClass(QThread):
                         debug_message.append('[' + str(datetime.datetime.now()) + '] [MechanizedMessageClass.message_send] ciphertext: ' + str((ciphertext)))
                         textbox_0_messages.append('[' + str(datetime.datetime.now()) + '] [SENDING ENCRYPTED] [' + str(self.HOST_SEND) + ':' + str(self.PORT_SEND) + ']')
                     else:
-                        ciphertext = bytes(self.MESSAGE_CONTENT, self.codec_)
+                        ciphertext = self.MESSAGE_CONTENT.encode()
+                        ciphertext = ciphertext.decode('unicode-escape').encode(self.codec_)
                         textbox_0_messages.append('[' + str(datetime.datetime.now()) + '] [SENDING UNENCRYPTED] [' + str(self.HOST_SEND) + ':' + str(self.PORT_SEND) + ']')
 
                     debug_message.append('[' + str(datetime.datetime.now()) + '] [MechanizedMessageClass.message_send] attempting to send ciphertext')
@@ -3577,7 +3578,9 @@ class ConfigurationClass(QThread):
                         for _ in client_address:
                             if line[1] in _:
                                 print('adding to client address:', _)
-                                _.append(str(line_0.replace(line[0], '').replace(line[1], '')))
+                                message_var = str(line_0.replace(line[0], '').replace(line[1], ''))
+                                message_var = message_var[2:]
+                                _.append(message_var)
                                 print('client address after append', _)
 
         client_address.sort(key=lambda x: canonical_caseless(x[0]))
