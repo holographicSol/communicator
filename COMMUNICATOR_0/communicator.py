@@ -2986,6 +2986,9 @@ class PowerDecode(QThread):
 
         print('my_bytes:', my_bytes)
         print('[ATTEMPT DECODE]', my_bytes)
+        tb_sep_ = '-' * 100
+        textbox_1_messages.append(tb_sep_)
+        textbox_1_messages.append('[ATTEMPTING DECODE] ' + str_)
         for _ in enc:
             try:
                 decoded = my_bytes.decode(_)
@@ -2993,6 +2996,7 @@ class PowerDecode(QThread):
                 textbox_1_messages.append('[' + str(_) + '] ' + str(decoded))
             except Exception as e:
                 print(e)
+        textbox_1_messages.append(tb_sep_)
         print('[DECODE END]')
 
     def stop(self):
@@ -3917,6 +3921,9 @@ class DialOutClass(QThread):
 
                 if enable_power_decode_bool is True:
                     print('[ATTEMPT DECODE]', data_response)
+                    tb_sep_ = '-' * 100
+                    textbox_1_messages.append(tb_sep_)
+                    textbox_1_messages.append('[ATTEMPTING DECODE]')
                     for _ in enc:
                         try:
                             decoded = data_response.decode(_)
@@ -3924,6 +3931,7 @@ class DialOutClass(QThread):
                             textbox_1_messages.append('[' + str(datetime.datetime.now()) + '] [' + str(self.HOST_SEND) + ':' + str(self.PORT_SEND) + '] [' + str(_) + '] ' + str(decoded))
                         except:
                             pass
+                    textbox_1_messages.append(tb_sep_)
 
         except Exception as e:
             self.data = '[' + str(datetime.datetime.now()) + '] [EXCEPTION] [' + str(self.HOST_SEND) + ':' + str(self.PORT_SEND) + '] ' + str(e)
@@ -4003,6 +4011,9 @@ class ServerDataHandlerClass(QThread):
 
                         if enable_power_decode_bool is True:
                             print('[ATTEMPT DECODE]', server_messages[0])
+                            tb_sep_ = '-' * 100
+                            textbox_1_messages.append(tb_sep_)
+                            textbox_1_messages.append('[ATTEMPTING DECODE]')
                             for _ in enc:
                                 try:
                                     decoded = ciphertext.decode(_)
@@ -4010,6 +4021,7 @@ class ServerDataHandlerClass(QThread):
                                     textbox_1_messages.append('[' + str(datetime.datetime.now()) + '] [' + addr_data + '] [' + str(_) + '] ' + str(decoded))
                                 except:
                                     pass
+                            textbox_1_messages.append(tb_sep_)
                             print('[DECODE END]')
 
                         # remove currently iterated over item from server_messages to keep the list low and performance high
