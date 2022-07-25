@@ -3112,7 +3112,13 @@ class MechanizedMessageClass(QThread):
                         SOCKET_MECHANIZE.setblocking(0)
                         ready = select.select([SOCKET_MECHANIZE], [], [], 3)
                         if ready[0]:
-                            data_response = SOCKET_MECHANIZE.recv(4096)
+                            while True:
+                                data_response = SOCKET_MECHANIZE.recv(4096)
+
+                                print(data_response)
+
+                                if not data_response:
+                                    break
 
                     except Exception as e:
                         debug_message.append('[' + str(datetime.datetime.now()) + '] [MechanizedMessageClass.message_send] ' + str(e))
@@ -3698,8 +3704,9 @@ class ConfigurationClass(QThread):
                         for _ in client_address:
                             if line[1] in _:
                                 print('adding to client address:', _)
-                                message_var = str(line_0.replace(line[0], '').replace(line[1], ''))
-                                message_var = message_var[2:]
+                                message_var = line_0.replace('MECHANIZED_MESSAGE ', '')
+                                message_var = message_var.replace(str(line[1] + ' '), '')
+                                # message_var = line_0[2:]
                                 _.append(message_var)
                                 print('client address after append', _)
 
