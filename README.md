@@ -5,6 +5,8 @@ Security is only as good as the implementation.
 
 Please use with caution and read the code if implementing the Communicator. The Communicator is experimental.
 
+The communicator is not perfect but it is communications freedom.
+
 Communicator is capable of potentially communicating with any IPv4, Domain Name, IPv6 and MAC addresses
 running and or not running a Communicator, this makes the Communicator very powerful. Use wisely.
 
