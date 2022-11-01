@@ -78,6 +78,7 @@ cipher_message_count = 0
 alien_message_count = 0
 soft_block_ip_count = 0
 enable_power_decode_bool = False
+bool_default_decode_allow = False
 default_encoding = 'utf-8'
 default_decoding = 'utf-8'
 
@@ -307,6 +308,13 @@ COMMUNICATOR_SOCK = {
     "TCP_NODELAY": socket.TCP_NODELAY
 }
 
+label_stylesheet_yellow_text = """QLabel{background-color: rgb(0, 0, 0);
+                       color: rgb(255, 255, 0);
+                       border-bottom:0px solid rgb(5, 5, 5);
+                       border-right:0px solid rgb(5, 5, 5);
+                       border-top:0px solid rgb(5, 5, 5);
+                       border-left:0px solid rgb(5, 5, 5);}"""
+
 label_stylesheet_black_bg_text_white = """QLabel{background-color: rgb(0, 0, 0);
                        color: rgb(255, 255, 255);
                        border-bottom:0px solid rgb(5, 5, 5);
@@ -514,6 +522,8 @@ class App(QMainWindow):
         global uplink_enable_bool
         global uplink_use_external_service
         global gui_message
+        global default_decoding
+        global bool_default_decode_allow
 
         global_self = self
 
@@ -1697,6 +1707,8 @@ class App(QMainWindow):
                 self.dial_override.setStyleSheet(button_stylesheet_default)
                 self.address_book_label.setText('ADDRESS BOOK')
                 self.dial_out_label.setText('TRANSMIT')
+                self.address_book_label.setStyleSheet(label_stylesheet_black_bg_text_white)
+                self.dial_out_label.setStyleSheet(label_stylesheet_black_bg_text_white)
 
                 self.address_book_label.setStyleSheet(title_stylesheet_default)
                 self.dial_out_label.setStyleSheet(title_stylesheet_default)
@@ -1754,6 +1766,8 @@ class App(QMainWindow):
                 self.dial_override.setStyleSheet(button_stylesheet_red_text)
                 self.address_book_label.setText('[ OVERRIDE ]')
                 self.dial_out_label.setText('[ TRANSMIT OVERRIDE ]')
+                self.address_book_label.setStyleSheet(label_stylesheet_yellow_text)
+                self.dial_out_label.setStyleSheet(label_stylesheet_yellow_text)
 
                 self.dial_out_prev_addr.hide()
                 self.dial_out_next_addr.hide()
@@ -2095,11 +2109,35 @@ class App(QMainWindow):
         def default_decode_function():
             global debug_message
             global default_decoding
+            global bool_default_decode_allow
 
-            debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.default_decode_function]')
+            if bool_default_decode_allow is True:
 
-            default_decoding = self.default_decode.currentText()
-            debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.default_decode_function] setting server default decoding:' + str(default_decoding))
+                debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.default_decode_function]')
+
+                default_decoding = self.default_decode.currentText()
+                debug_message.append('[' + str(datetime.datetime.now()) + '] [App.default_decode_function] setting server default decoding: ' + str(default_decoding))
+
+                # Save Changes
+                old_config = []
+                if not os.path.exists('./config.txt'):
+                    debug_message.append('[' + str(datetime.datetime.now()) + '] [App.default_decode_function] creating new: config.txt')
+                    open('./config.txt', 'w').close()
+                if os.path.exists('./config.txt'):
+
+                    with open('./config.txt', 'r') as fo:
+                        for line in fo:
+                            line = line.strip()
+                            if not line.startswith('DEFAULT_DECODING '):
+                                old_config.append(line)
+                    fo.close()
+                    old_config.append('DEFAULT_DECODING ' + str(self.default_decode.currentText()))
+                    open('./config.tmp', 'w').close()
+                    with open('./config.tmp', 'a') as fo:
+                        for _ in old_config:
+                            fo.write(_ + '\n')
+                    fo.close()
+                    os.replace('./config.tmp', './config.txt')
 
         def power_decode_mode_function():
             global debug_message
@@ -2809,6 +2847,8 @@ class App(QMainWindow):
             time.sleep(1)
         debug_message.append('[' + str(datetime.datetime.now()) + '] [App] configuration_thread_completed: ' + str(configuration_thread_completed))
 
+        bool_default_decode_allow = True
+
         # Show Server Settings
         server_prev_addr_function()
         server_next_addr_function()
@@ -2816,6 +2856,10 @@ class App(QMainWindow):
         # Show Dial Out Address settings
         client_previous_address_function()
         client_next_address_function()
+
+        # Set Server Default Decoding
+        index = self.default_decode.findText(default_decoding, QtCore.Qt.MatchFixedString)
+        self.default_decode.setCurrentIndex(index)
 
         # Show and set server accept connection settings
         if accept_from_key == 'address_book_only':
@@ -2894,6 +2938,7 @@ class App(QMainWindow):
         self.initUI()
 
     def initUI(self):
+
         self.show()
 
     @QtCore.pyqtSlot()
@@ -3670,6 +3715,7 @@ class ConfigurationClass(QThread):
         global accept_from_key
         global uplink_enable_bool
         global uplink_use_external_service
+        global default_decoding
 
         debug_message.append('[' + str(datetime.datetime.now()) + '] [ConfigurationClass.run] updating all values from configuration file...')
 
@@ -3705,6 +3751,11 @@ class ConfigurationClass(QThread):
                             uplink_use_external_service = False
                         elif str(line[1]) == 'use_external_service':
                             uplink_use_external_service = True
+
+                if str(line[0]) == 'DEFAULT_DECODING':
+                    if len(line) == 2:
+                        default_decoding = line[1]
+                        debug_message.append('[' + str(datetime.datetime.now()) + '] [ConfigurationClass.run] setting default server decoding: ' + str(default_decoding))
         fo.close()
 
         debug_message.append('[' + str(datetime.datetime.now()) + '] [ConfigurationClass.run] updating all values from communicator address book...')
