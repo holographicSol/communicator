@@ -78,6 +78,9 @@ cipher_message_count = 0
 alien_message_count = 0
 soft_block_ip_count = 0
 enable_power_decode_bool = False
+bool_default_decode_allow = False
+default_encoding = 'utf-8'
+default_decoding = 'utf-8'
 
 # Files
 server_log = './log/server_log.txt'
@@ -91,12 +94,16 @@ player_default.setMedia(player_content_default)
 player_default.setVolume(100)
 
 # Images
-mute_0 = './resources/image/mute_0.png'
-mute_1 = './resources/image/mute_1.png'
+notifications_img = './resources/image/notifications.png'
+notifications_off_img = './resources/image/notifications_off.png'
 advanced_save_0 = './resources/image/advanced_save_0.png'
 advanced_save_1 = './resources/image/advanced_save_1.png'
 arrow_left = './resources/image/arrow_left.png'
 arrow_right = './resources/image/arrow_right.png'
+
+arrow_prev = './resources/image/arrow_up.png'
+arrow_nxt = './resources/image/arrow_down.png'
+
 send_white = './resources/image/send_white.png'
 send_green = './resources/image/send_green.png'
 send_red = './resources/image/send_red.png'
@@ -109,6 +116,8 @@ play_yellow = './resources/image/play_yellow.png'
 replay_yellow = './resources/image/replay_white.png'
 stop_red = './resources/image/stop_white.png'
 undo_white = './resources/image/undo_white.png'
+
+default_select_address_image = './resources/image/default_select_address_image.png'
 
 # Boolean
 debug_bool = True
@@ -305,7 +314,21 @@ COMMUNICATOR_SOCK = {
     "TCP_NODELAY": socket.TCP_NODELAY
 }
 
+label_stylesheet_yellow_text = """QLabel{background-color: rgb(0, 0, 0);
+                       color: rgb(255, 255, 0);
+                       border-bottom:0px solid rgb(5, 5, 5);
+                       border-right:0px solid rgb(5, 5, 5);
+                       border-top:0px solid rgb(5, 5, 5);
+                       border-left:0px solid rgb(5, 5, 5);}"""
+
 label_stylesheet_black_bg_text_white = """QLabel{background-color: rgb(0, 0, 0);
+                       color: rgb(255, 255, 255);
+                       border-bottom:0px solid rgb(5, 5, 5);
+                       border-right:0px solid rgb(5, 5, 5);
+                       border-top:0px solid rgb(5, 5, 5);
+                       border-left:0px solid rgb(5, 5, 5);}"""
+
+label_stylesheet_grey_bg_text_white_large = """QLabel{background-color: rgb(8, 8, 8);
                        color: rgb(255, 255, 255);
                        border-bottom:0px solid rgb(5, 5, 5);
                        border-right:0px solid rgb(5, 5, 5);
@@ -354,6 +377,48 @@ title_stylesheet_default = """QLabel{background-color: rgb(0, 0, 0);
                        border-top:3px solid rgb(255, 255, 255);
                        border-left:3px solid rgb(255, 255, 255);}"""
 
+title_stylesheet_server_offline = """QLabel{background-color: rgb(0, 0, 0);
+                       color: rgb(255, 0, 0);
+                       border-bottom:0px solid rgb(5, 5, 5);
+                       border-right:3px solid rgb(255, 255, 255);
+                       border-top:3px solid rgb(255, 255, 255);
+                       border-left:3px solid rgb(255, 255, 255);}"""
+
+btn_title_stylesheet_server_offline = """QPushButton{background-color: rgb(0, 0, 0);
+                       color: rgb(255, 0, 0);
+                       border-bottom:0px solid rgb(5, 5, 5);
+                       border-right:3px solid rgb(255, 255, 255);
+                       border-top:3px solid rgb(255, 255, 255);
+                       border-left:3px solid rgb(255, 255, 255);}"""
+
+title_stylesheet_server_trying_start = """QLabel{background-color: rgb(0, 0, 0);
+                       color: rgb(255, 255, 0);
+                       border-bottom:0px solid rgb(5, 5, 5);
+                       border-right:3px solid rgb(255, 255, 255);
+                       border-top:3px solid rgb(255, 255, 255);
+                       border-left:3px solid rgb(255, 255, 255);}"""
+
+btn_title_stylesheet_server_running = """QPushButton{background-color: rgb(0, 0, 0);
+                       color: rgb(0, 255, 0);
+                       border-bottom:0px solid rgb(5, 5, 5);
+                       border-right:3px solid rgb(255, 255, 255);
+                       border-top:3px solid rgb(255, 255, 255);
+                       border-left:3px solid rgb(255, 255, 255);}"""
+
+btn_title_stylesheet_server_trying_start = """QPushButton{background-color: rgb(0, 0, 0);
+                       color: rgb(255, 255, 0);
+                       border-bottom:0px solid rgb(5, 5, 5);
+                       border-right:3px solid rgb(255, 255, 255);
+                       border-top:3px solid rgb(255, 255, 255);
+                       border-left:3px solid rgb(255, 255, 255);}"""
+
+btn_title_stylesheet_server_default = """QPushButton{background-color: rgb(0, 0, 0);
+                       color: rgb(255, 255, 255);
+                       border-bottom:0px solid rgb(5, 5, 5);
+                       border-right:3px solid rgb(255, 255, 255);
+                       border-top:3px solid rgb(255, 255, 255);
+                       border-left:3px solid rgb(255, 255, 255);}"""
+
 label_stylesheet_red_text = """QLabel{background-color: rgb(0, 0, 0);
                        color: rgb(255, 0, 0);
                        border-bottom:0px solid rgb(5, 5, 5);
@@ -361,19 +426,11 @@ label_stylesheet_red_text = """QLabel{background-color: rgb(0, 0, 0);
                        border-top:0px solid rgb(5, 5, 5);
                        border-left:0px solid rgb(5, 5, 5);}"""
 
-button_scroll_stylesheet_left = """QPushButton{background-color: rgb(0, 0, 0);
-                       color: rgb(255, 255, 255);
-                       border-bottom:3px solid rgb(255, 255, 255);
-                       border-right:3px solid rgb(255, 255, 255);
-                       border-top:3px solid rgb(255, 255, 255);
-                       border-left:0px solid rgb(5, 5, 5);}"""
+button_scroll_stylesheet_prev = """QPushButton{background-color: rgb(0, 0, 0);
+                       color: rgb(255, 255, 255);}"""
 
-button_scroll_stylesheet_right = """QPushButton{background-color: rgb(0, 0, 0);
-                       color: rgb(255, 255, 255);
-                       border-bottom:3px solid rgb(255, 255, 255);
-                       border-right:0px solid rgb(5, 5, 5);
-                       border-top:3px solid rgb(255, 255, 255);
-                       border-left:3px solid rgb(255, 255, 255);}"""
+button_scroll_stylesheet_nxt = """QPushButton{background-color: rgb(0, 0, 0);
+                       color: rgb(255, 255, 255);}"""
 
 
 button_stylesheet_default = """QPushButton{background-color: rgb(0, 0, 0);
@@ -465,7 +522,7 @@ textbox_stylesheet_default = """QTextBrowser {background-color: rgb(0, 0, 0);
                 selection-color: black;
                 selection-background-color: rgb(0, 180, 0);
                 color: rgb(255, 255, 255);
-                border-bottom:3px solid rgb(255 255, 255);
+                border-bottom:0px solid rgb(255 255, 255);
                 border-right:0px solid rgb(255, 255, 255);
                 border-top:0px solid rgb(255, 255, 255);
                 border-left:0px solid rgb(255, 255, 255);}"""
@@ -475,15 +532,6 @@ textbox_stylesheet_black_bg = """QTextBrowser {background-color: rgb(0, 0, 0);
                 selection-color: black;
                 selection-background-color: rgb(0, 180, 0);
                 color: rgb(255, 255, 255);
-                border-bottom:0px solid rgb(5, 5, 5);
-                border-right:0px solid rgb(5, 5, 5);
-                border-top:0px solid rgb(5, 5, 5);
-                border-left:0px solid rgb(5, 5, 5);}"""
-
-textbox_stylesheet_white_bg_black_text = """QTextBrowser {background-color: rgb(255, 255, 0);
-                selection-color: black;
-                selection-background-color: rgb(0, 180, 0);
-                color: rgb(0, 0, 0);
                 border-bottom:0px solid rgb(5, 5, 5);
                 border-right:0px solid rgb(5, 5, 5);
                 border-top:0px solid rgb(5, 5, 5);
@@ -512,6 +560,8 @@ class App(QMainWindow):
         global uplink_enable_bool
         global uplink_use_external_service
         global gui_message
+        global default_decoding
+        global bool_default_decode_allow
 
         global_self = self
 
@@ -555,10 +605,10 @@ class App(QMainWindow):
                                     width: 11px;
                                     }
                                     QScrollBar::add-page:vertical {
-                                    background: rgb(25, 25, 25);
+                                    background: rgb(12, 12, 12);
                                     }
                                     QScrollBar::sub-page:vertical {
-                                    background: rgb(25, 25, 25);
+                                    background: rgb(12, 12, 12);
                                     }
 
                                     QScrollBar:horizontal {
@@ -594,10 +644,10 @@ class App(QMainWindow):
                                     width: 11px;
                                     }
                                     QScrollBar::add-page:horizontal {
-                                    background: rgb(25, 25, 25);
+                                    background: rgb(12, 12, 12);
                                     }
                                     QScrollBar::sub-page:horizontal {
-                                    background: rgb(25, 25, 25);
+                                    background: rgb(12, 12, 12);
                                     }
                                     """)
 
@@ -613,8 +663,6 @@ class App(QMainWindow):
         self.key_string = ''
         self.fingerprint_str = ''
 
-        # EMPHASIS TO IMPORTANCE
-
         def disable_address_book_0():
             self.dial_out_name.setEnabled(False)
             self.dial_out_ip_port.setEnabled(False)
@@ -622,8 +670,6 @@ class App(QMainWindow):
             self.address_book_broadcast.setEnabled(False)
             self.address_book_mac.setEnabled(False)
             self.address_key.setEnabled(False)
-            self.generate_key.setEnabled(False)
-            self.generate_fingerprint.setEnabled(False)
 
         def enable_address_book_0():
             self.dial_out_name.setEnabled(True)
@@ -632,19 +678,15 @@ class App(QMainWindow):
             self.address_book_broadcast.setEnabled(True)
             self.address_book_mac.setEnabled(True)
             self.address_key.setEnabled(True)
-            self.generate_key.setEnabled(True)
-            self.generate_fingerprint.setEnabled(True)
 
         def style_0():
-            self.address_book_label.setStyleSheet(title_stylesheet_default)
+            self.address_book_label.setStyleSheet(label_stylesheet_grey_bg_text_white_large)
             self.dial_out_name.setStyleSheet(line_edit_stylesheet_white_text)
             self.dial_out_ip_port.setStyleSheet(line_edit_stylesheet_white_text)
             self.address_book_port.setStyleSheet(line_edit_stylesheet_white_text)
             self.address_book_broadcast.setStyleSheet(line_edit_stylesheet_white_text)
             self.address_book_mac.setStyleSheet(line_edit_stylesheet_white_text)
             self.address_key.setStyleSheet(line_edit_stylesheet_white_text)
-            self.generate_key.setStyleSheet(button_stylesheet_white_text_low)
-            self.generate_fingerprint.setStyleSheet(button_stylesheet_white_text_low)
 
         # WRITES
 
@@ -686,6 +728,10 @@ class App(QMainWindow):
             global client_address_index
             global address_mode
             global use_address
+
+            self.address_undo_form.setText('EDIT')
+            self.dial_out_rem_addr.hide()
+            self.dial_out_add_addr.hide()
 
             # Attempt to only run this function if this function is not already in progress
             if write_client_configuration_engaged is False:
@@ -819,6 +865,10 @@ class App(QMainWindow):
             global gui_message
             global use_address
             global mechanize_timer_bool
+
+            self.address_undo_form.setText('EDIT')
+            self.dial_out_rem_addr.hide()
+            self.dial_out_add_addr.hide()
 
             # Attempt to only run this function if this function is not already in progress
             if write_client_configuration_engaged is False:
@@ -1106,7 +1156,7 @@ class App(QMainWindow):
                     else:
                         debug_message.append('[' + str(datetime.datetime.now()) + '] [App.server_save_function] server address save failed')
                 write_server_configuration_engaged = False
-                self.server_add_addr.setStyleSheet(button_stylesheet_white_text_low)
+                self.server_add_addr.setStyleSheet(button_stylesheet_white_text_high)
 
         def server_delete_function():
             global debug_message
@@ -1246,7 +1296,7 @@ class App(QMainWindow):
             global server_address_index
             global server_address
 
-            self.server_add_addr.setStyleSheet(button_stylesheet_white_text_low)
+            self.server_add_addr.setStyleSheet(button_stylesheet_white_text_high)
             self.server_add_addr.setEnabled(False)
 
             if len(server_address) > 0:
@@ -1267,7 +1317,7 @@ class App(QMainWindow):
             global server_address_index
             global server_address
 
-            self.server_add_addr.setStyleSheet(button_stylesheet_white_text_low)
+            self.server_add_addr.setStyleSheet(button_stylesheet_white_text_high)
             self.server_add_addr.setEnabled(False)
 
             if len(server_address) > 0:
@@ -1331,6 +1381,15 @@ class App(QMainWindow):
             else:
                 debug_message.append('[' + str(datetime.datetime.now()) + '] [App.sck_set_arguments_function] [SOCKET OPTION  1] could not find index for: ' + str(client_address[client_address_index][11]))
 
+        def select_address_clear():
+            self.select_address_0.setText('')
+            self.select_address_2.setText('')
+            self.select_address_3.setText('')
+            self.select_address_4.setText('')
+            self.select_address_5.setText('')
+            self.select_address_6.setText('')
+            self.select_address_7.setText('')
+
         def client_previous_address_function():
             global debug_message
             debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.client_previous_address_function]')
@@ -1342,6 +1401,10 @@ class App(QMainWindow):
             global address_mode
             global mechanize_timer_bool
 
+            self.address_undo_form.setText('EDIT')
+            self.dial_out_rem_addr.hide()
+            self.dial_out_add_addr.hide()
+
             self.dial_out_name.setText('')
             self.dial_out_ip_port.setText('')
             self.address_book_port.setText('')
@@ -1349,6 +1412,8 @@ class App(QMainWindow):
             self.address_book_mac.setText('')
             self.address_key.setText('')
             self.tb_fingerprint.setText('')
+
+            select_address_clear()
 
             address_mode = 'uplink_current_index'
 
@@ -1377,13 +1442,10 @@ class App(QMainWindow):
                     self.address_book_mac.setText(str(client_address[client_address_index][4]))
 
                 if client_address[client_address_index][13] == 'default':
-                    self.transmit_display_address.setText(self.dial_out_ip_port.text())
                     address_book_address_label_function()
                 elif client_address[client_address_index][13] == 'broadcast':
-                    self.transmit_display_address.setText(self.address_book_broadcast.text())
                     address_book_broadcast_label_function()
                 elif client_address[client_address_index][13] == 'mac':
-                    self.transmit_display_address.setText(self.address_book_mac.text())
                     address_book_mac_label_function()
 
                 check_key()
@@ -1427,6 +1489,40 @@ class App(QMainWindow):
 
                 sck_set_arguments_function()
 
+                # todo set address book select array
+                if len(client_address) >= client_address_index+1:
+                    self.select_address_0.setText(str(client_address[client_address_index][0]))
+                else:
+                    self.select_address_0.setText('')
+                if len(client_address) >= client_address_index+2:
+                    self.select_address_1.setText(str(client_address[client_address_index+1][0]))
+                else:
+                    self.select_address_1.setText('')
+                if len(client_address) >= client_address_index+3:
+                    self.select_address_2.setText(str(client_address[client_address_index+2][0]))
+                else:
+                    self.select_address_2.setText('')
+                if len(client_address) >= client_address_index+4:
+                    self.select_address_3.setText(str(client_address[client_address_index+3][0]))
+                else:
+                    self.select_address_3.setText('')
+                if len(client_address) >= client_address_index+5:
+                    self.select_address_4.setText(str(client_address[client_address_index+4][0]))
+                else:
+                    self.select_address_4.setText('')
+                if len(client_address) >= client_address_index+6:
+                    self.select_address_5.setText(str(client_address[client_address_index+5][0]))
+                else:
+                    self.select_address_5.setText('')
+                if len(client_address) >= client_address_index+7:
+                    self.select_address_6.setText(str(client_address[client_address_index+6][0]))
+                else:
+                    self.select_address_6.setText('')
+                if len(client_address) >= client_address_index+8:
+                    self.select_address_7.setText(str(client_address[client_address_index+7][0]))
+                else:
+                    self.select_address_7.setText('')
+
                 debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_previous_address_function] dial_out_dial_out_cipher_bool: ' + str(dial_out_dial_out_cipher_bool))
             else:
                 debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_previous_address_function] client_address unpopulated')
@@ -1443,6 +1539,10 @@ class App(QMainWindow):
             global address_mode
             global mechanize_timer_bool
 
+            self.address_undo_form.setText('EDIT')
+            self.dial_out_rem_addr.hide()
+            self.dial_out_add_addr.hide()
+
             self.dial_out_name.setText('')
             self.dial_out_ip_port.setText('')
             self.address_book_port.setText('')
@@ -1450,6 +1550,8 @@ class App(QMainWindow):
             self.address_book_mac.setText('')
             self.address_key.setText('')
             self.tb_fingerprint.setText('')
+
+            select_address_clear()
 
             address_mode = 'uplink_current_index'
 
@@ -1477,13 +1579,10 @@ class App(QMainWindow):
                     self.address_book_mac.setText(str(client_address[client_address_index][4]))
 
                 if client_address[client_address_index][13] == 'default':
-                    self.transmit_display_address.setText(self.dial_out_ip_port.text())
                     address_book_address_label_function()
                 elif client_address[client_address_index][13] == 'broadcast':
-                    self.transmit_display_address.setText(self.address_book_broadcast.text())
                     address_book_broadcast_label_function()
                 elif client_address[client_address_index][13] == 'mac':
-                    self.transmit_display_address.setText(self.address_book_mac.text())
                     address_book_mac_label_function()
 
                 check_key()
@@ -1527,6 +1626,40 @@ class App(QMainWindow):
 
                 sck_set_arguments_function()
 
+                # todo set address book select array
+                if len(client_address) >= client_address_index + 1:
+                    self.select_address_0.setText(str(client_address[client_address_index][0]))
+                else:
+                    self.select_address_0.setText('')
+                if len(client_address) >= client_address_index + 2:
+                    self.select_address_1.setText(str(client_address[client_address_index + 1][0]))
+                else:
+                    self.select_address_1.setText('')
+                if len(client_address) >= client_address_index + 3:
+                    self.select_address_2.setText(str(client_address[client_address_index + 2][0]))
+                else:
+                    self.select_address_2.setText('')
+                if len(client_address) >= client_address_index + 4:
+                    self.select_address_3.setText(str(client_address[client_address_index + 3][0]))
+                else:
+                    self.select_address_3.setText('')
+                if len(client_address) >= client_address_index + 5:
+                    self.select_address_4.setText(str(client_address[client_address_index + 4][0]))
+                else:
+                    self.select_address_4.setText('')
+                if len(client_address) >= client_address_index + 6:
+                    self.select_address_5.setText(str(client_address[client_address_index + 5][0]))
+                else:
+                    self.select_address_5.setText('')
+                if len(client_address) >= client_address_index + 7:
+                    self.select_address_6.setText(str(client_address[client_address_index + 6][0]))
+                else:
+                    self.select_address_6.setText('')
+                if len(client_address) >= client_address_index + 8:
+                    self.select_address_7.setText(str(client_address[client_address_index + 7][0]))
+                else:
+                    self.select_address_7.setText('')
+
             else:
                 debug_message.append('[' + str(datetime.datetime.now()) + '] [App.client_next_address_function] client_address unpopulated')
 
@@ -1557,7 +1690,7 @@ class App(QMainWindow):
                     server_address.append([server_address_var.split(' ')[0], int(server_address_var.split(' ')[1])])
                     server_address_index = len(server_address)-1
                     debug_message.append('[' + str(datetime.datetime.now()) + '] [App.server_line_edit_return_pressed] changing server_address_index to: ' + str(server_address_index))
-                    self.server_status_label_ip_in_use.setText(str(server_address[server_address_index][0]) + ' ' + str(server_address[server_address_index][1]))
+                    self.server_status_label.setText(str(server_address[server_address_index][0]) + ' ' + str(server_address[server_address_index][1]))
                     self.server_add_addr.setStyleSheet(button_stylesheet_white_text_high)
                     server_save_bool = True
                     self.server_add_addr.setEnabled(True)
@@ -1567,9 +1700,9 @@ class App(QMainWindow):
                 else:
                     debug_message.append('[' + str(datetime.datetime.now()) + '] [App.server_line_edit_return_pressed] server address already exists: ' + str(server_address_var))
                     debug_message.append('[' + str(datetime.datetime.now()) + '] [App.server_line_edit_return_pressed] server_address_match_index: ' + str(server_address_match_index))
-                    self.server_status_label_ip_in_use.setText(str(server_address[server_address_match_index][0]) + ' ' + str(server_address[server_address_match_index][1]))
+                    self.server_status_label.setText(str(server_address[server_address_match_index][0]) + ' ' + str(server_address[server_address_match_index][1]))
                     server_address_index = server_address_match_index
-                    self.server_add_addr.setStyleSheet(button_stylesheet_white_text_low)
+                    self.server_add_addr.setStyleSheet(button_stylesheet_white_text_high)
                     server_save_bool = False
                     self.server_add_addr.setEnabled(False)
                     server_thread.stop()
@@ -1604,11 +1737,11 @@ class App(QMainWindow):
             global mute_server_notify_alien_bool
             if mute_server_notify_alien_bool is True:
                 mute_server_notify_alien_bool = False
-                self.mute_server_notify_alien.setIcon(QIcon(mute_0))
+                self.mute_server_notify_alien.setIcon(QIcon(notifications_img))
                 debug_message.append('[' + str(datetime.datetime.now()) + '] [App.mute_server_notify_alien_function] setting mute: ' + str(mute_server_notify_alien_bool))
             elif mute_server_notify_alien_bool is False:
                 mute_server_notify_alien_bool = True
-                self.mute_server_notify_alien.setIcon(QIcon(mute_1))
+                self.mute_server_notify_alien.setIcon(QIcon(notifications_off_img))
                 debug_message.append('[' + str(datetime.datetime.now()) + '] [App.mute_server_notify_alien_function] setting mute: ' + str(mute_server_notify_alien_bool))
 
         def mute_server_notify_cipher_function():
@@ -1617,11 +1750,11 @@ class App(QMainWindow):
             global mute_server_notify_cipher_bool
             if mute_server_notify_cipher_bool is True:
                 mute_server_notify_cipher_bool = False
-                self.mute_server_notify_cipher.setIcon(QIcon(mute_0))
+                self.mute_server_notify_cipher.setIcon(QIcon(notifications_img))
                 debug_message.append('[' + str(datetime.datetime.now()) + '] [App.mute_server_notify_cipher_function] setting mute: ' + str(mute_server_notify_cipher_bool))
             elif mute_server_notify_cipher_bool is False:
                 mute_server_notify_cipher_bool = True
-                self.mute_server_notify_cipher.setIcon(QIcon(mute_1))
+                self.mute_server_notify_cipher.setIcon(QIcon(notifications_off_img))
                 debug_message.append('[' + str(datetime.datetime.now()) + '] [App.mute_server_notify_cipher_function] setting mute: ' + str(mute_server_notify_cipher_bool))
 
         def start_function():
@@ -1693,20 +1826,13 @@ class App(QMainWindow):
                 bool_dial_out_override = False
 
                 self.dial_override.setStyleSheet(button_stylesheet_default)
-                self.address_book_label.setText('ADDRESS BOOK')
                 self.dial_out_label.setText('TRANSMIT')
-
-                self.address_book_label.setStyleSheet(title_stylesheet_default)
-                self.dial_out_label.setStyleSheet(title_stylesheet_default)
+                self.address_book_label.setStyleSheet(label_stylesheet_grey_bg_text_white_large)
+                self.dial_out_label.setStyleSheet(label_stylesheet_black_bg_text_white)
 
                 self.dial_out_prev_addr.show()
                 self.dial_out_next_addr.show()
-
-                self.dial_out_add_addr.show()
-                self.dial_out_rem_addr.show()
-
                 self.dial_out_name.show()
-
                 self.address_clear_form.show()
 
                 if len(client_address) >= 0:
@@ -1721,28 +1847,37 @@ class App(QMainWindow):
                         self.address_book_mac.setText(client_address[client_address_index][4])
 
                 self.dial_out_cipher_bool_btn.show()
-
                 self.address_key.show()
                 self.address_key_label.show()
                 self.address_fingerprint_label.show()
                 self.tb_fingerprint.show()
                 self.reveal_btn.show()
-                self.dial_out_save_with_key.show()
-
+                self.dial_out_save_with_key.setStyleSheet(button_stylesheet_white_text_high)
                 self.address_book_name_label.show()
-                self.generate_fingerprint.show()
-                self.generate_key.show()
-
                 self.address_undo_form.show()
-
                 self.uplink_btn.show()
-
-                self.transmit_display_address.show()
+                self.select_address_0.show()
+                self.select_address_0_img.show()
+                self.select_address_1.show()
+                self.select_address_1_img.show()
+                self.select_address_2.show()
+                self.select_address_2_img.show()
+                self.select_address_3.show()
+                self.select_address_3_img.show()
+                self.select_address_4.show()
+                self.select_address_4_img.show()
+                self.select_address_5.show()
+                self.select_address_5_img.show()
+                self.select_address_6.show()
+                self.select_address_6_img.show()
+                self.select_address_7.show()
+                self.select_address_7_img.show()
 
                 self.dial_out_ip_port.setEnabled(False)
                 self.address_book_port.setEnabled(False)
                 self.address_book_broadcast.setEnabled(False)
                 self.address_book_mac.setEnabled(False)
+                self.dial_out_save_with_key.setEnabled(True)
 
                 self.dial_override.setStyleSheet(button_stylesheet_white_text_high)
 
@@ -1750,46 +1885,51 @@ class App(QMainWindow):
                 bool_dial_out_override = True
 
                 self.dial_override.setStyleSheet(button_stylesheet_red_text)
-                self.address_book_label.setText('[ OVERRIDE ]')
                 self.dial_out_label.setText('[ TRANSMIT OVERRIDE ]')
-
+                self.address_book_label.setStyleSheet(label_stylesheet_grey_bg_text_white_large)
+                self.dial_out_label.setStyleSheet(label_stylesheet_yellow_text)
                 self.dial_out_prev_addr.hide()
                 self.dial_out_next_addr.hide()
-
                 self.dial_out_add_addr.hide()
                 self.dial_out_rem_addr.hide()
-
                 self.dial_out_name.hide()
                 self.dial_out_ip_port.setText('')
                 self.address_book_port.setText('')
                 self.address_book_broadcast.setText('')
                 self.address_book_mac.setText('')
-
                 self.dial_out_cipher_bool_btn.hide()
-
                 self.address_key_label.hide()
                 self.address_key.hide()
                 self.address_fingerprint_label.hide()
                 self.tb_fingerprint.hide()
                 self.reveal_btn.hide()
-                self.dial_out_save_with_key.hide()
-
+                self.dial_out_save_with_key.setStyleSheet(button_stylesheet_white_text_low)
                 self.address_clear_form.hide()
-
                 self.address_book_name_label.hide()
-                self.generate_fingerprint.hide()
-                self.generate_key.hide()
-
                 self.address_undo_form.hide()
-
                 self.uplink_btn.hide()
-
-                self.transmit_display_address.hide()
+                self.select_address_0.hide()
+                self.select_address_0_img.hide()
+                self.select_address_1.hide()
+                self.select_address_1_img.hide()
+                self.select_address_2.hide()
+                self.select_address_2_img.hide()
+                self.select_address_3.hide()
+                self.select_address_3_img.hide()
+                self.select_address_4.hide()
+                self.select_address_4_img.hide()
+                self.select_address_5.hide()
+                self.select_address_5_img.hide()
+                self.select_address_6.hide()
+                self.select_address_6_img.hide()
+                self.select_address_7.hide()
+                self.select_address_7_img.hide()
 
                 self.dial_out_ip_port.setEnabled(True)
                 self.address_book_port.setEnabled(True)
                 self.address_book_broadcast.setEnabled(True)
                 self.address_book_mac.setEnabled(True)
+                self.dial_out_save_with_key.setEnabled(False)
 
                 self.dial_override.setStyleSheet(button_stylesheet_yellow_text)
 
@@ -1805,23 +1945,17 @@ class App(QMainWindow):
             address_reveal_bool = True
 
             if address_save_mode == 'basic':
+                generate_fingerprint_function()
+                generate_key_function()
                 address_save_mode = 'advanced'
                 address_reveal_bool = True
-                self.generate_key.setEnabled(True)
-                self.generate_fingerprint.setEnabled(True)
-                self.dial_out_save_with_key.setIcon(QIcon(advanced_save_1))
-                self.generate_key.setStyleSheet(button_stylesheet_green_text)
-                self.generate_fingerprint.setStyleSheet(button_stylesheet_green_text)
                 self.dial_out_add_addr.setText('ADVANCED SAVE')
                 self.dial_out_add_addr.setStyleSheet(button_stylesheet_green_text)
             elif address_save_mode == 'advanced':
+                self.address_key.setText('')
+                self.tb_fingerprint.setText('')
                 address_save_mode = 'basic'
                 address_reveal_bool = False
-                self.generate_key.setEnabled(False)
-                self.generate_fingerprint.setEnabled(False)
-                self.dial_out_save_with_key.setIcon(QIcon(advanced_save_0))
-                self.generate_key.setStyleSheet(button_stylesheet_white_text_low)
-                self.generate_fingerprint.setStyleSheet(button_stylesheet_white_text_low)
                 self.dial_out_add_addr.setText('SAVE')
                 self.dial_out_add_addr.setStyleSheet(button_stylesheet_white_text_high)
             debug_message.append('[' + str(datetime.datetime.now()) + '] [App.dial_out_save_with_key_function] setting address_save_mode: ' + str(address_save_mode))
@@ -1857,11 +1991,13 @@ class App(QMainWindow):
                     if client_address[client_address_index][5] != bytes('x', 'utf-8'):
                         self.address_key.setText(str(client_address[client_address_index][5], 'utf-8'))
 
+        # NEW
         def address_clear_form_function():
             global debug_message
             global address_mode
             global bool_address_uplink
             debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.address_clear_form_function]')
+            self.dial_out_save_with_key.setStyleSheet(button_stylesheet_white_text_high)
             self.dial_out_name.setText('')
             self.dial_out_ip_port.setText('')
             self.address_book_port.setText('')
@@ -1869,7 +2005,6 @@ class App(QMainWindow):
             self.address_book_mac.setText('')
             self.address_key.setText('')
             self.tb_fingerprint.setText('')
-            self.transmit_display_address.setText('')
             self.mechanized_timer_edit.setText('')
             self.mechanized_timer_message_edit.setText('')
             self.codec_select_box.setCurrentIndex(0)
@@ -1881,6 +2016,9 @@ class App(QMainWindow):
             address_mode = 'save_mode'
             bool_address_uplink = False
 
+            self.dial_out_save_with_key.setStyleSheet(button_stylesheet_white_text_high)
+            self.dial_out_save_with_key.setEnabled(True)
+
             enable_address_book_0()
 
             self.dial_out_name.setStyleSheet(line_edit_stylesheet_is_enabled)
@@ -1889,15 +2027,33 @@ class App(QMainWindow):
             self.address_book_broadcast.setStyleSheet(line_edit_stylesheet_is_enabled)
             self.address_book_mac.setStyleSheet(line_edit_stylesheet_is_enabled)
 
+            self.address_undo_form.setText('BACK')
+            self.dial_out_rem_addr.hide()
+            self.dial_out_add_addr.show()
+
+        # EDIT/BACK
         def address_undo_form_function():
             global debug_message
             global address_mode
+            self.dial_out_save_with_key.setStyleSheet(button_stylesheet_white_text_low)
+            self.dial_out_save_with_key.setEnabled(False)
             debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.address_undo_form_function]')
-            client_previous_address_function()
-            client_next_address_function()
+
             address_mode = 'uplink_current_index'
 
             disable_address_book_0()
+            
+            if self.address_undo_form.text() == 'EDIT':
+                self.address_undo_form.setText('BACK')
+                self.dial_out_rem_addr.show()
+                self.dial_out_add_addr.show()
+
+            elif self.address_undo_form.text() == 'BACK':
+                self.address_undo_form.setText('EDIT')
+                client_previous_address_function()
+                client_next_address_function()
+                self.dial_out_rem_addr.hide()
+                self.dial_out_add_addr.hide()
 
             style_0()
 
@@ -2029,7 +2185,6 @@ class App(QMainWindow):
             self.address_book_address_label.setStyleSheet(button_stylesheet_white_text_high)
             self.address_book_broadcast_label.setStyleSheet(button_stylesheet_white_text_low)
             self.address_book_mac_label.setStyleSheet(button_stylesheet_white_text_low)
-            self.transmit_display_address.setText(self.dial_out_ip_port.text())
 
         def address_book_broadcast_label_function():
             global debug_message
@@ -2039,7 +2194,6 @@ class App(QMainWindow):
             self.address_book_broadcast_label.setStyleSheet(button_stylesheet_white_text_high)
             self.address_book_address_label.setStyleSheet(button_stylesheet_white_text_low)
             self.address_book_mac_label.setStyleSheet(button_stylesheet_white_text_low)
-            self.transmit_display_address.setText(self.address_book_broadcast.text())
 
         def address_book_mac_label_function():
             global debug_message
@@ -2049,7 +2203,6 @@ class App(QMainWindow):
             self.address_book_mac_label.setStyleSheet(button_stylesheet_white_text_high)
             self.address_book_address_label.setStyleSheet(button_stylesheet_white_text_low)
             self.address_book_broadcast_label.setStyleSheet(button_stylesheet_white_text_low)
-            self.transmit_display_address.setText(self.address_book_mac.text())
 
         def mechanized_timer_btn_function():
             global debug_message
@@ -2090,6 +2243,39 @@ class App(QMainWindow):
             global client_address_index
             print(client_address[client_address_index])
 
+        def default_decode_function():
+            global debug_message
+            global default_decoding
+            global bool_default_decode_allow
+
+            if bool_default_decode_allow is True:
+
+                debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.default_decode_function]')
+
+                default_decoding = self.default_decode_combobox.currentText()
+                debug_message.append('[' + str(datetime.datetime.now()) + '] [App.default_decode_function] setting server default decoding: ' + str(default_decoding))
+
+                # Save Changes
+                old_config = []
+                if not os.path.exists('./config.txt'):
+                    debug_message.append('[' + str(datetime.datetime.now()) + '] [App.default_decode_function] creating new: config.txt')
+                    open('./config.txt', 'w').close()
+                if os.path.exists('./config.txt'):
+
+                    with open('./config.txt', 'r') as fo:
+                        for line in fo:
+                            line = line.strip()
+                            if not line.startswith('DEFAULT_DECODING '):
+                                old_config.append(line)
+                    fo.close()
+                    old_config.append('DEFAULT_DECODING ' + str(self.default_decode_combobox.currentText()))
+                    open('./config.tmp', 'w').close()
+                    with open('./config.tmp', 'a') as fo:
+                        for _ in old_config:
+                            fo.write(_ + '\n')
+                    fo.close()
+                    os.replace('./config.tmp', './config.txt')
+
         def power_decode_mode_function():
             global debug_message
             global enable_power_decode_bool
@@ -2098,19 +2284,12 @@ class App(QMainWindow):
 
             if self.power_decode_mode_box.currentText() == 'Disabled':
                 enable_power_decode_bool = False
-                self.power_decode_bytes_str_lbl.hide()
-                self.power_decode_bytes_str.hide()
 
             elif self.power_decode_mode_box.currentText() == 'Enabled':
                 enable_power_decode_bool = True
-                self.power_decode_bytes_str_lbl.hide()
-                self.power_decode_bytes_str.hide()
 
             elif self.power_decode_mode_box.currentText() == 'Specific':
                 enable_power_decode_bool = False
-
-                self.power_decode_bytes_str_lbl.show()
-                self.power_decode_bytes_str.show()
 
             debug_message.append('[' + str(datetime.datetime.now()) + '] [App.power_decode_mode_function] setting enable_power_decode_bool: ' + str(enable_power_decode_bool))
 
@@ -2122,13 +2301,67 @@ class App(QMainWindow):
                 power_decode_thread.stop()
             power_decode_thread.start()
 
+        def search_address_function():
+            global client_address_index
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.search_address_function]')
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [App.search_address_function] [Search Query] ' + str(self.search_address.text()))
+            
+            i_search_address = 0
+            for _ in client_address:
+                if canonical_caseless(_[0]) == canonical_caseless(self.search_address.text()):
+                    debug_message.append('[' + str(datetime.datetime.now()) + '] [App.search_address_function] [Found Match] ' + str(_[0]) + str(' at index ') + str(i_search_address))
+                    client_address_index = i_search_address-1
+                    client_next_address_function()
+                    self.search_address.setText('')
+                    self.setFocus()
+                i_search_address += 1
+
+        def select_address_0_function():
+            global client_address_index
+            client_address_index = client_address_index
+
+        def select_address_1_function():
+            global client_address_index
+            client_address_index = client_address_index
+            client_next_address_function()
+
+        def select_address_2_function():
+            global client_address_index
+            client_address_index = client_address_index+1
+            client_next_address_function()
+
+        def select_address_3_function():
+            global client_address_index
+            client_address_index = client_address_index+2
+            client_next_address_function()
+
+        def select_address_4_function():
+            global client_address_index
+            client_address_index = client_address_index+3
+            client_next_address_function()
+
+        def select_address_5_function():
+            global client_address_index
+            client_address_index = client_address_index+4
+            client_next_address_function()
+
+        def select_address_6_function():
+            global client_address_index
+            client_address_index = client_address_index+5
+            client_next_address_function()
+
+        def select_address_7_function():
+            global client_address_index
+            client_address_index = client_address_index+6
+            client_next_address_function()
+
         # Window Title
         self.title = "Communicator"
         self.setWindowTitle('Communicator')
         self.setWindowIcon(QIcon('./resources/image/icon.ico'))
 
         # Window Geometry
-        self.width, self.height = 1132, 780
+        self.width, self.height = 1624, 520
         # app_pos_w, app_pos_h = (GetSystemMetrics(0) / 2 - (self.width / 2)), (GetSystemMetrics(1) / 2 - (self.height / 2))
         app_pos_w, app_pos_h = 0, 0
         self.left, self.top = int(app_pos_w), int(app_pos_h)
@@ -2157,131 +2390,164 @@ class App(QMainWindow):
 
         # ##########################################################################################################
 
-        self.server_staple = 28
+        self.server_staple = 80
+
+        self.staple_server_main_pw, self.staple_server_main_ph = 20, 0
+
+        self.server_main_label_large = QLabel(self)
+        self.server_main_label_large.move(self.staple_server_main_pw, self.staple_server_main_ph)
+        self.server_main_label_large.resize(self.width - 40, self.server_staple + 142 + 80 + 8 + 80)
+        self.server_main_label_large.setFont(self.font_s7b)
+        self.server_main_label_large.setAlignment(Qt.AlignCenter)
+        self.server_main_label_large.setStyleSheet(label_stylesheet_grey_bg_text_white_large)
+
+        self.staple_status_pw, self.staple_status_ph = int((self.width / 2) - (524 / 2)) - 8, 4
+
+        self.server_status_label_large = QLabel(self)
+        self.server_status_label_large.move(self.staple_status_pw, self.staple_status_ph)
+        self.server_status_label_large.resize(532, 200)
+        self.server_status_label_large.setFont(self.font_s7b)
+        self.server_status_label_large.setAlignment(Qt.AlignCenter)
+        self.server_status_label_large.setStyleSheet(label_stylesheet_black_bg_text_white)
 
         self.server_status_label = QLabel(self)
-        self.server_status_label.move(12, self.server_staple)
-        self.server_status_label.resize(self.width - 24, 20)
+        self.server_status_label.move(int((self.width / 2) - (self.btn_240 / 2)), 8)
+        self.server_status_label.resize(self.btn_240, 20)
         self.server_status_label.setFont(self.font_s7b)
-        self.server_status_label.setText('SERVER STATUS:  OFFLINE')
+        self.server_status_label.setText('---   ---   ---')
         self.server_status_label.setAlignment(Qt.AlignCenter)
-        self.server_status_label.setStyleSheet(title_stylesheet_default)
-
-        self.server_status_label_ip_in_use = QLabel(self)
-        self.server_status_label_ip_in_use.move(int((self.width / 2) - (self.btn_240 / 2)), self.server_staple + 24 + 24)
-        self.server_status_label_ip_in_use.resize(self.btn_240, 20)
-        self.server_status_label_ip_in_use.setFont(self.font_s7b)
-        self.server_status_label_ip_in_use.setText('')
-        self.server_status_label_ip_in_use.setAlignment(Qt.AlignCenter)
-        self.server_status_label_ip_in_use.setStyleSheet(label_stylesheet_black_bg_text_white)
+        self.server_status_label.setStyleSheet(label_stylesheet_red_text)
 
         self.server_start = QPushButton(self)
-        self.server_start.move(int((self.width / 2) - (self.btn_60 / 2)), self.server_staple - 24)
+        self.server_start.move(int((self.width / 2) - (524 / 2)) + 8, 8)
         self.server_start.resize(self.btn_60, self.btn_20)
         self.server_start.setIcon(QIcon(play_default))
         self.server_start.setIconSize(QSize(9, 9))
-        self.server_start.setStyleSheet(button_stylesheet_red_text)
+        self.server_start.setStyleSheet(button_stylesheet_white_text_high)
         self.server_start.clicked.connect(start_function)
 
         self.server_stop = QPushButton(self)
-        self.server_stop.move(int((self.width / 2) - (self.btn_240 / 2)), self.server_staple - 24)
+        self.server_stop.move(int((self.width / 2) + (self.btn_240 / 2)) + 8 + self.btn_60 + 8, 8)
         self.server_stop.resize(self.btn_60, self.btn_20)
         self.server_stop.setIcon(QIcon(stop_red))
         self.server_stop.setIconSize(QSize(9, 9))
-        self.server_stop.setStyleSheet(button_stylesheet_red_text)
+        self.server_stop.setStyleSheet(button_stylesheet_white_text_high)
         self.server_stop.clicked.connect(stop_function)
 
         self.server_restart = QPushButton(self)
-        self.server_restart.move(int((self.width / 2) + (self.btn_240 / 2) - self.btn_60), self.server_staple - 24)
+        self.server_restart.move(int((self.width / 2) + (self.btn_240 / 2)) + 8, 8)
         self.server_restart.resize(self.btn_60, self.btn_20)
         self.server_restart.setIcon(QIcon(replay_yellow))
         self.server_restart.setIconSize(QSize(9, 9))
-        self.server_restart.setStyleSheet(button_stylesheet_red_text)
+        self.server_restart.setStyleSheet(button_stylesheet_white_text_high)
         self.server_restart.clicked.connect(restart_function)
 
+        self.server_settings_0_label_large = QLabel(self)
+        self.server_settings_0_label_large.move(4, 4)
+        self.server_settings_0_label_large.resize(524, 200)
+        self.server_settings_0_label_large.setFont(self.font_s7b)
+        self.server_settings_0_label_large.setAlignment(Qt.AlignCenter)
+        self.server_settings_0_label_large.setStyleSheet(label_stylesheet_black_bg_text_white)
+
+        self.local_address_label = QLabel(self)
+        self.local_address_label.move(4, 8)
+        self.local_address_label.resize(120, 20)
+        self.local_address_label.setFont(self.font_s7b)
+        self.local_address_label.setText('LOCAL ADDRESS')
+        self.local_address_label.setAlignment(Qt.AlignCenter)
+        self.local_address_label.setStyleSheet(label_stylesheet_black_bg_text_white)
+
+        self.server_add_addr = QPushButton(self)
+        self.server_add_addr.move(4 + 120 + 8, 8)
+        self.server_add_addr.resize(60, int(self.btn_40 / 2))
+        self.server_add_addr.setFont(self.font_s7b)
+        self.server_add_addr.setText('SAVE')
+        self.server_add_addr.setStyleSheet(button_stylesheet_white_text_high)
+        self.server_add_addr.clicked.connect(server_save_function)
+
+        self.server_prev_addr = QPushButton(self)
+        self.server_prev_addr.move(4 + 120 + 8 + 60 + 8, 8)
+        self.server_prev_addr.resize(20, 20)
+        self.server_prev_addr.setIcon(QIcon(arrow_prev))
+        self.server_prev_addr.setIconSize(QSize(20, 20))
+        self.server_prev_addr.setStyleSheet(button_scroll_stylesheet_prev)
+        self.server_prev_addr.clicked.connect(server_prev_addr_function)
+
         self.server_ip_port = QLineEdit(self)
-        self.server_ip_port.move(int((self.width / 2) - (self.btn_240 / 2)), self.server_staple + 24 + 24 + 24)
-        self.server_ip_port.resize(self.btn_240, 20)
+        self.server_ip_port.move(4 + 120 + 8 + 60 + 8 + 20 + 8, 8)
+        self.server_ip_port.resize(180, 20)
         self.server_ip_port.returnPressed.connect(server_line_edit_return_pressed)
         self.server_ip_port.setFont(self.font_s7b)
         self.server_ip_port.setText('')
         self.server_ip_port.setStyleSheet(line_edit_stylesheet_white_text)
         self.server_ip_port.setAlignment(Qt.AlignCenter)
 
-        self.server_prev_addr = QPushButton(self)
-        self.server_prev_addr.move(4, self.server_staple + 28)
-        self.server_prev_addr.resize(self.btn_20, 84)
-        self.server_prev_addr.setIcon(QIcon(arrow_left))
-        self.server_prev_addr.setIconSize(QSize(20, 20))
-        self.server_prev_addr.setStyleSheet(button_scroll_stylesheet_left)
-        self.server_prev_addr.clicked.connect(server_prev_addr_function)
-
         self.server_next_addr = QPushButton(self)
-        self.server_next_addr.move(self.width - 24, self.server_staple + 28)
-        self.server_next_addr.resize(20, 84)
-        self.server_next_addr.setIcon(QIcon(arrow_right))
+        self.server_next_addr.move(4 + 120 + 8 + 60 + 8 + 20 + 8 + 180 + 8, 8)
+        self.server_next_addr.resize(20, 20)
+        self.server_next_addr.setIcon(QIcon(arrow_nxt))
         self.server_next_addr.setIconSize(QSize(20, 20))
-        self.server_next_addr.setStyleSheet(button_scroll_stylesheet_right)
+        self.server_next_addr.setStyleSheet(button_scroll_stylesheet_nxt)
         self.server_next_addr.clicked.connect(server_next_addr_function)
 
-        self.server_add_addr = QPushButton(self)
-        self.server_add_addr.move(int((self.width / 2) - (self.btn_240 / 2)), self.server_staple + 24 + 24 + 24 + 24)
-        self.server_add_addr.resize(60, int(self.btn_40 / 2))
-        self.server_add_addr.setFont(self.font_s7b)
-        self.server_add_addr.setText('SAVE')
-        self.server_add_addr.setStyleSheet(button_stylesheet_white_text_low)
-        self.server_add_addr.clicked.connect(server_save_function)
-
         self.server_rem_addr = QPushButton(self)
-        self.server_rem_addr.move(int((self.width / 2) + (self.btn_240 / 2) - self.btn_60), self.server_staple + 24 + 24 + 24 + 24)
+        self.server_rem_addr.move(4 + 120 + 8 + 60 + 8 + 20 + 8 + 180 + 8 + 20 + 8, 8)
         self.server_rem_addr.resize(self.btn_60, int(self.btn_40 / 2))
         self.server_rem_addr.setFont(self.font_s7b)
         self.server_rem_addr.setText('DELETE')
         self.server_rem_addr.setIconSize(QSize(14, 14))
-        self.server_rem_addr.setStyleSheet(button_stylesheet_default)
+        self.server_rem_addr.setStyleSheet(button_stylesheet_white_text_high)
         self.server_rem_addr.clicked.connect(server_delete_function)
 
         self.soft_block_ip_notification = QPushButton(self)
-        self.soft_block_ip_notification.move(self.width - 24 - 60, self.server_staple + 24 + 24 + 24)
+        self.soft_block_ip_notification.move(int((self.width / 2) - (524 / 2)) + 8, 8 + 20 + 8 + 20 + 8 + 20 + 8 + 20 + 8)
         self.soft_block_ip_notification.resize(60, 20)
         self.soft_block_ip_notification.setText(str(soft_block_ip_count))
         self.soft_block_ip_notification.setStyleSheet(button_stylesheet_red_text)
         self.soft_block_ip_notification.clicked.connect(soft_block_ip_notofication_function)
 
         self.server_notify_alien = QPushButton(self)
-        self.server_notify_alien.move(self.width - 24 - 60, self.server_staple + 24 + 24)
-        self.server_notify_alien.resize(60, int(self.btn_40 / 2))
+        self.server_notify_alien.move(int((self.width / 2) - (524 / 2)) + 8, 8 + 20 + 8 + 20 + 8 + 20 + 8)
+        self.server_notify_alien.resize(60, 20)
         self.server_notify_alien.setStyleSheet(button_stylesheet_yellow_text)
         self.server_notify_alien.setFont(self.font_s7b)
         self.server_notify_alien.setText(str(alien_message_count))
         self.server_notify_alien.clicked.connect(server_notify_alien_function)
 
+        self.mute_server_notify_alien = QPushButton(self)
+        self.mute_server_notify_alien.move(int((self.width / 2) + (self.btn_240 / 2)) + 76, 8 + 20 + 8 + 20 + 8 + 20 + 8)
+        self.mute_server_notify_alien.resize(60, int(self.btn_40 / 2))
+        self.mute_server_notify_alien.setStyleSheet(button_stylesheet_yellow_text)
+        self.mute_server_notify_alien.setIcon(QIcon(notifications_img))
+        self.mute_server_notify_alien.setIconSize(QSize(14, 14))
+        self.mute_server_notify_alien.clicked.connect(mute_server_notify_alien_function)
+
+        self.connection_type = QLabel(self)
+        self.connection_type.move(int((self.width / 2) - (self.btn_240 / 2)) - 68, self.server_staple)
+        self.connection_type.resize(120, 20)
+        self.connection_type.setStyleSheet(label_stylesheet_black_bg_text_white)
+        self.connection_type.setFont(self.font_s7b)
+        self.connection_type.setText('CONNECTION_TYPE')
+        self.connection_type.hide()
+
         self.server_notify_cipher = QPushButton(self)
-        self.server_notify_cipher.move(self.width - 24 - 60, self.server_staple + 24)
-        self.server_notify_cipher.resize(60, int(self.btn_40 / 2))
+        self.server_notify_cipher.move(int((self.width / 2) - (524 / 2)) + 8, 8 + 20 + 8 + 20 + 8)
+        self.server_notify_cipher.resize(60, 20)
         self.server_notify_cipher.setStyleSheet(button_stylesheet_white_text_high)
         self.server_notify_cipher.setFont(self.font_s7b)
         self.server_notify_cipher.setText(str(cipher_message_count))
         self.server_notify_cipher.clicked.connect(server_notify_cipher_function)
 
         self.mute_server_notify_cipher = QPushButton(self)
-        self.mute_server_notify_cipher.move(self.width - 24 - 60 - 64, self.server_staple + 24)
+        self.mute_server_notify_cipher.move(int((self.width / 2) + (self.btn_240 / 2)) + 76, 8 + 20 + 8 + 20 + 8)
         self.mute_server_notify_cipher.resize(60, int(self.btn_40 / 2))
         self.mute_server_notify_cipher.setStyleSheet(button_stylesheet_default)
-        self.mute_server_notify_cipher.setIcon(QIcon(mute_0))
+        self.mute_server_notify_cipher.setIcon(QIcon(notifications_img))
         self.mute_server_notify_cipher.setIconSize(QSize(14, 14))
         self.mute_server_notify_cipher.clicked.connect(mute_server_notify_cipher_function)
 
-        self.mute_server_notify_alien = QPushButton(self)
-        self.mute_server_notify_alien.move(self.width - 24 - 60 - 64, self.server_staple + 24 + 24)
-        self.mute_server_notify_alien.resize(60, int(self.btn_40 / 2))
-        self.mute_server_notify_alien.setStyleSheet(button_stylesheet_yellow_text)
-        self.mute_server_notify_alien.setIcon(QIcon(mute_0))
-        self.mute_server_notify_alien.setIconSize(QSize(14, 14))
-        self.mute_server_notify_alien.clicked.connect(mute_server_notify_alien_function)
-
         self.server_accept_incoming_rule = QLabel(self)
-        self.server_accept_incoming_rule.move(28, self.server_staple + 24)
+        self.server_accept_incoming_rule.move(4, self.server_staple)
         self.server_accept_incoming_rule.resize(self.btn_120, 20)
         self.server_accept_incoming_rule.setFont(self.font_s7b)
         self.server_accept_incoming_rule.setText('ALLOW INCOMING')
@@ -2289,8 +2555,8 @@ class App(QMainWindow):
         self.server_accept_incoming_rule.setStyleSheet(label_stylesheet_grey_bg_white_text_high)
 
         self.server_accept_incoming_rule_box_0 = QComboBox(self)
-        self.server_accept_incoming_rule_box_0.move(28 + self.btn_120 + 4, self.server_staple + 24)
-        self.server_accept_incoming_rule_box_0.resize(186, 20)
+        self.server_accept_incoming_rule_box_0.move(4 + self.btn_120 + 4, self.server_staple)
+        self.server_accept_incoming_rule_box_0.resize(160, 20)
         self.server_accept_incoming_rule_box_0.setStyleSheet(cmb_menu_style)
         self.server_accept_incoming_rule_box_0.setFont(self.font_s7b)
         self.server_accept_incoming_rule_box_0.addItem('Allow from any address')
@@ -2298,15 +2564,22 @@ class App(QMainWindow):
         self.server_accept_incoming_rule_box_0.currentIndexChanged.connect(server_accept_incoming_function)
 
         self.uplink_enable = QLabel(self)
-        self.uplink_enable.move(28, self.server_staple + 24 + 24)
+        self.uplink_enable.move(4, self.server_staple + 24)
         self.uplink_enable.resize(self.btn_120, int(self.btn_40 / 2))
         self.uplink_enable.setFont(self.font_s7b)
         self.uplink_enable.setText('UPLINK')
         self.uplink_enable.setAlignment(Qt.AlignCenter)
         self.uplink_enable.setStyleSheet(label_stylesheet_black_bg_text_white)
 
+        self.server_settings_1_label_large = QLabel(self)
+        self.server_settings_1_label_large.move(self.width - 524 - 8, 4)
+        self.server_settings_1_label_large.resize(524, 200)
+        self.server_settings_1_label_large.setFont(self.font_s7b)
+        self.server_settings_1_label_large.setAlignment(Qt.AlignCenter)
+        self.server_settings_1_label_large.setStyleSheet(label_stylesheet_black_bg_text_white)
+
         self.external_ip_label = QLabel(self)
-        self.external_ip_label.move(int((self.width / 2) - (self.btn_240 / 2)), self.server_staple + 24)
+        self.external_ip_label.move(int((self.width / 2) - (self.btn_240 / 2)), 36)
         self.external_ip_label.resize(self.btn_240, 20)
         self.external_ip_label.setFont(self.font_s7b)
         self.external_ip_label.setText('')
@@ -2314,8 +2587,8 @@ class App(QMainWindow):
         self.external_ip_label.setStyleSheet(label_stylesheet_black_bg_text_white)
 
         self.obtain_external_ip_box_0 = QComboBox(self)
-        self.obtain_external_ip_box_0.move(28 + self.btn_120 + 4, self.server_staple + 24 + 24)
-        self.obtain_external_ip_box_0.resize(186, 20)
+        self.obtain_external_ip_box_0.move(4 + self.btn_120 + 4, self.server_staple + 24)
+        self.obtain_external_ip_box_0.resize(160, 20)
         self.obtain_external_ip_box_0.setStyleSheet(cmb_menu_style)
         self.obtain_external_ip_box_0.setFont(self.font_s7b)
         self.obtain_external_ip_box_0.addItem('Disabled')
@@ -2323,8 +2596,23 @@ class App(QMainWindow):
         self.obtain_external_ip_box_0.addItem('Use external service')
         self.obtain_external_ip_box_0.currentIndexChanged.connect(obtain_external_ip_function)
 
+        self.default_decode = QLabel(self)
+        self.default_decode.move(4, self.server_staple + 24 + 24)
+        self.default_decode.resize(self.btn_120, int(self.btn_40 / 2))
+        self.default_decode.setFont(self.font_s7b)
+        self.default_decode.setText('DECODING')
+        self.default_decode.setAlignment(Qt.AlignCenter)
+        self.default_decode.setStyleSheet(label_stylesheet_black_bg_text_white)
+
+        self.default_decode_combobox = QComboBox(self)
+        self.default_decode_combobox.move(4 + 120 + 4, self.server_staple + 24 + 24)
+        self.default_decode_combobox.resize(160, 20)
+        self.default_decode_combobox.setStyleSheet(cmb_menu_style)
+        self.default_decode_combobox.setFont(self.font_s7b)
+        self.default_decode_combobox.currentIndexChanged.connect(default_decode_function)
+
         self.power_decode_mode = QLabel(self)
-        self.power_decode_mode.move(28, self.server_staple + 24 + 24 + 24)
+        self.power_decode_mode.move(4, self.server_staple + 24 + 24 + 24)
         self.power_decode_mode.resize(self.btn_120, int(self.btn_40 / 2))
         self.power_decode_mode.setFont(self.font_s7b)
         self.power_decode_mode.setText('POWER DECODE')
@@ -2332,8 +2620,8 @@ class App(QMainWindow):
         self.power_decode_mode.setStyleSheet(label_stylesheet_black_bg_text_white)
 
         self.power_decode_mode_box = QComboBox(self)
-        self.power_decode_mode_box.move(28 + self.btn_120 + 4, self.server_staple + 24 + 24 + 24)
-        self.power_decode_mode_box.resize(186, 20)
+        self.power_decode_mode_box.move(4 + self.btn_120 + 4, self.server_staple + 24 + 24 + 24)
+        self.power_decode_mode_box.resize(160, 20)
         self.power_decode_mode_box.setStyleSheet(cmb_menu_style)
         self.power_decode_mode_box.setFont(self.font_s7b)
         self.power_decode_mode_box.addItem('Disabled')
@@ -2342,45 +2630,185 @@ class App(QMainWindow):
         self.power_decode_mode_box.currentIndexChanged.connect(power_decode_mode_function)
 
         self.power_decode_bytes_str_lbl = QLabel(self)
-        self.power_decode_bytes_str_lbl.move(28, self.server_staple + 24 + 24 + 24 + 24)
+        self.power_decode_bytes_str_lbl.move(4, self.server_staple + 24 + 24 + 24 + 24)
         self.power_decode_bytes_str_lbl.resize(self.btn_120, int(self.btn_40 / 2))
         self.power_decode_bytes_str_lbl.setFont(self.font_s7b)
         self.power_decode_bytes_str_lbl.setText('BYTES STRING')
         self.power_decode_bytes_str_lbl.setAlignment(Qt.AlignCenter)
         self.power_decode_bytes_str_lbl.setStyleSheet(label_stylesheet_black_bg_text_white)
-        self.power_decode_bytes_str_lbl.hide()
 
         self.power_decode_bytes_str = QLineEdit(self)
-        self.power_decode_bytes_str.move(28 + self.btn_120 + 4, self.server_staple + 24 + 24 + 24 + 24)
-        self.power_decode_bytes_str.resize(self.btn_120, 20)
+        self.power_decode_bytes_str.move(4 + self.btn_120 + 4, self.server_staple + 24 + 24 + 24 + 24)
+        self.power_decode_bytes_str.resize(160, 20)
         self.power_decode_bytes_str.setFont(self.font_s7b)
         self.power_decode_bytes_str.setText('')
         self.power_decode_bytes_str.setStyleSheet(line_edit_stylesheet_white_text)
         self.power_decode_bytes_str.returnPressed.connect(power_decode_bytes_str_function)
-        self.power_decode_bytes_str.hide()
 
         # ##########################################################################################################
 
-        self.address_staple_height = self.server_staple + 28 + 24 + 24 + 24 + 148 + 24 + 90 + 24 + 24
+        self.address_staple_height = self.server_staple + 24 + 24 + 24 + 24 + 24
+
+        self.select_address_staple_height = self.address_staple_height + 20 + 8
 
         self.address_book_label = QLabel(self)
         self.address_book_label.move(12, self.address_staple_height)
-        self.address_book_label.resize(self.width - 24, 20)
+        self.address_book_label.resize(self.width - 24, self.height - self.address_staple_height - 20)
         self.address_book_label.setFont(self.font_s7b)
-        self.address_book_label.setText('ADDRESS BOOK')
         self.address_book_label.setAlignment(Qt.AlignCenter)
-        self.address_book_label.setStyleSheet(title_stylesheet_default)
+        self.address_book_label.setStyleSheet(label_stylesheet_grey_bg_text_white_large)
+
+        self.search_address_label_large = QLabel(self)
+        self.search_address_label_large.move(0, self.address_staple_height + 20)
+        self.search_address_label_large.resize(144 + 8, 272 + 28)
+        self.search_address_label_large.setFont(self.font_s7b)
+        self.search_address_label_large.setAlignment(Qt.AlignCenter)
+        self.search_address_label_large.setStyleSheet(label_stylesheet_black_bg_text_white)
+
+        self.search_address = QLineEdit(self)
+        self.search_address.move(28, self.select_address_staple_height + 28)
+        self.search_address.resize(self.btn_120, 20)
+        self.search_address.setFont(self.font_s7b)
+        self.search_address.setStyleSheet(line_edit_stylesheet_white_text)
+        self.search_address.returnPressed.connect(search_address_function)
+
+        self.select_address_0 = QPushButton(self)
+        self.select_address_0.move(28, self.select_address_staple_height + 32 + 24)
+        self.select_address_0.resize(self.btn_120, 20)
+        self.select_address_0.setFont(self.font_s7b)
+        self.select_address_0.setText('0')
+        self.select_address_0.setStyleSheet(button_stylesheet_white_text_high)
+        self.select_address_0.clicked.connect(select_address_0_function)
+
+        self.select_address_0_img = QPushButton(self)
+        self.select_address_0_img.move(4, self.select_address_staple_height + 32 + 24)
+        self.select_address_0_img.resize(20, 20)
+        self.select_address_0_img.setIcon(QIcon(default_select_address_image))
+        self.select_address_0_img.setIconSize(QSize(20, 20))
+        self.select_address_0_img.setStyleSheet(button_stylesheet_white_text_high)
+
+        self.select_address_1 = QPushButton(self)
+        self.select_address_1.move(28, self.select_address_staple_height + 32 + 24 + 24)
+        self.select_address_1.resize(self.btn_120, 20)
+        self.select_address_1.setFont(self.font_s7b)
+        self.select_address_1.setText('1')
+        self.select_address_1.setStyleSheet(button_stylesheet_white_text_high)
+        self.select_address_1.clicked.connect(select_address_1_function)
+
+        self.select_address_1_img = QPushButton(self)
+        self.select_address_1_img.move(4, self.select_address_staple_height + 32 + 24 + 24)
+        self.select_address_1_img.resize(20, 20)
+        self.select_address_1_img.setIcon(QIcon(default_select_address_image))
+        self.select_address_1_img.setIconSize(QSize(20, 20))
+        self.select_address_1_img.setStyleSheet(button_stylesheet_white_text_high)
+
+        self.select_address_2 = QPushButton(self)
+        self.select_address_2.move(28, self.select_address_staple_height + 32 + 24 + 24 + 24)
+        self.select_address_2.resize(self.btn_120, 20)
+        self.select_address_2.setFont(self.font_s7b)
+        self.select_address_2.setText('2')
+        self.select_address_2.setStyleSheet(button_stylesheet_white_text_high)
+        self.select_address_2.clicked.connect(select_address_2_function)
+
+        self.select_address_2_img = QPushButton(self)
+        self.select_address_2_img.move(4, self.select_address_staple_height + 32 + 24 + 24 + 24)
+        self.select_address_2_img.resize(20, 20)
+        self.select_address_2_img.setIcon(QIcon(default_select_address_image))
+        self.select_address_2_img.setIconSize(QSize(20, 20))
+        self.select_address_2_img.setStyleSheet(button_stylesheet_white_text_high)
+
+        self.select_address_3 = QPushButton(self)
+        self.select_address_3.move(28, self.select_address_staple_height + 32 + 24 + 24 + 24 + 24)
+        self.select_address_3.resize(self.btn_120, 20)
+        self.select_address_3.setFont(self.font_s7b)
+        self.select_address_3.setText('3')
+        self.select_address_3.setStyleSheet(button_stylesheet_white_text_high)
+        self.select_address_3.clicked.connect(select_address_3_function)
+
+        self.select_address_3_img = QPushButton(self)
+        self.select_address_3_img.move(4, self.select_address_staple_height + 32 + 24 + 24 + 24 + 24)
+        self.select_address_3_img.resize(20, 20)
+        self.select_address_3_img.setIcon(QIcon(default_select_address_image))
+        self.select_address_3_img.setIconSize(QSize(20, 20))
+        self.select_address_3_img.setStyleSheet(button_stylesheet_white_text_high)
+
+        self.select_address_4 = QPushButton(self)
+        self.select_address_4.move(28, self.select_address_staple_height + 32 + 24 + 24 + 24 + 24 + 24)
+        self.select_address_4.resize(self.btn_120, 20)
+        self.select_address_4.setFont(self.font_s7b)
+        self.select_address_4.setText('4')
+        self.select_address_4.setStyleSheet(button_stylesheet_white_text_high)
+        self.select_address_4.clicked.connect(select_address_4_function)
+
+        self.select_address_4_img = QPushButton(self)
+        self.select_address_4_img.move(4, self.select_address_staple_height + 32 + 24 + 24 + 24 + 24 + 24)
+        self.select_address_4_img.resize(20, 20)
+        self.select_address_4_img.setIcon(QIcon(default_select_address_image))
+        self.select_address_4_img.setIconSize(QSize(20, 20))
+        self.select_address_4_img.setStyleSheet(button_stylesheet_white_text_high)
+
+        self.select_address_5 = QPushButton(self)
+        self.select_address_5.move(28, self.select_address_staple_height + 32 + 24 + 24 + 24 + 24 + 24 + 24)
+        self.select_address_5.resize(self.btn_120, 20)
+        self.select_address_5.setFont(self.font_s7b)
+        self.select_address_5.setText('5')
+        self.select_address_5.setStyleSheet(button_stylesheet_white_text_high)
+        self.select_address_5.clicked.connect(select_address_5_function)
+
+        self.select_address_5_img = QPushButton(self)
+        self.select_address_5_img.move(4, self.select_address_staple_height + 32 + 24 + 24 + 24 + 24 + 24 + 24)
+        self.select_address_5_img.resize(20, 20)
+        self.select_address_5_img.setIcon(QIcon(default_select_address_image))
+        self.select_address_5_img.setIconSize(QSize(20, 20))
+        self.select_address_5_img.setStyleSheet(button_stylesheet_white_text_high)
+
+        self.select_address_6 = QPushButton(self)
+        self.select_address_6.move(28, self.select_address_staple_height + 32 + 24 + 24 + 24 + 24 + 24 + 24 + 24)
+        self.select_address_6.resize(self.btn_120, 20)
+        self.select_address_6.setFont(self.font_s7b)
+        self.select_address_6.setText('6')
+        self.select_address_6.setStyleSheet(button_stylesheet_white_text_high)
+        self.select_address_6.clicked.connect(select_address_6_function)
+
+        self.select_address_6_img = QPushButton(self)
+        self.select_address_6_img.move(4, self.select_address_staple_height + 32 + 24 + 24 + 24 + 24 + 24 + 24 + 24)
+        self.select_address_6_img.resize(20, 20)
+        self.select_address_6_img.setIcon(QIcon(default_select_address_image))
+        self.select_address_6_img.setIconSize(QSize(20, 20))
+        self.select_address_6_img.setStyleSheet(button_stylesheet_white_text_high)
+
+        self.select_address_7 = QPushButton(self)
+        self.select_address_7.move(28, self.select_address_staple_height + 32 + 24 + 24 + 24 + 24 + 24 + 24 + 24 + 24)
+        self.select_address_7.resize(self.btn_120, 20)
+        self.select_address_7.setFont(self.font_s7b)
+        self.select_address_7.setText('6')
+        self.select_address_7.setStyleSheet(button_stylesheet_white_text_high)
+        self.select_address_7.clicked.connect(select_address_7_function)
+
+        self.select_address_7_img = QPushButton(self)
+        self.select_address_7_img.move(4, self.select_address_staple_height + 32 + 24 + 24 + 24 + 24 + 24 + 24 + 24 + 24)
+        self.select_address_7_img.resize(20, 20)
+        self.select_address_7_img.setIcon(QIcon(default_select_address_image))
+        self.select_address_7_img.setIconSize(QSize(20, 20))
+        self.select_address_7_img.setStyleSheet(button_stylesheet_white_text_high)
+
+        self.address_settings_0_label_large = QLabel(self)
+        self.address_settings_0_label_large.move(144 + 8 + 28 + 8, self.address_staple_height + 20)
+        self.address_settings_0_label_large.resize(524 - (144 + 8 + 28 + 8), 272 + 28)
+        self.address_settings_0_label_large.setFont(self.font_s7b)
+        self.address_settings_0_label_large.setAlignment(Qt.AlignCenter)
+        self.address_settings_0_label_large.setStyleSheet(label_stylesheet_black_bg_text_white)
 
         self.dial_out_encoding = QPushButton(self)
-        self.dial_out_encoding.move(32, self.address_staple_height + 32 + 24)
+        self.dial_out_encoding.move(144 + 8 + 28 + 8 + 8, self.address_staple_height + 20 + 8)
         self.dial_out_encoding.resize(self.btn_120, 20)
         self.dial_out_encoding.setFont(self.font_s7b)
         self.dial_out_encoding.setText('ENCODING')
         self.dial_out_encoding.setStyleSheet(button_stylesheet_white_text_high)
 
         self.codec_select_box = QComboBox(self)
-        self.codec_select_box.move(32 + self.btn_120 + 4, self.address_staple_height + 32 + 24)
-        self.codec_select_box.resize(186, 20)
+        self.codec_select_box.move(144 + 8 + 28 + 8 + 120 + 8, self.address_staple_height + 20 + 8)
+        self.codec_select_box.resize(160, 20)
         self.codec_select_box.setStyleSheet(cmb_menu_style)
         self.codec_select_box.setFont(self.font_s7b)
         self.codec_select_box.addItem('Unselected')
@@ -2391,10 +2819,11 @@ class App(QMainWindow):
             if enc_val not in enc_val_list:
                 enc_val_list.append(enc_val)
                 self.codec_select_box.addItem(str(enc_val))
+                self.default_decode_combobox.addItem(str(enc_val))
         del enc_val_list
 
         self.dial_out_family_type = QLabel(self)
-        self.dial_out_family_type.move(32, self.address_staple_height + 32 + 24 + 24)
+        self.dial_out_family_type.move(144 + 8 + 28 + 8 + 8, self.address_staple_height + 20 + 8 + 20 + 8)
         self.dial_out_family_type.resize(self.btn_120, 20)
         self.dial_out_family_type.setFont(self.font_s7b)
         self.dial_out_family_type.setText('ADDRESS FAMILY')
@@ -2402,14 +2831,14 @@ class App(QMainWindow):
         self.dial_out_family_type.setStyleSheet(label_stylesheet_grey_bg_white_text_high)
 
         self.communicator_socket_options_box_0 = QComboBox(self)
-        self.communicator_socket_options_box_0.move(32 + self.btn_120 + 4, self.address_staple_height + 32 + 24 + 24)
-        self.communicator_socket_options_box_0.resize(186, 20)
+        self.communicator_socket_options_box_0.move(144 + 8 + 28 + 8 + 8 + 120, self.address_staple_height + 20 + 8 + 20 + 8)
+        self.communicator_socket_options_box_0.resize(160, 20)
         self.communicator_socket_options_box_0.setStyleSheet(cmb_menu_style)
         self.communicator_socket_options_box_0.setFont(self.font_s7b)
         self.communicator_socket_options_box_0.addItem('Unselected')
 
         self.dial_out_socket_type = QLabel(self)
-        self.dial_out_socket_type.move(32, self.address_staple_height + 32 + 24 + 24 + 24)
+        self.dial_out_socket_type.move(144 + 8 + 28 + 8 + 8, self.address_staple_height + 20 + 8 + 20 + 8 + 20 + 8)
         self.dial_out_socket_type.resize(self.btn_120, 20)
         self.dial_out_socket_type.setFont(self.font_s7b)
         self.dial_out_socket_type.setText('SOCKET TYPE')
@@ -2417,14 +2846,14 @@ class App(QMainWindow):
         self.dial_out_socket_type.setStyleSheet(label_stylesheet_grey_bg_white_text_high)
 
         self.communicator_socket_options_box_1 = QComboBox(self)
-        self.communicator_socket_options_box_1.move(32 + self.btn_120 + 4, self.address_staple_height + 32 + 24 + 24 + 24)
-        self.communicator_socket_options_box_1.resize(186, 20)
+        self.communicator_socket_options_box_1.move(144 + 8 + 28 + 8 + 8 + 120, self.address_staple_height + 20 + 8 + 20 + 8 + 20 + 8)
+        self.communicator_socket_options_box_1.resize(160, 20)
         self.communicator_socket_options_box_1.setStyleSheet(cmb_menu_style)
         self.communicator_socket_options_box_1.setFont(self.font_s7b)
         self.communicator_socket_options_box_1.addItem('Unselected')
 
         self.bool_socket_options_btn = QPushButton(self)
-        self.bool_socket_options_btn.move(32, self.address_staple_height + 32 + 24 + 24 + 24 + 24)
+        self.bool_socket_options_btn.move(144 + 8 + 28 + 8 + 8, self.address_staple_height + 20 + 8 + 20 + 8 + 20 + 8 + 20 + 8)
         self.bool_socket_options_btn.resize(self.btn_120, self.btn_20)
         self.bool_socket_options_btn.setStyleSheet(button_stylesheet_white_text_low)
         self.bool_socket_options_btn.setText('SOCKET OPTIONS')
@@ -2432,15 +2861,15 @@ class App(QMainWindow):
         self.bool_socket_options_btn.clicked.connect(bool_socket_options_function)
 
         self.communicator_socket_options_box_2 = QComboBox(self)
-        self.communicator_socket_options_box_2.move(32 + self.btn_120 + 4, self.address_staple_height + 32 + 24 + 24 + 24 + 24)
-        self.communicator_socket_options_box_2.resize(186, 20)
+        self.communicator_socket_options_box_2.move(144 + 8 + 28 + 8 + 8 + 120, self.address_staple_height + 20 + 8 + 20 + 8 + 20 + 8 + 20 + 8)
+        self.communicator_socket_options_box_2.resize(160, 20)
         self.communicator_socket_options_box_2.setStyleSheet(cmb_menu_style)
         self.communicator_socket_options_box_2.setFont(self.font_s7b)
         self.communicator_socket_options_box_2.addItem('Unselected')
 
         self.communicator_socket_options_box_3 = QComboBox(self)
-        self.communicator_socket_options_box_3.move(32 + self.btn_120 + 4, self.address_staple_height + 32 + 24 + 24 + 24 + 24 + 24)
-        self.communicator_socket_options_box_3.resize(186, 20)
+        self.communicator_socket_options_box_3.move(144 + 8 + 28 + 8 + 8 + 120, self.address_staple_height + 20 + 8 + 20 + 8 + 20 + 8 + 20 + 8 + 20 + 8)
+        self.communicator_socket_options_box_3.resize(160, 20)
         self.communicator_socket_options_box_3.setStyleSheet(cmb_menu_style)
         self.communicator_socket_options_box_3.setFont(self.font_s7b)
         self.communicator_socket_options_box_3.addItem('Unselected')
@@ -2452,7 +2881,7 @@ class App(QMainWindow):
             self.communicator_socket_options_box_3.addItem(str(v))
 
         self.mechanized_timer_btn = QPushButton(self)
-        self.mechanized_timer_btn.move(32, self.address_staple_height + 32 + 24 + 24 + 24 + 24 + 24 + 24)
+        self.mechanized_timer_btn.move(144 + 8 + 28 + 8 + 8, self.address_staple_height + 20 + 8 + 20 + 8 + 20 + 8 + 20 + 8 + 20 + 8 + 20 + 8)
         self.mechanized_timer_btn.resize(self.btn_120, self.btn_20)
         self.mechanized_timer_btn.setFont(self.font_s7b)
         self.mechanized_timer_btn.setText('MECH TIMER')
@@ -2460,14 +2889,14 @@ class App(QMainWindow):
         self.mechanized_timer_btn.clicked.connect(mechanized_timer_btn_function)
 
         self.mechanized_timer_edit = QLineEdit(self)
-        self.mechanized_timer_edit.move(32 + self.btn_120 + 4, self.address_staple_height + 32 + 24 + 24 + 24 + 24 + 24 + 24)
+        self.mechanized_timer_edit.move(144 + 8 + 28 + 8 + 8 + 120, self.address_staple_height + 20 + 8 + 20 + 8 + 20 + 8 + 20 + 8 + 20 + 8 + 20 + 8)
         self.mechanized_timer_edit.resize(self.btn_120, 20)
         self.mechanized_timer_edit.setFont(self.font_s7b)
         self.mechanized_timer_edit.setText('0')
         self.mechanized_timer_edit.setStyleSheet(line_edit_stylesheet_white_text)
 
         self.mechanized_timer_message_label = QLabel(self)
-        self.mechanized_timer_message_label.move(32, self.address_staple_height + 32 + 24 + 24 + 24 + 24 + 24 + 24 + 24)
+        self.mechanized_timer_message_label.move(144 + 8 + 28 + 8 + 8, self.address_staple_height + 20 + 8 + 20 + 8 + 20 + 8 + 20 + 8 + 20 + 8 + 20 + 8 + 20 + 8)
         self.mechanized_timer_message_label.resize(self.btn_120, self.btn_20)
         self.mechanized_timer_message_label.setFont(self.font_s7b)
         self.mechanized_timer_message_label.setText('MESSAGE')
@@ -2475,40 +2904,53 @@ class App(QMainWindow):
         self.mechanized_timer_message_label.setStyleSheet(label_stylesheet_black_bg_text_white)
 
         self.mechanized_timer_message_edit = QLineEdit(self)
-        self.mechanized_timer_message_edit.move(32 + self.btn_120 + 4, self.address_staple_height + 32 + 24 + 24 + 24 + 24 + 24 + 24 + 24)
+        self.mechanized_timer_message_edit.move(144 + 8 + 28 + 8 + 8 + 120, self.address_staple_height + 20 + 8 + 20 + 8 + 20 + 8 + 20 + 8 + 20 + 8 + 20 + 8 + 20 + 8)
         self.mechanized_timer_message_edit.resize(self.btn_120, 20)
         self.mechanized_timer_message_edit.setFont(self.font_s7b)
         self.mechanized_timer_message_edit.setText('')
         self.mechanized_timer_message_edit.setStyleSheet(line_edit_stylesheet_white_text)
 
+        self.address_settings_1_label_large = QLabel(self)
+        self.address_settings_1_label_large.move(self.width - 524 -8, self.address_staple_height + 20)
+        self.address_settings_1_label_large.resize(524 + 8, 272 + 28)
+        self.address_settings_1_label_large.setFont(self.font_s7b)
+        self.address_settings_1_label_large.setAlignment(Qt.AlignCenter)
+        self.address_settings_1_label_large.setStyleSheet(label_stylesheet_black_bg_text_white)
+
         self.reveal_btn = QPushButton(self)
-        self.reveal_btn.move(int((self.width / 2) + (self.btn_240 / 2) - self.btn_120 + 2), self.address_staple_height + 28)
-        self.reveal_btn.resize(self.btn_120 - 2, self.btn_20)
+        self.reveal_btn.move(self.width - 524, self.address_staple_height + 24 + 4)
+        self.reveal_btn.resize(524, 20)
         self.reveal_btn.setIcon(QIcon(visibility_0))
         self.reveal_btn.setIconSize(QSize(self.btn_20 - 8, self.btn_20 - 8))
         self.reveal_btn.setFont(self.font_s7b)
-        self.reveal_btn.setStyleSheet(button_stylesheet_white_text_low)
+        self.reveal_btn.setStyleSheet(button_stylesheet_white_text_high)
         self.reveal_btn.clicked.connect(address_clear_form_sensitive_function)
 
+        self.address_main_label_large = QLabel(self)
+        self.address_main_label_large.move(int((self.width / 2) - (524) / 2) - 8, self.address_staple_height + 20)
+        self.address_main_label_large.resize(524 + 8, 272 + 28)
+        self.address_main_label_large.setFont(self.font_s7b)
+        self.address_main_label_large.setAlignment(Qt.AlignCenter)
+        self.address_main_label_large.setStyleSheet(label_stylesheet_black_bg_text_white)
+
         self.address_clear_form = QPushButton(self)
-        self.address_clear_form.move(int((self.width / 2) - (self.btn_240 / 2)), self.address_staple_height + 28)
-        self.address_clear_form.resize(self.btn_120 - 2, self.btn_20)
+        self.address_clear_form.move(int((self.width / 2) - (524) / 2) + 8, self.address_staple_height + 28)
+        self.address_clear_form.resize(self.btn_80, self.btn_20)
         self.address_clear_form.setFont(self.font_s7b)
-        self.address_clear_form.setText('+')
+        self.address_clear_form.setText('NEW')
         self.address_clear_form.setStyleSheet(button_stylesheet_white_text_high)
         self.address_clear_form.clicked.connect(address_clear_form_function)
 
         self.address_undo_form = QPushButton(self)
-        self.address_undo_form.move(int((self.width / 2) - (self.btn_240 / 2) - self.btn_4 - self.btn_80), self.address_staple_height + 28)
+        self.address_undo_form.move(int((self.width / 2) + (524) / 2) - 80 - 8, self.address_staple_height + 28)
         self.address_undo_form.resize(self.btn_80, self.btn_20)
-        self.address_undo_form.setIcon(QIcon(undo_white))
-        self.address_undo_form.setIconSize(QSize(self.btn_20 - 8, self.btn_20 - 8))
+        self.address_undo_form.setText('EDIT')
         self.address_undo_form.setFont(self.font_s7b)
         self.address_undo_form.setStyleSheet(button_stylesheet_white_text_high)
         self.address_undo_form.clicked.connect(address_undo_form_function)
 
         self.address_book_name_label = QLabel(self)
-        self.address_book_name_label.move(int((self.width / 2) - (self.btn_240 / 2) - self.btn_4 - self.btn_80), self.address_staple_height + 56)
+        self.address_book_name_label.move(int((self.width / 2) - (524) / 2) + 8, self.address_staple_height + 56)
         self.address_book_name_label.resize(self.btn_80, 20)
         self.address_book_name_label.setFont(self.font_s7b)
         self.address_book_name_label.setText('NAME')
@@ -2516,15 +2958,15 @@ class App(QMainWindow):
         self.address_book_name_label.setStyleSheet(label_stylesheet_grey_bg_white_text_high)
 
         self.dial_out_name = QLineEdit(self)
-        self.dial_out_name.move(int((self.width / 2) - (self.btn_240 / 2)), self.address_staple_height + 56)
-        self.dial_out_name.resize(self.btn_240, 20)
+        self.dial_out_name.move(int((self.width / 2) - (280 / 2)), self.address_staple_height + 56)
+        self.dial_out_name.resize(300, 20)
         self.dial_out_name.setFont(self.font_s7b)
         self.dial_out_name.setText('')
         self.dial_out_name.setStyleSheet(line_edit_stylesheet_white_text)
         self.dial_out_name.setAlignment(Qt.AlignCenter)
 
         self.address_book_address_label = QPushButton(self)
-        self.address_book_address_label.move(int((self.width / 2) - (self.btn_240 / 2) - self.btn_4 - self.btn_80), self.address_staple_height + 80)
+        self.address_book_address_label.move(int((self.width / 2) - (524) / 2) + 8, self.address_staple_height + 80)
         self.address_book_address_label.resize(self.btn_80, 20)
         self.address_book_address_label.setFont(self.font_s7b)
         self.address_book_address_label.setText('ADDRESS')
@@ -2532,7 +2974,7 @@ class App(QMainWindow):
         self.address_book_address_label.clicked.connect(address_book_address_label_function)
 
         self.address_book_port_label = QLabel(self)
-        self.address_book_port_label.move(int((self.width / 2) - (self.btn_240 / 2) - self.btn_4 - self.btn_80), self.address_staple_height + 80 + 24)
+        self.address_book_port_label.move(int((self.width / 2) - (524) / 2) + 8, self.address_staple_height + 80 + 24)
         self.address_book_port_label.resize(self.btn_80, 20)
         self.address_book_port_label.setFont(self.font_s7b)
         self.address_book_port_label.setText('PORT')
@@ -2540,15 +2982,15 @@ class App(QMainWindow):
         self.address_book_port_label.setStyleSheet(label_stylesheet_grey_bg_white_text_high)
 
         self.address_book_port = QLineEdit(self)
-        self.address_book_port.move(int((self.width / 2) - (self.btn_240 / 2)), self.address_staple_height + 80 + 24)
-        self.address_book_port.resize(self.btn_240, 20)
+        self.address_book_port.move(int((self.width / 2) - (280 / 2)), self.address_staple_height + 80 + 24)
+        self.address_book_port.resize(300, 20)
         self.address_book_port.setFont(self.font_s7b)
         self.address_book_port.setText('')
         self.address_book_port.setStyleSheet(line_edit_stylesheet_white_text)
         self.address_book_port.setAlignment(Qt.AlignCenter)
 
         self.address_book_broadcast_label = QPushButton(self)
-        self.address_book_broadcast_label.move(int((self.width / 2) - (self.btn_240 / 2) - self.btn_4 - self.btn_80), self.address_staple_height + 80 + 24 + 24)
+        self.address_book_broadcast_label.move(int((self.width / 2) - (524) / 2) + 8, self.address_staple_height + 80 + 24 + 24)
         self.address_book_broadcast_label.resize(self.btn_80, 20)
         self.address_book_broadcast_label.setFont(self.font_s7b)
         self.address_book_broadcast_label.setText('BROADCAST')
@@ -2556,15 +2998,15 @@ class App(QMainWindow):
         self.address_book_broadcast_label.clicked.connect(address_book_broadcast_label_function)
 
         self.address_book_broadcast = QLineEdit(self)
-        self.address_book_broadcast.move(int((self.width / 2) - (self.btn_240 / 2)), self.address_staple_height + 80 + 24 + 24)
-        self.address_book_broadcast.resize(self.btn_240, 20)
+        self.address_book_broadcast.move(int((self.width / 2) - (280 / 2)), self.address_staple_height + 80 + 24 + 24)
+        self.address_book_broadcast.resize(300, 20)
         self.address_book_broadcast.setFont(self.font_s7b)
         self.address_book_broadcast.setText('')
         self.address_book_broadcast.setStyleSheet(line_edit_stylesheet_white_text)
         self.address_book_broadcast.setAlignment(Qt.AlignCenter)
 
         self.address_book_mac_label = QPushButton(self)
-        self.address_book_mac_label.move(int((self.width / 2) - (self.btn_240 / 2) - self.btn_4 - self.btn_80), self.address_staple_height + 80 + 24 + 24 + 24)
+        self.address_book_mac_label.move(int((self.width / 2) - (524) / 2) + 8, self.address_staple_height + 80 + 24 + 24 + 24)
         self.address_book_mac_label.resize(self.btn_80, 20)
         self.address_book_mac_label.setFont(self.font_s7b)
         self.address_book_mac_label.setText('MAC')
@@ -2572,58 +3014,49 @@ class App(QMainWindow):
         self.address_book_mac_label.clicked.connect(address_book_mac_label_function)
 
         self.address_book_mac = QLineEdit(self)
-        self.address_book_mac.move(int((self.width / 2) - (self.btn_240 / 2)), self.address_staple_height + 80 + 24 + 24 + 24)
-        self.address_book_mac.resize(self.btn_240, 20)
+        self.address_book_mac.move(int((self.width / 2) - (280 / 2)), self.address_staple_height + 80 + 24 + 24 + 24)
+        self.address_book_mac.resize(300, 20)
         self.address_book_mac.setFont(self.font_s7b)
         self.address_book_mac.setText('')
         self.address_book_mac.setStyleSheet(line_edit_stylesheet_white_text)
         self.address_book_mac.setAlignment(Qt.AlignCenter)
 
         self.uplink_btn = QPushButton(self)
-        self.uplink_btn.move(int((self.width / 2) - (self.btn_240 / 2) - self.btn_4 - self.btn_80), self.address_staple_height + 80 + 24 + 24 + 24 + 24)
+        self.uplink_btn.move(int((self.width / 2) - (524) / 2) + 8, self.address_staple_height + 80 + 24 + 24 + 24 + 24)
         self.uplink_btn.resize(self.btn_80, 20)
         self.uplink_btn.setText('UPLINK')
         self.uplink_btn.setFont(self.font_s7b)
         self.uplink_btn.setStyleSheet(button_stylesheet_white_text_low)
         self.uplink_btn.clicked.connect(uplink_address_function)
 
+        self.dial_out_save_with_key = QPushButton(self)
+        self.dial_out_save_with_key.move(int((self.width / 2) - (524) / 2) + 8, self.address_staple_height + 80 + 24 + 24 + 24 + 24 + 24)
+        self.dial_out_save_with_key.resize(80, 20)
+        self.dial_out_save_with_key.setText('CYPHER')
+        self.dial_out_save_with_key.setFont(self.font_s7b)
+        self.dial_out_save_with_key.setStyleSheet(button_stylesheet_white_text_low)
+        self.dial_out_save_with_key.clicked.connect(dial_out_save_with_key_function)
+        self.dial_out_save_with_key.setEnabled(False)
+
         self.dial_out_ip_port = QLineEdit(self)
-        self.dial_out_ip_port.move(int((self.width / 2) - (self.btn_240 / 2)), self.address_staple_height + 80)
-        self.dial_out_ip_port.resize(self.btn_240, 20)
+        self.dial_out_ip_port.move(int((self.width / 2) - (280 / 2)), self.address_staple_height + 80)
+        self.dial_out_ip_port.resize(300, 20)
         self.dial_out_ip_port.setFont(self.font_s7b)
         self.dial_out_ip_port.setText('')
         self.dial_out_ip_port.setStyleSheet(line_edit_stylesheet_white_text)
         self.dial_out_ip_port.setAlignment(Qt.AlignCenter)
 
-        self.generate_fingerprint = QPushButton(self)
-        self.generate_fingerprint.move(self.width - self.btn_4 - self.btn_20 - 4 - 24, self.address_staple_height + 48 + 4)
-        self.generate_fingerprint.resize(self.btn_20, self.btn_20)
-        self.generate_fingerprint.setText('+')
-        self.generate_fingerprint.setFont(self.font_s7b)
-        self.generate_fingerprint.setStyleSheet(button_stylesheet_white_text_low)
-        self.generate_fingerprint.clicked.connect(generate_fingerprint_function)
-        self.generate_fingerprint.setEnabled(False)
-
-        self.generate_key = QPushButton(self)
-        self.generate_key.move(self.width - self.btn_4 - self.btn_20 - 4 - 24, self.address_staple_height + 28)
-        self.generate_key.resize(self.btn_20, self.btn_20)
-        self.generate_key.setText('+')
-        self.generate_key.setFont(self.font_s7b)
-        self.generate_key.setStyleSheet(button_stylesheet_white_text_low)
-        self.generate_key.clicked.connect(generate_key_function)
-        self.generate_key.setEnabled(False)
-
         self.address_fingerprint_label = QLabel(self)
-        self.address_fingerprint_label.move(self.width - self.btn_360 - self.btn_4 - self.btn_20 - 8, self.address_staple_height + 48 + 4)
-        self.address_fingerprint_label.resize(338, 20)
+        self.address_fingerprint_label.move(self.width - 524 + 16, self.address_staple_height + 20 + 8 + 20 + 8 + 20 + 8)
+        self.address_fingerprint_label.resize(80, 20)
         self.address_fingerprint_label.setFont(self.font_s7b)
         self.address_fingerprint_label.setText('FINGERPRINT')
-        self.address_fingerprint_label.setAlignment(Qt.AlignCenter)
+        self.address_fingerprint_label.setAlignment(Qt.AlignLeft)
         self.address_fingerprint_label.setStyleSheet(label_stylesheet_grey_bg_white_text_high)
 
         self.tb_fingerprint = QTextBrowser(self)
-        self.tb_fingerprint.move(self.width - self.btn_360 - self.btn_4 - self.btn_20 - 8, self.address_staple_height + 72)
-        self.tb_fingerprint.resize(self.btn_360, 72 + 74)
+        self.tb_fingerprint.move(self.width - 400 - self.btn_4 - self.btn_20 - 8, self.address_staple_height + 20 + 8 + 20 + 8 + 20 + 8)
+        self.tb_fingerprint.resize(420, 72 + 74)
         self.tb_fingerprint.setObjectName("tb_fingerprint")
         self.tb_fingerprint.setFont(self.font_s7b)
         self.tb_fingerprint.setStyleSheet(textbox_stylesheet_black_bg)
@@ -2632,63 +3065,56 @@ class App(QMainWindow):
         self.tb_fingerprint.verticalScrollBar().setValue(0)
 
         self.address_key_label = QLabel(self)
-        self.address_key_label.move(self.width - self.btn_360 - self.btn_4 - self.btn_20 - 8, self.address_staple_height + 24 + 4)
-        self.address_key_label.resize(self.btn_80 - 4, 20)
+        self.address_key_label.move(self.width - 524 + 16, self.address_staple_height + 20 + 8 + 20 + 8)
+        self.address_key_label.resize(80, 20)
         self.address_key_label.setFont(self.font_s7b)
         self.address_key_label.setText('KEY')
-        self.address_key_label.setAlignment(Qt.AlignCenter)
-        self.address_key_label.setStyleSheet(label_stylesheet_grey_bg_white_text_high)
+        self.address_key_label.setAlignment(Qt.AlignLeft)
+        self.address_key_label.setStyleSheet(label_stylesheet_black_bg_text_white)
 
         self.address_key = QLineEdit(self)
-        self.address_key.move(self.width - self.btn_280 - self.btn_4 - self.btn_20 - 8, self.address_staple_height + 28)
-        self.address_key.resize(258, 20)
+        self.address_key.move(self.width - 524 + 16 + 80, self.address_staple_height + 20 + 8 + 20 + 8)
+        self.address_key.resize(280, 20)
         self.address_key.setFont(self.font_s7b)
         self.address_key.setStyleSheet(line_edit_stylesheet_white_text)
 
-        self.dial_out_save_with_key = QPushButton(self)
-        self.dial_out_save_with_key.move(self.width - self.btn_360 - self.btn_4 - self.btn_20 - self.btn_4 - self.btn_20 - 8, self.address_staple_height + 24 + 4)
-        self.dial_out_save_with_key.resize(self.btn_20, 116)
-        self.dial_out_save_with_key.setIcon(QIcon(advanced_save_0))
-        self.dial_out_save_with_key.setIconSize(QSize(20, 20))
-        self.dial_out_save_with_key.setStyleSheet(button_stylesheet_white_text_low)
-        self.dial_out_save_with_key.clicked.connect(dial_out_save_with_key_function)
-
         self.dial_out_prev_addr = QPushButton(self)
-        self.dial_out_prev_addr.move(4, self.address_staple_height + 24 + 4)
-        self.dial_out_prev_addr.resize(20, 204)
-        self.dial_out_prev_addr.setIcon(QIcon(arrow_left))
+        self.dial_out_prev_addr.move(0, self.address_staple_height + 20)
+        self.dial_out_prev_addr.resize(144 + 8, 20)
+        self.dial_out_prev_addr.setIcon(QIcon(arrow_prev))
         self.dial_out_prev_addr.setIconSize(QSize(20, 20))
-        self.dial_out_prev_addr.setStyleSheet(button_scroll_stylesheet_left)
+        self.dial_out_prev_addr.setStyleSheet(button_scroll_stylesheet_prev)
         self.dial_out_prev_addr.clicked.connect(client_previous_address_function)
 
         self.dial_out_next_addr = QPushButton(self)
-        self.dial_out_next_addr.move(self.width - self.btn_20 - self.btn_4, self.address_staple_height + 24 + 4)
-        self.dial_out_next_addr.resize(20, 204)
-        self.dial_out_next_addr.setIcon(QIcon(arrow_right))
+        self.dial_out_next_addr.move(0, self.address_staple_height + 32 + 24 + 24 + 24 + 24 + 24 + 24 + 24 + 24 + 24 + 24 + 24)
+        self.dial_out_next_addr.resize(144 + 8, 20)
+        self.dial_out_next_addr.setIcon(QIcon(arrow_nxt))
         self.dial_out_next_addr.setIconSize(QSize(20, 20))
-        self.dial_out_next_addr.setStyleSheet(button_scroll_stylesheet_right)
+        self.dial_out_next_addr.setStyleSheet(button_scroll_stylesheet_nxt)
         self.dial_out_next_addr.clicked.connect(client_next_address_function)
 
         self.dial_out_add_addr = QPushButton(self)
-        self.dial_out_add_addr.move(int((self.width / 2) - (self.btn_240 / 2)), self.address_staple_height + 104 + 24 + 24 + 24 + 24)
-        self.dial_out_add_addr.resize(self.btn_120 - 2, 20)
+        self.dial_out_add_addr.move(int((self.width / 2) - (524) / 2) + 8, self.address_staple_height + 80 + 24 + 24 + 24 + 24 + 24 + 24 + 8)
+        self.dial_out_add_addr.resize(80, 20)
         self.dial_out_add_addr.setFont(self.font_s7b)
         self.dial_out_add_addr.setText('SAVE')
-        self.dial_out_add_addr.setStyleSheet(button_stylesheet_default)
+        self.dial_out_add_addr.setStyleSheet(button_stylesheet_white_text_high)
         self.dial_out_add_addr.clicked.connect(client_save_address)
-        self.dial_out_add_addr.setEnabled(True)
+        self.dial_out_add_addr.hide()
 
         self.dial_out_rem_addr = QPushButton(self)
-        self.dial_out_rem_addr.move(int((self.width / 2) + (self.btn_240 / 2) - self.btn_120 + 2), self.address_staple_height + 104 + 24 + 24 + 24 + 24)
-        self.dial_out_rem_addr.resize(self.btn_120 - 2, 20)
+        self.dial_out_rem_addr.move(int((self.width / 2) + (524) / 2) - 80 - 8, self.address_staple_height + 80 + 24 + 24 + 24 + 24 + 24 + 24 + 8)
+        self.dial_out_rem_addr.resize(80, 20)
         self.dial_out_rem_addr.setFont(self.font_s7b)
         self.dial_out_rem_addr.setText('DELETE')
-        self.dial_out_rem_addr.setStyleSheet(button_stylesheet_default)
+        self.dial_out_rem_addr.setStyleSheet(button_stylesheet_white_text_high)
         self.dial_out_rem_addr.clicked.connect(client_remove_address)
+        self.dial_out_rem_addr.hide()
 
         # ##########################################################################################################
 
-        self.transmission_staple = self.address_staple_height + 224 + 24
+        self.transmission_staple = self.height - 28 - 20 - 8
 
         self.dial_out_label = QLabel(self)
         self.dial_out_label.move(12, self.transmission_staple)
@@ -2697,9 +3123,10 @@ class App(QMainWindow):
         self.dial_out_label.setText('TRANSMIT')
         self.dial_out_label.setAlignment(Qt.AlignCenter)
         self.dial_out_label.setStyleSheet(title_stylesheet_default)
+        self.dial_out_label.hide()
 
         self.dial_override = QPushButton(self)
-        self.dial_override.move(int((self.width / 2) - (self.btn_240 / 2)), self.transmission_staple + 24 + 24)
+        self.dial_override.move(int((self.width / 2) - (524 / 2)) + 16, self.transmission_staple)
         self.dial_override.resize(self.btn_60, self.btn_20)
         self.dial_override.setStyleSheet(button_stylesheet_white_text_high)
         self.dial_override.setText('OVERRIDE')
@@ -2708,19 +3135,11 @@ class App(QMainWindow):
 
         # todo --> make as textbox
         self.dial_out_message = QLineEdit(self)
-        self.dial_out_message.move(int((self.width / 2) - (self.btn_240 / 2)), self.transmission_staple + 24 + 24 + 24)
-        self.dial_out_message.resize(self.btn_240, self.btn_20)
+        self.dial_out_message.move(int((self.width / 2) - (524 / 2)) + 16 + 60 + 8, self.transmission_staple)
+        self.dial_out_message.resize(280, self.btn_20)
         self.dial_out_message.setFont(self.font_s7b)
         self.dial_out_message.setText('')
         self.dial_out_message.setStyleSheet(line_edit_stylesheet_white_text)
-
-        self.transmit_display_address = QLabel(self)
-        self.transmit_display_address.move(4, self.transmission_staple + 24)
-        self.transmit_display_address.resize(self.width - 8, 20)
-        self.transmit_display_address.setFont(self.font_s7b)
-        self.transmit_display_address.setText('')
-        self.transmit_display_address.setAlignment(Qt.AlignCenter)
-        self.transmit_display_address.setStyleSheet(label_stylesheet_black_bg_text_white)
 
         # todo --> option - requests
 
@@ -2731,7 +3150,7 @@ class App(QMainWindow):
         # todo --> voice call
 
         self.dial_out_message_send = QPushButton(self)
-        self.dial_out_message_send.move(int((self.width / 2) + (self.btn_240 / 2) + self.btn_4), self.transmission_staple + 24 + 24 + 24)
+        self.dial_out_message_send.move(int((self.width / 2) - (524 / 2)) + 16 + 60 + 8 + 280 + 8, self.transmission_staple)
         self.dial_out_message_send.resize(self.btn_60, self.btn_20)
         self.dial_out_message_send.setIcon(QIcon(send_white))
         self.dial_out_message_send.setIconSize(QSize(self.btn_20, self.btn_20))
@@ -2739,7 +3158,7 @@ class App(QMainWindow):
         self.dial_out_message_send.clicked.connect(send_message_function)
 
         self.dial_out_cipher_bool_btn = QPushButton(self)
-        self.dial_out_cipher_bool_btn.move(int((self.width / 2) + (self.btn_240 / 2) + self.btn_4), self.transmission_staple + 24 + 24)
+        self.dial_out_cipher_bool_btn.move(int((self.width / 2) - (524 / 2)) + 16 + 60 + 8 + 280 + 8 + 60 + 8, self.transmission_staple)
         self.dial_out_cipher_bool_btn.resize(self.btn_60, self.btn_20)
         self.dial_out_cipher_bool_btn.setText('CIPHER')
         self.dial_out_cipher_bool_btn.setFont(self.font_s7b)
@@ -2748,7 +3167,7 @@ class App(QMainWindow):
         # ##########################################################################################################
 
         # Thread - Public Server
-        server_thread = ServerClass(self.server_status_label, self.soft_block_ip_notification, self.server_status_label_ip_in_use, self.server_start)
+        server_thread = ServerClass(self.server_status_label, self.soft_block_ip_notification, self.server_start)
 
         # Thread - ServerDataHandlerClass
         server_data_handler_class = ServerDataHandlerClass(self.server_notify_cipher, self.server_notify_alien)
@@ -2782,6 +3201,8 @@ class App(QMainWindow):
             time.sleep(1)
         debug_message.append('[' + str(datetime.datetime.now()) + '] [App] configuration_thread_completed: ' + str(configuration_thread_completed))
 
+        bool_default_decode_allow = True
+
         # Show Server Settings
         server_prev_addr_function()
         server_next_addr_function()
@@ -2789,6 +3210,10 @@ class App(QMainWindow):
         # Show Dial Out Address settings
         client_previous_address_function()
         client_next_address_function()
+
+        # Set Server Default Decoding
+        index = self.default_decode_combobox.findText(default_decoding, QtCore.Qt.MatchFixedString)
+        self.default_decode_combobox.setCurrentIndex(index)
 
         # Show and set server accept connection settings
         if accept_from_key == 'address_book_only':
@@ -2818,8 +3243,8 @@ class App(QMainWindow):
 
         # Initiate window into Communicator program
         self.textbox_0 = QTextBrowser(self)
-        self.textbox_0.move(12, self.server_staple + 28 + 24 + 24 + 24 + 24)
-        self.textbox_0.resize(self.width - 24, 128)
+        self.textbox_0.move(self.width - 524, 8)
+        self.textbox_0.resize(524, 80)
         self.textbox_0.setObjectName("textbox_0")
         self.textbox_0.setFont(self.font_s7b)
         self.textbox_0.setStyleSheet(textbox_stylesheet_default)
@@ -2834,8 +3259,8 @@ class App(QMainWindow):
 
         # Initiate window into Communicator program
         self.textbox_1 = QTextBrowser(self)
-        self.textbox_1.move(12, self.server_staple + 28 + 24 + 24 + 24 + 24 + 136)
-        self.textbox_1.resize(self.width - 24, 128)
+        self.textbox_1.move(self.width - 524, 96)
+        self.textbox_1.resize(524, 80)
         self.textbox_1.setObjectName("textbox_1")
         self.textbox_1.setFont(self.font_s7b)
         self.textbox_1.setStyleSheet(textbox_stylesheet_default)
@@ -2867,6 +3292,7 @@ class App(QMainWindow):
         self.initUI()
 
     def initUI(self):
+
         self.show()
 
     @QtCore.pyqtSlot()
@@ -2914,7 +3340,7 @@ class App(QMainWindow):
 
         if self.gui_message == 'invalid_address':
             self.gui_message = ''
-            self.address_book_label.setStyleSheet(title_stylesheet_default)
+            self.address_book_label.setStyleSheet(label_stylesheet_grey_bg_text_white_large)
             self.dial_out_name.setStyleSheet(line_edit_stylesheet_white_text)
             self.dial_out_ip_port.setStyleSheet(line_edit_stylesheet_white_text)
             self.address_book_port.setStyleSheet(line_edit_stylesheet_white_text)
@@ -2923,7 +3349,7 @@ class App(QMainWindow):
 
         if self.gui_message == 'saved_address':
             self.gui_message = ''
-            self.address_book_label.setStyleSheet(title_stylesheet_default)
+            self.address_book_label.setStyleSheet(label_stylesheet_grey_bg_text_white_large)
             self.dial_out_name.setStyleSheet(line_edit_stylesheet_white_text)
             self.dial_out_ip_port.setStyleSheet(line_edit_stylesheet_white_text)
             self.address_book_port.setStyleSheet(line_edit_stylesheet_white_text)
@@ -2937,7 +3363,7 @@ class App(QMainWindow):
             if gui_message_ == 'invalid_address':
                 self.gui_message = 'invalid_address'
                 print('-- dropped in gui_message:', gui_message_)
-                self.address_book_label.setStyleSheet(label_stylesheet_red_bg_black_text)
+                self.address_book_label.setStyleSheet(label_stylesheet_grey_bg_text_white_large)
                 self.dial_out_name.setStyleSheet(line_edit_stylesheet_red_bg_black_text)
                 self.dial_out_ip_port.setStyleSheet(line_edit_stylesheet_red_bg_black_text)
                 self.address_book_port.setStyleSheet(line_edit_stylesheet_red_bg_black_text)
@@ -2947,7 +3373,7 @@ class App(QMainWindow):
             elif gui_message_ == 'saved_address':
                 self.gui_message = 'saved_address'
                 print('-- dropped in gui_message:', gui_message_)
-                self.address_book_label.setStyleSheet(label_stylesheet_green_bg_black_text)
+                self.address_book_label.setStyleSheet(label_stylesheet_grey_bg_text_white_large)
                 self.dial_out_name.setStyleSheet(line_edit_stylesheet_green_bg_black_text)
                 self.dial_out_ip_port.setStyleSheet(line_edit_stylesheet_green_bg_black_text)
                 self.address_book_port.setStyleSheet(line_edit_stylesheet_green_bg_black_text)
@@ -2969,11 +3395,6 @@ class PowerDecode(QThread):
         debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.power_decode_bytes_str_function]')
 
         my_bytes = ''
-
-        # Example of a pre crafted magic packet -->
-        # \xff\xff\xff\xff\xff\xffpT\xb4\x84 \xfepT\xb4\x84 \xfepT\xb4\x84 \xfepT\xb4\x84 \xfepT\xb4\x84 \xfepT\xb4\x84 \xfepT\xb4\x84 \xfepT\xb4\x84 \xfepT\xb4\x84 \xfepT\xb4\x84 \xfepT\xb4\x84 \xfepT\xb4\x84 \xfepT\xb4\x84 \xfepT\xb4\x84 \xfepT\xb4\x84 \xfepT\xb4\x84 \xfe
-        # Which should look correct in utf-16 -->
-        # ￿￿￿呰蒴︠呰蒴︠呰蒴︠呰蒴︠呰蒴︠呰蒴︠呰蒴︠呰蒴︠呰蒴︠呰蒴︠呰蒴︠呰蒴︠呰蒴︠呰蒴︠呰蒴︠呰蒴︠
 
         str_ = self.power_decode_bytes_str.text()
         with open('make_a_byte_string.py', 'w') as fo:
@@ -3268,7 +3689,6 @@ class UplinkClass(QThread):
                 if len(uplink_addresses) > 0:
                     debug_message.append('[' + str(datetime.datetime.now()) + '] [UplinkClass.run] remaining addresses to receive uplink: ' + str(len(uplink_addresses)))
                     self.uplink()
-                # time.sleep(1)
 
     def uplink(self):
         global debug_message
@@ -3443,11 +3863,9 @@ class GetExternalIPClass(QThread):
     def use_external_service(self):
         global debug_message
         global external_ip_address
-        # debug_message.append('[' + str(datetime.datetime.now()) + '] GetExternalIPClass.use_external_service: plugged in')
         try:
             # todo --> more external service options for obtaining external ip address
             current_ip_address = get('https://api.ipify.org').text
-            # debug_message.append('current_ip_address:', current_ip_address)
 
             # todo --> more sanitize
             if not ' ' in current_ip_address:
@@ -3473,8 +3891,6 @@ class GetExternalIPClass(QThread):
             debug_message.append('[' + str(datetime.datetime.now()) + '] [GetExternalIPClass.use_external_service] ' + str(e))
             self.external_ip_label.setStyleSheet(label_stylesheet_black_bg_text_yellow)
 
-        # time.sleep(3)
-
     def get_url(self):
         global debug_message
         debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [GetExternalIPClass.get_url]')
@@ -3488,23 +3904,23 @@ class GetExternalIPClass(QThread):
             if from_file_bool is False:
                 # Set string
                 str_ = str(_[1])
+
                 # Find url and slice twice
                 find_0 = str_.find('http')
                 str_ = str_[find_0:]
                 find_1 = str_.find('.xml')
                 url = str_[:find_1 + 4]
+
                 # Find Address
                 addr = str(_[0][0] + ':' + str(_[0][1]))
-                # debug_message.append('Attempting to retrieve information from: ', addr, ' at address url ', url)
                 self.url.append(url)
             else:
-                str_ = _
                 # Find url and slice twice
+                str_ = _
                 find_0 = str_.find('http')
                 str_ = str_[find_0:]
                 find_1 = str_.find('.xml')
                 url = str_[:find_1 + 4]
-                # debug_message.append('Attempting to retrieve information from url:', url)
                 self.url.append(url)
             debug_message.append('[' + str(datetime.datetime.now()) + '] [self.url] ' + str(self.url))
 
@@ -3561,7 +3977,6 @@ class GetExternalIPClass(QThread):
                     enum.append([addr, data])
         except socket.timeout:
             soc.close()
-            # debug_message.append('[' + str(datetime.datetime.now()) + '] GetExternalIPClass.enumeration: timed out')
             pass
 
         if len(enum) > 0:
@@ -3581,7 +3996,6 @@ class GetExternalIPClass(QThread):
 
     def get_data(self):
         global debug_message
-        # debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [GetExternalIPClass.get_data]')
         global enum
         global from_file_bool
         global external_ip_address
@@ -3590,7 +4004,6 @@ class GetExternalIPClass(QThread):
 
             # Set device using url
             d = upnpclient.Device(_)
-            # debug_message.append('[' + str(datetime.datetime.now()) + '] [GetExternalIPClass.get_data] device(s)' + str(d))
 
             for k in d.service_map:
 
@@ -3643,6 +4056,7 @@ class ConfigurationClass(QThread):
         global accept_from_key
         global uplink_enable_bool
         global uplink_use_external_service
+        global default_decoding
 
         debug_message.append('[' + str(datetime.datetime.now()) + '] [ConfigurationClass.run] updating all values from configuration file...')
 
@@ -3678,6 +4092,11 @@ class ConfigurationClass(QThread):
                             uplink_use_external_service = False
                         elif str(line[1]) == 'use_external_service':
                             uplink_use_external_service = True
+
+                if str(line[0]) == 'DEFAULT_DECODING':
+                    if len(line) == 2:
+                        default_decoding = line[1]
+                        debug_message.append('[' + str(datetime.datetime.now()) + '] [ConfigurationClass.run] setting default server decoding: ' + str(default_decoding))
         fo.close()
 
         debug_message.append('[' + str(datetime.datetime.now()) + '] [ConfigurationClass.run] updating all values from communicator address book...')
@@ -3706,7 +4125,6 @@ class ConfigurationClass(QThread):
                                 print('adding to client address:', _)
                                 message_var = line_0.replace('MECHANIZED_MESSAGE ', '')
                                 message_var = message_var.replace(str(line[1] + ' '), '')
-                                # message_var = line_0[2:]
                                 _.append(message_var)
                                 print('client address after append', _)
 
@@ -3732,14 +4150,16 @@ class ConfigurationClass(QThread):
 class AESCipher:
 
     def __init__(self, KEY):
+        global default_encoding
         self.key = KEY
 
         self.BS = 16
-        self.pad = lambda s: bytes(s + (self.BS - len(s) % self.BS) * chr(self.BS - len(s) % self.BS), 'utf-8')
+        self.pad = lambda s: bytes(s + (self.BS - len(s) % self.BS) * chr(self.BS - len(s) % self.BS), default_encoding)
         self.unpad = lambda s: s[0:-ord(s[-1:])]
 
     def encrypt(self, raw):
         global debug_message
+
         debug_message.append('[' + str(datetime.datetime.now()) + '] [AESCipher.encrypt] encrypting using key: ' + str(self.key))
         try:
             raw = self.pad(raw)
@@ -3752,12 +4172,14 @@ class AESCipher:
 
     def decrypt(self, enc):
         global debug_message
+        global default_decoding
+
         debug_message.append('[' + str(datetime.datetime.now()) + '] [AESCipher.decrypt] decrypting using key: ' + str(self.key))
         try:
             enc = base64.b64decode(enc)
             iv = enc[:16]
             cipher = AES.new(self.key, AES.MODE_CBC, iv)
-            return self.unpad(cipher.decrypt(enc[16:])).decode('utf-8')
+            return self.unpad(cipher.decrypt(enc[16:])).decode(default_decoding)
 
         except Exception as e:
             debug_message.append('[' + str(datetime.datetime.now()) + '] [AESCipher.decrypt] ' + str(e))
@@ -4005,6 +4427,7 @@ class ServerDataHandlerClass(QThread):
         global cipher_message_count
         global alien_message_count
         global enable_power_decode_bool
+        global default_decoding
 
         while True:
             try:
@@ -4089,7 +4512,7 @@ class ServerDataHandlerClass(QThread):
                             self.data = str(datetime.datetime.now()) + ' [ServerDataHandlerClass.run] message is not encrypted using keys in address book: ' + str(ciphertext)
                             debug_message.append(self.data)
                             self.server_logger()
-                            textbox_0_messages.append('[' + str(datetime.datetime.now()) + '] [' + str(addr_data) + '] [NON-STANDARD COMMUNICATION] ' + str(ciphertext, 'utf-8'))
+                            textbox_0_messages.append('[' + str(datetime.datetime.now()) + '] [' + str(addr_data) + '] [NON-STANDARD COMMUNICATION] ' + str(ciphertext, default_decoding))
 
                             if not alien_message_count == '999+':
                                 if alien_message_count < 999:
@@ -4110,11 +4533,10 @@ class ServerDataHandlerClass(QThread):
 
 
 class ServerClass(QThread):
-    def __init__(self, server_status_label, soft_block_ip_notification, server_status_label_ip_in_use, server_start):
+    def __init__(self, server_status_label, soft_block_ip_notification, server_start):
         QThread.__init__(self)
         self.server_status_label = server_status_label
         self.soft_block_ip_notification = soft_block_ip_notification
-        self.server_status_label_ip_in_use = server_status_label_ip_in_use
         self.server_start = server_start
         self.data = ''
         self.SERVER_HOST = ''
@@ -4129,7 +4551,7 @@ class ServerClass(QThread):
         global server_address
         global server_address_index
 
-        self.server_status_label_ip_in_use.setText(str(server_address[server_address_index][0] + ' ' + str(server_address[server_address_index][1])))
+        self.server_status_label.setText(str(server_address[server_address_index][0] + ' ' + str(server_address[server_address_index][1])))
 
         self.SERVER_HOST = server_address[server_address_index][0]
         debug_message.append('[' + str(datetime.datetime.now()) + '] [ServerClass.run] SERVER_HOST: ' + str(self.SERVER_HOST))
@@ -4142,16 +4564,15 @@ class ServerClass(QThread):
 
         while True:
             try:
-                self.server_status_label.setText('SERVER STATUS: ONLINE')
-                self.server_start.setIcon(QIcon(play_default))
+                self.server_start.setStyleSheet(button_stylesheet_white_text_high)
+                self.server_status_label.setStyleSheet(label_stylesheet_black_bg_text_white)
                 self.listen()
             except Exception as e:
                 self.data = str('[' + str(datetime.datetime.now()) + '] [ServerClass.run] [0] failed: ' + str(e))
                 textbox_0_messages.append(self.data)
                 self.server_logger()
-
-                self.server_status_label.setText('SERVER STATUS: TRYING TO START')
-                self.server_start.setIcon(QIcon(play_yellow))
+                self.server_status_label.setText('---   ---   ---')
+                self.server_status_label.setStyleSheet(label_stylesheet_black_bg_text_yellow)
                 time.sleep(1)
 
     def server_logger(self):
@@ -4224,8 +4645,6 @@ class ServerClass(QThread):
             try:
                 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as SOCKET_SERVER:
                     SOCKET_SERVER.bind((self.SERVER_HOST, self.SERVER_PORT))
-                    self.server_status_label.setText('SERVER STATUS: ONLINE')
-                    self.server_start.setIcon(QIcon(play_default))
 
                     SOCKET_SERVER.listen()
 
@@ -4354,8 +4773,9 @@ class ServerClass(QThread):
                                     self.server_status_current = False
                                     debug_message.append('[' + str(datetime.datetime.now()) + '] [ServerClass.listen] [2] failed: ' + str(e))
                                     textbox_0_messages.append('[' + str(datetime.datetime.now()) + '] [2] ' + str(e))
-                                    self.server_status_label.setText('SERVER STATUS: TRYING TO START')
-                                    self.server_start.setIcon(QIcon(play_yellow))
+                                    self.server_status_label.setText('---   ---   ---')
+                                    self.server_status_label.setStyleSheet(label_stylesheet_black_bg_text_yellow)
+                                    self.server_start.setStyleSheet(button_stylesheet_yellow_text)
                                     time.sleep(1)
                                     break
 
@@ -4363,8 +4783,9 @@ class ServerClass(QThread):
                 self.server_status_current = False
                 debug_message.append('[' + str(datetime.datetime.now()) + '] [ServerClass.listen] [3] failed: ' + str(e))
                 textbox_0_messages.append('[' + str(datetime.datetime.now()) + '] [3] ' + str(e))
-                self.server_status_label.setText('SERVER STATUS: TRYING TO START')
-                self.server_start.setIcon(QIcon(play_yellow))
+                self.server_status_label.setText('---   ---   ---')
+                self.server_status_label.setStyleSheet(label_stylesheet_black_bg_text_yellow)
+                self.server_start.setStyleSheet(button_stylesheet_yellow_text)
                 time.sleep(1)
                 break
 
@@ -4373,8 +4794,9 @@ class ServerClass(QThread):
         self.data = str('[' + str(datetime.datetime.now()) + '] [ServerClass.stop] ServerClass.stop public server terminating')
         debug_message.append(self.data)
         self.server_logger()
-        self.server_status_label.setText('SERVER STATUS: OFFLINE')
-        self.server_start.setIcon(QIcon(play_default))
+        self.server_status_label.setText('---   ---   ---')
+        self.server_status_label.setStyleSheet(label_stylesheet_red_text)
+        self.server_start.setStyleSheet(button_stylesheet_red_text)
         self.terminate()
 
 
