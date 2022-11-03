@@ -139,6 +139,7 @@ bool_address_uplink = False
 get_external_ip_finnished_reading = False
 uplink_use_external_service = False
 mechanize_timer_bool = False
+soft_block_bool = True
 
 # Keys
 accept_from_key = ''
@@ -2355,6 +2356,16 @@ class App(QMainWindow):
             client_address_index = client_address_index+6
             client_next_address_function()
 
+        def rate_limiting_function():
+            global soft_block_bool
+
+            debug_message.append('[' + str(datetime.datetime.now()) + '] [Plugged In] [App.rate_limiting_function]')
+
+            if self.rate_limiting_box.currentText() == 'Enabled':
+                soft_block_bool = True
+            elif self.rate_limiting_box.currentText() == 'Disabled':
+                soft_block_bool = False
+
         # Window Title
         self.title = "Communicator"
         self.setWindowTitle('Communicator')
@@ -2609,7 +2620,6 @@ class App(QMainWindow):
         self.default_decode_combobox.resize(160, 20)
         self.default_decode_combobox.setStyleSheet(cmb_menu_style)
         self.default_decode_combobox.setFont(self.font_s7b)
-        self.default_decode_combobox.currentIndexChanged.connect(default_decode_function)
 
         self.power_decode_mode = QLabel(self)
         self.power_decode_mode.move(4, self.server_staple + 24 + 24 + 24)
@@ -2645,6 +2655,23 @@ class App(QMainWindow):
         self.power_decode_bytes_str.setStyleSheet(line_edit_stylesheet_white_text)
         self.power_decode_bytes_str.returnPressed.connect(power_decode_bytes_str_function)
 
+        self.rate_limiting_label = QLabel(self)
+        self.rate_limiting_label.move(4, self.server_staple - 28)
+        self.rate_limiting_label.resize(self.btn_120, 20)
+        self.rate_limiting_label.setFont(self.font_s7b)
+        self.rate_limiting_label.setText('SOFT BLOCKING')
+        self.rate_limiting_label.setAlignment(Qt.AlignCenter)
+        self.rate_limiting_label.setStyleSheet(label_stylesheet_black_bg_text_white)
+
+        self.rate_limiting_box = QComboBox(self)
+        self.rate_limiting_box.move(4 + self.btn_120 + 4, self.server_staple - 28)
+        self.rate_limiting_box.resize(160, 20)
+        self.rate_limiting_box.setStyleSheet(cmb_menu_style)
+        self.rate_limiting_box.setFont(self.font_s7b)
+        self.rate_limiting_box.addItem('Disabled')
+        self.rate_limiting_box.addItem('Enabled')
+        self.rate_limiting_box.currentIndexChanged.connect(rate_limiting_function)
+
         # ##########################################################################################################
 
         self.address_staple_height = self.server_staple + 24 + 24 + 24 + 24 + 24
@@ -2660,7 +2687,7 @@ class App(QMainWindow):
 
         self.search_address_label_large = QLabel(self)
         self.search_address_label_large.move(0, self.address_staple_height + 20)
-        self.search_address_label_large.resize(144 + 8, 272 + 28)
+        self.search_address_label_large.resize(144 + 8 + 20, 272 + 28)
         self.search_address_label_large.setFont(self.font_s7b)
         self.search_address_label_large.setAlignment(Qt.AlignCenter)
         self.search_address_label_large.setStyleSheet(label_stylesheet_black_bg_text_white)
@@ -2821,6 +2848,8 @@ class App(QMainWindow):
                 self.codec_select_box.addItem(str(enc_val))
                 self.default_decode_combobox.addItem(str(enc_val))
         del enc_val_list
+
+        self.default_decode_combobox.currentIndexChanged.connect(default_decode_function)
 
         self.dial_out_family_type = QLabel(self)
         self.dial_out_family_type.move(144 + 8 + 28 + 8 + 8, self.address_staple_height + 20 + 8 + 20 + 8)
@@ -3080,7 +3109,7 @@ class App(QMainWindow):
 
         self.dial_out_prev_addr = QPushButton(self)
         self.dial_out_prev_addr.move(0, self.address_staple_height + 20)
-        self.dial_out_prev_addr.resize(144 + 8, 20)
+        self.dial_out_prev_addr.resize(144 + 8 + 20, 20)
         self.dial_out_prev_addr.setIcon(QIcon(arrow_prev))
         self.dial_out_prev_addr.setIconSize(QSize(20, 20))
         self.dial_out_prev_addr.setStyleSheet(button_scroll_stylesheet_prev)
@@ -3088,7 +3117,7 @@ class App(QMainWindow):
 
         self.dial_out_next_addr = QPushButton(self)
         self.dial_out_next_addr.move(0, self.address_staple_height + 32 + 24 + 24 + 24 + 24 + 24 + 24 + 24 + 24 + 24 + 24 + 24)
-        self.dial_out_next_addr.resize(144 + 8, 20)
+        self.dial_out_next_addr.resize(144 + 8 + 20, 20)
         self.dial_out_next_addr.setIcon(QIcon(arrow_nxt))
         self.dial_out_next_addr.setIconSize(QSize(20, 20))
         self.dial_out_next_addr.setStyleSheet(button_scroll_stylesheet_nxt)
@@ -3114,7 +3143,7 @@ class App(QMainWindow):
 
         # ##########################################################################################################
 
-        self.transmission_staple = self.height - 28 - 20 - 8
+        self.transmission_staple = self.height - 28 - 8
 
         self.dial_out_label = QLabel(self)
         self.dial_out_label.move(12, self.transmission_staple)
@@ -3259,7 +3288,7 @@ class App(QMainWindow):
 
         # Initiate window into Communicator program
         self.textbox_1 = QTextBrowser(self)
-        self.textbox_1.move(self.width - 524, 96)
+        self.textbox_1.move(self.width - 524, 112)
         self.textbox_1.resize(524, 80)
         self.textbox_1.setObjectName("textbox_1")
         self.textbox_1.setFont(self.font_s7b)
@@ -4584,21 +4613,18 @@ class ServerClass(QThread):
 
     def listen(self):
         global debug_message
-
         global client_address
         global client_address_index
-
         global server_messages
         global server_address_messages
-
         global x_time
         global z_time
         global prev_addr
         global soft_block_ip
         global violation_count
         global soft_block_ip_count
-
         global accept_from_key
+        global soft_block_bool
 
         debug_message.append('[' + str(datetime.datetime.now()) + '] [ServerClass.listen] SERVER_HOST: ' + str(self.SERVER_HOST))
         debug_message.append('[' + str(datetime.datetime.now()) + '] [ServerClass.listen] SERVER_PORT: ' + str(self.SERVER_PORT))
@@ -4610,37 +4636,38 @@ class ServerClass(QThread):
         self.server_status_prev = None
 
         while True:
-            debug_message.append('[' + str(datetime.datetime.now()) + '] [ServerClass.listen] checking soft_block_ip: ' + str(soft_block_ip))
-            if len(soft_block_ip) > 0:
+            if soft_block_bool is True:
+                debug_message.append('[' + str(datetime.datetime.now()) + '] [ServerClass.listen] checking soft_block_ip: ' + str(soft_block_ip))
+                if len(soft_block_ip) > 0:
 
-                # DOS & DDOS Protection - Notify Per IP Address In Soft_Block_IP
-                if len(soft_block_ip) >= 999:
-                    soft_block_ip_count = '999+'
-                else:
-                    soft_block_ip_count = len(soft_block_ip)
-                self.soft_block_ip_notification.setText(str(soft_block_ip_count))
+                    # DOS & DDOS Protection - Notify Per IP Address In Soft_Block_IP
+                    if len(soft_block_ip) >= 999:
+                        soft_block_ip_count = '999+'
+                    else:
+                        soft_block_ip_count = len(soft_block_ip)
+                    self.soft_block_ip_notification.setText(str(soft_block_ip_count))
 
-                # DOS & DDOS Protection - Tune And Add Soft Block Time Ranges Using (Z_Time + n) And Violation Count
-                i = 0
-                for _ in soft_block_ip:
+                    # DOS & DDOS Protection - Tune And Add Soft Block Time Ranges Using (Z_Time + n) And Violation Count
+                    i = 0
+                    for _ in soft_block_ip:
 
-                    if soft_block_ip[i][2] < 20:
-                        debug_message.append('[' + str(datetime.datetime.now()) + '] [ServerClass.listen] [violation < 20] ' + str(soft_block_ip[i][0]))
-                        if round(time.time() * 1000) > (soft_block_ip[i][1] + 2000):  # Unblock in n [ Z_Time + TUNABLE n ] N=Milliseconds Soft Block Time
-                            debug_message.append('[' + str(datetime.datetime.now()) + '] [ServerClass.listen] unblocking: ' + str(soft_block_ip[i][0]))
-                            del soft_block_ip[i]
+                        if soft_block_ip[i][2] < 20:
+                            debug_message.append('[' + str(datetime.datetime.now()) + '] [ServerClass.listen] [violation < 20] ' + str(soft_block_ip[i][0]))
+                            if round(time.time() * 1000) > (soft_block_ip[i][1] + 2000):  # Unblock in n [ Z_Time + TUNABLE n ] N=Milliseconds Soft Block Time
+                                debug_message.append('[' + str(datetime.datetime.now()) + '] [ServerClass.listen] unblocking: ' + str(soft_block_ip[i][0]))
+                                del soft_block_ip[i]
 
-                            # DOS & DDOS Protection - Notify Per IP Address In Soft_Block_IP
-                            if len(soft_block_ip) >= 999:
-                                soft_block_ip_count = '999+'
+                                # DOS & DDOS Protection - Notify Per IP Address In Soft_Block_IP
+                                if len(soft_block_ip) >= 999:
+                                    soft_block_ip_count = '999+'
+                                else:
+                                    soft_block_ip_count = len(soft_block_ip)
+                                self.soft_block_ip_notification.setText(str(soft_block_ip_count))
+
                             else:
-                                soft_block_ip_count = len(soft_block_ip)
-                            self.soft_block_ip_notification.setText(str(soft_block_ip_count))
+                                debug_message.append('[' + str(datetime.datetime.now()) + '] [ServerClass.listen] soft block will remain: ' + str(soft_block_ip[i][0]))
 
-                        else:
-                            debug_message.append('[' + str(datetime.datetime.now()) + '] [ServerClass.listen] soft block will remain: ' + str(soft_block_ip[i][0]))
-
-                    i += 1
+                        i += 1
 
             try:
                 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as SOCKET_SERVER:
@@ -4652,66 +4679,67 @@ class ServerClass(QThread):
                     conn, addr = SOCKET_SERVER.accept()
                     debug_message.append('[' + str(datetime.datetime.now()) + '] [ServerClass.listen] connection:' + str(conn) + ' address:' + str(addr))
 
-                    addr_exists_already = False
-                    if len(soft_block_ip) > 0:
-                        i = 0
-                        for _ in soft_block_ip:
-                            debug_message.append('[' + str(datetime.datetime.now()) + '] [ServerClass.listen] comparing: ' + str(soft_block_ip[i][0]) + ' ---> ' + str(addr[0]))
-                            if soft_block_ip[i][0] == addr[0]:
-                                debug_message.append('[' + str(datetime.datetime.now()) + '] [ServerClass.listen] SOCKET_SERVER ATTEMPTING BLOCK: ' + str(SOCKET_SERVER))
-                                try:
-                                    SOCKET_SERVER.close()
-                                except Exception as e:
-                                    debug_message.append('[' + str(datetime.datetime.now()) + '] [ServerClass.listen] [1] failed: ' + str(e))
-                                    textbox_0_messages.append('[' + str(datetime.datetime.now()) + '] [1]' + str(e))
-                                debug_message.append('[' + str(datetime.datetime.now()) + '] [ServerClass.listen] SOCKET_SERVER AFTER CLOSE ATTEMPT: ' + str(SOCKET_SERVER))
-                                soft_block_ip_index = i
-                                addr_exists_already = True
-                            i += 1
+                    if soft_block_bool is True:
+                        addr_exists_already = False
+                        if len(soft_block_ip) > 0:
+                            i = 0
+                            for _ in soft_block_ip:
+                                debug_message.append('[' + str(datetime.datetime.now()) + '] [ServerClass.listen] comparing: ' + str(soft_block_ip[i][0]) + ' ---> ' + str(addr[0]))
+                                if soft_block_ip[i][0] == addr[0]:
+                                    debug_message.append('[' + str(datetime.datetime.now()) + '] [ServerClass.listen] SOCKET_SERVER ATTEMPTING BLOCK: ' + str(SOCKET_SERVER))
+                                    try:
+                                        SOCKET_SERVER.close()
+                                    except Exception as e:
+                                        debug_message.append('[' + str(datetime.datetime.now()) + '] [ServerClass.listen] [1] failed: ' + str(e))
+                                        textbox_0_messages.append('[' + str(datetime.datetime.now()) + '] [1]' + str(e))
+                                    debug_message.append('[' + str(datetime.datetime.now()) + '] [ServerClass.listen] SOCKET_SERVER AFTER CLOSE ATTEMPT: ' + str(SOCKET_SERVER))
+                                    soft_block_ip_index = i
+                                    addr_exists_already = True
+                                i += 1
 
-                    # DOS & DDOS Protection - Set Previous Address
-                    if addr[0] != prev_addr:
-                        prev_addr = addr[0]
-                    elif addr[0] == prev_addr:
+                        # DOS & DDOS Protection - Set Previous Address
+                        if addr[0] != prev_addr:
+                            prev_addr = addr[0]
+                        elif addr[0] == prev_addr:
 
-                        # DOS & DDOS Protection - Initiate Y_Time
-                        y_time = round(time.time() * 1000)
+                            # DOS & DDOS Protection - Initiate Y_Time
+                            y_time = round(time.time() * 1000)
 
-                        # DOS & DDOS Protection - Compare Y_Time (Now) To X_Time (Last Time)
-                        if y_time < (x_time + 1000):  # Throttle Rate = n [ TUNABLE X_Time + n ] N=Milliseconds
-                            debug_message.append('[' + str(datetime.datetime.now()) + '] [ServerClass.listen] checking soft block configuration for:' + str(addr[0]))
+                            # DOS & DDOS Protection - Compare Y_Time (Now) To X_Time (Last Time)
+                            if y_time < (x_time + 1000):  # Throttle Rate = n [ TUNABLE X_Time + n ] N=Milliseconds
+                                debug_message.append('[' + str(datetime.datetime.now()) + '] [ServerClass.listen] checking soft block configuration for:' + str(addr[0]))
 
-                            # DOS & DDOS Protection - Add New Entry To Soft Block List
-                            if addr_exists_already is False:
-                                debug_message.append('[' + str(datetime.datetime.now()) + '] [ServerClass.listen] adding IP Address to soft block list: ' + str(addr[0]))
+                                # DOS & DDOS Protection - Add New Entry To Soft Block List
+                                if addr_exists_already is False:
+                                    debug_message.append('[' + str(datetime.datetime.now()) + '] [ServerClass.listen] adding IP Address to soft block list: ' + str(addr[0]))
 
-                                # DOS & DDOS Protection - Set Z Time
-                                _z_time = round(time.time() * 1000)
-                                debug_message.append('[' + str(datetime.datetime.now()) + '] [ServerClass.listen] setting IP Address Z_TIME to current time: ' + str(addr[0]) + ' --> ' + str(_z_time))
+                                    # DOS & DDOS Protection - Set Z Time
+                                    _z_time = round(time.time() * 1000)
+                                    debug_message.append('[' + str(datetime.datetime.now()) + '] [ServerClass.listen] setting IP Address Z_TIME to current time: ' + str(addr[0]) + ' --> ' + str(_z_time))
 
-                                # DOS & DDOS Protection - Set Violation Count
-                                _violation_count = 1
-                                debug_message.append('[' + str(datetime.datetime.now()) + '] [ServerClass.listen] setting IP Address violation count: ' + str(addr[0]) + ' --> ' + str(_violation_count))
+                                    # DOS & DDOS Protection - Set Violation Count
+                                    _violation_count = 1
+                                    debug_message.append('[' + str(datetime.datetime.now()) + '] [ServerClass.listen] setting IP Address violation count: ' + str(addr[0]) + ' --> ' + str(_violation_count))
 
-                                new_list_entry = [addr[0], _z_time, _violation_count]
-                                soft_block_ip.append(new_list_entry)
+                                    new_list_entry = [addr[0], _z_time, _violation_count]
+                                    soft_block_ip.append(new_list_entry)
 
-                            elif addr_exists_already is True:
+                                elif addr_exists_already is True:
 
-                                # DOS & DDOS Protection - Amend Entry For Soft Block IP List
-                                debug_message.append('[' + str(datetime.datetime.now()) + '] [ServerClass.listen] IP Address already in soft block list: ' + str(addr[0]))
+                                    # DOS & DDOS Protection - Amend Entry For Soft Block IP List
+                                    debug_message.append('[' + str(datetime.datetime.now()) + '] [ServerClass.listen] IP Address already in soft block list: ' + str(addr[0]))
 
-                                # DOS & DDOS Protection - Amend Entry For Z_Time
-                                soft_block_ip[soft_block_ip_index][1] = round(time.time() * 1000)
+                                    # DOS & DDOS Protection - Amend Entry For Z_Time
+                                    soft_block_ip[soft_block_ip_index][1] = round(time.time() * 1000)
 
-                                # DOS & DDOS Protection - Amend Entry For Violation Count
-                                soft_block_ip[soft_block_ip_index][2] += 1
+                                    # DOS & DDOS Protection - Amend Entry For Violation Count
+                                    soft_block_ip[soft_block_ip_index][2] += 1
 
-                                debug_message.append('[' + str(datetime.datetime.now()) + '] [ServerClass.listen] ammending soft_block_ip[soft_block_ip_index]: ' + str(soft_block_ip[soft_block_ip_index]))
+                                    debug_message.append('[' + str(datetime.datetime.now()) + '] [ServerClass.listen] ammending soft_block_ip[soft_block_ip_index]: ' + str(soft_block_ip[soft_block_ip_index]))
 
-                        # DOS & DDOS Protection - Set X_Time As Time Y_Time
-                        x_time = y_time
-                        debug_message.append('[' + str(datetime.datetime.now()) + '] [ServerClass.listen] updating x time: ' + str(addr[0]))
+                            # DOS & DDOS Protection - Set X_Time As Time Y_Time
+                            x_time = y_time
+                            debug_message.append('[' + str(datetime.datetime.now()) + '] [ServerClass.listen] updating x time: ' + str(addr[0]))
 
                     # Set connection acceptance as False
                     accept_conn = False
