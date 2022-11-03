@@ -2321,16 +2321,17 @@ class App(QMainWindow):
 
             search_address_regex = regex_address_search(rex_str=self.search_address.text())
             print(search_address_regex)
-            
-            i_search_address = 0
-            for _ in client_address:
-                if canonical_caseless(_[0]) == canonical_caseless(search_address_regex[0][0]):
-                    debug_message.append('[' + str(datetime.datetime.now()) + '] [App.search_address_function] [Found Match] ' + str(_[0]) + str(' at index ') + str(i_search_address))
-                    client_address_index = i_search_address-1
-                    client_next_address_function()
-                    self.search_address.setText('')
-                    self.setFocus()
-                i_search_address += 1
+
+            if search_address_regex:
+                i_search_address = 0
+                for _ in client_address:
+                    if canonical_caseless(_[0]) == canonical_caseless(search_address_regex[0][0]):
+                        debug_message.append('[' + str(datetime.datetime.now()) + '] [App.search_address_function] [Found Match] ' + str(_[0]) + str(' at index ') + str(i_search_address))
+                        client_address_index = i_search_address-1
+                        client_next_address_function()
+                        self.search_address.setText('')
+                        self.setFocus()
+                    i_search_address += 1
 
         def select_address_0_function():
             global client_address_index
