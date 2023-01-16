@@ -100,6 +100,10 @@ A tactical decoder for humans for responses and other incoming bytes. (Expensive
 Aesthetic:
 Aesthetic purely functional.
 
+All socket module address families, socket types parsed programatically out of the module level and programatically
+written to STDOUT for me to copy and paste back into the communicator source code. This is what makes the communicator
+extremely powerful for communicating with potentially anything.
+
 If you poke around in the dark, you might poke a bear. Please use with caution and treat as experimental.
 
 
