@@ -91,7 +91,7 @@ feature and I do not in any way condone weaponizing the Communicator but it is p
 even attack itself if configured too. The Communicator is intended to be an extremely versatile, dynamic and flexible
 communications tool capable of a wide variety if not infinite applications.
 Mechanization allows for an infinite amount of things to be done to an infinite amount of things simultanioulsy,
-specifically and potentially extremely quickly.
+specifically and potentially extremely quickly. Please do not weaponize the mechanize.
 
 OMEGA DECODER:
 A tactical decoder for humans for responses and other incoming bytes. (Expensive).
